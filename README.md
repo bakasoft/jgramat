@@ -1,2 +1,3 @@
-# jgramat
-Java implementation of Gramat Language
+# JGramat
+
+Java implementation of [Gramat Language](https://github.com/bakasoft/gramat).
