@@ -1,0 +1,6 @@
+@import any from gramat;
+
+newline = "\r"? "\n";
+request-line = <method: (!" ")+ > " "+ <path: (!" ")+ > " "+ <protocol: (!"/")+ > "/" <version:# (!"\r" | "\n")+ > newline;
+header-field = {headers +: <name: (!":" | " " | "\r" | "\n")+ > " "* ":" " "* <value: (!"\r" | "\n")+ > newline };
+request = request-line header-field* newline <body: any*>;

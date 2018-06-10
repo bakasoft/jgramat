@@ -1,0 +1,16 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+	jcenter()
+	maven { url "https://jitpack.io" }
+}
+
+
+dependencies {
+	compile 'com.google.code.gson:gson:2.8.5'
+
+	compile 'com.github.bakasoft:framboyan:v1.0'
+}
+
+mainClassName = 'org.bakasoft.gramat.test.Main'

@@ -1,0 +1,9 @@
+{
+    "baseUrl": "http://bakasoft.org",
+    "path": "/gramat",
+    "query": [
+        { "name": "ref", "value": "github" },
+        { "name": "code", "value": "201805" }
+    ],
+    "fragment": "top"
+}

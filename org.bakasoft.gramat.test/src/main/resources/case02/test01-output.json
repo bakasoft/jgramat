@@ -1,0 +1,15 @@
+{
+	"method": "POST",
+	"path": "/login",
+	"protocol": "HTTP",
+	"version": 1.1,
+	"headers": [
+		{ "name": "Host", "value": "www.example.com" },
+		{ "name": "Content-Type", "value": "application/x-www-form-urlencoded" },
+		{ "name": "Content-Length", "value": "length" },
+		{ "name": "Accept-Language", "value": "en-us" },
+		{ "name": "Accept-Encoding", "value": "gzip, deflate" },
+		{ "name": "Connection", "value": "Keep-Alive" }
+	],
+	"body": "username=admin&password=admin"
+}
