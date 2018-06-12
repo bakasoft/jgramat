@@ -6,11 +6,12 @@ repositories {
 	maven { url "https://jitpack.io" }
 }
 
-
 dependencies {
 	compile 'com.google.code.gson:gson:2.8.5'
 
 	compile 'com.github.bakasoft:framboyan:v1.0'
+	
+	compile project(":org.bakasoft.gramat")
 }
 
 mainClassName = 'org.bakasoft.gramat.test.Main'

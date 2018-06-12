@@ -34,7 +34,9 @@ public class Main {
 		Framboyan.add(PerformanceTest.class);
 		Framboyan.add(CaseTest.class);
 
-		Framboyan.run();
+		boolean result = Framboyan.run();
+		
+		System.exit(result ? 0 : 1);
 	}
 
 }

@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: gramat
-Implementation-Version: v0.1
-
