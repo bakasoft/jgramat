@@ -3,7 +3,6 @@ package org.bakasoft.gramat.test.unit;
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.errors.GramatException;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
 public class GrammarTest extends Framboyan {{
@@ -21,12 +20,12 @@ public class GrammarTest extends Framboyan {{
 			Grammar grammar = new Grammar();
 			expect(() -> {
 				grammar.compile("=====");
-			}).toThrow(GramatException.class);
+			}).toThrow(RuntimeException.class); // TODO: change to specific exception
 		});
 		
 		it("should register and then find a Expression", () -> {
 			Grammar grammar = new Grammar();
-			Expression expression0 = new StrictString(grammar, "");
+			Expression expression0 = new StrictString("");
 			
 			grammar.registerRule("test", expression0);
 			grammar.registerRule("pending");
@@ -39,13 +38,13 @@ public class GrammarTest extends Framboyan {{
 		
 		it("should throw an error when registering a duplicated Expression", () -> {
 			Grammar grammar = new Grammar();
-			Expression expression = new StrictString(grammar, "");
+			Expression expression = new StrictString("");
 			
 			grammar.registerRule("test", expression);
 			
 			expect(() -> {
 				grammar.registerRule("test", expression);
-			}).toThrow(GramatException.class);
+			}).toThrow(RuntimeException.class); // TODO: change to specific exception
 		});
 		
 		it("should register the expression despite it was previouly registered with null", () -> {
@@ -55,16 +54,16 @@ public class GrammarTest extends Framboyan {{
 			expect(() -> {
 				// two times with null is not possible
 				grammar.registerRule("test");
-			}).toThrow(GramatException.class);
+			}).toThrow(RuntimeException.class); // TODO: change to specific exception
 			
-			grammar.registerRule("test", new StrictString(grammar, ""));
+			grammar.registerRule("test", new StrictString(""));
 		});
 		
 		it("should throw an error finding a not registered Expression", () -> {
 			Grammar grammar = new Grammar();
 			expect(() -> {
 				grammar.findRule("test");
-			}).toThrow(GramatException.class);
+			}).toThrow(RuntimeException.class); // TODO: change to specific exception
 		});
 	});	
 	

@@ -1,7 +1,6 @@
 package org.bakasoft.gramat.test.unit.regularExpressions;
 
 import org.bakasoft.framboyan.Framboyan;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
 public class StrictStringTest extends Framboyan {
@@ -25,8 +24,7 @@ public class StrictStringTest extends Framboyan {
 	}
 	
 	private static StrictString build(String code) {
-		Grammar grammar = new Grammar();
-		StrictString expr = new StrictString(grammar, code);
+		StrictString expr = new StrictString(code);
 		return expr;
 	}
 	

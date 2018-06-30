@@ -2,15 +2,17 @@ package org.bakasoft.gramat.regularExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 
 public class StrictString extends Expression {
 
 	private final char[] chars;
 
-	public StrictString(Grammar grammar, String value) {
-		super(grammar);
-		
+	public StrictString(char[] chars) {
+		this.chars = chars;
+	}
+	
+	public StrictString(String value) {
 		chars = value.toCharArray();
 	}
 
@@ -46,4 +48,10 @@ public class StrictString extends Expression {
 		return new String(chars);
 	}
 
+	@Override
+	public void toString(GramatWriter writer) {
+		String value = new String(chars);
+		
+		writer.writeDelimitedString(value, '"');
+	}
 }

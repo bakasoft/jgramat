@@ -1,11 +1,13 @@
 package org.bakasoft.gramat;
 
+import java.io.StringWriter;
 import java.util.Map;
 
 import org.bakasoft.gramat.debug.DebugContext;
 import org.bakasoft.gramat.debug.DebugObjectBuilder;
 import org.bakasoft.gramat.debug.DebugTape;
 import org.bakasoft.gramat.debug.Debugger;
+import org.bakasoft.gramat.io.GramatWriter;
 import org.bakasoft.gramat.util.DefaultObjectBuilder;
 import org.bakasoft.gramat.util.DummyObjectBuilder;
 import org.bakasoft.gramat.util.ObjectBuilder;
@@ -16,11 +18,7 @@ abstract public class Expression {
 
 	abstract public boolean process(Context context);
 	
-	protected final Grammar grammar;
-	
-	public Expression(Grammar grammar) {
-		this.grammar = grammar;
-	}
+	abstract public void toString(GramatWriter writer);
 	
 	public Context debug(String input, Debugger debugger) {
 		Tape tape = new DebugTape(input, debugger);
@@ -55,9 +53,15 @@ abstract public class Expression {
 			throw new RuntimeException(); // add message
 		}
 	}
-
-	public Grammar getGrammar() {
-		return grammar;
-	}
 	
+	@Override
+	public String toString() {
+		StringWriter s = new StringWriter();
+		GramatWriter writer = new GramatWriter(s);
+		
+		toString(writer);
+		
+		return s.toString();
+	}
+
 }

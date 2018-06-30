@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.DisjunctionSequence;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 import org.bakasoft.gramat.test.util.PerformanceTool;
@@ -14,12 +13,11 @@ public class PerformanceTest extends Framboyan {{
 
 	describe("Gramat Performance vs Java Pattern", () -> {
 		it("should be superior using disjunctions", () -> {
-			Grammar grammar = new Grammar();
 			String input = "e";
 			Pattern javaOr = Pattern.compile("a|b|c|d|e|f|g|h|i");
-			DisjunctionSequence gramatOr = new DisjunctionSequence(grammar, 
+			DisjunctionSequence gramatOr = new DisjunctionSequence( 
 					Stream.of("a", "b", "c", "d", "e", "f", "g", "h", "i")
-					.map(item -> new StrictString(grammar, item))
+					.map(item -> new StrictString(item))
 					.toArray(Expression[]::new)); // TODO compile
 			
 			PerformanceTool.deathMatch(1000000, 

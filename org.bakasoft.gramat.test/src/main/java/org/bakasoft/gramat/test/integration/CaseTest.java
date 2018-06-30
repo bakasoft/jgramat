@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.Context;
-import org.bakasoft.gramat.Engine;
 import org.bakasoft.gramat.Expression;
 import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.debug.DefaultDebugger;
@@ -30,11 +29,8 @@ public class CaseTest extends Framboyan {
 	
 	private static void test(String caseName, String mainRule, PrintStream out) {
 		String code = fetchString("/" + caseName + "/main.gmt");
-		Engine engine = new Engine();
 		
-		engine.registerDefaultGrammar();
-		
-		Grammar grammar = engine.compile(code);
+		Grammar grammar = new Grammar(code);
 		Expression rule = grammar.findRule(mainRule);
 		
 		for (int n = 1; n <= 99; n++) {

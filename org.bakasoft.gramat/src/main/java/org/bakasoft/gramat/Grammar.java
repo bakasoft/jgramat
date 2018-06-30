@@ -4,30 +4,41 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bakasoft.gramat.compiling.Compiler;
 import org.bakasoft.gramat.util.CharPredicate;
 import org.bakasoft.gramat.util.StringTape;
+import org.bakasoft.gramat.util.Tape;
+import org.bakasoft.gramat.building.ExpressionBuilder;
+import org.bakasoft.gramat.building.GrammarBuilder;
 import org.bakasoft.gramat.errors.IdentifierNotAvailableException;
 import org.bakasoft.gramat.errors.RuleNotFoundException;
+import org.bakasoft.gramat.io.Parser;
 import org.bakasoft.gramat.regularExpressions.CharPredicateExpression;
 
 public class Grammar {
-
-	private final Engine engine;
 	
+	private final GrammarBuilder builder;
 	private final LinkedHashMap<String, Expression> rules;
 	
 	public Grammar() {
-		this(new Engine());
+		this(new GrammarBuilder());
 	}
 	
-	public Grammar(Engine engine) {
-		this.engine = engine;
+	public Grammar(GrammarBuilder builder) {
+		this.builder = builder;
 		this.rules = new LinkedHashMap<>();
 	}
 	
+	public Grammar(String code) {
+		this(Parser.parseGrammar(new StringTape(code)));
+		
+		builder.build(this);
+	}
+	
 	public Expression compile(String code) {
-		return Compiler.compileExpression(this, new StringTape(code));
+		Tape tape = new StringTape(code);
+		ExpressionBuilder expressionBuilder = Parser.parseExpression(tape);
+		
+		return builder.build(expressionBuilder);
 	}
 	
 	public String getId(Expression rule) {
@@ -41,6 +52,10 @@ public class Grammar {
 		}
 			
 		return null;
+	}
+	
+	public Expression getRule(String name) {
+		return rules.get(name);
 	}
 	
 	public Expression findRule(String id) {
@@ -64,11 +79,6 @@ public class Grammar {
 	}
 	
 	public void registerRule(String id, CharPredicate predicate) {
-		registerRule(id, new CharPredicateExpression(this, predicate));
+		registerRule(id, new CharPredicateExpression(id, predicate));
 	}
-
-	public Engine getEngine() {
-		return engine;
-	}
-	
 }

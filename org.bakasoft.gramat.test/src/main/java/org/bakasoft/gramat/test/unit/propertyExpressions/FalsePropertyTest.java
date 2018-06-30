@@ -2,7 +2,6 @@ package org.bakasoft.gramat.test.unit.propertyExpressions;
 
 import org.bakasoft.framboyan.Framboyan;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.propertyExpressions.FalseProperty;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
@@ -29,7 +28,7 @@ public class FalsePropertyTest extends Framboyan {
 	}
 	
 	private FalseProperty build(String name, boolean isArray, String expression) {
-		Grammar grammar = new Grammar();
-		return new FalseProperty(grammar, name, isArray, new StrictString(grammar, expression));
+		// TODO compile instead of manually construct (in all tests)
+		return new FalseProperty(name, isArray, new StrictString(expression));
 	}
 }

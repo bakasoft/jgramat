@@ -2,15 +2,15 @@ package org.bakasoft.gramat.regularExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 
 public class FuzzyString extends Expression {
 	
+	// add settings
+	
 	private final char[] chars;
 
-	public FuzzyString(Grammar grammar, String value) {
-		super(grammar);
-		
+	public FuzzyString(String value) {
 		chars = value.toCharArray();
 	}
 
@@ -44,5 +44,12 @@ public class FuzzyString extends Expression {
 	
 	public String getValue() {
 		return new String(chars);
+	}
+
+	@Override
+	public void toString(GramatWriter writer) {
+		String value = new String(chars);
+		
+		writer.writeDelimitedString(value, '~');
 	}
 }

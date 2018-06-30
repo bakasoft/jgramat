@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.ConjunctionSequence;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
@@ -28,11 +27,9 @@ public class ConjunctionSequenceTest extends Framboyan {
 	}
 	
 	private ConjunctionSequence build(String... strictStrings) {
-		Grammar grammar = new Grammar();
-		
-		return new ConjunctionSequence(grammar, 
+		return new ConjunctionSequence( 
 				Arrays.stream(strictStrings)
-				.map(item -> new StrictString(grammar, item))
+				.map(item -> new StrictString(item))
 				.toArray(Expression[]::new));
 	}
 	

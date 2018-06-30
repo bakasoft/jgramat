@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.DisjunctionSequence;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
@@ -33,10 +32,9 @@ public class DisjunctionSequenceTest extends Framboyan {
 	}
 	
 	private DisjunctionSequence build(String... strictStrings) {
-		Grammar grammar = new Grammar();
-		return new DisjunctionSequence(grammar, 
+		return new DisjunctionSequence( 
 				Arrays.stream(strictStrings)
-				.map(item -> new StrictString(grammar, item))
+				.map(item -> new StrictString(item))
 				.toArray(Expression[]::new));
 	}
 	

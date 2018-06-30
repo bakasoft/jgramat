@@ -2,7 +2,6 @@ package org.bakasoft.gramat.test.unit.propertyExpressions;
 
 import org.bakasoft.framboyan.Framboyan;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.propertyExpressions.TrueProperty;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
@@ -29,7 +28,6 @@ public class TruePropertyTest extends Framboyan {
 	}
 	
 	private TrueProperty build(String name, boolean isArray, String expression) {
-		Grammar grammar = new Grammar();
-		return new TrueProperty(grammar, name, isArray, new StrictString(grammar, expression));
+		return new TrueProperty(name, isArray, new StrictString(expression));
 	}
 }

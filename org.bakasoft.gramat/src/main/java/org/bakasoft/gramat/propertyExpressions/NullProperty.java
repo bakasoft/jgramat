@@ -2,12 +2,12 @@ package org.bakasoft.gramat.propertyExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 
 public class NullProperty extends AbstractProperty {
 	
-	public NullProperty(Grammar grammar, String name, boolean isArray, Expression expr) {
-		super(grammar, name, isArray, expr);
+	public NullProperty(String name, boolean isArray, Expression expr) {
+		super(name, isArray, expr);
 	}
 
 	@Override
@@ -21,6 +21,19 @@ public class NullProperty extends AbstractProperty {
 			
 			return false;
 		});
+	}
+
+	@Override
+	public void toString(GramatWriter writer) {
+		writer.writeName(propertyName);
+		writer.write(':');
+		writer.write('@');
+		if (isArray) {
+			writer.write('+');	
+		}
+		writer.write('<');
+		writer.write(expr);
+		writer.write('>');
 	}
 
 }

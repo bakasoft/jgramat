@@ -2,15 +2,16 @@ package org.bakasoft.gramat.regularExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 import org.bakasoft.gramat.util.CharPredicate;
 
 public class CharPredicateExpression extends Expression {
 
+	private final String name;
 	private final CharPredicate predicate;
 	
-	public CharPredicateExpression(Grammar grammar, CharPredicate predicate) {
-		super(grammar);
+	public CharPredicateExpression(String name, CharPredicate predicate) {
+		this.name = name;
 		this.predicate = predicate;
 	}
 
@@ -26,6 +27,11 @@ public class CharPredicateExpression extends Expression {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void toString(GramatWriter writer) {
+		writer.writeName(name);
 	}
 	
 }

@@ -1,7 +1,6 @@
 package org.bakasoft.gramat.test.unit.regularExpressions;
 
 import org.bakasoft.framboyan.Framboyan;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.OneOrMore;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 
@@ -30,8 +29,7 @@ public class OneOrMoreTest extends Framboyan {
 	}
 		
 	private OneOrMore build(String str) {
-		Grammar grammar = new Grammar();
-		return new OneOrMore(grammar, new StrictString(grammar, str));
+		return new OneOrMore(new StrictString(str));
 	}
 	
 }

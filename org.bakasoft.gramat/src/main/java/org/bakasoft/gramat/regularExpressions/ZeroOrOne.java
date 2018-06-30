@@ -2,14 +2,13 @@ package org.bakasoft.gramat.regularExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 
 public class ZeroOrOne extends Expression {
 
 	private final Expression expr;
 	
-	public ZeroOrOne(Grammar grammar, Expression expr) {
-		super(grammar);
+	public ZeroOrOne(Expression expr) {
 		this.expr = expr;
 	}
 
@@ -26,6 +25,12 @@ public class ZeroOrOne extends Expression {
 	
 	public Expression getExpression() {
 		return expr;
+	}
+
+	@Override
+	public void toString(GramatWriter writer) {
+		writer.write(expr);
+		writer.write('?');
 	}
 
 }

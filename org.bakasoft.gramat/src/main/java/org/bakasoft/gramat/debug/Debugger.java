@@ -2,7 +2,6 @@ package org.bakasoft.gramat.debug;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.compiling.Decompiler;
 import org.bakasoft.gramat.util.Tape;
 
 public interface Debugger {
@@ -29,7 +28,7 @@ public interface Debugger {
 	
 
 	static String inspect(Expression expr, int sampleLength) {
-		String code = Decompiler.decompileExpression(expr);
+		String code = expr.toString();
 		
 //		if (code.length() > sampleLength) {
 //			return code.substring(sampleLength).trim() + "...";

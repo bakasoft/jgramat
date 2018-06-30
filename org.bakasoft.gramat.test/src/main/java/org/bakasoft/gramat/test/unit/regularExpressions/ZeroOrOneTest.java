@@ -1,7 +1,6 @@
 package org.bakasoft.gramat.test.unit.regularExpressions;
 
 import org.bakasoft.framboyan.Framboyan;
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.regularExpressions.StrictString;
 import org.bakasoft.gramat.regularExpressions.ZeroOrMore;
 
@@ -28,8 +27,7 @@ public class ZeroOrOneTest extends Framboyan {
 	}
 	
 	private ZeroOrMore build(String str) {
-		Grammar grammar = new Grammar();
-		return new ZeroOrMore(grammar, new StrictString(grammar, str));
+		return new ZeroOrMore(new StrictString(str));
 	}
 	
 }

@@ -1,31 +1,19 @@
 package org.bakasoft.gramat.test.unit.compiling;
 
-import org.bakasoft.gramat.util.StringTape;
-import org.bakasoft.gramat.util.Tape;
-
 import java.util.function.Consumer;
 
 import org.bakasoft.framboyan.Framboyan;
-import org.bakasoft.gramat.Engine;
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
-import org.bakasoft.gramat.compiling.Compiler;
-import org.bakasoft.gramat.compiling.importers.DefaultImportResolver;
-import org.bakasoft.gramat.propertyExpressions.AbstractProperty;
-import org.bakasoft.gramat.propertyExpressions.FalseProperty;
-import org.bakasoft.gramat.propertyExpressions.NullProperty;
-import org.bakasoft.gramat.propertyExpressions.NumberProperty;
-import org.bakasoft.gramat.propertyExpressions.ObjectProperty;
-import org.bakasoft.gramat.propertyExpressions.StringProperty;
-import org.bakasoft.gramat.propertyExpressions.TrueProperty;
-import org.bakasoft.gramat.regularExpressions.ConjunctionSequence;
-import org.bakasoft.gramat.regularExpressions.DisjunctionSequence;
-import org.bakasoft.gramat.regularExpressions.FuzzyString;
-import org.bakasoft.gramat.regularExpressions.OneOrMore;
-import org.bakasoft.gramat.regularExpressions.ReferencedExpression;
-import org.bakasoft.gramat.regularExpressions.StrictString;
-import org.bakasoft.gramat.regularExpressions.ZeroOrMore;
-import org.bakasoft.gramat.regularExpressions.ZeroOrOne;
+import org.bakasoft.gramat.building.ConjunctionSequenceBuilder;
+import org.bakasoft.gramat.building.DisjunctionSequenceBuilder;
+import org.bakasoft.gramat.building.ExpressionBuilder;
+import org.bakasoft.gramat.building.PropertyBuilder;
+import org.bakasoft.gramat.building.PropertyType;
+import org.bakasoft.gramat.building.ReferencedRuleBuilder;
+import org.bakasoft.gramat.building.RepetitionBuilder;
+import org.bakasoft.gramat.building.StringLiteralBuilder;
+import org.bakasoft.gramat.io.Parser;
+import org.bakasoft.gramat.util.StringTape;
+import org.bakasoft.gramat.util.Tape;
 
 
 public class CompilerTest extends Framboyan {
@@ -33,193 +21,171 @@ public class CompilerTest extends Framboyan {
 	{
 		describe("Compiler class", () -> {
 			it("should ignore whitespaces and comments", () -> {
-				test("", tape -> Compiler.ignoreWhitespace(tape));
-				test(" ", tape -> Compiler.ignoreWhitespace(tape));
-				test(" \t\r\n", tape -> Compiler.ignoreWhitespace(tape));
-				test(" /* comment */ ", tape -> Compiler.ignoreWhitespace(tape));
+				test("", tape -> Parser.ignoreWhitespace(tape));
+				test(" ", tape -> Parser.ignoreWhitespace(tape));
+				test(" \t\r\n", tape -> Parser.ignoreWhitespace(tape));
+				test(" /* comment */ ", tape -> Parser.ignoreWhitespace(tape));
 			});
 			
 			it("should be able to read delimited strings", () -> {
-				test("#123#", tape -> expect(Compiler.readDelimitedString('#', tape)).toBe("123"));
-				test("'ab \\' cd'", tape -> expect(Compiler.readDelimitedString('\'', tape)).toBe("ab ' cd"));
-				test("\"\\\"\\'\\`\\\\\\/\\b\\f\\n\\r\\t\"", tape -> expect(Compiler.readDelimitedString('"', tape)).toBe("\"'`\\/\b\f\n\r\t"));
-				test("*\\u003D\\u005f\\u007E\\u002b*", tape -> expect(Compiler.readDelimitedString('*', tape)).toBe("=_~+"));
+				test("#123#", tape -> expect(Parser.readDelimitedString('#', tape)).toBe("123"));
+				test("'ab \\' cd'", tape -> expect(Parser.readDelimitedString('\'', tape)).toBe("ab ' cd"));
+				test("\"\\\"\\'\\`\\\\\\/\\b\\f\\n\\r\\t\"", tape -> expect(Parser.readDelimitedString('"', tape)).toBe("\"'`\\/\b\f\n\r\t"));
+				test("*\\u003D\\u005f\\u007E\\u002b*", tape -> expect(Parser.readDelimitedString('*', tape)).toBe("=_~+"));
 			});
 			
 			it("should understand valid identifier formats", () -> {
-				test("id", tape -> expect(Compiler.readIdentifier(tape)).toBe("id"));
-				test("a_b_c", tape -> expect(Compiler.readIdentifier(tape)).toBe("a_b_c"));
-				test("123", tape -> expect(Compiler.readIdentifier(tape)).toBe("123"));
-				test("`/*weird id*/`", tape -> expect(Compiler.readIdentifier(tape)).toBe("/*weird id*/"));
-				test("`\\``", tape -> expect(Compiler.readIdentifier(tape)).toBe("`"));
+				test("id", tape -> expect(Parser.readIdentifier(tape)).toBe("id"));
+				test("a_b_c", tape -> expect(Parser.readIdentifier(tape)).toBe("a_b_c"));
+				test("123", tape -> expect(Parser.readIdentifier(tape)).toBe("123"));
+				test("`/*weird id*/`", tape -> expect(Parser.readIdentifier(tape)).toBe("/*weird id*/"));
+				test("`\\``", tape -> expect(Parser.readIdentifier(tape)).toBe("`"));
 			});
 			
 			it("should compile character sequences", () -> {
-				test("'abc'", tape -> expect(Compiler.compileCharacterSequence(new Grammar(), tape)).toBeInstanceOf(StrictString.class));
-				test("\"abc\"", tape -> expect(Compiler.compileCharacterSequence(new Grammar(), tape)).toBeInstanceOf(StrictString.class));
-				test("~abc~", tape -> expect(Compiler.compileCharacterSequence(new Grammar(), tape)).toBeInstanceOf(FuzzyString.class));
+				test("'abc'", tape -> expect(Parser.parseStringLiteral(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				test("\"abc\"", tape -> expect(Parser.parseStringLiteral(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				test("~abc~", tape -> expect(Parser.parseStringLiteral(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				// TODO test `text` and `fuzzy` properties
 			});
 			
 			it("should compile different kinds of properties", () -> {
-				testProperty("name", false, StringProperty.class,
-						"<name:'abc'>",
-						"<`name`: 'abc'>",
-						"< name : 'abc' >");
-				testProperty("names", true, StringProperty.class,
-						"<names+:'abc'>",
-						"<`names` +: 'abc'>",
-						"< names +: 'abc' >");
-				testProperty("index", false, NumberProperty.class,
-						"<index:#'abc'>",
-						"< index :# 'abc' >",
-						"<`index`:# 'abc'>");
-				testProperty("indexes", true, NumberProperty.class,
-						"<indexes+:#'abc'>",
-						"<`indexes` +:# 'abc'>",
-						"< indexes +:# 'abc' >");
-				testProperty("enabled", false, TrueProperty.class,
-						"<enabled:?'abc'>",
-						"< enabled :? 'abc' >",
-						"<`enabled`:? 'abc'>");
-				testProperty("enableds", true, TrueProperty.class,
-						"<enableds+:?'abc'>",
-						"<`enableds` +:? 'abc'>",
-						"< enableds +:? 'abc' >");
-				testProperty("disabled", false, FalseProperty.class,
-						"<disabled:!'abc'>",
-						"<`disabled`:! 'abc'>",
-						"< disabled :! 'abc' >");
-				testProperty("disableds", true, FalseProperty.class,
-						"<disableds+:!'abc'>",
-						"<`disableds`+:! 'abc'>",
-						"< disableds +:! 'abc' >");
-				testProperty("reference", false, NullProperty.class,
-						"<reference:@'abc'>",
-						"<`reference`:@ 'abc'>",
-						"< reference :@ 'abc' >");
-				testProperty("references", true, NullProperty.class,
-						"<references+:@'abc'>",
-						"<`references`+:@ 'abc'>",
-						"< references +:@ 'abc' >");
-				testProperty("node", false, ObjectProperty.class,
-						"{node:'abc'}",
-						"{`node`: 'abc' }",
-						"{ node : 'abc' }");
-				testProperty("nodes", true, ObjectProperty.class,
-						"{nodes+:'abc'}",
-						"{`nodes`+: 'abc' }",
-						"{ nodes +: 'abc' }");
-			});
-			
-			it("should compile referenced expressions", () -> {
-				Grammar grammar = new Grammar();
-				Expression test = new StrictString(grammar, "abc");
-				
-				grammar.registerRule("a", test);
-				grammar.registerRule("b");
-				
-				test("a", tape -> expect(Compiler.compileExpression(grammar, tape) == test).toBe(true));
-				test("b", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(ReferencedExpression.class));
+				testProperty("name", false, PropertyType.STRING,
+						"name:<'abc'>",
+						"`name`: <'abc'>",
+						"name : < 'abc' >");
+				testProperty("names", true, PropertyType.STRING,
+						"names+:<'abc'>",
+						"`names` +: <'abc'>",
+						"names +: < 'abc' >");
+				testProperty("index", false, PropertyType.NUMBER,
+						"index:#<'abc'>",
+						"index :# < 'abc' >",
+						"`index`:# <'abc'>");
+				testProperty("indexes", true, PropertyType.NUMBER,
+						"indexes+:#<'abc'>",
+						"`indexes` +:# <'abc'>",
+						"indexes +:# < 'abc' >");
+				testProperty("enabled", false, PropertyType.TRUE,
+						"enabled:?<'abc'>",
+						"enabled :? < 'abc' >",
+						"`enabled`:? <'abc'>");
+				testProperty("enableds", true, PropertyType.TRUE,
+						"enableds+:?<'abc'>",
+						"`enableds` +:? <'abc'>",
+						"enableds +:? < 'abc' >");
+				testProperty("disabled", false, PropertyType.FALSE,
+						"disabled:!<'abc'>",
+						"`disabled`:! <'abc'>",
+						"disabled :! < 'abc' >");
+				testProperty("disableds", true, PropertyType.FALSE,
+						"disableds+:!<'abc'>",
+						"`disableds`+:! <'abc'>",
+						"disableds +:! < 'abc' >");
+				testProperty("reference", false, PropertyType.NULL,
+						"reference:@<'abc'>",
+						"`reference`:@ <'abc'>",
+						"reference :@ < 'abc' >");
+				testProperty("references", true, PropertyType.NULL,
+						"references+:@<'abc'>",
+						"`references`+:@ <'abc'>",
+						"references +:@ < 'abc' >");
+				testProperty("node", false, PropertyType.OBJECT,
+						"node:{'abc'}",
+						"`node`: {'abc' }",
+						"node : { 'abc' }");
+				testProperty("nodes", true, PropertyType.OBJECT,
+						"nodes+:{'abc'}",
+						"`nodes`+: {'abc' }",
+						"nodes +: { 'abc' }");
 			});
 			
 			it("should compile different kinds of expressions", () -> {
-				Grammar grammar = new Grammar();
-				Expression test = new StrictString(grammar, "abc");
-				grammar.registerRule("test", test);
 				
-				test("test", tape -> expect(Compiler.compileExpression(grammar, tape) == test).toBe(true));
-				test("(test)", tape -> expect(Compiler.compileExpression(grammar, tape) == test).toBe(true));
-				test("'abc'", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(StrictString.class));
-				test("\"abc\"", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(StrictString.class));
-				test("~abc~", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(FuzzyString.class));
-				test("{id: test}", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(ObjectProperty.class));
-				test("<id: test>", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(StringProperty.class));
-				test("<id:# test>", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(NumberProperty.class));
-				test("<id:? test>", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(TrueProperty.class));
-				test("<id:! test>", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(FalseProperty.class));
-				test("<id:@ test>", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(NullProperty.class));
-				test("test?", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(ZeroOrOne.class));
-				test("test*", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(ZeroOrMore.class));
-				test("test+", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(OneOrMore.class));
-				test("test test", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(ConjunctionSequence.class));
-				test("test | test", tape -> expect(Compiler.compileExpression(grammar, tape)).toBeInstanceOf(DisjunctionSequence.class));
+				test("test", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(ReferencedRuleBuilder.class));
+				test("(test)", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(ReferencedRuleBuilder.class));
+				test("'abc'", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				test("\"abc\"", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				test("~abc~", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(StringLiteralBuilder.class));
+				test("id: {test}", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("id: <test>", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("id:# <test>", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("id:? <test>", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("id:! <test>", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("id:@ <test>", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(PropertyBuilder.class));
+				test("test?", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(RepetitionBuilder.class));
+				test("test*", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(RepetitionBuilder.class));
+				test("test+", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(RepetitionBuilder.class));
+				test("test test", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(ConjunctionSequenceBuilder.class));
+				test("test | test", tape -> expect(Parser.parseExpression(tape)).toBeInstanceOf(DisjunctionSequenceBuilder.class));
 			});
 			
 			it("should compile conjunction sequences and disjunction sequences", () -> {
-				Grammar grammar = new Grammar();
-				Expression a = new StrictString(grammar, "aaa");
-				Expression b = new StrictString(grammar, "bbb");
-				Expression c = new StrictString(grammar, "ccc");
-				grammar.registerRule("a", a);
-				grammar.registerRule("b", b);
-				grammar.registerRule("c", c);
-				
 				test("a b c", tape -> {
-					Expression expr = Compiler.compileExpression(grammar, tape);
+					ExpressionBuilder expr = Parser.parseExpression(tape);
 					
-					expect(expr).toBeInstanceOf(ConjunctionSequence.class);
+					expect(expr).toBeInstanceOf(ConjunctionSequenceBuilder.class);
 					
-					ConjunctionSequence cseq = (ConjunctionSequence)expr;
-					expect(cseq.getExpressions()).not.toBe(null);
-					expect(cseq.getExpressions().length).toBe(3);
-					expect(cseq.getExpressions()[0] == a).toBe(true);
-					expect(cseq.getExpressions()[1] == b).toBe(true);
-					expect(cseq.getExpressions()[2] == c).toBe(true);
+					ConjunctionSequenceBuilder cseq = (ConjunctionSequenceBuilder)expr;
+					expect(cseq.getExpressions().size()).toBe(3);
+					expect(cseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getExpressions().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getExpressions().get(2)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					// TODO test name of rules
 				});
 				
 				test("a | b c", tape -> {
-					Expression expr = Compiler.compileExpression(grammar, tape);
+					ExpressionBuilder expr = Parser.parseExpression(tape);
 					
-					expect(expr).toBeInstanceOf(DisjunctionSequence.class);
+					expect(expr).toBeInstanceOf(DisjunctionSequenceBuilder.class);
 					
-					DisjunctionSequence dseq = (DisjunctionSequence)expr;
-					expect(dseq.getExpressions()).not.toBe(null);
-					expect(dseq.getExpressions().length).toBe(2);
-					expect(dseq.getExpressions()[0] == a).toBe(true);
-					expect(dseq.getExpressions()[1]).toBeInstanceOf(ConjunctionSequence.class);
+					DisjunctionSequenceBuilder dseq = (DisjunctionSequenceBuilder)expr;
+					expect(dseq.getExpressions().size()).toBe(2);
+					expect(dseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(dseq.getExpressions().get(1)).toBeInstanceOf(ConjunctionSequenceBuilder.class);
 					
-					ConjunctionSequence cseq = (ConjunctionSequence) dseq.getExpressions()[1];
-					expect(cseq.getExpressions()).not.toBe(null);
-					expect(cseq.getExpressions().length).toBe(2);
-					expect(cseq.getExpressions()[0] == b).toBe(true);
-					expect(cseq.getExpressions()[1] == c).toBe(true);
+					ConjunctionSequenceBuilder cseq = (ConjunctionSequenceBuilder) dseq.getExpressions().get(1);
+					expect(cseq.getExpressions().size()).toBe(2);
+					expect(cseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getExpressions().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
 				});
 			});
 			
-			it("should understand @require directive", () -> {
-				test("@require test;", tape -> {
-					Engine engine = new Engine();
-					DefaultImportResolver resolver = new DefaultImportResolver(engine);
-					Grammar grammar = Compiler.compileGrammar(engine, tape, resolver);
-					
-					expect(grammar.findRule("test")).toBe(null);
-				});
-			});
-			
-			it("should declare rules", () -> {
-				test("test = (<id: 'a'+> ('b'* {x +: 'c'})?);", tape -> {
-					Engine engine = new Engine();
-					DefaultImportResolver resolver = new DefaultImportResolver(engine);
-					Grammar grammar = Compiler.compileGrammar(engine, tape, resolver);
-					
-					expect(grammar.findRule("test")).toBeInstanceOf(ConjunctionSequence.class);
-				});
-			});
+			// TODO add directive tests
+//			it("should understand @require directive", () -> {
+//				test("@require test;", tape -> {
+//					Engine engine = new Engine();
+//					DefaultImportResolver resolver = new DefaultImportResolver(engine);
+//					Grammar grammar = Parser.compileGrammar(engine, tape, resolver);
+//					
+//					expect(grammar.findRule("test")).toBe(null);
+//				});
+//			});
+//			
+//			it("should declare rules", () -> {
+//				test("test = (<id: 'a'+> ('b'* {x +: 'c'})?);", tape -> {
+//					Engine engine = new Engine();
+//					DefaultImportResolver resolver = new DefaultImportResolver(engine);
+//					Grammar grammar = Parser.compileGrammar(engine, tape, resolver);
+//					
+//					expect(grammar.findRule("test")).toBeInstanceOf(ConjunctionSequence.class);
+//				});
+//			});
 		});	
 	}
 	
-	private void testProperty(String name, boolean isArray, Class<?> type, String... codes) {
+	private void testProperty(String name, boolean isArray, PropertyType type, String... codes) {
 		for (String code : codes) {
 			test(code, tape -> {
-				Expression expr = Compiler.compileProperty(new Grammar(), tape);
+				ExpressionBuilder expr = Parser.parseExpression(tape);
 				
-				expect(expr).toBeInstanceOf(AbstractProperty.class);
+				expect(expr).toBeInstanceOf(PropertyBuilder.class);
 				
-				AbstractProperty property = (AbstractProperty)expr;
+				PropertyBuilder property = (PropertyBuilder)expr;
 				
-				expect(property.getPropertyName()).toBe(name);
+				expect(property.getName()).toBe(name);
 				expect(property.isArray()).toBe(isArray);
-				expect(property).toBeInstanceOf(type);
+				expect(property.getType()).toBe(type);
 			});	
 		}
 	}

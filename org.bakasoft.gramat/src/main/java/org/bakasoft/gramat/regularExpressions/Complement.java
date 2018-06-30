@@ -2,14 +2,13 @@ package org.bakasoft.gramat.regularExpressions;
 
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.Grammar;
+import org.bakasoft.gramat.io.GramatWriter;
 
 public class Complement extends Expression {
 
 	private final Expression expression;
 	
-	public Complement(Grammar grammar, Expression expression) {
-		super(grammar);
+	public Complement(Expression expression) {
 		this.expression = expression;
 	}
 
@@ -28,6 +27,13 @@ public class Complement extends Expression {
 	
 	public Expression getExpression() {
 		return expression;
+	}
+
+	@Override
+	public void toString(GramatWriter writer) {
+		writer.write("(!");
+		writer.write(expression);
+		writer.write(")");
 	}
 
 }

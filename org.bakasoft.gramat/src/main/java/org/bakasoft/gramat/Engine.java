@@ -2,11 +2,12 @@ package org.bakasoft.gramat;
 
 import java.util.LinkedHashMap;
 
-import org.bakasoft.gramat.compiling.Compiler;
-import org.bakasoft.gramat.compiling.importers.DefaultImportResolver;
 import org.bakasoft.gramat.util.StringTape;
+import org.bakasoft.gramat.util.Tape;
+import org.bakasoft.gramat.building.GrammarBuilder;
 import org.bakasoft.gramat.errors.GrammarNotFoundException;
 import org.bakasoft.gramat.errors.IdentifierNotAvailableException;
+import org.bakasoft.gramat.io.Parser;
 
 public class Engine {
 
@@ -16,12 +17,11 @@ public class Engine {
 		grammars = new LinkedHashMap<>();
 	}
 	
-	public void registerDefaultGrammar() {
-		registerGrammar("gramat", new DefaultGrammar(this));
-	}
-	
 	public Grammar compile(String code) {
-		return Compiler.compileGrammar(this, new StringTape(code), new DefaultImportResolver(this));
+		Tape tape = new StringTape(code);
+		GrammarBuilder builder = Parser.parseGrammar(tape);
+		
+		return builder.build();
 	}
 	
 	public void registerGrammar(String id, Grammar grammar) {
