@@ -5,31 +5,29 @@ import org.bakasoft.gramat.regularExpressions.Complement;
 
 public class ComplementBuilder extends ExpressionBuilder {
 
-	private final ExpressionBuilder expression;
-	
-	public ComplementBuilder(ExpressionBuilder expression) {
-		this.expression = expression;
-	}
-
 	@Override
 	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		return new Complement(grammarBuilder.build(expression));
+		ExpressionBuilder content = getSingleChild();
+		Expression e = grammarBuilder.build(content);
+		
+		return new Complement(e);
 	}
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder startExpr = expression.getStartExpression(grammarBuilder);
+		ExpressionBuilder content = getSingleChild();
+		ExpressionBuilder startExpr = content.getStartExpression(grammarBuilder);
 		
 		return startExpr.getComplement();
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public ExpressionBuilder clone() {
+		ComplementBuilder clone = new ComplementBuilder();
+		
+		cloneChildrenInto(clone);
+		
+		return clone;
 	}
-	
-	public ExpressionBuilder getExpression() {
-		return expression;
-	}
-	
+
 }

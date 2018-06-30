@@ -14,27 +14,28 @@ public class Main {
 
 	public static void main(String[] args) {
 		// unit tests
-		Framboyan.add(GrammarTest.class);
-		Framboyan.add(ExpressionTest.class);
-		Framboyan.add(StrictStringTest.class);
-		Framboyan.add(ConjunctionSequenceTest.class);
-		Framboyan.add(DisjunctionSequenceTest.class);
-		Framboyan.add(OneOrMoreTest.class);
-		Framboyan.add(ZeroOrMoreTest.class);
-		Framboyan.add(ZeroOrOneTest.class);
-		Framboyan.add(DefaultObjectBuilderTest.class);
-		Framboyan.add(TruePropertyTest.class);
-		Framboyan.add(FalsePropertyTest.class);
-		Framboyan.add(StringPropertyTest.class);
-		Framboyan.add(ObjectPropertyTest.class);
-		Framboyan.add(CompilerTest.class);
-//		
-//		// integration tests
-		Framboyan.add(PerformanceTest.class);
-		Framboyan.add(CaseTest.class);
+//		Framboyan.add(GrammarTest.class);
+//		Framboyan.add(ExpressionTest.class);
+//		Framboyan.add(StrictStringTest.class);
+//		Framboyan.add(ConjunctionSequenceTest.class);
+//		Framboyan.add(DisjunctionSequenceTest.class);
+//		Framboyan.add(OneOrMoreTest.class);
+//		Framboyan.add(ZeroOrMoreTest.class);
+//		Framboyan.add(ZeroOrOneTest.class);
+//		Framboyan.add(DefaultObjectBuilderTest.class);
+//		Framboyan.add(TruePropertyTest.class);
+//		Framboyan.add(FalsePropertyTest.class);
+//		Framboyan.add(StringPropertyTest.class);
+//		Framboyan.add(ObjectPropertyTest.class);
+//		Framboyan.add(CompilerTest.class);
+////		
+////		// integration tests
+//		Framboyan.add(PerformanceTest.class);
+//		Framboyan.add(CaseTest.class);
+		Framboyan.add(WildCharTest.class);
 		
-		Framboyan.add(ParserTestExpressions.class);
-		Framboyan.add(BuildingTest.class);
+//		Framboyan.add(ParserTestExpressions.class);
+//		Framboyan.add(BuildingTest.class);
 
 		boolean result = Framboyan.run();
 		

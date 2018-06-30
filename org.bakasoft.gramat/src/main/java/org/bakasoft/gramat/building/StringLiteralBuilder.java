@@ -36,16 +36,16 @@ public class StringLiteralBuilder extends ExpressionBuilder {
 		return new StringLiteralBuilder(String.valueOf(firstChar), fuzzy);
 	}
 
-	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
-	}
-
 	public String getText() {
 		return text;
 	}
 
 	public boolean isFuzzy() {
 		return fuzzy;
+	}
+
+	@Override
+	public ExpressionBuilder clone() {
+		return new StringLiteralBuilder(text, fuzzy);
 	}
 }

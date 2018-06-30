@@ -3,11 +3,14 @@ package org.bakasoft.gramat;
 import java.io.StringWriter;
 import java.util.Map;
 
+import org.bakasoft.gramat.building.ExpressionBuilder;
+import org.bakasoft.gramat.building.GrammarBuilder;
 import org.bakasoft.gramat.debug.DebugContext;
 import org.bakasoft.gramat.debug.DebugObjectBuilder;
 import org.bakasoft.gramat.debug.DebugTape;
 import org.bakasoft.gramat.debug.Debugger;
 import org.bakasoft.gramat.io.GramatWriter;
+import org.bakasoft.gramat.io.Parser;
 import org.bakasoft.gramat.util.DefaultObjectBuilder;
 import org.bakasoft.gramat.util.DummyObjectBuilder;
 import org.bakasoft.gramat.util.ObjectBuilder;
@@ -16,6 +19,12 @@ import org.bakasoft.gramat.util.Tape;
 
 abstract public class Expression {
 
+	@Override
+	abstract public int hashCode();
+	
+	@Override
+	abstract public boolean equals(Object obj);
+	
 	abstract public boolean process(Context context);
 	
 	abstract public void toString(GramatWriter writer);
@@ -64,4 +73,11 @@ abstract public class Expression {
 		return s.toString();
 	}
 
+	public static Expression compile(String code) {
+		GrammarBuilder builder = new GrammarBuilder();
+		ExpressionBuilder expr = Parser.parseExpression(new StringTape(code));
+		
+		return builder.build(expr);
+	}
+	
 }

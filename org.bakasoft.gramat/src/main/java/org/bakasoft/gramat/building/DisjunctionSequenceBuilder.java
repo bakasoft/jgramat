@@ -1,52 +1,67 @@
 package org.bakasoft.gramat.building;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bakasoft.gramat.Expression;
 import org.bakasoft.gramat.regularExpressions.DisjunctionSequence;
 
 public class DisjunctionSequenceBuilder extends ExpressionBuilder {
 
-	private final List<ExpressionBuilder> items;
-	
-	public DisjunctionSequenceBuilder(List<ExpressionBuilder> items) {
-		this.items = items;
+	private void collapseExpressions(GrammarBuilder grammarBuilder, List<Expression> expressions) {
+		for (ExpressionBuilder child : getChildren()) {
+			if (child instanceof DisjunctionSequenceBuilder) {
+				DisjunctionSequenceBuilder subseq = (DisjunctionSequenceBuilder)child;
+				
+				subseq.collapseExpressions(grammarBuilder, expressions);
+			} else {
+				Expression expr = grammarBuilder.build(child);
+				
+				if (!expressions.contains(expr)) {
+					expressions.add(expr);		
+				}
+			}
+		}
 	}
 
 	@Override
 	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		Expression[] expressions = items.stream()
-				.map(item -> grammarBuilder.build(item))
-				.toArray(Expression[]::new);
+		ArrayList<Expression> expressions = new ArrayList<>();
 		
-		if (expressions.length == 0) {
+		collapseExpressions(grammarBuilder, expressions);
+		
+		if (expressions.isEmpty()) {
 			throw new RuntimeException(); // TODO empty expression error
-		} else if (expressions.length == 1) {
-			return expressions[0];
+		} else if (expressions.size() == 1) {
+			return expressions.get(0);
 		}
 		
-		return new DisjunctionSequence(expressions);
+		return new DisjunctionSequence(expressions.toArray(new Expression[expressions.size()]));
 	}
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		if (items.isEmpty()) {
+		if (getChildren().isEmpty()) {
 			throw new RuntimeException(); // TODO empty list
 		}
 		
-		return new DisjunctionSequenceBuilder(items.stream()
-				.map(item -> item.getStartExpression(grammarBuilder))
-				.collect(Collectors.toList()));
+		DisjunctionSequenceBuilder startExpr = new DisjunctionSequenceBuilder();
+		
+		for (ExpressionBuilder child : getChildren()) {
+			ExpressionBuilder childStart = child.getStartExpression(grammarBuilder);
+			
+			startExpr.addExpression(childStart);
+		}
+		
+		return startExpr;
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public ExpressionBuilder clone() {
+		DisjunctionSequenceBuilder clone = new DisjunctionSequenceBuilder();
+		
+		cloneChildrenInto(clone);
+		
+		return clone;
 	}
-	
-	public List<ExpressionBuilder> getExpressions() {
-		return items;
-	}
-
 }

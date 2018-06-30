@@ -14,7 +14,7 @@ import org.bakasoft.gramat.building.importers.ImportResolver;
 public class GrammarBuilder {
 
 	private final ArrayList<StatementBuilder> statements;
-	private final Stack<ExpressionBuilder> expressionBuilders;
+	private final Stack<ExpressionBuilder> expressionBuilders; // TODO remove this stack since the next expr is now implemented in other way
 	private final HashMap<Setting, Object> settings;
 	private final HashMap<String, GrammarBuilder> imports;
 	
@@ -67,22 +67,6 @@ public class GrammarBuilder {
 		}
 		
 		return e;
-	}
-	
-	public ExpressionBuilder findNextExpression(ExpressionBuilder child) {
-		for (int i = expressionBuilders.size() - 1; i >= 0; i--) {
-			ExpressionBuilder parent = expressionBuilders.get(i);
-			
-			ExpressionBuilder nextExpr = parent.getNextExpression(child);
-				
-			if (nextExpr != null) {
-				return nextExpr;
-			}
-			
-			child = parent;
-		}
-		
-		return null;
 	}
 	
 	public boolean getBoolean(Setting setting) {

@@ -21,9 +21,9 @@ public class CaseTest extends Framboyan {
 			it("should pass the case01", (out) -> {
 				test("case01", "url", out);		
 			});
-			it("should pass the case02", (out) -> {
-				test("case02", "request", out);		
-			});
+//			it("should pass the case02", (out) -> {
+//				test("case02", "request", out);		
+//			});
 		});
 	}
 	
@@ -32,6 +32,8 @@ public class CaseTest extends Framboyan {
 		
 		Grammar grammar = new Grammar(code);
 		Expression rule = grammar.findRule(mainRule);
+		
+		System.out.println(rule);
 		
 		for (int n = 1; n <= 99; n++) {
 			String baseName = "test" + (n <= 9 ? "0" + n : String.valueOf(n));

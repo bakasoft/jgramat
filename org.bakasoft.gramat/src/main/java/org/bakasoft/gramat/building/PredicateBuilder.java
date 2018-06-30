@@ -25,8 +25,8 @@ public class PredicateBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public ExpressionBuilder clone() {
+		return new PredicateBuilder(name, predicate);
 	}
 
 }

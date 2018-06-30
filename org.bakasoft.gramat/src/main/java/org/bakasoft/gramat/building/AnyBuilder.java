@@ -16,8 +16,7 @@ public class AnyBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public AnyBuilder clone() {
+		return new AnyBuilder();
 	}
-
 }

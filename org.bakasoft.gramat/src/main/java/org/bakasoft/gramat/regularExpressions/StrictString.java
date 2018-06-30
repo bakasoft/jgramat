@@ -1,8 +1,11 @@
 package org.bakasoft.gramat.regularExpressions;
 
+import java.util.Objects;
+
 import org.bakasoft.gramat.Context;
 import org.bakasoft.gramat.Expression;
 import org.bakasoft.gramat.io.GramatWriter;
+import org.bakasoft.gramat.util.CompareTool;
 
 public class StrictString extends Expression {
 
@@ -53,5 +56,18 @@ public class StrictString extends Expression {
 		String value = new String(chars);
 		
 		writer.writeDelimitedString(value, '"');
+	}
+
+	@Override
+	public int hashCode() {
+		return CompareTool.hashMix(new String(chars), getClass());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		StrictString other = CompareTool.checkType(obj, StrictString.class);
+		
+		return other != null
+				&& Objects.deepEquals(this.chars, other.chars);
 	}
 }

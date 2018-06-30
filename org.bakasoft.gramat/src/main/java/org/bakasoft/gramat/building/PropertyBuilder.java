@@ -11,20 +11,28 @@ import org.bakasoft.gramat.propertyExpressions.TrueProperty;
 public class PropertyBuilder extends ExpressionBuilder {
 
 	private final String name;
-	private final ExpressionBuilder expression;
 	private final PropertyType type;
 	private final boolean array;
 	
-	public PropertyBuilder(String name, ExpressionBuilder expression, PropertyType type, boolean array) {
+	public PropertyBuilder(String name, PropertyType type, boolean array) {
 		this.name = name;
-		this.expression = expression;
 		this.type = type;
 		this.array = array;
 	}
 
 	@Override
+	public ExpressionBuilder clone() {
+		PropertyBuilder clone = new PropertyBuilder(name, type, array);
+		
+		cloneChildrenInto(clone);
+		
+		return clone;
+	}
+
+	@Override
 	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		Expression e = grammarBuilder.build(expression);
+		ExpressionBuilder content = getSingleChild();
+		Expression e = grammarBuilder.build(content);
 		
 		switch(type) {
 		case FALSE: return new FalseProperty(name, array, e);
@@ -40,18 +48,11 @@ public class PropertyBuilder extends ExpressionBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		return expression.getStartExpression(grammarBuilder);
+		ExpressionBuilder content = getSingleChild();
+		
+		return content.getStartExpression(grammarBuilder);
 	}
 
-	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
-	}
-
-	public ExpressionBuilder getExpression() {
-		return expression;
-	}
-	
 	public String getName() {
 		return name;
 	}

@@ -33,14 +33,14 @@ public class ReferencedRuleBuilder extends ExpressionBuilder {
 		
 		return expression.getStartExpression(grammarBuilder);
 	}
-
-	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
-	}
-
+	
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public ExpressionBuilder clone() {
+		return new ReferencedRuleBuilder(name);
 	}
 
 }

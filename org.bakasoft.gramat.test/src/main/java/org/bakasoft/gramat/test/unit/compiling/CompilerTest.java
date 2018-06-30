@@ -127,10 +127,10 @@ public class CompilerTest extends Framboyan {
 					expect(expr).toBeInstanceOf(ConjunctionSequenceBuilder.class);
 					
 					ConjunctionSequenceBuilder cseq = (ConjunctionSequenceBuilder)expr;
-					expect(cseq.getExpressions().size()).toBe(3);
-					expect(cseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
-					expect(cseq.getExpressions().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
-					expect(cseq.getExpressions().get(2)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getChildren().size()).toBe(3);
+					expect(cseq.getChildren().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getChildren().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getChildren().get(2)).toBeInstanceOf(ReferencedRuleBuilder.class);
 					// TODO test name of rules
 				});
 				
@@ -140,14 +140,14 @@ public class CompilerTest extends Framboyan {
 					expect(expr).toBeInstanceOf(DisjunctionSequenceBuilder.class);
 					
 					DisjunctionSequenceBuilder dseq = (DisjunctionSequenceBuilder)expr;
-					expect(dseq.getExpressions().size()).toBe(2);
-					expect(dseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
-					expect(dseq.getExpressions().get(1)).toBeInstanceOf(ConjunctionSequenceBuilder.class);
+					expect(dseq.getChildren().size()).toBe(2);
+					expect(dseq.getChildren().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(dseq.getChildren().get(1)).toBeInstanceOf(ConjunctionSequenceBuilder.class);
 					
-					ConjunctionSequenceBuilder cseq = (ConjunctionSequenceBuilder) dseq.getExpressions().get(1);
-					expect(cseq.getExpressions().size()).toBe(2);
-					expect(cseq.getExpressions().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
-					expect(cseq.getExpressions().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					ConjunctionSequenceBuilder cseq = (ConjunctionSequenceBuilder) dseq.getChildren().get(1);
+					expect(cseq.getChildren().size()).toBe(2);
+					expect(cseq.getChildren().get(0)).toBeInstanceOf(ReferencedRuleBuilder.class);
+					expect(cseq.getChildren().get(1)).toBeInstanceOf(ReferencedRuleBuilder.class);
 				});
 			});
 			

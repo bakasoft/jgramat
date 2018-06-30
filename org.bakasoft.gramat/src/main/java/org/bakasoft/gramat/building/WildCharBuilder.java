@@ -13,7 +13,7 @@ public class WildCharBuilder extends ExpressionBuilder {
 	
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder nextExpr = grammarBuilder.findNextExpression(this);
+		ExpressionBuilder nextExpr = getNextExpression();
 		
 		if (nextExpr != null) {
 			return nextExpr.getStartExpression(grammarBuilder);
@@ -23,8 +23,8 @@ public class WildCharBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public ExpressionBuilder clone() {
+		return new WildCharBuilder();
 	}
 
 }

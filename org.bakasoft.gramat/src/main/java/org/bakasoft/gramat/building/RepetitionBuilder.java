@@ -7,12 +7,10 @@ import org.bakasoft.gramat.regularExpressions.ZeroOrOne;
 
 public class RepetitionBuilder extends ExpressionBuilder {
 
-	private final ExpressionBuilder expression;
 	private final Integer minimum;
 	private final Integer maximum;
 	
-	public RepetitionBuilder(ExpressionBuilder expression, Integer minimum, Integer maximum) {
-		this.expression = expression;
+	public RepetitionBuilder(Integer minimum, Integer maximum) {
 		this.minimum = minimum;
 		this.maximum = maximum;
 		
@@ -31,7 +29,8 @@ public class RepetitionBuilder extends ExpressionBuilder {
 	
 	@Override
 	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		Expression e = grammarBuilder.build(expression);
+		ExpressionBuilder content = getSingleChild();
+		Expression e = grammarBuilder.build(content);
 		
 		if (minimum == null || minimum == 0) {
 			if (maximum == null) {
@@ -54,18 +53,37 @@ public class RepetitionBuilder extends ExpressionBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder startExpr = expression.getStartExpression(grammarBuilder);
+		ExpressionBuilder content = getSingleChild();
+		ExpressionBuilder startExpr = content.getStartExpression(grammarBuilder);
 		
 		if (minimum == null || minimum == 0) {
-			return new RepetitionBuilder(startExpr, 0, 1);
+			ExpressionBuilder nextExpr = getNextExpression();
+			
+			if (nextExpr != null) {
+				ExpressionBuilder nextExpr0 = nextExpr.getStartExpression(grammarBuilder);
+				DisjunctionSequenceBuilder result = new DisjunctionSequenceBuilder();
+				
+				result.addExpression(startExpr);
+				result.addExpression(nextExpr0);
+				
+				return result;
+			} else {
+				RepetitionBuilder result = new RepetitionBuilder(0, 1);
+				
+				result.addExpression(startExpr);	
+			}
 		}
 		
 		return startExpr;
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		return null;
+	public ExpressionBuilder clone() {
+		RepetitionBuilder clone = new RepetitionBuilder(minimum, maximum);
+		
+		cloneChildrenInto(clone);
+		
+		return clone;
 	}
 
 }

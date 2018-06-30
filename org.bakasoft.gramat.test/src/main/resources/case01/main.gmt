@@ -1,7 +1,7 @@
 /* Practical URL parser */
 @import any from gramat;
 
-entry = name: <(! "=" | "&" | "#")*> ("=" value: <(! "&" | "#")*>)?;
+entry = name: <.*> ("=" value: <(! "&" | "#")*>)?;
 url = baseUrl: <((! ":")+ "://")? (! "/")*>
     path: <(! "?")*>
     ( "?" query +: {entry} ("&" query +: {entry})* "&"? )?

@@ -1,21 +1,13 @@
 package org.bakasoft.gramat.building;
 
-import java.util.List;
-
 import org.bakasoft.gramat.Expression;
 import org.bakasoft.gramat.regularExpressions.ConjunctionSequence;
 
 public class ConjunctionSequenceBuilder extends ExpressionBuilder {
 
-	private final List<ExpressionBuilder> items;
-
-	public ConjunctionSequenceBuilder(List<ExpressionBuilder> items) {
-		this.items = items;
-	}
-	
 	@Override
 	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		Expression[] expressions = items.stream()
+		Expression[] expressions = getChildren().stream()
 				.map(item -> grammarBuilder.build(item))
 				.toArray(Expression[]::new);
 		
@@ -30,32 +22,20 @@ public class ConjunctionSequenceBuilder extends ExpressionBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		if (items.isEmpty()) {
+		if (getChildren().isEmpty()) {
 			throw new RuntimeException(); // TODO empty list
 		}
 		
-		return items.get(0).getStartExpression(grammarBuilder);
+		return getChildren().get(0).getStartExpression(grammarBuilder);
 	}
 
 	@Override
-	public ExpressionBuilder getNextExpression(ExpressionBuilder child) {
-		int index = items.indexOf(child);
+	public ExpressionBuilder clone() {
+		ConjunctionSequenceBuilder clone = new ConjunctionSequenceBuilder();
 		
-		if (index == -1) {
-			throw new RuntimeException("the kid is not my son");
-		}
+		cloneChildrenInto(clone);
 		
-		index++;
-		
-		if (index < items.size()) {
-			return items.get(index);
-		}
-		
-		return null;
-	}
-	
-	public List<ExpressionBuilder> getExpressions() {
-		return items;
+		return clone;
 	}
 
 }
