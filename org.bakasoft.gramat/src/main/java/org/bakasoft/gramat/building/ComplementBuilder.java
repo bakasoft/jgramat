@@ -1,31 +1,20 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.Complement;
-
-public class ComplementBuilder extends ExpressionBuilder {
-
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder content = getSingleChild();
-		Expression e = grammarBuilder.build(content);
-		
-		return new Complement(e);
-	}
+public class ComplementBuilder extends ExpressionItemBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder content = getSingleChild();
+		ExpressionBuilder content = getExpression();
 		ExpressionBuilder startExpr = content.getStartExpression(grammarBuilder);
 		
 		return startExpr.getComplement();
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		ComplementBuilder clone = new ComplementBuilder();
 		
-		cloneChildrenInto(clone);
+		clone.setExpression(expression.clone(includeProperties));
 		
 		return clone;
 	}

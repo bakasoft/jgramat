@@ -3,6 +3,7 @@ package org.bakasoft.gramat;
 import java.io.StringWriter;
 import java.util.Map;
 
+import org.bakasoft.gramat.building.Builder;
 import org.bakasoft.gramat.building.ExpressionBuilder;
 import org.bakasoft.gramat.building.GrammarBuilder;
 import org.bakasoft.gramat.debug.DebugContext;
@@ -77,7 +78,7 @@ abstract public class Expression {
 		GrammarBuilder builder = new GrammarBuilder();
 		ExpressionBuilder expr = Parser.parseExpression(new StringTape(code));
 		
-		return builder.build(expr);
+		return Builder.build(expr, builder);
 	}
 	
 }

@@ -1,16 +1,7 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
+public class WildCharBuilder extends ExpressionPlainBuilder {
 
-public class WildCharBuilder extends ExpressionBuilder {
-
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder startExpr = getStartExpression(grammarBuilder);	
-		
-		return grammarBuilder.build(startExpr.getComplement());
-	}
-	
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
 		ExpressionBuilder nextExpr = getNextExpression();
@@ -23,8 +14,13 @@ public class WildCharBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		return new WildCharBuilder();
+	}
+
+	@Override
+	public boolean hasWildChar(GrammarBuilder grammarBuilder) {
+		return true;
 	}
 
 }

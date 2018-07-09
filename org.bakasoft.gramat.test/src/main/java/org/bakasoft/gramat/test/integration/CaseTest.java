@@ -18,8 +18,8 @@ public class CaseTest extends Framboyan {
 	
 	{
 		describe("Integration cases testing", () -> {
-			it("should pass the case01", (out) -> {
-				test("case01", "url", out);		
+			it("should pass the case01", () -> {
+				test("case01", "url");		
 			});
 //			it("should pass the case02", (out) -> {
 //				test("case02", "request", out);		
@@ -27,7 +27,7 @@ public class CaseTest extends Framboyan {
 		});
 	}
 	
-	private static void test(String caseName, String mainRule, PrintStream out) {
+	private void test(String caseName, String mainRule) {
 		String code = fetchString("/" + caseName + "/main.gmt");
 		
 		Grammar grammar = new Grammar(code);
@@ -49,12 +49,12 @@ public class CaseTest extends Framboyan {
 			
 			Map<String, Object> expectedMap = JsonTool.parse(output);
 			
-			Context context = rule.debug(input, new DefaultDebugger(out));
+			Context context = rule.debug(input, new DefaultDebugger(System.out)); // TODO take the print stream from framboyan?
 			
 			Map<String, Object> actualMap = context.builder.build();
 			
-			out.println("Actual: " + actualMap);
-			out.println("Expected: " + expectedMap);
+			console.log("Actual: " + actualMap);
+			console.log("Expected: " + expectedMap);
 			
 			ExpectTool.matchMap(actualMap, expectedMap, true);
 			
@@ -62,7 +62,7 @@ public class CaseTest extends Framboyan {
 		}
 	}
 	
-	private static String fetchString(String resource) {
+	private String fetchString(String resource) {
 		URL url = CaseTest.class.getResource(resource);
 		
 		if (url != null) {

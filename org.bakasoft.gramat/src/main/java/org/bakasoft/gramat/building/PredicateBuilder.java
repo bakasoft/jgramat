@@ -1,10 +1,8 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.CharPredicateExpression;
 import org.bakasoft.gramat.util.CharPredicate;
 
-public class PredicateBuilder extends ExpressionBuilder {
+public class PredicateBuilder extends ExpressionPlainBuilder {
 
 	private final String name;
 	private final CharPredicate predicate;
@@ -13,11 +11,6 @@ public class PredicateBuilder extends ExpressionBuilder {
 		this.name = name;
 		this.predicate = predicate;
 	}
-	
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		return new CharPredicateExpression(name, predicate);
-	}
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
@@ -25,8 +18,21 @@ public class PredicateBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		return new PredicateBuilder(name, predicate);
+	}
+
+	@Override
+	public boolean hasWildChar(GrammarBuilder grammarBuilder) {
+		return false;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public CharPredicate getPredicate() {
+		return predicate;
 	}
 
 }

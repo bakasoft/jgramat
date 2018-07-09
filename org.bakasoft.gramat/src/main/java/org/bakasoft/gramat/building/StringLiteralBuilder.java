@@ -1,10 +1,6 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.FuzzyString;
-import org.bakasoft.gramat.regularExpressions.StrictString;
-
-public class StringLiteralBuilder extends ExpressionBuilder {
+public class StringLiteralBuilder extends ExpressionPlainBuilder {
 	
 	private final String text;
 	
@@ -13,16 +9,6 @@ public class StringLiteralBuilder extends ExpressionBuilder {
 	public StringLiteralBuilder(String text, boolean fuzzy) {
 		this.text = text;
 		this.fuzzy = fuzzy;
-	}
-	
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		if (fuzzy) {
-			return new FuzzyString(text);
-		}
-
-		// TODO optimize immutable expressions by returning the same instance instead of a new one
-		return new StrictString(text);
 	}
 
 	@Override
@@ -45,7 +31,12 @@ public class StringLiteralBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		return new StringLiteralBuilder(text, fuzzy);
+	}
+
+	@Override
+	public boolean hasWildChar(GrammarBuilder grammarBuilder) {
+		return false;
 	}
 }

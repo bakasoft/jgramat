@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.bakasoft.gramat.util.CharPredicate;
 import org.bakasoft.gramat.util.StringTape;
 import org.bakasoft.gramat.util.Tape;
+import org.bakasoft.gramat.building.Builder;
 import org.bakasoft.gramat.building.ExpressionBuilder;
 import org.bakasoft.gramat.building.GrammarBuilder;
 import org.bakasoft.gramat.errors.IdentifierNotAvailableException;
@@ -38,7 +39,7 @@ public class Grammar {
 		Tape tape = new StringTape(code);
 		ExpressionBuilder expressionBuilder = Parser.parseExpression(tape);
 		
-		return builder.build(expressionBuilder);
+		return Builder.build(expressionBuilder, builder);
 	}
 	
 	public String getId(Expression rule) {

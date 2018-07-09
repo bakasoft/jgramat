@@ -1,24 +1,6 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.ConjunctionSequence;
-
-public class ConjunctionSequenceBuilder extends ExpressionBuilder {
-
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		Expression[] expressions = getChildren().stream()
-				.map(item -> grammarBuilder.build(item))
-				.toArray(Expression[]::new);
-		
-		if (expressions.length == 0) {
-			throw new RuntimeException(); // TODO empty expression error
-		} else if (expressions.length == 1) {
-			return expressions[0];
-		}
-		
-		return new ConjunctionSequence(expressions);
-	}
+public class ConjunctionSequenceBuilder extends ExpressionListBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
@@ -30,12 +12,29 @@ public class ConjunctionSequenceBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		ConjunctionSequenceBuilder clone = new ConjunctionSequenceBuilder();
 		
-		cloneChildrenInto(clone);
+		for (ExpressionBuilder child : children) {
+			clone.addExpression(child.clone(includeProperties));
+		}
 		
 		return clone;
+	}
+
+	@Override
+	public ExpressionBuilder getNextExpressionTo(ExpressionBuilder item) {
+		for (int i = 0; i < children.size(); i++) {
+			if (children.get(i) == item) {
+				if (i + 1 < children.size()) {
+					return children.get(i + 1); 	
+				} else if (parent != null) {
+					return parent.getNextExpression();
+				}
+			}
+		}
+
+		return null;
 	}
 
 }

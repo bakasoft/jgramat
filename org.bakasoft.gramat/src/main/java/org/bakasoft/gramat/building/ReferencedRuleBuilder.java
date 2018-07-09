@@ -1,27 +1,18 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-
-public class ReferencedRuleBuilder extends ExpressionBuilder {
+public class ReferencedRuleBuilder extends ExpressionPlainBuilder {
 
 	private final String name;
 	
 	public ReferencedRuleBuilder(String name) {
 		this.name = name;
 	}
-	
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder expression = getReferencedExpression(grammarBuilder);
-		
-		return grammarBuilder.build(expression);
-	}
 
 	public ExpressionBuilder getReferencedExpression(GrammarBuilder grammarBuilder) {
 		ExpressionBuilder expression = grammarBuilder.getExpression(grammarBuilder, name);
 		
 		if (expression == null) {
-			throw new RuntimeException("rule not defined");
+			throw new RuntimeException("rule not defined: '" + name + "'");
 		}
 		
 		return expression;
@@ -39,8 +30,15 @@ public class ReferencedRuleBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		return new ReferencedRuleBuilder(name);
+	}
+
+	@Override
+	public boolean hasWildChar(GrammarBuilder grammarBuilder) {
+		ExpressionBuilder expression = getReferencedExpression(grammarBuilder);
+		
+		return expression.hasWildChar(grammarBuilder);
 	}
 
 }

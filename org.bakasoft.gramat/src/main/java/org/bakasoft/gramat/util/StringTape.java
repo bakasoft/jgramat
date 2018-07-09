@@ -47,7 +47,7 @@ public class StringTape implements Tape {
 	@Override
 	public void setPosition(int position) {
 		if (position < 0 || position > chars.length) {
-			throw new RuntimeException();
+			throw new RuntimeException("Invalid position: " + position);
 		}
 		
 		this.position = position;

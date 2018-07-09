@@ -24,7 +24,7 @@ public class RuleBuilder extends StatementBuilder {
 
 	@Override
 	public void build(GrammarBuilder grammarBuilder, Grammar grammar) {
-		Expression e = grammarBuilder.build(expression);
+		Expression e = Builder.build(expression, grammarBuilder);
 		
 		grammar.registerRule(name, e);
 	}

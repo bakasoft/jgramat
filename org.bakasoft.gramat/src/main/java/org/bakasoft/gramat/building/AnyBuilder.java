@@ -1,14 +1,6 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.CharPredicateExpression;
-
-public class AnyBuilder extends ExpressionBuilder {
-
-	@Override
-	public Expression generateExpression(GrammarBuilder grammarBuilder) {
-		return new CharPredicateExpression("any", c -> true);
-	}
+public class AnyBuilder extends ExpressionPlainBuilder {
 
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
@@ -16,7 +8,12 @@ public class AnyBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public AnyBuilder clone() {
+	public AnyBuilder clone(boolean includeProperties) {
 		return new AnyBuilder();
+	}
+
+	@Override
+	public boolean hasWildChar(GrammarBuilder grammarBuilder) {
+		return true;
 	}
 }

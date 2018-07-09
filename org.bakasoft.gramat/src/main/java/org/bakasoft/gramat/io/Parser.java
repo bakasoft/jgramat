@@ -45,7 +45,7 @@ public class Parser {
 		return parseRule(tape);
 	}
 	
-	private static StatementBuilder parseDirective(Tape tape) {
+	public static StatementBuilder parseDirective(Tape tape) {
 		if (tape.peek() != '@') {
 			throw new RuntimeException("expected @");
 		}
@@ -224,7 +224,7 @@ public class Parser {
 					if (canBeOneOrMore) {
 						RepetitionBuilder result = new RepetitionBuilder(1, null);
 						
-						result.addExpression(new ReferencedRuleBuilder(name));
+						result.setExpression(new ReferencedRuleBuilder(name));
 						
 						return result;
 					}
@@ -276,6 +276,8 @@ public class Parser {
 			
 			tape.consume();
 			
+			ignoreWhitespace(tape);
+			
 			ExpressionBuilder expr = parse_expression(tape, ending);
 			
 			if (tape.peek() != ending) {
@@ -286,7 +288,7 @@ public class Parser {
 			
 			PropertyBuilder result = new PropertyBuilder(name, type, array);
 			
-			result.addExpression(expr);
+			result.setExpression(expr);
 			
 			return result;
 		}
@@ -331,9 +333,11 @@ public class Parser {
 				expression = group.get(0);
 			} 
 			else {
-				expression = new ConjunctionSequenceBuilder();
+				ConjunctionSequenceBuilder seq = new ConjunctionSequenceBuilder();
 				
-				expression.addExpressions(group);
+				seq.addExpressions(group);
+				
+				expression = seq;
 			}
 			
 			expressions.add(expression);
@@ -377,21 +381,21 @@ public class Parser {
 				tape.consume();
 				
 				RepetitionBuilder r = new RepetitionBuilder(0, 1);
-				r.addExpression(expr);
+				r.setExpression(expr);
 				expr = r;
 			}
 			else if (c == Constants.ZERO_OR_MORE_OPERATOR) {
 				tape.consume();
 				
 				RepetitionBuilder r = new RepetitionBuilder(0, null);
-				r.addExpression(expr);
+				r.setExpression(expr);
 				expr = r;
 			}
 			else if (c == Constants.ONE_OR_MORE_OPERATOR) {
 				tape.consume();
 				
 				RepetitionBuilder r = new RepetitionBuilder(1, null);
-				r.addExpression(expr);
+				r.setExpression(expr);
 				expr = r;
 			}
 			else if (c == '{') {
@@ -430,9 +434,13 @@ public class Parser {
 				tape.consume();
 				
 				RepetitionBuilder r = new RepetitionBuilder(minimum, maximum);
-				r.addExpression(expr);
+				r.setExpression(expr);
 				expr = r;
 			}
+		}
+		
+		if (expr.getParent() != null) {
+			expr.toString();
 		}
 		
 		return expr;

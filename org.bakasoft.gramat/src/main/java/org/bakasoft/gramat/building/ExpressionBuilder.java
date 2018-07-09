@@ -1,70 +1,26 @@
 package org.bakasoft.gramat.building;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.bakasoft.gramat.Expression;
 
 abstract public class ExpressionBuilder {
 
 	// TODO add a mark for immutable expressions and optimize them
 
-	abstract protected Expression generateExpression(GrammarBuilder grammarBuilder);
-	
 	abstract public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder);
+	
+	abstract public ExpressionBuilder getNextExpressionTo(ExpressionBuilder item);
 
-	@Override
-	abstract public ExpressionBuilder clone();
+	abstract public List<ExpressionBuilder> getChildren();
 	
-	private final List<ExpressionBuilder> children;
+	abstract public boolean hasWildChar(GrammarBuilder grammarBuilder);
 	
-	private ExpressionBuilder parent;
+	abstract public ExpressionBuilder clone(boolean includeProperties);
 	
-	public ExpressionBuilder() {
-		children = new ArrayList<>();
-	}
-
-	public final ExpressionBuilder getSingleChild() {
-		if (children.size() != 1) {
-			throw new RuntimeException("too much children");
-		}
-		
-		return children.get(0);
-	}
+	protected ExpressionBuilder parent;
 	
-	public final List<ExpressionBuilder> getChildren() {
-		return children;
-	}
-	
-	public void addExpressions(List<ExpressionBuilder> list) {
-		for (ExpressionBuilder item : list) {
-			addExpression(item);
-		}
-	}
-
-	public final void addExpression(ExpressionBuilder child) {
-		if (child.parent != null) {
-			throw new RuntimeException("the kid is not my son");
-		}
-		
-		child.parent = this;
-		
-		children.add(child);
-	}
-	
-	public final ExpressionBuilder getNextExpression() {
+	public final ExpressionBuilder getNextExpression() {		
 		if (parent != null) {
-			List<ExpressionBuilder> siblings = parent.getChildren();
-			
-			for (int i = 0; i < siblings.size(); i++) {
-				if (siblings.get(i) == this) {
-					if (i + 1 < siblings.size()) {
-						return siblings.get(i + 1); 	
-					} else {
-						return parent.getNextExpression();
-					}
-				}
-			}
+			return parent.getNextExpressionTo(this);
 		}
 		
 		return null;
@@ -76,23 +32,29 @@ abstract public class ExpressionBuilder {
 	
 	public ExpressionBuilder getComplement() {
 		if (this instanceof ComplementBuilder) {
-			return ((ComplementBuilder)this).getSingleChild();
+			return ((ComplementBuilder)this).getExpression().clone(false);
 		}
 		
 		ComplementBuilder complement = new ComplementBuilder();
-		ExpressionBuilder clone = this.clone();
+		ExpressionBuilder clone = this.clone(false);
 		
-		complement.addExpression(clone);
+		complement.setExpression(clone);
 		
 		return complement;
 	}
 	
-	protected void cloneChildrenInto(ExpressionBuilder exprClone) {
-		for (ExpressionBuilder child : children) {
-			ExpressionBuilder childClone = child.clone();
-			
-			exprClone.addExpression(childClone);
+	protected void checkParent(ExpressionBuilder parent) {
+		if (this.parent != parent) {
+			throw new RuntimeException("the kid is not my son");
 		}
+	}
+	
+	protected void adopt(ExpressionBuilder parent) {
+		if (this.parent != null) {
+			throw new RuntimeException("the kid is not my son");
+		}
+		
+		this.parent = parent;
 	}
 
 }

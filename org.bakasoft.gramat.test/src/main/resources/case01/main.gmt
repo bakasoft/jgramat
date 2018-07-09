@@ -1,8 +1,23 @@
-/* Practical URL parser */
-@import any from gramat;
+/* Simple URL parser */
 
-entry = name: <.*> ("=" value: <(! "&" | "#")*>)?;
-url = baseUrl: <((! ":")+ "://")? (! "/")*>
-    path: <(! "?")*>
-    ( "?" query +: {entry} ("&" query +: {entry})* "&"? )?
-    ( "#" fragment: <any*>)?;
+entry = name: <.*> ("=" value: <.*>)?;
+url = baseUrl: <.*> path: <"/" .*>
+    ( "?" query +: {entry}? ("&" query +: {entry})* "&"? )?
+    ( "#" fragment: <.*>)?;
+    
+/*
+      A      B        C       D           E       F                   G
+url = .* "/" .* ("?" (.* ("=" .*)?)? ("&" .* ("=" .*)?)* "&"? )? ("#" .*)?;
+
+A = (!"/")
+B = (!"?"|"&"|"#")
+C = (!"=")
+D = (!"&"|"#")
+
+ABC D         E     FG    H      IJ     K  
+((. 'zx'*)? | 'qw') ('ab'|'cd')+ ('_' | .)?
+
+C = D F
+
+
+*/

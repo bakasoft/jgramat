@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Stack;
 
-import org.bakasoft.gramat.Expression;
 import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Setting;
 import org.bakasoft.gramat.building.importers.ImportResolver;
@@ -14,7 +12,6 @@ import org.bakasoft.gramat.building.importers.ImportResolver;
 public class GrammarBuilder {
 
 	private final ArrayList<StatementBuilder> statements;
-	private final Stack<ExpressionBuilder> expressionBuilders; // TODO remove this stack since the next expr is now implemented in other way
 	private final HashMap<Setting, Object> settings;
 	private final HashMap<String, GrammarBuilder> imports;
 	
@@ -22,7 +19,6 @@ public class GrammarBuilder {
 	
 	public GrammarBuilder() {
 		this.statements = new ArrayList<>();
-		this.expressionBuilders = new Stack<>();
 		this.settings = new HashMap<>();
 		this.imports = new HashMap<>();
 	}
@@ -34,10 +30,6 @@ public class GrammarBuilder {
 	public void addStatement(StatementBuilder statement) {
 		// TODO check duplicated names
 		statements.add(statement);
-	}
-	
-	public ExpressionBuilder getCurrentExpression() {
-		return expressionBuilders.peek();
 	}
 	
 	public Grammar build() {
@@ -52,21 +44,6 @@ public class GrammarBuilder {
 		for (StatementBuilder statement : statements) {
 			statement.build(this, grammar);
 		}
-	}
-	
-	public Expression build(ExpressionBuilder expr) {
-		expressionBuilders.push(expr);
-		
-		Expression e;
-		
-		try {
-			e = expr.generateExpression(this);	
-		} 
-		finally {
-			expressionBuilders.pop();	
-		}
-		
-		return e;
 	}
 	
 	public boolean getBoolean(Setting setting) {

@@ -1,11 +1,6 @@
 package org.bakasoft.gramat.building;
 
-import org.bakasoft.gramat.Expression;
-import org.bakasoft.gramat.regularExpressions.OneOrMore;
-import org.bakasoft.gramat.regularExpressions.ZeroOrMore;
-import org.bakasoft.gramat.regularExpressions.ZeroOrOne;
-
-public class RepetitionBuilder extends ExpressionBuilder {
+public class RepetitionBuilder extends ExpressionItemBuilder {
 
 	private final Integer minimum;
 	private final Integer maximum;
@@ -27,33 +22,17 @@ public class RepetitionBuilder extends ExpressionBuilder {
 		}
 	}
 	
-	@Override
-	protected Expression generateExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder content = getSingleChild();
-		Expression e = grammarBuilder.build(content);
-		
-		if (minimum == null || minimum == 0) {
-			if (maximum == null) {
-				return new ZeroOrMore(e);
-			}
-			else if (maximum == 1) {
-				return new ZeroOrOne(e);	
-			}
-		} else if (minimum == 1) {
-			if (maximum == null) {
-				return new OneOrMore(e);
-			}
-			else if (maximum == 1) {
-				return e; // 🤦🏽
-			}
-		}
-		
-		throw new RuntimeException(); // TODO implement max-min and exact repetitions
+	public Integer getMinimum() {
+		return minimum;
 	}
-
+	
+	public Integer getMaximum() {
+		return maximum;
+	}
+	
 	@Override
 	public ExpressionBuilder getStartExpression(GrammarBuilder grammarBuilder) {
-		ExpressionBuilder content = getSingleChild();
+		ExpressionBuilder content = getExpression();
 		ExpressionBuilder startExpr = content.getStartExpression(grammarBuilder);
 		
 		if (minimum == null || minimum == 0) {
@@ -70,7 +49,7 @@ public class RepetitionBuilder extends ExpressionBuilder {
 			} else {
 				RepetitionBuilder result = new RepetitionBuilder(0, 1);
 				
-				result.addExpression(startExpr);	
+				result.setExpression(startExpr);	
 			}
 		}
 		
@@ -78,10 +57,10 @@ public class RepetitionBuilder extends ExpressionBuilder {
 	}
 
 	@Override
-	public ExpressionBuilder clone() {
+	public ExpressionBuilder clone(boolean includeProperties) {
 		RepetitionBuilder clone = new RepetitionBuilder(minimum, maximum);
 		
-		cloneChildrenInto(clone);
+		clone.setExpression(expression.clone(includeProperties));
 		
 		return clone;
 	}
