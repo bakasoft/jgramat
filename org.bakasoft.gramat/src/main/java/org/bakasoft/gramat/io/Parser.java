@@ -24,12 +24,12 @@ public class Parser {
 	public static GrammarBuilder parseGrammar(Tape tape) {
 		GrammarBuilder grammarBuilder = new GrammarBuilder();
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		while(tape.isOpen()) {
 			StatementBuilder statement = parseStatement(tape);
 			
-			ignoreWhitespace(tape);
+			ignoreVoid(tape);
 			
 			grammarBuilder.addStatement(statement);
 		}
@@ -54,7 +54,7 @@ public class Parser {
 		
 		String keyword = readKeyword(tape);
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		if (keyword.isEmpty()) {
 			throw new RuntimeException("expected keyword");
@@ -67,24 +67,24 @@ public class Parser {
 				String externalName = readIdentifier(tape);
 				String localName = null;
 				
-				ignoreWhitespace(tape);
+				ignoreVoid(tape);
 				
 				if (tape.peek() != ',' && tape.peek() != ';' && tape.peek() != 'f') {
 					if (!"as".equals(readKeyword(tape))) {
 						throw new RuntimeException("expected 'as'");
 					}
 					
-					ignoreWhitespace(tape);
+					ignoreVoid(tape);
 					
 					localName = readIdentifier(tape);
 					
-					ignoreWhitespace(tape);
+					ignoreVoid(tape);
 				}
 				
 				if (tape.peek() == ',') {
 					tape.consume();
 					
-					ignoreWhitespace(tape);
+					ignoreVoid(tape);
 					loop = true;	
 				}
 				else if (tape.peek() != ';') {
@@ -92,11 +92,11 @@ public class Parser {
 						throw new RuntimeException("expected 'from'");
 					}
 					
-					ignoreWhitespace(tape);
+					ignoreVoid(tape);
 					
 					externalPath = readIdentifier(tape);
 					
-					ignoreWhitespace(tape);
+					ignoreVoid(tape);
 					
 					loop = false;
 				}
@@ -128,7 +128,7 @@ public class Parser {
 	public static RuleBuilder parseRule(Tape tape) {
 		String name = readIdentifier(tape);
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		if (tape.peek() != '=') {
 			throw new RuntimeException();
@@ -136,7 +136,7 @@ public class Parser {
 		
 		tape.consume();
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		ExpressionBuilder expression = parse_expression(tape, Constants.STATEMENT_SEPARATOR);
 		
@@ -167,7 +167,7 @@ public class Parser {
 			complement = true;
 		}
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		ExpressionBuilder expr = parse_expression(tape, Constants.GROUP_END);
 		
@@ -177,7 +177,7 @@ public class Parser {
 		
 		tape.consume();
 		
-		ignoreWhitespace(tape);
+		ignoreVoid(tape);
 		
 		if (complement) {
 			return expr.getComplement();
@@ -211,7 +211,7 @@ public class Parser {
 	
 	public static ExpressionBuilder parseNamePrefixed(Tape tape) {
 		String name = readIdentifier(tape);
-		boolean canBeOneOrMore = !ignoreWhitespace(tape);
+		boolean canBeOneOrMore = !ignoreVoid(tape);
 		
 		if (tape.isOpen() && (tape.peek() == ':' || tape.peek() == '+')) {
 			PropertyType type = null;
@@ -250,7 +250,7 @@ public class Parser {
 				tape.consume();	
 			}
 			
-			ignoreWhitespace(tape);
+			ignoreVoid(tape);
 			
 			char opening = tape.peek();
 			char ending;
@@ -276,7 +276,7 @@ public class Parser {
 			
 			tape.consume();
 			
-			ignoreWhitespace(tape);
+			ignoreVoid(tape);
 			
 			ExpressionBuilder expr = parse_expression(tape, ending);
 			
@@ -310,12 +310,12 @@ public class Parser {
 			
 			groups.peek().add(item);
 			
-			ignoreWhitespace(tape);
+			ignoreVoid(tape);
 			
 			if (tape.isOpen() && tape.peek() == Constants.OR_OPERATOR) {
 				tape.consume();
 				
-				ignoreWhitespace(tape);
+				ignoreVoid(tape);
 				
 				groups.push(new ArrayList<ExpressionBuilder>());
 			}
@@ -401,7 +401,7 @@ public class Parser {
 			else if (c == '{') {
 				tape.consume();
 				
-				ignoreWhitespace(tape);
+				ignoreVoid(tape);
 				
 				Integer minimum = readInteger(tape);
 				
@@ -409,19 +409,19 @@ public class Parser {
 					throw new RuntimeException("expected number");
 				}
 				
-				ignoreWhitespace(tape);
+				ignoreVoid(tape);
 				
 				Integer maximum;
 				
 				if (tape.peek() == ',') {
 					tape.consume();
 					
-					ignoreWhitespace(tape);	
+					ignoreVoid(tape);	
 					
 					maximum = readInteger(tape);
 					
 					if (maximum != null) {
-						ignoreWhitespace(tape);	
+						ignoreVoid(tape);	
 					}
 				} else {
 					maximum = minimum;
@@ -561,6 +561,21 @@ public class Parser {
 		return text.toString();
 	}
 	
+	public static boolean ignoreVoid(Tape tape) {
+		boolean consumed = false;
+		
+		while(tape.isOpen()) {
+			if (ignoreWhitespace(tape) || ignoreComment(tape)) {
+				consumed = true;
+			}
+			else {
+				break;
+			}
+		}
+		
+		return consumed;
+	}
+	
 	public static boolean ignoreWhitespace(Tape tape) {
 		boolean consumed = false;
 		
@@ -569,44 +584,45 @@ public class Parser {
 			consumed = true;
 		}
 		
-		if (tape.isOpen() && tape.peek() == '/') {
-			tape.consume();
-			
-			if (tape.peek() != '*') {
-				throw new RuntimeException();
-			}
-			
-			tape.consume();
-			
-			consumed = true;
-			
-			if (tape.isOpen()) {
-				while (tape.peek() != '*') {
-					tape.consume();
-				}
-				
-				if (tape.peek() != '*') {
-					throw new RuntimeException();
-				}
-				
-				tape.consume();
-				
-				if (tape.peek() != '/') {
-					throw new RuntimeException();
-				}
-				
-				tape.consume();
-			}
-			
-			while(tape.isOpen() && Constants.WHITESPACE_CHAR.test(tape.peek())) {
-				tape.consume();
-			}
-		}
-		
-		// TODO: what about: "    /* */    /*   */"
-		
 		return consumed;
 	}
 	
+	public static boolean ignoreComment(Tape tape) {
+		if (tape.isOpen() && tape.peek() == '/') {
+			int position = tape.getPosition();
+			
+			tape.consume();
+			
+			if (tape.isOpen() && tape.peek() == '*') {
+				boolean incomplete = true;
+				tape.consume();
+				
+				while(incomplete && tape.isOpen()) {
+					if (tape.peek() == '*') {
+						tape.consume();
+						
+						if (tape.isOpen() && tape.peek() == '/') {
+							tape.consume();
+							incomplete = false;
+						}
+					}
+					else {
+						tape.consume();
+					}
+				}
+				
+				if (incomplete) {
+					throw new RuntimeException("invalid comment syntax");
+				}
+				
+				return true;
+			}
+			else {
+				tape.setPosition(position);
+			}
+		}
+		
+		return false;
+	}
 	
 }

@@ -32,4 +32,8 @@ abstract public class ExpressionListBuilder extends ExpressionBuilder {
 		
 		children.add(child);
 	}
+	
+	public boolean isEmpty() {
+		return children.isEmpty();
+	}
 }

@@ -208,8 +208,14 @@ public class Builder {
 				nextExpr = nextExpr.getNextExpression();
 			}
 
-			e = build(seq, grammarBuilder);
-			kleene = true;
+			if (seq.isEmpty()) {
+				e = buildAnyChar(grammarBuilder);
+				kleene = false;
+			}
+			else {
+				e = build(seq, grammarBuilder);
+				kleene = true;	
+			}
 		} else {
 			// TODO add a flag to build to avoid collapse twice
 			e = build(content, grammarBuilder);

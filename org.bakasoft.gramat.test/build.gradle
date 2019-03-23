@@ -12,7 +12,7 @@ repositories {
 dependencies {
 	compile 'com.google.code.gson:gson:2.8.5'
 
-	compile 'com.github.bakasoft:framboyan:663e5ddffed08ca5c5c3c600bcfa4512c7a9764e'
+	compile 'com.github.bakasoft:framboyan:cdced95d4ca1d7402d8edcc5cd1bb9ff97f321bb'
 	
 	compile project(":org.bakasoft.gramat")
 }

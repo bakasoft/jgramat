@@ -21,10 +21,10 @@ public class CompilerTest extends Framboyan {
 	{
 		describe("Compiler class", () -> {
 			it("should ignore whitespaces and comments", () -> {
-				test("", tape -> Parser.ignoreWhitespace(tape));
-				test(" ", tape -> Parser.ignoreWhitespace(tape));
-				test(" \t\r\n", tape -> Parser.ignoreWhitespace(tape));
-				test(" /* comment */ ", tape -> Parser.ignoreWhitespace(tape));
+				test("", tape -> Parser.ignoreVoid(tape));
+				test(" ", tape -> Parser.ignoreVoid(tape));
+				test(" \t\r\n", tape -> Parser.ignoreVoid(tape));
+				test(" /* comment */ ", tape -> Parser.ignoreVoid(tape));
 			});
 			
 			it("should be able to read delimited strings", () -> {
