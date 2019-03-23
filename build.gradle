@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'org.bakasoft.gramat'
+version '0.1'
+
+sourceCompatibility = 10
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile 'com.github.bakasoft:framboyan:v1.1'
+}
