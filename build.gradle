@@ -6,8 +6,8 @@ plugins {
 group 'org.bakasoft.gramat'
 version '0.1'
 
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="org.bakasoft.gramat.gramat.main" target="1.10" />
-      <module name="org.bakasoft.gramat.gramat.test" target="1.10" />
+      <module name="org.bakasoft.gramat.gramat.main" target="1.8" />
+      <module name="org.bakasoft.gramat.gramat.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

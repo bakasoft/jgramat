@@ -117,24 +117,6 @@ public class Tape {
         }
     }
 
-    public static Tape fromResource(String name, Class<?> sibling) {
-        InputStream input = sibling.getResourceAsStream(name);
-
-        if (input == null) {
-            throw new RuntimeException("resource not found: " + name);
-        }
-
-        try (input) {
-            byte[] data = input.readAllBytes();
-            String content = new String(data);
-
-            return new Tape(name, content);
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public String generateSample() {
         final int LENGTH = 30;
         int start = Math.max(0, position - LENGTH / 2);
