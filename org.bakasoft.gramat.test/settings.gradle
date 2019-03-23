@@ -1,4 +1,0 @@
-rootProject.name = 'org.bakasoft.gramat.test'
-
-include ':org.bakasoft.gramat'
-project(':org.bakasoft.gramat').projectDir = new File('../org.bakasoft.gramat')
