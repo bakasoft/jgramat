@@ -8,7 +8,7 @@ import org.bakasoft.gramat.util.ReflectionHelper;
 
 import java.util.Set;
 
-public class TypeElement extends Element implements WrappedElement {
+public class TypeElement extends Element {
 
     private final Class<?> type;
     private Element element;

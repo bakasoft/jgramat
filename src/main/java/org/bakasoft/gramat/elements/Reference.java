@@ -5,7 +5,7 @@ import org.bakasoft.gramat.Tape;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class Reference extends Element implements WrappedElement {
+public class Reference extends Element {
 
     private final String name;
 

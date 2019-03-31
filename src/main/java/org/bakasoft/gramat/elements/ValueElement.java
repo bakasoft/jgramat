@@ -5,7 +5,7 @@ import org.bakasoft.gramat.Tape;
 import java.util.Set;
 import java.util.function.Function;
 
-public class ValueElement extends Element implements WrappedElement {
+public class ValueElement extends Element {
 
     private final Function<String, ?> parser;
     private Element element;

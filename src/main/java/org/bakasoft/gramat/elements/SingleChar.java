@@ -4,7 +4,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class SingleChar extends Element implements WrappedElement {
+public class SingleChar extends Element {
 
     private final char c;
 

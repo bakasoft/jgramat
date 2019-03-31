@@ -6,7 +6,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class CharRange extends Element implements WrappedElement {
+public class CharRange extends Element {
 
     private final String description; // TODO name?
     private final CharPredicate predicate;

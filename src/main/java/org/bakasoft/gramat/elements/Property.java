@@ -5,7 +5,7 @@ import org.bakasoft.gramat.handlers.ObjectHandler;
 
 import java.util.Set;
 
-public class Property extends Element implements WrappedElement {
+public class Property extends Element {
 
     private final String propertyName;
     private final boolean appendMode;

@@ -4,7 +4,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class Symbol extends Element implements WrappedElement {
+public class Symbol extends Element {
 
     private final String symbol;
 

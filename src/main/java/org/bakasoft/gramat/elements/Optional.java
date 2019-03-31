@@ -4,7 +4,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class Optional extends Element implements WrappedElement {
+public class Optional extends Element {
 
     private Element element;
 

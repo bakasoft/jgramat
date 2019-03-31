@@ -4,7 +4,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class Repetition extends Element implements WrappedElement {
+public class Repetition extends Element {
 
     private Element element;
     private final int minimum;

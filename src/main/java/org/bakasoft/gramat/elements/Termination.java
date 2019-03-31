@@ -4,7 +4,7 @@ import org.bakasoft.gramat.Tape;
 
 import java.util.Set;
 
-public class Termination extends Element implements WrappedElement {
+public class Termination extends Element {
 
     // TODO what happen with the constructors?
     // TODO does this be mapped to `$`?
