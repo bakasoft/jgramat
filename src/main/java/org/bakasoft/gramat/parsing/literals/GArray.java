@@ -5,6 +5,8 @@ import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.parsing.GLiteral;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GArray extends GLiteral {
 
@@ -20,6 +22,10 @@ public class GArray extends GLiteral {
 
     public GLiteral get(int index) {
         return array[index];
+    }
+
+    public List<GLiteral> getList() {
+        return Arrays.asList(array); // TODO refactor to toArray
     }
 
     // parsing

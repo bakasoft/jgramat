@@ -4,7 +4,7 @@
     baseUrl: "http://www.google.com"
     path: "/search"
     query: [
-        { q: "gramat" }
+        { name: "q" value: "gramat" }
     ]
     fragment: "search"
 }

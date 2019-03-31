@@ -1,21 +1,13 @@
 package org.bakasoft.gramat;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class DefaultParsers {
 
-    private static final HashMap<String, Function<String, ?>> defaultParsers;
-
-    private static <T> void addDefault(Class<T> type, Function<String, T> parser) {
-        defaultParsers.put(type.getSimpleName(), parser);
-    }
-
-    static {
-        defaultParsers = new HashMap<>();
-
-        // primitive classes
-        addDefault(int.class, raw -> {
+    public static void init(Map<String, Function<String,?>> parsers) {
+        parsers.put("int", raw -> {
             if (raw == null) {
                 throw new NullPointerException();
             }
@@ -23,7 +15,7 @@ public class DefaultParsers {
             return Integer.parseInt(raw);
         });
 
-        addDefault(Integer.class, raw -> {
+        parsers.put("Integer", raw -> {
             if (raw == null) {
                 return null;
             }
@@ -31,7 +23,7 @@ public class DefaultParsers {
             return Integer.parseInt(raw);
         });
 
-        addDefault(Boolean.class, raw -> {
+        parsers.put("Boolean", raw -> {
             if (raw == null) {
                 return null;
             }
@@ -39,10 +31,7 @@ public class DefaultParsers {
             return Boolean.parseBoolean(raw);
         });
 
-        addDefault(String.class, raw -> raw);
+        parsers.put("String", raw -> raw);
     }
 
-    public static Function<String, ?> getDefaultParser(String name) {
-       return defaultParsers.get(name);
-    }
 }

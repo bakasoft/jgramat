@@ -8,6 +8,7 @@ import org.bakasoft.gramat.parsing.literals.GToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 abstract public class GLiteral {
 
@@ -118,5 +119,4 @@ abstract public class GLiteral {
 
         return null;
     }
-
 }

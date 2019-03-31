@@ -1,10 +1,14 @@
 package org.bakasoft.gramat;
 
+import org.bakasoft.gramat.diff.Comparator;
+import org.bakasoft.gramat.diff.Diff;
+import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.GDirective;
 import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.parsing.GRule;
 import org.bakasoft.gramat.parsing.GTest;
+import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GMap;
 import org.bakasoft.gramat.parsing.literals.GToken;
 import org.bakasoft.gramat.util.FileHelper;
@@ -30,6 +34,17 @@ public class Gramat {
         this.tests = new ArrayList<>();
         this.parsers = new HashMap<>();
         this.typeMap = new HashMap<>();
+
+        // built-in parsers
+        DefaultParsers.init(parsers);
+    }
+
+    public void clear() {
+        rules.clear();
+        tests.clear();
+        parsers.clear();
+        typeMap.clear();
+        typeResolver = null;
     }
 
     public Class<?> getType(String name) {
@@ -77,8 +92,7 @@ public class Gramat {
             return parser;
         }
 
-        // built-in conversions
-        return DefaultParsers.getDefaultParser(name);
+        return null;
     }
 
     public <T> void addParser(Class<T> type, Function<String, T> parser) {
@@ -123,7 +137,25 @@ public class Gramat {
     }
 
     public void test() {
-        Map<String, Element> elements = compile();
+        Gramat testGramat = new Gramat();
+        testGramat.clear();
+
+        testGramat.rules.addAll(rules);
+
+        Map<String, Element> elements = testGramat.compile();
+        Comparator comparator = new Comparator(value -> {
+            if (value instanceof GMap) {
+                return ((GMap)value).getMap();
+            }
+            else if (value instanceof GArray) {
+                return ((GArray)value).getList();
+            }
+            else if (value instanceof GToken) {
+                return ((GToken)value).content;
+            }
+
+            return value;
+        });
 
         for (GTest test : tests) {
             Element rule = elements.get(test.rule);
@@ -135,17 +167,23 @@ public class Gramat {
             Tape tape = new Tape("test", test.input);
 
             if (test.output instanceof GToken) {
-                String output = rule.captureText(tape);
+                String actual = rule.captureText(tape);
+                Diff diff = comparator.diff(actual, test.output);
 
-                output.toString();
+                if (diff != null) {
+                    throw new DiffException(diff);
+                }
             }
             else if (test.output instanceof GMap) {
-                Object output = rule.capture(tape);
+                Object actual = rule.capture(tape);
+                Diff diff = comparator.diff(actual, test.output);
 
-                output.toString();
+                if (diff != null) {
+                    throw new DiffException(diff);
+                }
             }
             else {
-                throw new RuntimeException("cannot compare");
+                throw new RuntimeException("Test has invalid output: " + GElement.inspect(test.output));
             }
         }
     }

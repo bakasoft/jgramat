@@ -5,7 +5,7 @@ import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.parsing.GLiteral;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,10 +29,14 @@ public class GMap extends GLiteral {
         return map.keySet();
     }
 
+    public Map<String, GLiteral> getMap() {
+        return map;
+    }
+
     // parsing
 
     public static GMap expectMap(Tape tape) {
-        HashMap<String, GLiteral> map = new HashMap<>();
+        Map<String, GLiteral> map = new LinkedHashMap<>();
 
         GElement.expectSymbol(tape, '{');
 
