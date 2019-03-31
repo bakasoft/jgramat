@@ -12,18 +12,8 @@ public class Nop extends Element {
     }
 
     @Override
-    public void codify(CodifyControl control, boolean grouped) {
-
-    }
-
-    @Override
     public Object capture(Tape tape) {
         return null;
-    }
-
-    @Override
-    public boolean isCyclic(CyclicControl control) {
-        return false;
     }
 
     @Override

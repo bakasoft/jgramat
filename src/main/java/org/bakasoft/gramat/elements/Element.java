@@ -18,11 +18,7 @@ abstract public class Element {
 
     abstract public boolean parse(Tape tape);
 
-    abstract public void codify(CodifyControl control, boolean grouped);
-
     abstract public Object capture(Tape tape);
-
-    abstract public boolean isCyclic(CyclicControl control);
 
     abstract public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols);
 
@@ -32,10 +28,6 @@ abstract public class Element {
         collectFirstAllowedSymbol(new CyclicControl(), symbols);
 
         return symbols;
-    }
-
-    public boolean isCyclic() {
-        return isCyclic(new CyclicControl());
     }
 
     public String captureText(Tape tape) {
@@ -50,12 +42,4 @@ abstract public class Element {
         return null;
     }
 
-    @Override
-    public String toString() {
-        CodifyControl control = new CodifyControl();
-
-        codify(control, false);
-
-        return control.getCode();
-    }
 }

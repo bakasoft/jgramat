@@ -19,11 +19,6 @@ public class Repetition extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element) || (separator != null && control.isCyclic(separator));
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
         boolean expectMore = false;
@@ -67,29 +62,6 @@ public class Repetition extends Element implements WrappedElement {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append('{');
-            if (minimum != 0 || maximum != 0) {
-                output.append(minimum);
-
-                if (maximum != 0) {
-                    output.append(',');
-                    output.append(maximum);
-                }
-
-                output.append(' ');
-            }
-            element.codify(control, true);
-            if (separator != null) {
-                output.append(',');
-                separator.codify(control, true);
-            }
-            output.append('}');
-        });
     }
 
     @Override

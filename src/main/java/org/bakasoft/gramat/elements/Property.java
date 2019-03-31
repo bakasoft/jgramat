@@ -19,11 +19,6 @@ public class Property extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
         Location loc0 = tape.getLocation();
@@ -58,20 +53,6 @@ public class Property extends Element implements WrappedElement {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append('<');
-            output.append(propertyName);
-            if (appendMode) {
-                output.append('+');
-            }
-            output.append(':');
-            element.codify(control, true);
-            output.append('>');
-        });
     }
 
     @Override

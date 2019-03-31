@@ -16,11 +16,6 @@ public class ValueElement extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         return element.parse(tape);
     }
@@ -34,16 +29,6 @@ public class ValueElement extends Element implements WrappedElement {
         }
 
         return parser.apply(raw);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-
-            output.append('=');
-            element.codify(control, true);
-            output.append(';');
-        });
     }
 
     @Override

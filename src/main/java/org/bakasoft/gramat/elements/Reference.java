@@ -17,13 +17,6 @@ public class Reference extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        Element element = elementResolver.get();
-
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         return elementResolver.get().parse(tape);
     }
@@ -31,13 +24,6 @@ public class Reference extends Element implements WrappedElement {
     @Override
     public Object capture(Tape tape) {
         return elementResolver.get().capture(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append(name);
-        });
     }
 
     @Override

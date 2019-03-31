@@ -13,11 +13,6 @@ public class SingleChar extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return false;
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         if (tape.alive()) {
             char actual = tape.peek();
@@ -34,15 +29,6 @@ public class SingleChar extends Element implements WrappedElement {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append('"');
-            output.append(c);
-            output.append('"');
-        });
     }
 
     @Override

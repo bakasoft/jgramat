@@ -19,11 +19,6 @@ public class TypeElement extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         return element.parse(tape);
     }
@@ -55,16 +50,6 @@ public class TypeElement extends Element implements WrappedElement {
 //        System.out.println("ROLL " + type);
         tape.popHandler();
         return null;
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append(type.getCanonicalName());
-            output.append('=');
-            element.codify(control, true);
-            output.append(';');
-        });
     }
 
     @Override

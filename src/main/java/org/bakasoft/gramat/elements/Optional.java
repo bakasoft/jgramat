@@ -13,11 +13,6 @@ public class Optional extends Element implements WrappedElement {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         element.parse(tape);
 
@@ -28,15 +23,6 @@ public class Optional extends Element implements WrappedElement {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append('[');
-            element.codify(control, true);
-            output.append(']');
-        });
     }
 
     @Override

@@ -14,11 +14,6 @@ public class Sequence extends Element {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(elements);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
 
@@ -37,19 +32,6 @@ public class Sequence extends Element {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            for (int i = 0; i < elements.length; i++) {
-                if (i > 0) {
-                    output.append(' ');
-                }
-
-                elements[i].codify(control, false);
-            }
-        });
     }
 
     @Override

@@ -20,24 +20,4 @@ public class CyclicControl {
         }
     }
 
-    public <T> boolean isCyclic(Element... items) {
-        for (Element item : items) {
-            if (register.contains(item)) {
-                return true;
-            }
-            else {
-                register.push(item);
-                if (item.isCyclic(this)) {
-                    register.pop();
-                    return true;
-                }
-                else {
-                    register.pop();
-                }
-            }
-        }
-
-        return false;
-    }
-
 }

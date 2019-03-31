@@ -13,11 +13,6 @@ public class Negation extends Element {
     }
 
     @Override
-    public boolean isCyclic(CyclicControl control) {
-        return control.isCyclic(element);
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
 
@@ -35,14 +30,6 @@ public class Negation extends Element {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
-    }
-
-    @Override
-    public void codify(CodifyControl control, boolean grouped) {
-        control.codify(this, grouped, output -> {
-            output.append("!");
-            element.codify(control, false);
-        });
     }
 
     @Override
