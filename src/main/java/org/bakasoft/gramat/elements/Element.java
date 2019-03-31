@@ -6,6 +6,7 @@ import org.bakasoft.gramat.parsing.GElement;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 abstract public class Element {
@@ -19,6 +20,18 @@ abstract public class Element {
     abstract public boolean parse(Tape tape);
 
     abstract public Object capture(Tape tape);
+
+    abstract public Element link();
+
+    public static Element[] linkAll(Element[] elements) {
+        Element[] linked = new Element[elements.length];
+
+        for (int i = 0; i < elements.length; i++) {
+            linked[i] = elements[i].link();
+        }
+
+        return linked;
+    }
 
     abstract public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols);
 
@@ -41,5 +54,4 @@ abstract public class Element {
 
         return null;
     }
-
 }

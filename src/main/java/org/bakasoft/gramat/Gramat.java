@@ -93,26 +93,31 @@ public class Gramat {
         parsers.put(name, parser);
     }
 
-    private List<GRule> simplify() {
-        ArrayList<GRule> simpleRules = new ArrayList<>();
+    private void simplify() {
+        for (int i = 0; i < rules.size(); i++) {
+            GRule simpleRule = rules.get(i).simplify();
 
-        for (GRule rule : rules) {
-            simpleRules.add(rule.simplify());
+            rules.set(i, simpleRule);
         }
-
-        return simpleRules;
     }
 
     public Map<String, Element> compile() {
         HashMap<String, Element> compiled = new HashMap<>();
 
-        for (GRule rule : simplify()) {
+        simplify();
+
+        for (GRule rule : rules) {
             Element element = rule.compile(this, compiled);
 
             compiled.put(rule.name, element);
         }
 
         // link
+        for (Map.Entry<String, Element> entry : compiled.entrySet()) {
+            Element linked = entry.getValue().link();
+
+            entry.setValue(linked);
+        }
 
         return compiled;
     }

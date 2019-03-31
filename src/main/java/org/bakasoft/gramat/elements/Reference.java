@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -24,6 +25,11 @@ public class Reference extends Element {
     @Override
     public Object capture(Tape tape) {
         return elementResolver.get().capture(tape);
+    }
+
+    @Override
+    public Element link() {
+        return elementResolver.get();
     }
 
     @Override

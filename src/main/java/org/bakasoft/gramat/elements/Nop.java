@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Nop extends Element {
@@ -14,6 +15,11 @@ public class Nop extends Element {
     @Override
     public Object capture(Tape tape) {
         return null;
+    }
+
+    @Override
+    public Element link() {
+        return this;
     }
 
     @Override

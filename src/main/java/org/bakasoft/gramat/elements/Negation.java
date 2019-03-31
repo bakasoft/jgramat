@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Negation extends Element {
@@ -30,6 +31,11 @@ public class Negation extends Element {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
+    }
+
+    @Override
+    public Element link() {
+        return new Negation(element.link());
     }
 
     @Override

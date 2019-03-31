@@ -29,6 +29,11 @@ public class Termination extends Element {
     }
 
     @Override
+    public Element link() {
+        return this;
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         // nothing to collect
     }

@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Alternation extends Element {
@@ -50,6 +51,11 @@ public class Alternation extends Element {
 
         // did not match!
         return null;
+    }
+
+    @Override
+    public Element link() {
+        return new Alternation(linkAll(elements));
     }
 
     @Override

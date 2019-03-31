@@ -32,6 +32,11 @@ public class ValueElement extends Element {
     }
 
     @Override
+    public Element link() {
+        return new ValueElement(parser, element.link());
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {
             element.collectFirstAllowedSymbol(control, symbols);

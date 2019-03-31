@@ -35,6 +35,11 @@ public class Sequence extends Element {
     }
 
     @Override
+    public Element link() {
+        return new Sequence(linkAll(elements));
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {
             if (elements.length > 0) {

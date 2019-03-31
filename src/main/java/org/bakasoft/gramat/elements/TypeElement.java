@@ -53,6 +53,11 @@ public class TypeElement extends Element {
     }
 
     @Override
+    public Element link() {
+        return new TypeElement(type, element.link());
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {
             element.collectFirstAllowedSymbol(control, symbols);

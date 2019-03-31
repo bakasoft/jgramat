@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Optional extends Element {
@@ -25,6 +26,10 @@ public class Optional extends Element {
         return captureText(tape);
     }
 
+    @Override
+    public Element link() {
+        return new Optional(element.link());
+    }
     @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {

@@ -4,6 +4,7 @@ import org.bakasoft.gramat.CharPredicate;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 
+import java.util.Map;
 import java.util.Set;
 
 public class CharRange extends Element {
@@ -39,6 +40,11 @@ public class CharRange extends Element {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
+    }
+
+    @Override
+    public Element link() {
+        return this;
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.bakasoft.gramat.elements;
 import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.handlers.ObjectHandler;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Property extends Element {
@@ -53,6 +54,11 @@ public class Property extends Element {
     @Override
     public Object capture(Tape tape) {
         return captureText(tape);
+    }
+
+    @Override
+    public Element link() {
+        return new Property(propertyName, appendMode, element.link());
     }
 
     @Override

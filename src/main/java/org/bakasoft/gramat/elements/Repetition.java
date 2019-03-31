@@ -65,6 +65,15 @@ public class Repetition extends Element {
     }
 
     @Override
+    public Element link() {
+        return new Repetition(
+                element.link(),
+                minimum,
+                maximum,
+                separator != null ? separator.link() : null);
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {
             element.collectFirstAllowedSymbol(control, symbols);

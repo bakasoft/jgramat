@@ -49,6 +49,11 @@ public class Symbol extends Element {
     }
 
     @Override
+    public Element link() {
+        return this;
+    }
+
+    @Override
     public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
         control.enter(this, () -> {
             symbols.add(symbol);
