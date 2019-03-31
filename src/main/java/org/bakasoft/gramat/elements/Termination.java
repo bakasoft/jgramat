@@ -14,11 +14,6 @@ public class Termination extends Element implements WrappedElement {
     }
 
     @Override
-    public void replace(CyclicControl control, Element older, Element newer) {
-        // nothing to be replaced
-    }
-
-    @Override
     public boolean isCyclic(CyclicControl control) {
         return false;
     }

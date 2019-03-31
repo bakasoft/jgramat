@@ -22,11 +22,6 @@ public class Nop extends Element {
     }
 
     @Override
-    public void replace(CyclicControl control, Element older, Element newer) {
-
-    }
-
-    @Override
     public boolean isCyclic(CyclicControl control) {
         return false;
     }

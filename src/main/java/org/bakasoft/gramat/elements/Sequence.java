@@ -14,20 +14,6 @@ public class Sequence extends Element {
     }
 
     @Override
-    public void replace(CyclicControl control, Element older, Element newer) {
-        control.enter(this, () -> {
-            for (int i = 0; i < elements.length; i++) {
-                if (elements[i] == older) {
-                    elements[i] = newer;
-                }
-                else {
-                    elements[i].replace(control, older, newer);
-                }
-            }
-        });
-    }
-
-    @Override
     public boolean isCyclic(CyclicControl control) {
         return control.isCyclic(elements);
     }

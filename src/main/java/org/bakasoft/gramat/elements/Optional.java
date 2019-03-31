@@ -13,18 +13,6 @@ public class Optional extends Element implements WrappedElement {
     }
 
     @Override
-    public void replace(CyclicControl control, Element older, Element newer) {
-        control.enter(this, () -> {
-            if (element == older) {
-                element = newer;
-            }
-            else {
-                element.replace(control, older, newer);
-            }
-        });
-    }
-
-    @Override
     public boolean isCyclic(CyclicControl control) {
         return control.isCyclic(element);
     }

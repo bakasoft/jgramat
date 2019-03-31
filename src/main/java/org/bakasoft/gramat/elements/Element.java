@@ -22,8 +22,6 @@ abstract public class Element {
 
     abstract public Object capture(Tape tape);
 
-    abstract public void replace(CyclicControl control, Element older, Element newer);
-
     abstract public boolean isCyclic(CyclicControl control);
 
     abstract public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols);
