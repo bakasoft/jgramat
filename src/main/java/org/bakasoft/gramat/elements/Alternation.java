@@ -31,17 +31,6 @@ public class Alternation extends Element implements WrappedElement {
         return control.isCyclic(elements);
     }
 
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            if (elements.length == 1) {
-                control.apply("reduce single element alternation",this, elements[0]);
-            }
-            else {
-                control.next(elements);
-            }
-        });
-    }
-
     @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();

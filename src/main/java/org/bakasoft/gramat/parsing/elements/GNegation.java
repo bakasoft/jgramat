@@ -19,11 +19,14 @@ public class GNegation extends GElement {
 
     @Override
     public GElement simplify() {
-        if (expression instanceof GNegation) {
-            return ((GNegation)expression).expression.simplify();
+        GElement simplification = expression.simplify();
+
+        // remove double negation
+        if (simplification instanceof GNegation) {
+            return ((GNegation)simplification).expression;
         }
 
-        return this;
+        return new GNegation(simplification);
     }
 
     @Override

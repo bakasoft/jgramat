@@ -30,18 +30,6 @@ public class Optional extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            if (element instanceof Optional) {
-                control.apply("remove double optional", this, element);
-            }
-            else {
-                control.next(element);
-            }
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         element.parse(tape);
 

@@ -19,7 +19,14 @@ public class GOptional extends GElement {
 
     @Override
     public GElement simplify() {
-        return this;
+        GElement simplification = expression.simplify();
+
+        // double optional
+        if (simplification instanceof GOptional) {
+            return simplification;
+        }
+
+        return new GOptional(simplification);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class GProperty extends GElement {
 
     @Override
     public GElement simplify() {
-        return null;
+        return new GProperty(propertyName, appendMode, expression.simplify());
     }
 
     @Override

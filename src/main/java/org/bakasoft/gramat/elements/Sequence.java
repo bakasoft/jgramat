@@ -33,35 +33,6 @@ public class Sequence extends Element {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            if (elements.length == 1) {
-                control.apply("reduce single element sequence", this, elements[0]);
-            }
-    //        else if (Sets.containsRule(elements, Sequence.class)) {
-    //            ArrayList<Element> result = new ArrayList<>();
-    //
-    //            for (Element element : elements) {
-    //                if (element instanceof Sequence) {
-    //                    Sequence seq = (Sequence) element;
-    //
-    //                    Collections.addAll(result, seq.elements);
-    //
-    //                    control.increase("nested sequence");
-    //                } else {
-    //                    result.addRule(element);
-    //                }
-    //            }
-    //
-    //            return new Sequence(result.toArray(new Element[0]));
-    //        }
-            else {
-                control.next(elements);
-            }
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
 

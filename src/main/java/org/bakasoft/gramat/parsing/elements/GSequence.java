@@ -18,7 +18,16 @@ public class GSequence extends GElement {
 
     @Override
     public GElement simplify() {
-        return this;
+        GElement[] simplification = simplifyAll(expressions);
+
+        if (simplification.length == 0) {
+            return new GNop();
+        }
+        else if (simplification.length == 1) {
+            return simplification[0];
+        }
+
+        return new GSequence(simplification);
     }
 
     @Override

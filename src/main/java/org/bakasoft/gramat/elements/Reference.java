@@ -29,15 +29,6 @@ public class Reference extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            Element element = elementResolver.get();
-
-            control.apply("resolve reference", this, element);
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         return elementResolver.get().parse(tape);
     }

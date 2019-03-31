@@ -23,15 +23,6 @@ public class Symbol extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            if (symbol.length() == 1) {
-                control.apply("simplify single char symbol", this, new SingleChar(symbol.charAt(0)));
-            }
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
         int index = 0;

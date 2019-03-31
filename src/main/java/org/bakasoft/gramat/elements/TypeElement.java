@@ -36,13 +36,6 @@ public class TypeElement extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            control.next(element);
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         return element.parse(tape);
     }

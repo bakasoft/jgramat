@@ -30,18 +30,6 @@ public class Negation extends Element {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            if (element instanceof Negation) {
-                control.apply("remove double negation", this, ((Negation) element).element);
-            }
-            else {
-                control.next(element);
-            }
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
 

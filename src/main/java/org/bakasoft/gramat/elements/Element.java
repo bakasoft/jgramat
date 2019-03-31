@@ -16,8 +16,6 @@ abstract public class Element {
                 .compile(new Gramat(), new HashMap<>());
     }
 
-    abstract public void optimize(OptimizationControl control);
-
     abstract public boolean parse(Tape tape);
 
     abstract public void codify(CodifyControl control, boolean grouped);
@@ -40,27 +38,6 @@ abstract public class Element {
 
     public boolean isCyclic() {
         return isCyclic(new CyclicControl());
-    }
-
-    public Element optimize() {
-        OptimizationControl control = new OptimizationControl(this);
-
-//        System.out.println("optimizing...");
-
-        do {
-            control.reset();
-
-//            System.out.println(control.getRoot());
-
-            control.optimize();
-
-//            System.out.println("    optimizations: " + control.getCount());
-        }
-        while (control.hasChanged());
-
-//        System.out.println(control.getRoot());
-
-        return control.getRoot();
     }
 
     public String captureText(Tape tape) {

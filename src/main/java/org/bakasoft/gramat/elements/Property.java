@@ -36,13 +36,6 @@ public class Property extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        control.enter(this, () -> {
-            control.next(element);
-        });
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         int pos0 = tape.getPosition();
         Location loc0 = tape.getLocation();

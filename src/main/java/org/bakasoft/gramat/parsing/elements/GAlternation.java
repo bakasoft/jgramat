@@ -18,14 +18,16 @@ public class GAlternation extends GElement {
 
     @Override
     public GElement simplify() {
-        if (expressions.length == 0) {
+        GElement[] simplification = simplifyAll(expressions);
+
+        if (simplification.length == 0) {
             return new GNop();
         }
-        else if (expressions.length == 1) {
-            return expressions[0].simplify();
+        else if (simplification.length == 1) {
+            return simplification[0];
         }
 
-        return this;
+        return new GAlternation(simplification);
     }
 
     @Override

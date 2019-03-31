@@ -5,10 +5,6 @@ import org.bakasoft.gramat.Tape;
 import java.util.Set;
 
 public class Nop extends Element {
-    @Override
-    public void optimize(OptimizationControl control) {
-
-    }
 
     @Override
     public boolean parse(Tape tape) {

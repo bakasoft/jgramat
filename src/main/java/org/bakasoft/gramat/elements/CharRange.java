@@ -31,11 +31,6 @@ public class CharRange extends Element implements WrappedElement {
     }
 
     @Override
-    public void optimize(OptimizationControl control) {
-        // nothing to be optimized
-    }
-
-    @Override
     public boolean parse(Tape tape) {
         if (tape.alive()) {
             char actual = tape.peek();

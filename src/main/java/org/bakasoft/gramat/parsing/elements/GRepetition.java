@@ -25,7 +25,23 @@ public class GRepetition extends GElement {
 
     @Override
     public GElement simplify() {
-        return this;
+        GElement simpleExpression = expression.simplify();
+        GElement simpleSeparator = separator != null ? separator.simplify() : null;
+        int min = minimum != null ? minimum : 0;
+        int max = maximum != null ? maximum : 0;
+
+        // no repetition at all
+        if (min == 1 && max == 1) {
+            return simpleExpression;
+        }
+        // optional substitution
+        else if (min == 0 && max == 1) {
+            return new GOptional(simpleExpression).simplify();
+        }
+
+        // TODO add no separator simplification
+
+        return new GRepetition(minimum, maximum, simpleExpression, simpleSeparator);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class GObject extends GElement {
 
     @Override
     public GElement simplify() {
-        return this;
+        return new GObject(typeName, expression.simplify());
     }
 
     @Override

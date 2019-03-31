@@ -7,10 +7,7 @@ import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.elements.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 abstract public class GElement {
 
@@ -26,19 +23,36 @@ abstract public class GElement {
         return GStringifier.stringify(this);
     }
 
-    public static Element[] compileAll(GElement[] source, Gramat gramat, Map<String, Element> compiled) {
-        return Arrays.stream(source)
+    public static Element[] compileAll(GElement[] elements, Gramat gramat, Map<String, Element> compiled) {
+        return Arrays.stream(elements)
                 .map(item -> item.compile(gramat, compiled))
                 .toArray(Element[]::new);
     }
 
-    public static boolean areAllPlain(GElement[] expressions, Gramat gramat) {
-        return Arrays.stream(expressions).allMatch(item -> item.isPlain(gramat));
+    public static boolean areAllPlain(GElement[] elements, Gramat gramat) {
+        return Arrays.stream(elements).allMatch(item -> item.isPlain(gramat));
     }
 
+    public static boolean isAnyPlain(GElement[] elements, Gramat gramat) {
+        return Arrays.stream(elements).anyMatch(item -> item.isPlain(gramat));
+    }
 
-    public static GElement[] toArray(List<? extends GElement> expressions) {
-        return expressions.toArray(new GElement[0]);
+    public static GElement[] simplifyAll(GElement[] elements) {
+        ArrayList<GElement> list = new ArrayList<>();
+
+        for (GElement element : elements) {
+            GElement simplified = element.simplify();
+
+            if (!(element instanceof GNop)) {
+                list.add(simplified);
+            }
+        }
+
+        return toArray(list);
+    }
+
+    public static GElement[] toArray(List<? extends GElement> elements) {
+        return elements.toArray(new GElement[0]);
     }
 
     // parsing
