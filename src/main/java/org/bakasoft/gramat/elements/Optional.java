@@ -1,8 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.OptionalData;
 
 import java.util.Set;
 
@@ -12,12 +10,6 @@ public class Optional extends Element implements WrappedElement {
 
     public Optional(Element element) {
         this.element = element;
-    }
-
-    public Optional(Grammar grammar, OptionalData data) {
-        grammar.addElement(data, this);
-
-        element = grammar.settle(data.getExpression());
     }
 
     @Override

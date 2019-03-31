@@ -1,9 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
-import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.SymbolData;
 
 import java.util.Set;
 
@@ -13,16 +10,6 @@ public class Symbol extends Element implements WrappedElement {
 
     public Symbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public Symbol(Grammar grammar, SymbolData data) {
-        grammar.addElement(data, this);
-
-        this.symbol = data.getContent();
-
-        if (symbol.isEmpty()) {
-            throw new GrammarException();
-        }
     }
 
     @Override

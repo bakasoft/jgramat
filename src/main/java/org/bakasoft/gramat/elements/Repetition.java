@@ -1,8 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.RepetitionData;
 
 import java.util.Set;
 
@@ -18,33 +16,6 @@ public class Repetition extends Element implements WrappedElement {
         this.minimum = minimum;
         this.maximum = maximum;
         this.separator = separator;
-    }
-
-    public Repetition(Grammar grammar, RepetitionData data) {
-        grammar.addElement(data, this);
-
-        this.element = grammar.settle(data.getExpression());
-        if (data.getSeparator() == null || data.getSeparator().getItems().isEmpty()) {
-            this.separator = null;
-        } else {
-            this.separator = grammar.settle(data.getSeparator());
-        }
-
-        if (data.getMinimum() != null) {
-            minimum = data.getMinimum();
-        } else {
-            minimum = 0;
-        }
-
-        if (data.getMaximum() != null) {
-            maximum = data.getMaximum();
-
-            if (maximum < minimum) {
-                throw new RuntimeException("? " + minimum + "," + maximum);
-            }
-        } else {
-            maximum = 0;
-        }
     }
 
     @Override

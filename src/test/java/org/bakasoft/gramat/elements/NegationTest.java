@@ -1,13 +1,11 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.GrammarBuilder;
 import org.bakasoft.gramat.TestBase;
 
 public class NegationTest extends TestBase {{
 
     it("Negation", ()-> {
-        GrammarBuilder g = new GrammarBuilder();
-        Element element = g.seq(g.chr('<'), g.rep(g.not(g.chr('>'))), g.chr('>'));
+        Element element = Element.eval("\"<\" { !\">\"} \">\"");
 
         test(element, false, "");
         test(element, true, "<>");

@@ -1,14 +1,8 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
-import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.AlternationData;
-import org.bakasoft.gramat.parsing.ExpressionData;
 
-import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Alternation extends Element implements WrappedElement {
 
@@ -16,18 +10,6 @@ public class Alternation extends Element implements WrappedElement {
 
     public Alternation(Element[] elements) {
         this.elements = elements;
-    }
-
-    public Alternation(Grammar grammar, AlternationData data) {
-        grammar.addElement(data, this);
-
-        this.elements = ExpressionData.settleAll(grammar, data.getItems());
-
-        // TODO optimize sequence
-
-        if (elements.length == 0) {
-            throw new GrammarException();
-        }
     }
 
     @Override

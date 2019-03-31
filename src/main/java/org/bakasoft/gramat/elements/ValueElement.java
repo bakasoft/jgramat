@@ -1,39 +1,18 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.ResolvedValueData;
-import org.bakasoft.gramat.parsing.ValueData;
 
 import java.util.Set;
 import java.util.function.Function;
 
 public class ValueElement extends Element implements WrappedElement {
 
-    private final Class<?> type;
-    private final Function<Object, ?> converter; // TODO change to Function<String, ?>
+    private final Function<String, ?> parser;
     private Element element;
 
-    public ValueElement(Class<?> type, Function<Object, ?> converter, Element element) {
-        this.type = type;
+    public ValueElement(Function<String, ?> parser, Element element) {
         this.element = element;
-        this.converter = converter;
-    }
-
-    public ValueElement(Grammar grammar, ValueData data) {
-        grammar.addElement(data, this);
-
-        this.type = grammar.resolveType(data.getName());
-        this.element = grammar.settle(data.getExpression());
-        this.converter = grammar.getParser(type);
-    }
-
-    public ValueElement(Grammar grammar, ResolvedValueData data) {
-        grammar.addElement(data, this);
-
-        this.type = data.getType();
-        this.element = grammar.settle(data.getExpression());
-        this.converter = grammar.getParser(type);
+        this.parser = parser;
     }
 
     @Override
@@ -73,13 +52,13 @@ public class ValueElement extends Element implements WrappedElement {
             return null; // TODO improve how to handle null
         }
 
-        return converter.apply(raw);
+        return parser.apply(raw);
     }
 
     @Override
     public void codify(CodifyControl control, boolean grouped) {
         control.codify(this, grouped, output -> {
-            output.append(type.getCanonicalName());
+
             output.append('=');
             element.codify(control, true);
             output.append(';');

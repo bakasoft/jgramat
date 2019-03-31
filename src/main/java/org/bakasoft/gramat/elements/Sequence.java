@@ -1,10 +1,7 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.ExpressionData;
-import org.bakasoft.gramat.parsing.SequenceData;
 
 import java.util.Set;
 
@@ -14,18 +11,6 @@ public class Sequence extends Element {
 
     public Sequence(Element[] elements) {
         this.elements = elements;
-    }
-
-    public Sequence(Grammar grammar, SequenceData data) {
-        grammar.addElement(data, this);
-
-        this.elements = ExpressionData.settleAll(grammar, data.getItems());
-
-        // TODO optimize sequence
-
-        if (elements.length == 0) {
-            throw new GrammarException();
-        }
     }
 
     @Override
@@ -53,7 +38,7 @@ public class Sequence extends Element {
             if (elements.length == 1) {
                 control.apply("reduce single element sequence", this, elements[0]);
             }
-    //        else if (Sets.contains(elements, Sequence.class)) {
+    //        else if (Sets.containsRule(elements, Sequence.class)) {
     //            ArrayList<Element> result = new ArrayList<>();
     //
     //            for (Element element : elements) {
@@ -64,7 +49,7 @@ public class Sequence extends Element {
     //
     //                    control.increase("nested sequence");
     //                } else {
-    //                    result.add(element);
+    //                    result.addRule(element);
     //                }
     //            }
     //

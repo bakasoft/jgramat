@@ -1,8 +1,7 @@
 package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.*;
-import org.bakasoft.gramat.parsing.PropertyData;
-import org.bakasoft.gramat.parsing.PropertyMode;
+import org.bakasoft.gramat.handlers.ObjectHandler;
 
 import java.util.Set;
 
@@ -17,21 +16,6 @@ public class Property extends Element implements WrappedElement {
         this.propertyName = propertyName;
         this.appendMode = appendMode;
         this.element = element;
-    }
-
-    public Property(Grammar grammar, PropertyData data) {
-        grammar.addElement(data, this);
-
-        this.propertyName = data.getName();
-        this.element = grammar.settle(data.getExpression());
-
-        if (data.getMode() == PropertyMode.SET) {
-            appendMode = false;
-        } else if (data.getMode() == PropertyMode.ADD) {
-            appendMode = true;
-        } else {
-            throw new RuntimeException("missing property mode");
-        }
     }
 
     @Override
@@ -70,7 +54,7 @@ public class Property extends Element implements WrappedElement {
             return tape.no(this);
         }
 
-        ObjectHandle entity = tape.peekCapture();
+        ObjectHandler entity = tape.peekHandler();
 
         if (value instanceof GrammarElement) {
             ((GrammarElement) value).setBeginLocation(loc0);

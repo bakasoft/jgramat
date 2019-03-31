@@ -2,9 +2,9 @@ package org.bakasoft.gramat;
 
 import org.bakasoft.gramat.elements.CyclicControl;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.handlers.ObjectHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Tape {
 
-    private final Stack<ObjectHandle> captureStack = new Stack<>();
+    private final Stack<ObjectHandler> handlerStack = new Stack<>();
 
     private final String name;
     private final char[] content;
@@ -92,25 +92,28 @@ public class Tape {
         return new String(content, startIndex, count);
     }
 
-    public void pushCapture(ObjectHandle entity) {
-        captureStack.push(entity);
+    public void pushHandler(ObjectHandler handler) {
+        handlerStack.push(handler);
     }
 
-    public ObjectHandle peekCapture() {
-        return captureStack.peek();
+    public ObjectHandler peekHandler() {
+        return handlerStack.peek();
     }
 
-    public ObjectHandle popCapture() {
-        return captureStack.pop();
+    public ObjectHandler popHandler() {
+        return handlerStack.pop();
     }
 
     public static Tape fromFile(String path) {
+        return fromPath(Paths.get(path));
+    }
+
+    public static Tape fromPath(Path path) {
         try {
-            Path p = Paths.get(path);
-            byte[] data = Files.readAllBytes(p);
+            byte[] data = Files.readAllBytes(path);
             String content = new String(data);
 
-            return new Tape(path, content);
+            return new Tape(path.toString(), content);
         }
         catch (IOException e) {
             throw new RuntimeException(e);

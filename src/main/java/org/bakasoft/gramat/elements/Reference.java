@@ -1,8 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.ReferenceData;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -16,13 +14,6 @@ public class Reference extends Element implements WrappedElement {
     public Reference(String name, Supplier<Element> elementResolver) {
         this.name = name;
         this.elementResolver = elementResolver;
-    }
-
-    public Reference(Grammar grammar, ReferenceData data) {
-        grammar.addElement(data, this);
-
-        name = data.getName();
-        elementResolver = () -> grammar.resolveElement(name);
     }
 
     @Override

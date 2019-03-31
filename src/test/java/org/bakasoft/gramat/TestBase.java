@@ -1,14 +1,24 @@
 package org.bakasoft.gramat;
 
-import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.framboyan.Framboyan;
+import org.bakasoft.gramat.parsing.GElement;
+
+import java.nio.file.Path;
+import java.util.HashMap;
 
 public class TestBase extends Framboyan {
 
-    protected void test(Element element, boolean expectedResult, String input) {
-        Tape tape = new Tape("test", input);
+    protected Tape tape(String content) {
+        return new Tape("test", content);
+    }
 
+    protected void test(String code, boolean expectedResult, String input) {
+        test(Element.eval(code), expectedResult, input);
+    }
+
+    protected void test(Element element, boolean expectedResult, String input) {
+        Tape tape = new Tape(null, input);
         boolean actualResult = element.parse(tape);
 
         if (expectedResult) {
@@ -18,6 +28,16 @@ public class TestBase extends Framboyan {
         else {
             expect(!tape.alive() && actualResult).toBeFalse();
         }
+    }
+
+    protected void testExpression(String code) {
+        GElement exp = GElement.expectExpression(tape(code));
+
+        expect(exp).not.toBeNull();
+
+        String generatedCode = exp.stringify();
+
+        expect(generatedCode).toBe(code);
     }
 
 }

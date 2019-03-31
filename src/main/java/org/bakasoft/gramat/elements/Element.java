@@ -1,11 +1,20 @@
 package org.bakasoft.gramat.elements;
 
+import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.GElement;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 abstract public class Element {
+
+    public static Element eval(String code) {
+        return GElement.expectExpression(new Tape(null, code))
+                .simplify()
+                .compile(new Gramat(), new HashMap<>());
+    }
 
     abstract public void optimize(OptimizationControl control);
 

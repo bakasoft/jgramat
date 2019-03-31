@@ -1,0 +1,10 @@
+@import "url.gmt"
+
+@test "http://www.google.com/search?q=gramat#search" Url {
+    baseUrl: "http://www.google.com"
+    path: "/search"
+    query: [
+        { q: "gramat" }
+    ]
+    fragment: "search"
+}

@@ -1,8 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.TerminationData;
 
 import java.util.Set;
 
@@ -28,10 +26,6 @@ public class Termination extends Element implements WrappedElement {
     @Override
     public void optimize(OptimizationControl control) {
         // nothing to be optimized
-    }
-
-    public Termination(Grammar grammar, TerminationData data) {
-        grammar.addElement(data, this);
     }
 
     @Override

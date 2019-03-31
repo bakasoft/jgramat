@@ -1,11 +1,10 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
-import org.bakasoft.gramat.ObjectHandle;
-import org.bakasoft.gramat.ReflectionHelper;
-import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.ResolvedTypeData;
-import org.bakasoft.gramat.parsing.TypeData;
+import org.bakasoft.gramat.*;
+import org.bakasoft.gramat.handlers.DefaultHandler;
+import org.bakasoft.gramat.handlers.ObjectHandler;
+import org.bakasoft.gramat.handlers.TypedHandler;
+import org.bakasoft.gramat.util.ReflectionHelper;
 
 import java.util.Set;
 
@@ -31,20 +30,6 @@ public class TypeElement extends Element implements WrappedElement {
         });
     }
 
-    public TypeElement(Grammar grammar, TypeData data) {
-        grammar.addElement(data, this);
-
-        this.type = grammar.resolveType(data.getName());
-        this.element = grammar.settle(data.getExpression());
-    }
-
-    public TypeElement(Grammar grammar, ResolvedTypeData data) {
-        grammar.addElement(data, this);
-
-        this.type = data.getType();
-        this.element = grammar.settle(data.getExpression());
-    }
-
     @Override
     public boolean isCyclic(CyclicControl control) {
         return control.isCyclic(element);
@@ -64,21 +49,30 @@ public class TypeElement extends Element implements WrappedElement {
 
     @Override
     public Object capture(Tape tape) {
-        Object instance = ReflectionHelper.newInstance(type);
+        ObjectHandler handler;
 
-        tape.pushCapture(new ObjectHandle(type, instance));
+        if (type != null) {
+            Object instance = ReflectionHelper.newInstance(type);
+            handler = new TypedHandler(type, instance);
+
+            tape.pushHandler(handler);
+        }
+        else {
+            handler = new DefaultHandler();
+            tape.pushHandler(handler);
+        }
 
 //        System.out.println("TRAN " + type);
 
         if (element.parse(tape)) {
 //            System.out.println("COMM " + type);
-            tape.popCapture();
+            tape.popHandler();
 
-            return instance;
+            return handler.getInstance();
         }
 
 //        System.out.println("ROLL " + type);
-        tape.popCapture();
+        tape.popHandler();
         return null;
     }
 

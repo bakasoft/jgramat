@@ -1,15 +1,12 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.GrammarBuilder;
 import org.bakasoft.gramat.TestBase;
 
 public class AlternationTest extends TestBase {{
 
     describe("Alternation", () -> {
-        GrammarBuilder g = new GrammarBuilder();
-
         it ("should pass case 1", () -> {
-            Element data = g.seq(g.rep(g.alt(g.sym("0"), g.sym("1")), 1), g.end());
+            Element data = Element.eval("{1 \"0\" | \"1\"} $");
 
             test(data, true, "0");
             test(data, true, "1");
@@ -25,7 +22,7 @@ public class AlternationTest extends TestBase {{
         });
 
         it ("should pass case 2", () -> {
-            Element data = g.seq(g.sym("a"), g.rep(g.alt(g.sym("x"), g.sym("0"))), g.end());
+            Element data = Element.eval("\"a\" {\"x\" | \"0\"} $");
 
             test(data, true, "a");
             test(data, true, "ax");

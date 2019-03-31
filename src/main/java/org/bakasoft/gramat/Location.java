@@ -47,4 +47,8 @@ public class Location {
     public String toString() {
         return name + " (line " + line + ", column " + column + ")";
     }
+
+    public String toShortString() {
+        return line + ":" + column;
+    }
 }

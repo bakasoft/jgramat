@@ -1,8 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Grammar;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.NegationData;
 
 import java.util.Set;
 
@@ -12,12 +10,6 @@ public class Negation extends Element {
 
     public Negation(Element element) {
         this.element = element;
-    }
-
-    public Negation(Grammar grammar, NegationData data) {
-        grammar.addElement(data, this);
-
-        this.element = grammar.settle(data.getExpression());
     }
 
     @Override
