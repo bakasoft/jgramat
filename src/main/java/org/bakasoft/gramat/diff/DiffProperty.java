@@ -1,5 +1,7 @@
 package org.bakasoft.gramat.diff;
 
+import org.bakasoft.gramat.util.CodeWriter;
+
 public class DiffProperty extends Diff {
 
     private final Object key;
@@ -10,4 +12,10 @@ public class DiffProperty extends Diff {
         this.diff = diff;
     }
 
+    @Override
+    public void toString(CodeWriter writer) {
+        writer.write(String.valueOf(key));
+        writer.write(": ");
+        diff.toString(writer);
+    }
 }

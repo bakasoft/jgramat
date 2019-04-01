@@ -23,9 +23,14 @@ public class Negation extends Element {
             return tape.no(this);
         }
 
-        // perfect match!
-        tape.moveForward();
-        return tape.ok(this);
+        if (tape.alive()) {
+            // perfect match!
+            tape.moveForward();
+            return tape.ok(this);
+        }
+
+        tape.setPosition(pos0);
+        return tape.no(this);
     }
 
     @Override

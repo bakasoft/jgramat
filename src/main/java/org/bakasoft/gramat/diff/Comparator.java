@@ -17,95 +17,95 @@ public class Comparator {
         this.normalizer = normalizer;
     }
 
-    public Diff diff(Object left, Object right) {
-        Object normalizedLeft;
-        Object normalizedRight;
+    public Diff diff(Object expected, Object actual) {
+        Object normalizedExpected;
+        Object normalizedActual;
 
         if (normalizer != null) {
-            normalizedLeft = normalizer.apply(left);
-            normalizedRight = normalizer.apply(right);
+            normalizedExpected = normalizer.apply(expected);
+            normalizedActual = normalizer.apply(actual);
         }
         else {
-            normalizedLeft = left;
-            normalizedRight = right;
+            normalizedExpected = expected;
+            normalizedActual = actual;
         }
 
-        if (Objects.equals(left, right)) {
+        if (Objects.equals(expected, actual)) {
             return null;
         }
-        else if (normalizedLeft instanceof String && normalizedRight instanceof String) {
-            return diffString((String)normalizedLeft, (String)normalizedRight);
+        else if (normalizedExpected instanceof String && normalizedActual instanceof String) {
+            return diffString((String)normalizedExpected, (String)normalizedActual);
         }
-        else if (normalizedLeft instanceof List && normalizedRight instanceof List) {
-            return diffList((List<?>)normalizedLeft, (List<?>)normalizedRight);
+        else if (normalizedExpected instanceof List && normalizedActual instanceof List) {
+            return diffList((List<?>)normalizedExpected, (List<?>)normalizedActual);
         }
-        else if (normalizedLeft instanceof Map && normalizedRight instanceof Map) {
-            return diffMap((Map<?,?>)normalizedLeft, (Map<?,?>) normalizedRight);
+        else if (normalizedExpected instanceof Map && normalizedActual instanceof Map) {
+            return diffMap((Map<?,?>)normalizedExpected, (Map<?,?>) normalizedActual);
         }
 
-        return new DiffValue(left, right);
+        return new DiffValue(expected, actual);
     }
 
-    public DiffValue diffString(String left, String right) {
-        if (Objects.equals(left, right)) {
+    public DiffValue diffString(String expected, String actual) {
+        if (Objects.equals(expected, actual)) {
             return null;
         }
 
-        return new DiffValue(left, right);
+        return new DiffValue(expected, actual);
     }
 
-    public Diff diffList(List<?> left, List<?> right) {
-        if (left == null && right == null) {
+    public Diff diffList(List<?> expected, List<?> actual) {
+        if (expected == null && actual == null) {
             return null;
         }
-        else if (left == null || right == null) {
-            return new DiffValue(left, right);
+        else if (expected == null || actual == null) {
+            return new DiffValue(expected, actual);
         }
 
-        int minSize = Math.min(left.size(), right.size());
+        int minSize = Math.min(expected.size(), actual.size());
 
         for (int i = 0; i < minSize; i++) {
-            Object leftValue = left.get(i);
-            Object rightValue = right.get(i);
-            Diff diff = diff(leftValue, rightValue);
+            Object expectedValue = expected.get(i);
+            Object actualValue = actual.get(i);
+            Diff diff = diff(expectedValue, actualValue);
 
             if (diff != null) {
                 return new DiffList(i, diff);
             }
         }
 
-        if (left.size() != right.size()) {
-            return new DiffSize(left.size(), right.size());
+        if (expected.size() != actual.size()) {
+            return new DiffSize(expected.size(), actual.size());
         }
 
         return null;
     }
 
-    public DiffObject diffMap(Map<?,?> left, Map<?,?> right) {
+    public DiffObject diffMap(Map<?,?> expected, Map<?,?> actual) {
         ArrayList<DiffProperty> properties = new ArrayList<>();
 
-        Set<?> leftKeys = left.keySet();
+        Set<?> expectedKeys = expected.keySet();
 
-        for (Object leftKey : leftKeys) {
-            Object leftValue = left.get(leftKey);
-            Object rightValue = right.get(leftKey);
-            Diff item = diff(leftValue, rightValue);
+        for (Object expectedKey : expectedKeys) {
+            Object expectedValue = expected.get(expectedKey);
+            Object actualValue = actual.get(expectedKey);
+            Diff item = diff(expectedValue, actualValue);
 
             if (item != null) {
-                properties.add(new DiffProperty(leftKey, item));
+                properties.add(new DiffProperty(expectedKey, item));
             }
         }
 
-        Set<?> rightKeys = right.keySet();
+        Set<?> actualKeys = actual.keySet();
 
-        for (Object rightKey : rightKeys) {
-            if (!leftKeys.contains(rightKey)) {
-                Object leftValue = left.get(rightKey);
-                Object rightValue = right.get(rightKey);
-                Diff item = diff(leftValue, rightValue);
+        for (Object actualKey : actualKeys) {
+            if (!expectedKeys.contains(actualKey)) {
+                Object expectedValue = expected.get(actualKey);
+                Object actualValue = actual.get(actualKey);
+                Diff item = diff(expectedValue, actualValue);
 
                 if (item != null) {
-                    properties.add(new DiffProperty(rightKey, item));
+                    properties.add(new DiffProperty(actualKey, item));
                 }
             }
         }

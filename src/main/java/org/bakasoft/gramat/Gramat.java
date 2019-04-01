@@ -168,7 +168,7 @@ public class Gramat {
 
             if (test.output instanceof GToken) {
                 String actual = rule.captureText(tape);
-                Diff diff = comparator.diff(actual, test.output);
+                Diff diff = comparator.diff(test.output, actual);
 
                 if (diff != null) {
                     throw new DiffException(diff);
@@ -176,7 +176,7 @@ public class Gramat {
             }
             else if (test.output instanceof GMap) {
                 Object actual = rule.capture(tape);
-                Diff diff = comparator.diff(actual, test.output);
+                Diff diff = comparator.diff(test.output, actual);
 
                 if (diff != null) {
                     throw new DiffException(diff);

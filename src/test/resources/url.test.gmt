@@ -1,7 +1,8 @@
 @import "url.gmt"
 
 @test "http://www.google.com/search?q=gramat#search" Url {
-    baseUrl: "http://www.google.com"
+    scheme: "http"
+    host: "www.google.com"
     path: "/search"
     query: [
         { name: "q" value: "gramat" }
