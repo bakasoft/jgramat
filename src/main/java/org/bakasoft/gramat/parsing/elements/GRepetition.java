@@ -3,7 +3,6 @@ package org.bakasoft.gramat.parsing.elements;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Repetition;
-import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
 
 import java.util.Map;
@@ -87,6 +86,11 @@ public class GRepetition extends GElement {
                 maximum = expectInteger(tape);
 
                 skipVoid(tape);
+            }
+            else if (trySymbol(tape, ';')) {
+                skipVoid(tape);
+
+                maximum = minimum;
             }
             else {
                 maximum = null;

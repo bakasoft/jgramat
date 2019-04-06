@@ -1,11 +1,14 @@
-package org.bakasoft.gramat.parsing;
+package org.bakasoft.gramat.parsing.elements;
 
 import org.bakasoft.gramat.CharPredicate;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.parsing.elements.*;
+import org.bakasoft.gramat.parsing.GStringifier;
+import org.bakasoft.gramat.parsing.elements.captures.GCapture;
+import org.bakasoft.gramat.parsing.elements.captures.GObject;
+import org.bakasoft.gramat.parsing.elements.captures.GNamedProperty;
 
 import java.util.*;
 
@@ -65,7 +68,7 @@ abstract public class GElement {
         ArrayList<GElement> buffer = new ArrayList<>();
         Runnable flushBuffer = () -> {
             if (buffer.isEmpty()) {
-                throw new RuntimeException();
+                throw new GrammarException("expected some elements", tape.getLocation());
             }
             else if (buffer.size() == 1) {
                 expressions.add(buffer.get(0));
@@ -149,7 +152,7 @@ abstract public class GElement {
             }
         }
         else if (isChar(tape, '<')) {
-            return GProperty.expectProperty(tape);
+            return GCapture.expectCapture(tape);
         }
         else if (isChar(tape, '{')) {
             return GRepetition.expectRepetition(tape);
@@ -345,8 +348,8 @@ abstract public class GElement {
         if (tryName(tape) != null) {
             skipVoid(tape);
 
-            // if there is a name followed by assignment symbols, it's a rule!
-            result = trySymbols(tape, ":=") || trySymbol(tape, '=');
+            // if there is a name followed by the assignment symbol, it's a rule!
+            result = trySymbol(tape, '=');
         }
         else if (trySymbol(tape, '@')) {
             // if there is an @ followed by a name, it's a directive!
@@ -371,7 +374,11 @@ abstract public class GElement {
     }
 
     public static boolean isWhitespace(Tape tape) {
-        return is(tape, c -> c == ' ' || c == '\t' || c == '\r' || c == '\n');
+        return is(tape, GElement::isWhitespace);
+    }
+
+    public static boolean isWhitespace(char c) {
+        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
     }
 
     public static boolean isChar(Tape tape, char expected) {
@@ -443,13 +450,12 @@ abstract public class GElement {
 
             switch (escaped) {
                 case '"':
+                case '\'':
                 case '`':
                 case '\\':
                     return '\\';
-                case 'b':
-                    return '\b';
-                case 'f':
-                    return '\f';
+                case 's':
+                    return ' ';
                 case 'n':
                     return '\n';
                 case 'r':

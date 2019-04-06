@@ -4,7 +4,8 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.parsing.elements.GObject;
+import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.elements.captures.GObject;
 
 import java.util.Map;
 import java.util.Objects;
@@ -12,27 +13,26 @@ import java.util.Objects;
 public class GRule {
 
     public final String name;
-    public final boolean objectMode;
     public final GElement expression;
 
-    public GRule(String name, boolean objectMode, GElement expression) {
+    public GRule(String name, GElement expression) {
         this.name = Objects.requireNonNull(name);
-        this.objectMode = objectMode;
         this.expression = Objects.requireNonNull(expression);
     }
 
     public GRule simplify() {
-        return new GRule(name, objectMode, expression.simplify());
+        GElement simplified = expression.simplify();
+
+        if (simplified == null) {
+            return null;
+        }
+
+        return new GRule(name, simplified);
     }
 
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        if (objectMode) {
-            GObject obj = new GObject(name, expression);
-
-            return obj.compile(gramat, compiled);
-        }
-
-        return expression.compile(gramat, compiled);
+        // TODO create rules according to the expression
+        throw new UnsupportedOperationException();
     }
 
     public static GRule expectRule(Tape tape) {
@@ -40,23 +40,15 @@ public class GRule {
 
         GElement.skipVoid(tape);
 
-        boolean objectMode;
-
-        if (GElement.trySymbols(tape, ":=")) {
-            objectMode = true;
-        }
-        else if (GElement.trySymbol(tape, '=')) {
-            objectMode = false;
-        }
-        else {
-            throw new GrammarException("Expected rule assignment: " + GElement.inspect(":=") + " or " + GElement.inspect("="), tape.getLocation());
+        if (!GElement.trySymbol(tape, '=')) {
+            throw new GrammarException("Expected rule assignment: " + GElement.inspect("="), tape.getLocation());
         }
 
         GElement.skipVoid(tape);
 
         GElement expression = GElement.expectExpression(tape);
 
-        return new GRule(name, objectMode, expression);
+        return new GRule(name, expression);
     }
 
 }

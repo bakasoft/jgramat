@@ -1,14 +1,12 @@
-package org.bakasoft.gramat.parsing;
+package org.bakasoft.gramat.parsing.literals;
 
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.literals.GArray;
-import org.bakasoft.gramat.parsing.literals.GMap;
-import org.bakasoft.gramat.parsing.literals.GToken;
+import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 abstract public class GLiteral {
 
@@ -19,46 +17,28 @@ abstract public class GLiteral {
             return token.content;
         }
         else if (this instanceof GArray) {
-            StringBuilder result = new StringBuilder();
             GArray array = (GArray)this;
 
-            for (int i = 0; i < array.size(); i++) {
-                GLiteral item = array.get(i);
-
-                if (i > 0) {
-                    result.append(", ");
-                }
-
-                result.append(item.resolveString());
+            if (array.size() == 1) {
+                return array.get(0).resolveString();
             }
-
-            return result.toString();
         }
         else if (this instanceof GMap) {
-            StringBuilder result = new StringBuilder();
             GMap map = (GMap)this;
 
-            for (String key : map.keySet()) {
-                if (result.length() > 0) {
-                    result.append(", ");
+            if (map.size() == 1) {
+                for (String key : map.keySet()) {
+                    if (map.get(key) == null) {
+                        return key;
+                    }
                 }
-
-                GLiteral value = map.get(key);
-                String str = value.resolveString();
-
-                result.append(key);
-                result.append(": ");
-                result.append(str);
             }
+        }
 
-            return result.toString();
-        }
-        else {
-            throw new RuntimeException("cannot resolve string");
-        }
+        throw new RuntimeException("cannot resolve string");
     }
 
-    public List<String> resolveStringList() {
+    public String[] resolveStringArray() {
         ArrayList<String> result = new ArrayList<>();
 
         if (this instanceof GToken) {
@@ -73,7 +53,7 @@ abstract public class GLiteral {
                 GLiteral item = array.get(i);
 
                 if (item instanceof GArray) {
-                    result.addAll(item.resolveStringList());
+                    Collections.addAll(result, item.resolveStringArray());
                 }
 
                 result.add(item.resolveString());
@@ -93,7 +73,7 @@ abstract public class GLiteral {
             throw new RuntimeException("cannot resolve string list");
         }
 
-        return result;
+        return result.toArray(new String[0]);
     }
 
     public static GLiteral expectLiteral(Tape tape) {

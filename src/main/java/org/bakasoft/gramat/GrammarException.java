@@ -13,7 +13,7 @@ public class GrammarException extends RuntimeException {
     }
 
     public GrammarException(String message, Location location, Throwable cause) {
-        super(message + (location != null ? " (" + location.toShortString() + ")" : ""), cause);
+        super(message + (location != null ? " (" + location.toString() + ")" : ""), cause);
         this.location = location;
         this.printStackTrace();
     }

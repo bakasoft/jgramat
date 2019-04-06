@@ -3,6 +3,8 @@ package org.bakasoft.gramat.parsing;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.Stringifier;
 import org.bakasoft.gramat.parsing.elements.*;
+import org.bakasoft.gramat.parsing.elements.captures.GObject;
+import org.bakasoft.gramat.parsing.elements.captures.GNamedProperty;
 
 public class GStringifier {
 
@@ -33,8 +35,8 @@ public class GStringifier {
         else if (element instanceof GObject) {
             stringifyObject((GObject)element, output, grouped);
         }
-        else if (element instanceof GProperty) {
-            stringifyProperty((GProperty)element, output, grouped);
+        else if (element instanceof GNamedProperty) {
+            stringifyProperty((GNamedProperty)element, output, grouped);
         }
         else if (element instanceof GString) {
             stringifyString((GString)element, output, grouped);
@@ -63,12 +65,7 @@ public class GStringifier {
 
     private static void stringifyRule(GRule rule, StringBuilder output, boolean grouped) {
         output.append(rule.name);
-        if (rule.objectMode) {
-            output.append(":=");
-        }
-        else {
-            output.append("=");
-        }
+        output.append("=");
         stringifyElement(rule.expression, output, true);
         output.append(System.lineSeparator());
     }
@@ -83,7 +80,7 @@ public class GStringifier {
         stringifyElement(object.expression, output, false);
     }
 
-    private static void stringifyProperty(GProperty property, StringBuilder output, boolean grouped) {
+    private static void stringifyProperty(GNamedProperty property, StringBuilder output, boolean grouped) {
         output.append('<');
         output.append(property.propertyName);
         output.append(':');

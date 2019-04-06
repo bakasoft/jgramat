@@ -4,7 +4,6 @@ import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
 import org.bakasoft.gramat.elements.Symbol;
-import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
 
 import java.util.Map;

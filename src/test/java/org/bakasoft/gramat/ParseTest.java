@@ -23,11 +23,6 @@ public class ParseTest extends TestBase {{
             testExpression("[a b value]");
             testExpression("[a [b] [value d e]]");
         });
-        it("parse property", () -> {
-            testExpression("<a:b>");
-            testExpression("<a:b value>");
-            testExpression("<a:b|value>");
-        });
         it("parse reference", () -> {
             testExpression("a");
             testExpression("a-b-value");

@@ -1,5 +1,7 @@
 package org.bakasoft.gramat.parsing;
 
+import org.bakasoft.gramat.parsing.literals.GLiteral;
+
 import java.util.Objects;
 
 public class GTest {

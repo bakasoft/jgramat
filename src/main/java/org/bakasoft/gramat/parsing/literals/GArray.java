@@ -1,8 +1,7 @@
 package org.bakasoft.gramat.parsing.literals;
 
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.GElement;
-import org.bakasoft.gramat.parsing.GLiteral;
+import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;

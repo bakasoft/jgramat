@@ -1,23 +1,23 @@
-package org.bakasoft.gramat.parsing.elements;
+package org.bakasoft.gramat.parsing.elements.captures;
 
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Property;
-import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.Map;
 import java.util.Objects;
 
-public class GProperty extends GElement {
+public class GNamedProperty extends GCapture {
 
     public final String propertyName;
     public final boolean appendMode;
     public final GElement expression;
 
-    public GProperty(String propertyName, boolean appendMode, GElement expression) {
-        this.propertyName = Objects.requireNonNull(propertyName);
+    public GNamedProperty(String propertyName, boolean appendMode, GElement expression) {
+        this.propertyName = propertyName;
         this.appendMode = appendMode;
         this.expression = Objects.requireNonNull(expression);
     }
@@ -30,7 +30,7 @@ public class GProperty extends GElement {
             return null;
         }
 
-        return new GProperty(propertyName, appendMode, simplified);
+        return new GNamedProperty(propertyName, appendMode, simplified);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class GProperty extends GElement {
         return expression.isOptional(gramat);
     }
 
-    public static GProperty expectProperty(Tape tape) {
+    public static GNamedProperty expectProperty(Tape tape) {
         expectSymbol(tape, '<');
 
         skipVoid(tape);
@@ -81,6 +81,6 @@ public class GProperty extends GElement {
 
         expectSymbol(tape, '>');
 
-        return new GProperty(propertyName, appendMode, expression);
+        return new GNamedProperty(propertyName, appendMode, expression);
     }
 }

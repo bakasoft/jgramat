@@ -1,23 +1,29 @@
-package org.bakasoft.gramat.parsing.elements;
+package org.bakasoft.gramat.parsing.elements.captures;
 
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.TypeElement;
 import org.bakasoft.gramat.elements.ValueElement;
-import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.literals.GLiteral;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class GObject extends GElement {
+public class GObject extends GCapture {
 
     public final String typeName;
     public final GElement expression;
 
     public GObject(String typeName, GElement expression) {
-        this.typeName = Objects.requireNonNull(typeName);
+        this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    public GObject(GLiteral[] options, GElement[] arguments) {
+        this.typeName = getOptionalString(options);
+        this.expression = getSingleExpression(arguments);
     }
 
     @Override

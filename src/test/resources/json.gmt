@@ -1,6 +1,6 @@
 Json    = Object | Array | String | Number | Boolean | Null
-Object  = <object: "{" ws { <key-value: String, ws ":" ws, Json> ws / "," ws } "}">
-Array   = <array: "[" ws { <add: Json> ws / "," ws } "]">
+Object  = <object: "{" ws { <set key-value: String, ws ":" ws, Json> ws / "," ws } "}">
+Array   = <list: "[" ws { <add: Json> ws / "," ws } "]">
 String  = <value: "\"" { escape-seq | !"\"" } "\"" >
 Number  = <value: ["-"] ("0" | `1..9` {digit}) [ "." {1 digit} ] [ `e E` [`- +`] {1 digit} ]>
 Boolean = <value: "true" | "false">

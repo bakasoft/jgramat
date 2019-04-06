@@ -1,13 +1,9 @@
 package org.bakasoft.gramat.parsing.elements;
 
-import org.bakasoft.gramat.CharPredicate;
-import org.bakasoft.gramat.Gramat;
-import org.bakasoft.gramat.Stringifier;
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.elements.CharRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
-import org.bakasoft.gramat.parsing.GElement;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -26,26 +22,26 @@ public class GPredicate extends GElement {
         expectSymbol(tape, '`');
 
         while (!isChar(tape, '`')) {
-            if (isWhitespace(tape) && conditions.isEmpty()) {
-                throw new RuntimeException("Predicate expression cannot start with whitespace");
+            if (isWhitespace(tape)) {
+                throw new GrammarException("unexpected whitespace", tape.getLocation());
             }
 
             char c = readStringChar(tape);
 
-            // if is the separator or the end of string
-            if (isWhitespace(tape) || isChar(tape, '`')) {
-                skipVoid(tape);
-
-                conditions.add(new Option(c));
-            }
-            else {
-                expectSymbols(tape, "..");
-
+            if (trySymbols(tape, "..")) {
                 char begin = c;
                 char end = readStringChar(tape);
 
                 conditions.add(new Range(begin, end));
             }
+            else if (isWhitespace(tape) || isChar(tape, '`')) {
+                conditions.add(new Option(c));
+            }
+            else {
+                throw new GrammarException("expected whitespace", tape.getLocation());
+            }
+
+            skipVoid(tape);
         }
 
         expectSymbol(tape, '`');

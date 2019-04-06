@@ -3,7 +3,7 @@ package org.bakasoft.gramat;
 import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.framboyan.Framboyan;
-import org.bakasoft.gramat.parsing.GElement;
+import org.bakasoft.gramat.parsing.elements.GElement;
 
 public class TestBase extends Framboyan {
 

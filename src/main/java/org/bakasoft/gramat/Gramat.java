@@ -5,10 +5,7 @@ import org.bakasoft.gramat.diff.Diff;
 import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.parsing.GDirective;
-import org.bakasoft.gramat.parsing.GElement;
-import org.bakasoft.gramat.parsing.GRule;
-import org.bakasoft.gramat.parsing.GTest;
+import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GMap;
 import org.bakasoft.gramat.parsing.literals.GToken;
@@ -108,23 +105,18 @@ public class Gramat {
         parsers.put(name, parser);
     }
 
-    private void simplify() {
+    public Map<String, Element> compile() {
+        HashMap<String, Element> compiled = new HashMap<>();
+
+        // simplify & compile
         for (int i = 0; i < rules.size(); i++) {
             GRule simpleRule = rules.get(i).simplify();
 
             rules.set(i, simpleRule);
-        }
-    }
 
-    public Map<String, Element> compile() {
-        HashMap<String, Element> compiled = new HashMap<>();
+            Element element = simpleRule.compile(this, compiled);
 
-        simplify();
-
-        for (GRule rule : rules) {
-            Element element = rule.compile(this, compiled);
-
-            compiled.put(rule.name, element);
+            compiled.put(simpleRule.name, element);
         }
 
         // link
@@ -221,7 +213,7 @@ public class Gramat {
     }
 
     public void load(Path path, PathResolver resolver) {
-        readGrammarInto(this, resolver, Tape.fromPath(path));
+        GGramat.readGrammarInto(this, resolver, Tape.fromPath(path));
     }
 
     public void eval(String code) {
@@ -229,36 +221,8 @@ public class Gramat {
     }
 
     public void eval(String code, PathResolver resolver) {
-        readGrammarInto(this, resolver, new Tape(null, code));
+        GGramat.readGrammarInto(this, resolver, new Tape(null, code));
     }
 
     // parsing
-
-    public static void readGrammarInto(Gramat gramat, PathResolver pathResolver, Tape tape) {
-        boolean active = true;
-
-        while(active) {
-            GElement.skipVoid(tape);
-
-            if (GElement.isChar(tape, '@')) {
-                GDirective directive = GDirective.expectDirective(tape);
-
-                directive.evalDirective(gramat, pathResolver);
-            }
-            else if (GElement.isLetter(tape)) {
-                GRule rule = GRule.expectRule(tape);
-
-                gramat.addRule(rule);
-            }
-            else {
-                active = false;
-            }
-        }
-
-        GElement.skipVoid(tape);
-
-        if (tape.alive()) {
-            throw new GrammarException("Expected end of file", tape.getLocation());
-        }
-    }
 }

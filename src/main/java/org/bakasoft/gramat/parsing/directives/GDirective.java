@@ -1,8 +1,11 @@
-package org.bakasoft.gramat.parsing;
+package org.bakasoft.gramat.parsing.directives;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.PathResolver;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.GTest;
+import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.literals.GLiteral;
 import org.bakasoft.gramat.parsing.literals.GToken;
 
 import java.nio.file.Path;
@@ -42,7 +45,7 @@ public class GDirective {
         }
         else if ("test".equals(name)) {
             if (arguments.length != 3) {
-                throw new RuntimeException("Expected 3 arguments for test");
+                throw new RuntimeException("Expected 3 options for test");
             }
 
             gramat.addTest(new GTest(

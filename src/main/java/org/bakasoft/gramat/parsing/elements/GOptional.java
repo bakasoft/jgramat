@@ -3,7 +3,6 @@ package org.bakasoft.gramat.parsing.elements;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Optional;
-import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
 
 import java.util.Map;

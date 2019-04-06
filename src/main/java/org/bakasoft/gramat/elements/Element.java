@@ -1,7 +1,7 @@
 package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.*;
-import org.bakasoft.gramat.parsing.GElement;
+import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.HashMap;
 import java.util.HashSet;
