@@ -26,6 +26,7 @@ public class CharRange extends Element {
 
             if (predicate.test(actual)) {
                 // perfect match!
+                ctx.capture.append(actual);
                 ctx.tape.moveForward();
                 return true;
             }

@@ -1,7 +1,7 @@
 package org.bakasoft.gramat.parsing.elements.captures;
 
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.elements.TypeElement;
+import org.bakasoft.gramat.elements.ObjectElement;
 import org.bakasoft.gramat.elements.ValueElement;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.elements.GElement;
@@ -60,6 +60,6 @@ public class GObject extends GCapture {
 
         Class<?> type = gramat.getType(typeName);
 
-        return new TypeElement(type, element);
+        return new ObjectElement(type, element);
     }
 }

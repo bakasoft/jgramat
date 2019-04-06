@@ -18,6 +18,7 @@ public class SingleChar extends Element {
             char actual = ctx.tape.peek();
 
             if (actual == c) {
+                ctx.capture.append(c);
                 ctx.tape.moveForward();
                 return true;
             }

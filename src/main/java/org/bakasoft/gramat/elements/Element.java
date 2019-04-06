@@ -35,14 +35,17 @@ abstract public class Element {
 
     public final boolean parse(Context ctx) {
         ctx.builder.beginTransaction();
+        ctx.capture.beginTransaction();
 
         if (parseImpl(ctx)) {
             ctx.builder.commitTransaction();
+            ctx.capture.commitTransaction();
             ctx.errors.flush();
             return true;
         }
         else {
             ctx.builder.rollbackTransaction();
+            ctx.capture.rollbackTransaction();
             ctx.errors.log(this);
             return false;
         }

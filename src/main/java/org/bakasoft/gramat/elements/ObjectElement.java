@@ -2,12 +2,12 @@ package org.bakasoft.gramat.elements;
 
 import java.util.Set;
 
-public class TypeElement extends Element {
+public class ObjectElement extends Element {
 
     private final Class<?> type;
     private Element element;
 
-    public TypeElement(Class<?> type, Element element) {
+    public ObjectElement(Class<?> type, Element element) {
         this.type = type;
         this.element = element;
     }
@@ -38,6 +38,6 @@ public class TypeElement extends Element {
 
     @Override
     public Element link() {
-        return new TypeElement(type, element.link());
+        return new ObjectElement(type, element.link());
     }
 }

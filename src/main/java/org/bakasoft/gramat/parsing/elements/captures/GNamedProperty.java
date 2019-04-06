@@ -3,7 +3,7 @@ package org.bakasoft.gramat.parsing.elements.captures;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.elements.Property;
+import org.bakasoft.gramat.elements.NamedProperty;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
@@ -35,7 +35,7 @@ public class GNamedProperty extends GCapture {
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        return new Property(
+        return new NamedProperty(
                 propertyName,
                 appendMode,
                 expression.compile(gramat, compiled));

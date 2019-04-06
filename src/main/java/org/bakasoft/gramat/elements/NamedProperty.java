@@ -1,30 +1,27 @@
 package org.bakasoft.gramat.elements;
 
 import java.util.Set;
-import java.util.function.Function;
 
-public class ValueElement extends Element {
+public class NamedProperty extends Property {
 
-    private final Function<String, ?> parser;
+    private final String propertyName;
+    private final boolean appendMode;
+
     private Element element;
 
-    public ValueElement(Function<String, ?> parser, Element element) {
+    public NamedProperty(String propertyName, boolean appendMode, Element element) {
+        this.propertyName = propertyName;
+        this.appendMode = appendMode;
         this.element = element;
-        this.parser = parser;
     }
 
     @Override
     protected boolean parseImpl(Context ctx) {
-        ctx.capture.beginTransaction();
-
-        if (element.parse(ctx)) {
-            String value = ctx.capture.commitTransaction();
-
-            ctx.builder.pushValue(value, parser);
+        if (parsePushValue(element, ctx)) {
+            ctx.builder.popValue(propertyName, appendMode);
             return true;
         }
 
-        ctx.capture.rollbackTransaction();
         return false;
     }
 
@@ -42,8 +39,6 @@ public class ValueElement extends Element {
 
     @Override
     public Element link() {
-        return new ValueElement(parser, element.link());
+        return new NamedProperty(propertyName, appendMode, element.link());
     }
 }
-
-

@@ -22,6 +22,14 @@ public class ObjectBuilder {
         stack.peek().add(new PushObject());
     }
 
+    public void openList(Class<?> type) {
+        stack.peek().add(new OpenList(type));
+    }
+
+    public void pushList() {
+        stack.peek().add(new PushList());
+    }
+
     public void pushValue(String value) {
         stack.peek().add(new PushValue(value, null));
     }
@@ -77,21 +85,43 @@ public class ObjectBuilder {
     }
 
     private static class OpenObject extends Edit {
-        final Class<?> type;
+        final Class<?> objectType;
 
-        OpenObject(Class<?> type) {
-            this.type = type;
+        OpenObject(Class<?> objectType) {
+            this.objectType = objectType;
         }
 
         @Override
         void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
             ObjectWrapper wrapper;
 
-            if (type != null) {
-                wrapper = new TypedWrapper(type);
+            if (objectType != null) {
+                wrapper = new TypedWrapper(objectType);
             }
             else {
-                wrapper = new DefaultWrapper();
+                wrapper = new DefaultMapWrapper();
+            }
+
+            wrappers.push(wrapper);
+        }
+    }
+
+    public static class OpenList extends Edit {
+        final Class<?> listType;
+
+        OpenList(Class<?> listType) {
+            this.listType = listType;
+        }
+
+        @Override
+        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
+            ObjectWrapper wrapper;
+
+            if (listType != null) {
+                wrapper = new TypedWrapper(listType);
+            }
+            else {
+                wrapper = new DefaultListWrapper();
             }
 
             wrappers.push(wrapper);
@@ -99,6 +129,19 @@ public class ObjectBuilder {
     }
 
     private static class PushObject extends Edit {
+        @Override
+        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
+            if (wrappers.isEmpty()) {
+                throw new RuntimeException();
+            }
+
+            ObjectWrapper wrapper = wrappers.pop();
+
+            values.push(wrapper.getInstance());
+        }
+    }
+
+    private static class PushList extends Edit { // TODO is it the same than PushObject?
         @Override
         void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
             if (wrappers.isEmpty()) {

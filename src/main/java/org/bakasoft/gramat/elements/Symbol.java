@@ -40,6 +40,7 @@ public class Symbol extends Element {
         }
 
         // perfect match!
+        ctx.capture.append(symbol);
         return true;
     }
 

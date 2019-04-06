@@ -3,6 +3,8 @@ package org.bakasoft.gramat.capturing;
 import org.bakasoft.gramat.util.ReflectionHelper;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class TypedWrapper implements ObjectWrapper {
@@ -44,5 +46,15 @@ public class TypedWrapper implements ObjectWrapper {
         }
 
         ReflectionHelper.addElement(property, instance, value);
+    }
+
+    @Override
+    public void addValue(Object value) {
+        if (instance instanceof Collection) {
+            ((Collection) instance).add(value);
+        }
+        else {
+            throw new RuntimeException("can't add item to a non-collection instance");
+        }
     }
 }

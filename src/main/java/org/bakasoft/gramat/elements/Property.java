@@ -1,61 +1,32 @@
 package org.bakasoft.gramat.elements;
 
-import java.util.Set;
+abstract public class Property extends Element {
 
-public class Property extends Element {
-
-    private final String propertyName;
-    private final boolean appendMode;
-
-    private Element element;
-
-    public Property(String propertyName, boolean appendMode, Element element) {
-        this.propertyName = propertyName;
-        this.appendMode = appendMode;
-        this.element = element;
-    }
-
-    @Override
-    protected boolean parseImpl(Context ctx) {
-        boolean result;
-
-        if (element instanceof TypeElement || element instanceof ValueElement) {
-            result = element.parse(ctx);
-        }
-        else {
-            int pos0 = ctx.tape.getPosition();
-
-            result = element.parse(ctx);
-
-            if (result) {
-                int posF = ctx.tape.getPosition();
-                String value = ctx.tape.substring(pos0, posF);
-                ctx.builder.pushValue(value);
-            }
+    public static boolean parsePushValue(Element element, Context ctx) {
+        if (element instanceof ObjectElement || element instanceof ValueElement || element instanceof ListElement) {
+            return element.parse(ctx);
         }
 
-        if (result) {
-            ctx.builder.popValue(propertyName, appendMode);
-            return true;
+        String value = parseText(element, ctx);
+
+        if (value == null) {
+            return false;
         }
 
-        return false;
+        ctx.builder.pushValue(value);
+        return true;
     }
 
-    @Override
-    public boolean isOptional(Set<Element> control) {
-        return control.add(element) && element.isOptional(control);
-    }
+    public static String parseText(Element element, Context ctx) {
+        ctx.capture.beginTransaction();
 
-    @Override
-    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        if (control.add(element)) {
-            element.collectFirstAllowedSymbol(control, symbols);
+        if (element.parse(ctx)) {
+            return ctx.capture.commitTransaction();
         }
+
+        ctx.capture.rollbackTransaction();
+        return null;
     }
 
-    @Override
-    public Element link() {
-        return new Property(propertyName, appendMode, element.link());
-    }
+
 }

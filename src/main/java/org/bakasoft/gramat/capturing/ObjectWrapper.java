@@ -7,4 +7,6 @@ public interface ObjectWrapper {
     void setValue(String name, Object value);
 
     void addValue(String name, Object value);
+
+    void addValue(Object value);
 }

@@ -1,30 +1,26 @@
 package org.bakasoft.gramat.elements;
 
 import java.util.Set;
-import java.util.function.Function;
 
-public class ValueElement extends Element {
+public class ListElement extends Element {
 
-    private final Function<String, ?> parser;
+    private final Class<?> type;
     private Element element;
 
-    public ValueElement(Function<String, ?> parser, Element element) {
+    public ListElement(Class<?> type, Element element) {
+        this.type = type;
         this.element = element;
-        this.parser = parser;
     }
 
     @Override
     protected boolean parseImpl(Context ctx) {
-        ctx.capture.beginTransaction();
+        ctx.builder.openList(type);
 
         if (element.parse(ctx)) {
-            String value = ctx.capture.commitTransaction();
-
-            ctx.builder.pushValue(value, parser);
+            ctx.builder.pushList();
             return true;
         }
 
-        ctx.capture.rollbackTransaction();
         return false;
     }
 
@@ -42,8 +38,6 @@ public class ValueElement extends Element {
 
     @Override
     public Element link() {
-        return new ValueElement(parser, element.link());
+        return new ListElement(type, element.link());
     }
 }
-
-

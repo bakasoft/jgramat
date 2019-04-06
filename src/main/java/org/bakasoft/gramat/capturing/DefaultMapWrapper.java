@@ -1,10 +1,10 @@
 package org.bakasoft.gramat.capturing;
 
-public class DefaultWrapper implements ObjectWrapper {
+public class DefaultMapWrapper implements ObjectWrapper {
 
     private final DefaultMap map;
 
-    public DefaultWrapper() {
+    public DefaultMapWrapper() {
         map = new DefaultMap();
     }
 
@@ -37,6 +37,11 @@ public class DefaultWrapper implements ObjectWrapper {
         }
 
         list.add(value);
+    }
+
+    @Override
+    public void addValue(Object value) {
+        throw new RuntimeException("can't add items to map");
     }
 
 }

@@ -1,16 +1,17 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-public class ValueElement extends Element {
+public class Transformation extends Element {
 
-    private final Function<String, ?> parser;
-    private Element element;
+    private final Function<String, String> transformation;
+    private final Element element;
 
-    public ValueElement(Function<String, ?> parser, Element element) {
+    public Transformation(Function<String, String> transformation, Element element) {
+        this.transformation = Objects.requireNonNull(transformation);
         this.element = element;
-        this.parser = parser;
     }
 
     @Override
@@ -18,9 +19,7 @@ public class ValueElement extends Element {
         ctx.capture.beginTransaction();
 
         if (element.parse(ctx)) {
-            String value = ctx.capture.commitTransaction();
-
-            ctx.builder.pushValue(value, parser);
+            ctx.capture.commitTransaction(transformation);
             return true;
         }
 
@@ -30,20 +29,16 @@ public class ValueElement extends Element {
 
     @Override
     public boolean isOptional(Set<Element> control) {
-        return control.add(element) && element.isOptional(control);
+        return element.isOptional();
     }
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        if (control.add(element)) {
-            element.collectFirstAllowedSymbol(control, symbols);
-        }
+        element.collectFirstAllowedSymbol(control, symbols);
     }
 
     @Override
     public Element link() {
-        return new ValueElement(parser, element.link());
+        return element.link();
     }
 }
-
-

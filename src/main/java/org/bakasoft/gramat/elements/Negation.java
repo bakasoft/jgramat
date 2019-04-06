@@ -22,6 +22,8 @@ public class Negation extends Element {
 
         if (ctx.tape.alive()) {
             // perfect match!
+            char c = ctx.tape.peek();
+            ctx.capture.append(c);
             ctx.tape.moveForward();
             return true;
         }
