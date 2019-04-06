@@ -21,7 +21,7 @@ public class GAlternation extends GElement {
         GElement[] simplification = simplifyAll(expressions);
 
         if (simplification.length == 0) {
-            return new GNop();
+            return null;
         }
         else if (simplification.length == 1) {
             return simplification[0];

@@ -1,11 +1,9 @@
 package org.bakasoft.gramat;
 
+import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.parsing.GElement;
-
-import java.nio.file.Path;
-import java.util.HashMap;
 
 public class TestBase extends Framboyan {
 
@@ -19,7 +17,7 @@ public class TestBase extends Framboyan {
 
     protected void test(Element element, boolean expectedResult, String input) {
         Tape tape = new Tape(null, input);
-        boolean actualResult = element.parse(tape);
+        boolean actualResult = element.parse(new Context(tape));
 
         if (expectedResult) {
             expect(tape.alive()).toBeFalse();

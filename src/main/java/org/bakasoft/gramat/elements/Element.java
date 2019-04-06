@@ -1,12 +1,10 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Gramat;
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.parsing.GElement;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 abstract public class Element {
@@ -17,11 +15,38 @@ abstract public class Element {
                 .compile(new Gramat(), new HashMap<>());
     }
 
-    abstract public boolean parse(Tape tape);
+    abstract protected boolean parseImpl(Context ctx);
 
-    abstract public Object capture(Tape tape);
+    abstract public boolean isOptional(Set<Element> control);
+
+    abstract public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols);
 
     abstract public Element link();
+
+    public final Object capture(Tape tape) {
+        Context ctx = new Context(tape);
+
+        if (parse(ctx)) {
+            return ctx.builder.pop();
+        }
+
+        throw new GrammarException(ctx.errors.getMessage(), ctx.errors.getLocation());
+    }
+
+    public final boolean parse(Context ctx) {
+        ctx.builder.beginTransaction();
+
+        if (parseImpl(ctx)) {
+            ctx.builder.commitTransaction();
+            ctx.errors.flush();
+            return true;
+        }
+        else {
+            ctx.builder.rollbackTransaction();
+            ctx.errors.log(this);
+            return false;
+        }
+    }
 
     public static Element[] linkAll(Element[] elements) {
         Element[] linked = new Element[elements.length];
@@ -33,25 +58,15 @@ abstract public class Element {
         return linked;
     }
 
-    abstract public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols);
+    public boolean isOptional() {
+        return isOptional(new HashSet<>());
+    }
 
     public Set<String> collectFirstAllowedSymbol() {
         HashSet<String> symbols = new HashSet<>();
 
-        collectFirstAllowedSymbol(new CyclicControl(), symbols);
+        collectFirstAllowedSymbol(new HashSet<>(), symbols);
 
         return symbols;
-    }
-
-    public String captureText(Tape tape) {
-        int pos0 = tape.getPosition();
-
-        if (parse(tape)) {
-            int posF = tape.getPosition();
-
-            return tape.substring(pos0, posF);
-        }
-
-        return null;
     }
 }

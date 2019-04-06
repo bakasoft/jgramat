@@ -1,8 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
-import java.util.Map;
 import java.util.Set;
 
 public class Negation extends Element {
@@ -14,38 +11,38 @@ public class Negation extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
 
-        if (element.parse(tape)) {
+        if (element.parse(ctx)) {
             // did not match!
-            tape.setPosition(pos0);
-            return tape.no(this);
+            ctx.tape.setPosition(pos0);
+            return false;
         }
 
-        if (tape.alive()) {
+        if (ctx.tape.alive()) {
             // perfect match!
-            tape.moveForward();
-            return tape.ok(this);
+            ctx.tape.moveForward();
+            return true;
         }
 
-        tape.setPosition(pos0);
-        return tape.no(this);
+        ctx.tape.setPosition(pos0);
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return control.add(element) && !element.isOptional(control);
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        // no symbols to collect
     }
 
     @Override
     public Element link() {
         return new Negation(element.link());
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        // no symbols to collect
     }
 
 }

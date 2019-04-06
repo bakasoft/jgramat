@@ -1,8 +1,0 @@
-- implement the generation of the first allowed element
-- ~~add support for escaping characters in strings~~
-- ~~implement `name: rule` as object creator and `<name: rule>` as property creator~~
-- ~~if an object creator don't have properties, object will be parsed from string~~
-- ~~implement `:=` as shortcut for a rule of object creator~~
-- ~~implement `$` as terminator~~
-- ~~implement import files~~
-- implement unit test description in gramat files

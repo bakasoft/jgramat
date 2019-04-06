@@ -2,18 +2,16 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.CharPredicate;
 import org.bakasoft.gramat.GrammarException;
-import org.bakasoft.gramat.Tape;
 
-import java.util.Map;
 import java.util.Set;
 
 public class CharRange extends Element {
 
-    private final String description; // TODO name?
+    private final String name;
     private final CharPredicate predicate;
 
-    public CharRange(String description, CharPredicate predicate) {
-        this.description = description;
+    public CharRange(String name, CharPredicate predicate) {
+        this.name = name;
         this.predicate = predicate;
 
         if (predicate == null) {
@@ -22,24 +20,29 @@ public class CharRange extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        if (tape.alive()) {
-            char actual = tape.peek();
+    protected boolean parseImpl(Context ctx) {
+        if (ctx.tape.alive()) {
+            char actual = ctx.tape.peek();
 
             if (predicate.test(actual)) {
                 // perfect match!
-                tape.moveForward();
-                return tape.ok(this);
+                ctx.tape.moveForward();
+                return true;
             }
         }
 
         // did not match!
-        return tape.no(this);
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return false;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        symbols.add(name);
     }
 
     @Override
@@ -47,8 +50,11 @@ public class CharRange extends Element {
         return this;
     }
 
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        // no symbols to collect
+    public String getName() {
+        return name;
+    }
+
+    public CharPredicate getPredicate() {
+        return predicate;
     }
 }

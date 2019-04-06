@@ -1,8 +1,11 @@
-Entry := <name: {1 !("=" | "&" | "#") }> [ "=" <value: { !("&" | "#") }> ]
+/* Simple URL Example */
 
-Url :=
-    [ <scheme: {1 !":" }> ":" ]
-    [ "//" [ <userinfo: { !"@" }> "@" ] <host: {1 !(":" | "/") }> [ ":" <port: {1 !"/" }> ] ]
-    <path: {1 !"?" }>
-    [ "?" { <query +: Entry> / {1 "&" } } { "&" } ]
-    [ "#" <fragment: { !$ }>] $
+Entry = <object: <set name: {1 !("=" | "&" | "#") }> [ "=" <set text: { !("&" | "#") }> ]>
+
+// simple URL example
+Url = <object:
+    [ <set scheme: {1 !":" }> ":" ]
+    [ "//" [ <set userinfo: { !"@" }> "@" ] <set host: {1 !(":" | "/") }> [ ":" <set port: {1 !"/" }> ] ]
+    <set path: {1 !"?" }>
+    [ "?" { <add query: Entry> / {1 "&" } } { "&" } ]
+    [ "#" <set fragment: { !$ }> ]> $

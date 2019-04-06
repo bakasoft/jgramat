@@ -1,8 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -18,24 +15,27 @@ public class Reference extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        return elementResolver.get().parse(tape);
+    protected boolean parseImpl(Context ctx) {
+        return elementResolver.get().parse(ctx);
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return elementResolver.get().capture(tape);
+    public boolean isOptional(Set<Element> control) {
+        Element element = elementResolver.get();
+
+        return control.add(element) && element.isOptional(control);
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        Element element = elementResolver.get();
+        if (control.add(element)) {
+            element.collectFirstAllowedSymbol(control, symbols);
+        }
     }
 
     @Override
     public Element link() {
         return elementResolver.get();
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            elementResolver.get().collectFirstAllowedSymbol(control, symbols);
-        });
     }
 }

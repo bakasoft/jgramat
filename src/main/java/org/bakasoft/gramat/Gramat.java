@@ -3,6 +3,7 @@ package org.bakasoft.gramat;
 import org.bakasoft.gramat.diff.Comparator;
 import org.bakasoft.gramat.diff.Diff;
 import org.bakasoft.gramat.diff.DiffException;
+import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.GDirective;
 import org.bakasoft.gramat.parsing.GElement;
@@ -165,25 +166,11 @@ public class Gramat {
             }
 
             Tape tape = new Tape("test", test.input);
+            Object actual = rule.capture(tape);
+            Diff diff = comparator.diff(test.output, actual);
 
-            if (test.output instanceof GToken) {
-                String actual = rule.captureText(tape);
-                Diff diff = comparator.diff(test.output, actual);
-
-                if (diff != null) {
-                    throw new DiffException(diff);
-                }
-            }
-            else if (test.output instanceof GMap) {
-                Object actual = rule.capture(tape);
-                Diff diff = comparator.diff(test.output, actual);
-
-                if (diff != null) {
-                    throw new DiffException(diff);
-                }
-            }
-            else {
-                throw new RuntimeException("Test has invalid output: " + GElement.inspect(test.output));
+            if (diff != null) {
+                throw new DiffException(diff);
             }
         }
     }

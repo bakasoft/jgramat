@@ -1,36 +1,24 @@
-package org.bakasoft.gramat.handlers;
+package org.bakasoft.gramat.capturing;
 
 import org.bakasoft.gramat.util.ReflectionHelper;
 
 import java.beans.PropertyDescriptor;
 import java.util.Map;
 
-public class TypedHandler implements ObjectHandler {
+public class TypedWrapper implements ObjectWrapper {
 
     private final Class<?> type;
     private final Map<String, PropertyDescriptor> properties;
     private final Object instance;
 
-    public TypedHandler(Class<?> type, Object instance) {
+    public TypedWrapper(Class<?> type) {
         this.type = type;
-        this.instance = instance;
+        this.instance = ReflectionHelper.newInstance(type);
         this.properties = ReflectionHelper.loadProperties(type, true, true);
     }
 
     public Object getInstance() {
         return instance;
-    }
-
-    public Class<?> getType() { return type; }
-
-    public Class<?> getPropertyType(String name) {
-        PropertyDescriptor property = properties.get(name);
-
-        if (property == null) {
-            throw new RuntimeException("unknown property: " + name);
-        }
-
-        return property.getPropertyType();
     }
 
     public void setValue(String name, Object value) {

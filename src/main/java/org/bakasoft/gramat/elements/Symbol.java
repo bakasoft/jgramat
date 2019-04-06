@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.Stringifier;
 
 import java.util.Set;
 
@@ -13,51 +13,49 @@ public class Symbol extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
         int index = 0;
 
         while (index < symbol.length()) {
             char expected = symbol.charAt(index);
 
-            if (tape.alive()) {
-                char actual = tape.peek();
+            if (ctx.tape.alive()) {
+                char actual = ctx.tape.peek();
                 if (expected == actual) {
                     index++;
-                    tape.moveForward();
+                    ctx.tape.moveForward();
                 }
                 else {
                     // did not match!
-                    tape.setPosition(pos0);
-                    return tape.no(this);
+                    ctx.tape.setPosition(pos0);
+                    return false;
                 }
             }
             else {
                 // did not match!
-                tape.setPosition(pos0);
-                return tape.no(this);
+                ctx.tape.setPosition(pos0);
+                return false;
             }
         }
 
         // perfect match!
-        return tape.ok(this);
+        return true;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return false;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        symbols.add(Stringifier.literal(symbol));
     }
 
     @Override
     public Element link() {
         return this;
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            symbols.add(symbol);
-        });
     }
 
 }

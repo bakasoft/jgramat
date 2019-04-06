@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.Stringifier;
 
 import java.util.Set;
 
@@ -13,34 +13,32 @@ public class SingleChar extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        if (tape.alive()) {
-            char actual = tape.peek();
+    protected boolean parseImpl(Context ctx) {
+        if (ctx.tape.alive()) {
+            char actual = ctx.tape.peek();
 
             if (actual == c) {
-                tape.moveForward();
-                return tape.ok(this);
+                ctx.tape.moveForward();
+                return true;
             }
         }
 
-        return tape.no(this);
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return false;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        symbols.add(Stringifier.literal(String.valueOf(c)));
     }
 
     @Override
     public Element link() {
         return this;
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            symbols.add(String.valueOf(c));
-        });
     }
 
 }

@@ -1,4 +1,4 @@
-package org.bakasoft.gramat.handlers;
+package org.bakasoft.gramat.capturing;
 
 import java.util.LinkedHashMap;
 

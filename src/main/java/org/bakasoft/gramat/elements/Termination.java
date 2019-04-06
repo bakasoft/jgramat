@@ -1,7 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
 import java.util.Set;
 
 public class Termination extends Element {
@@ -14,28 +12,27 @@ public class Termination extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        if (tape.alive()) {
-            return tape.no(this);
-
+    protected boolean parseImpl(Context ctx) {
+        if (ctx.tape.alive()) {
+            return false;
         }
 
-        return tape.ok(this);
+        return true;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return false;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        // nothing to collect
     }
 
     @Override
     public Element link() {
         return this;
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        // nothing to collect
     }
 
 }

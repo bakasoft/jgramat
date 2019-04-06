@@ -17,6 +17,7 @@ abstract public class GElement {
 
     abstract public boolean isPlain(Gramat gramat);
 
+    // is this method needed
     abstract public boolean isOptional(Gramat gramat);
 
     public String stringify() {
@@ -41,10 +42,12 @@ abstract public class GElement {
         ArrayList<GElement> list = new ArrayList<>();
 
         for (GElement element : elements) {
-            GElement simplified = element.simplify();
+            if (element != null) {
+                GElement simplified = element.simplify();
 
-            if (!(element instanceof GNop)) {
-                list.add(simplified);
+                if (simplified != null) {
+                    list.add(simplified);
+                }
             }
         }
 
@@ -163,6 +166,9 @@ abstract public class GElement {
         else if (isChar(tape, '"')) {
             return GString.expectString(tape);
         }
+        else if (isChar(tape, '`')) {
+            return GPredicate.expectPredicate(tape);
+        }
         else if (trySymbol(tape, '$')) {
             return new GTerminator();
         }
@@ -203,6 +209,12 @@ abstract public class GElement {
 
         tape.moveForward();
         return true;
+    }
+
+    public static void expectSymbols(Tape tape, String text) {
+        if (!trySymbols(tape, text)) {
+            throw new GrammarException("Expected characters " + inspect(text), tape.getLocation());
+        }
     }
 
     public static void expectSymbol(Tape tape, char c) {
@@ -291,9 +303,39 @@ abstract public class GElement {
     }
 
     public static void skipVoid(Tape tape) {
-        while (isWhitespace(tape)) {
-            tape.moveForward();
+        boolean active;
+
+        do {
+            active = false;
+
+            while (isWhitespace(tape)) {
+                tape.moveForward();
+            }
+
+            if (trySymbols(tape, "//")) {
+                active = true;
+                while (!trySymbol(tape, '\n')) {
+                    if (tape.alive()) {
+                        tape.moveForward();
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            else if (trySymbols(tape, "/*")) {
+                active = true;
+                while (!trySymbols(tape, "*/")) {
+                    if (tape.alive()) {
+                        tape.moveForward();
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
         }
+        while (active);
     }
 
     public static boolean tryStatementBeginning(Tape tape) {
@@ -381,44 +423,46 @@ abstract public class GElement {
         }
 
         while (!isChar(tape, '\"')) {
-            char c = tape.peek();
-            tape.moveForward();
+            char c = readStringChar(tape);
 
-            if (c == '\\') {
-                String escaped = readEscaped(tape);
-
-                content.append(escaped);
-            }
-            else {
-                // TODO allow only accepted characters
-                content.append(c);
-            }
+            content.append(c);
         }
 
-        if (!trySymbol(tape, '\"')) {
-            tape.setPosition(pos0);
-            return null;
-        }
+        expectSymbol(tape, '\"');
 
         return content.toString();
     }
 
-    private static String readEscaped(Tape tape) {
+    public static char readStringChar(Tape tape) {
         char c = tape.peek();
         tape.moveForward();
 
-        switch (c) {
-            case '"':
-            case '\\': return "\\";
-            case '/': return "/";
-            case 'b': return "\b";
-            case 'f': return "\f";
-            case 'n': return "\n";
-            case 'r': return "\r";
-            case 't': return "\t";
-            default:
-                throw new GrammarException("Invalid escape sequence: " + inspect(c), tape.getLocation());
+        if (c == '\\') {
+            char escaped = tape.peek();
+            tape.moveForward();
+
+            switch (escaped) {
+                case '"':
+                case '`':
+                case '\\':
+                    return '\\';
+                case 'b':
+                    return '\b';
+                case 'f':
+                    return '\f';
+                case 'n':
+                    return '\n';
+                case 'r':
+                    return '\r';
+                case 't':
+                    return '\t';
+                // TODO implement unicode
+                default:
+                    throw new GrammarException("Invalid escape sequence: " + inspect(c), tape.getLocation());
+            }
         }
+
+        return c; // TODO allow only accepted characters
     }
 
 }

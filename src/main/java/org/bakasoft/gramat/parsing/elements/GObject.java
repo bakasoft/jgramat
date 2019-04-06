@@ -22,12 +22,18 @@ public class GObject extends GElement {
 
     @Override
     public GElement simplify() {
-        return new GObject(typeName, expression.simplify());
+        GElement simplified = expression.simplify();
+
+        if (simplified == null) {
+            return null;
+        }
+
+        return new GObject(typeName, simplified);
     }
 
     @Override
     public boolean isPlain(Gramat gramat) {
-        // object elements are not plain by definition
+        // object conditions are not plain by definition
         return false;
     }
 

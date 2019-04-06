@@ -26,6 +26,11 @@ public class GRepetition extends GElement {
     @Override
     public GElement simplify() {
         GElement simpleExpression = expression.simplify();
+
+        if (simpleExpression == null) {
+            return null;
+        }
+
         GElement simpleSeparator = separator != null ? separator.simplify() : null;
         int min = minimum != null ? minimum : 0;
         int max = maximum != null ? maximum : 0;

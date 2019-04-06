@@ -21,8 +21,12 @@ public class GNegation extends GElement {
     public GElement simplify() {
         GElement simplification = expression.simplify();
 
+        if (simplification == null) {
+            return null;
+        }
+
         // remove double negation
-        if (simplification instanceof GNegation) {
+        else if (simplification instanceof GNegation) {
             return ((GNegation)simplification).expression;
         }
 

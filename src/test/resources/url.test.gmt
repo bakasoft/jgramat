@@ -5,7 +5,7 @@
     host: "www.google.com"
     path: "/search"
     query: [
-        { name: "q" value: "gramat" }
+        { name: "q" text: "gramat" }
     ]
     fragment: "search"
 }

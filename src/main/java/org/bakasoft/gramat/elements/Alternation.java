@@ -1,8 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
-import java.util.Map;
 import java.util.Set;
 
 public class Alternation extends Element {
@@ -14,56 +11,46 @@ public class Alternation extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
 
         for (Element element : elements) {
-            if (element.parse(tape)) {
+            if (element.parse(ctx)) {
                 // perfect match!
-                return tape.ok(this);
+                return true;
             }
             else {
                 // try with another!
-                tape.setPosition(pos0);
+                ctx.tape.setPosition(pos0);
             }
         }
 
         // did not match!
-        return tape.no(this);
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        int pos0 = tape.getPosition();
-
+    public boolean isOptional(Set<Element> control) {
         for (Element element : elements) {
-            Object result = element.capture(tape);
-
-            if (result != null) {
-                // perfect match!
-                return result;
-            }
-            else {
-                // try with another!
-                tape.setPosition(pos0);
+            if (control.add(element) && element.isOptional(control)) {
+                return true;
             }
         }
 
-        // did not match!
-        return null;
+        return false;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        for (Element element : elements) {
+            if (control.add(element)) {
+                element.collectFirstAllowedSymbol(control, symbols);
+            }
+        }
     }
 
     @Override
     public Element link() {
         return new Alternation(linkAll(elements));
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            for (Element element : elements) {
-                element.collectFirstAllowedSymbol(control, symbols);
-            }
-        });
     }
 }

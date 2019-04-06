@@ -1,26 +1,16 @@
-package org.bakasoft.gramat.handlers;
+package org.bakasoft.gramat.capturing;
 
-public class DefaultHandler implements ObjectHandler {
+public class DefaultWrapper implements ObjectWrapper {
 
     private final DefaultMap map;
 
-    public DefaultHandler() {
+    public DefaultWrapper() {
         map = new DefaultMap();
     }
 
     @Override
     public Object getInstance() {
         return map;
-    }
-
-    @Override
-    public Class<?> getType() {
-        return DefaultMap.class;
-    }
-
-    @Override
-    public Class<?> getPropertyType(String name) {
-        return Object.class;
     }
 
     @Override

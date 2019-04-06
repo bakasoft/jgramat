@@ -21,8 +21,11 @@ public class GOptional extends GElement {
     public GElement simplify() {
         GElement simplification = expression.simplify();
 
-        // double optional
-        if (simplification instanceof GOptional) {
+        if (simplification == null) {
+            return null;
+        }
+        // double optional simplification
+        else if (simplification instanceof GOptional) {
             return simplification;
         }
 

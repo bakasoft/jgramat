@@ -24,7 +24,13 @@ public class GProperty extends GElement {
 
     @Override
     public GElement simplify() {
-        return new GProperty(propertyName, appendMode, expression.simplify());
+        GElement simplified = expression.simplify();
+
+        if (simplified == null) {
+            return null;
+        }
+
+        return new GProperty(propertyName, appendMode, simplified);
     }
 
     @Override
@@ -37,7 +43,7 @@ public class GProperty extends GElement {
 
     @Override
     public boolean isPlain(Gramat gramat) {
-        // property elements are not plain by definition
+        // property conditions are not plain by definition
         return false;
     }
 

@@ -8,7 +8,7 @@ public class SymbolTest extends TestBase {{
             test("\"a\"", true, "a");
             test("\"ab\"", true, "ab");
             test("\"abc\"", true, "abc");
-            test("\"a b c\"", true, "a b c");
+            test("\"a b value\"", true, "a b value");
             test("\"{([!])}\"", true, "{([!])}");
         });
         it ("should detect wrong cases", () -> {

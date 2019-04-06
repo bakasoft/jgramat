@@ -1,7 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
 import java.util.Set;
 
 public class Repetition extends Element {
@@ -19,14 +17,14 @@ public class Repetition extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
         boolean expectMore = false;
         int count = 0;
 
-        while (element.parse(tape)) {
+        while (element.parse(ctx)) {
             if (separator != null) {
-                if (separator.parse(tape)) {
+                if (separator.parse(ctx)) {
                     expectMore = true;
                 } else {
                     expectMore = false;
@@ -41,27 +39,27 @@ public class Repetition extends Element {
 
         if (expectMore) {
             // did not match!
-            tape.setPosition(pos0);
-            return tape.no(this);
+            ctx.tape.setPosition(pos0);
+            return false;
         }
         else if (count < minimum) {
             // did not match!
-            tape.setPosition(pos0);
-            return tape.no(this);
+            ctx.tape.setPosition(pos0);
+            return false;
         }
         else if (maximum > 0 && count > maximum) {
             // did not match!
-            tape.setPosition(pos0);
-            return tape.no(this);
+            ctx.tape.setPosition(pos0);
+            return false;
         }
 
         // perfect match!
-        return tape.ok(this);
+        return true;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return minimum == 0 || control.add(element) && element.isOptional(control);
     }
 
     @Override
@@ -74,9 +72,9 @@ public class Repetition extends Element {
     }
 
     @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        if (control.add(element)) {
             element.collectFirstAllowedSymbol(control, symbols);
-        });
+        }
     }
 }

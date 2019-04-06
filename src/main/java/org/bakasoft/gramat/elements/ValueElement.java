@@ -1,7 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Tape;
-
 import java.util.Set;
 import java.util.function.Function;
 
@@ -16,31 +14,35 @@ public class ValueElement extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        return element.parse(tape);
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
+
+        if (element.parse(ctx)) {
+            int posF = ctx.tape.getPosition();
+            String value = ctx.tape.substring(pos0, posF);
+
+            ctx.builder.pushValue(value, parser);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        String raw = element.captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return control.add(element) && element.isOptional(control);
+    }
 
-        if (raw == null) {
-            return null; // TODO improve how to handle null
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        if (control.add(element)) {
+            element.collectFirstAllowedSymbol(control, symbols);
         }
-
-        return parser.apply(raw);
     }
 
     @Override
     public Element link() {
         return new ValueElement(parser, element.link());
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            element.collectFirstAllowedSymbol(control, symbols);
-        });
     }
 }
 

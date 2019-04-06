@@ -2,7 +2,6 @@ package org.bakasoft.gramat.parsing.elements;
 
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.elements.Nop;
 import org.bakasoft.gramat.elements.SingleChar;
 import org.bakasoft.gramat.elements.Symbol;
 import org.bakasoft.gramat.parsing.GElement;
@@ -27,7 +26,7 @@ public class GString extends GElement {
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
         if (content.isEmpty()) {
-            return new Nop();
+            return null;
         }
         else if (content.length() == 1) {
             char c = content.charAt(0);

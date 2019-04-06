@@ -1,8 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.GrammarException;
-import org.bakasoft.gramat.Tape;
-
 import java.util.Set;
 
 public class Sequence extends Element {
@@ -14,38 +11,48 @@ public class Sequence extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
+    protected boolean parseImpl(Context ctx) {
+        int pos0 = ctx.tape.getPosition();
 
         for (Element element : elements) {
-            if (!element.parse(tape)) {
+            if (!element.parse(ctx)) {
                 // did not match!
-                tape.setPosition(pos0);
-                return tape.no(this);
+                ctx.tape.setPosition(pos0);
+                return false;
             }
         }
 
         // perfect match!
-        return tape.ok(this);
+        return true;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        for (Element element : elements) {
+            if (control.add(element) && !element.isOptional(control)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        for (Element element : elements) {
+            if (control.add(element)) {
+                element.collectFirstAllowedSymbol(control, symbols);
+            }
+
+            if (!element.isOptional()) {
+                break;
+            }
+        }
     }
 
     @Override
     public Element link() {
         return new Sequence(linkAll(elements));
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            if (elements.length > 0) {
-                elements[0].collectFirstAllowedSymbol(control, symbols);
-            }
-        });
     }
 
 }

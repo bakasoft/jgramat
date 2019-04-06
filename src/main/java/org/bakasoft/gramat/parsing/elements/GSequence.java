@@ -5,6 +5,8 @@ import org.bakasoft.gramat.elements.Sequence;
 import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.Gramat;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,13 +23,26 @@ public class GSequence extends GElement {
         GElement[] simplification = simplifyAll(expressions);
 
         if (simplification.length == 0) {
-            return new GNop();
+            return null;
         }
         else if (simplification.length == 1) {
             return simplification[0];
         }
 
-        return new GSequence(simplification);
+        // flatten sequences
+        ArrayList<GElement> flattened = new ArrayList<>();
+        for (GElement e : simplification) {
+            if (e instanceof GSequence) {
+                GSequence seq = (GSequence)e;
+
+                Collections.addAll(flattened, seq.expressions);
+            }
+            else {
+                flattened.add(e);
+            }
+        }
+
+        return new GSequence(toArray(flattened));
     }
 
     @Override

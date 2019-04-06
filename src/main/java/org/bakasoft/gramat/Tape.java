@@ -1,18 +1,11 @@
 package org.bakasoft.gramat;
 
-import org.bakasoft.gramat.elements.CyclicControl;
-import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.handlers.ObjectHandler;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
 public class Tape {
-
-    private final Stack<ObjectHandler> handlerStack = new Stack<>();
 
     private final String name;
     private final char[] content;
@@ -92,18 +85,6 @@ public class Tape {
         return new String(content, startIndex, count);
     }
 
-    public void pushHandler(ObjectHandler handler) {
-        handlerStack.push(handler);
-    }
-
-    public ObjectHandler peekHandler() {
-        return handlerStack.peek();
-    }
-
-    public ObjectHandler popHandler() {
-        return handlerStack.pop();
-    }
-
     public static Tape fromFile(String path) {
         return fromPath(Paths.get(path));
     }
@@ -140,45 +121,5 @@ public class Tape {
         }
 
         return sample.toString();
-    }
-
-    private Location lastSuccess;
-    private final ArrayList<Element> lastLogs = new ArrayList<>();
-
-    public Location getLastLocation() {
-        return lastSuccess != null ? getLocationOf(lastSuccess.getPosition() + 1) : null;
-    }
-
-    public Set<String> getAllowedSymbols() {
-        HashSet<String> symbols = new HashSet<>();
-
-        for (Element element : lastLogs) {
-            element.collectFirstAllowedSymbol(new CyclicControl(), symbols);
-        }
-
-        return symbols;
-    }
-
-    public boolean ok(Element element) {
-        Location location = getLocation();
-
-//        System.out.println("OK " + location + "");
-
-        if (lastSuccess == null || location.getPosition() > lastSuccess.getPosition()) {
-            lastSuccess = location;
-            lastLogs.clear();
-        }
-
-        return true;
-    }
-
-    public boolean no(Element element) {
-        Location location = getLocation();
-//        System.out.println("NO " + getLocation() + "");
-        if (lastSuccess != null && lastSuccess.equals(location)) {
-            lastLogs.add(element);
-        }
-
-        return false;
     }
 }

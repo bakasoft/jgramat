@@ -1,9 +1,5 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.*;
-import org.bakasoft.gramat.handlers.ObjectHandler;
-
-import java.util.Map;
 import java.util.Set;
 
 public class Property extends Element {
@@ -20,51 +16,46 @@ public class Property extends Element {
     }
 
     @Override
-    public boolean parse(Tape tape) {
-        int pos0 = tape.getPosition();
-        Location loc0 = tape.getLocation();
-        Object value = element.capture(tape);
+    protected boolean parseImpl(Context ctx) {
+        boolean result;
 
-        if (value == null) {
-            // did not match!
-            tape.setPosition(pos0);
-            return tape.no(this);
-        }
-
-        ObjectHandler entity = tape.peekHandler();
-
-        if (value instanceof GrammarElement) {
-            ((GrammarElement) value).setBeginLocation(loc0);
-            ((GrammarElement) value).setEndLocation(tape.getLocation());
-        }
-
-//        System.out.println(" SET " + propertyName + ": <" + Json.stringify(value, 2) + ">");
-
-        if (appendMode) {
-            entity.addValue(propertyName, value);
+        if (element instanceof TypeElement || element instanceof ValueElement) {
+            result = element.parse(ctx);
         }
         else {
-            entity.setValue(propertyName, value);
+            int pos0 = ctx.tape.getPosition();
+
+            result = element.parse(ctx);
+
+            if (result) {
+                int posF = ctx.tape.getPosition();
+                String value = ctx.tape.substring(pos0, posF);
+                ctx.builder.pushValue(value);
+            }
         }
 
-        // perfect match!
-        return tape.ok(this);
+        if (result) {
+            ctx.builder.popValue(propertyName, appendMode);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public Object capture(Tape tape) {
-        return captureText(tape);
+    public boolean isOptional(Set<Element> control) {
+        return control.add(element) && element.isOptional(control);
+    }
+
+    @Override
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        if (control.add(element)) {
+            element.collectFirstAllowedSymbol(control, symbols);
+        }
     }
 
     @Override
     public Element link() {
         return new Property(propertyName, appendMode, element.link());
-    }
-
-    @Override
-    public void collectFirstAllowedSymbol(CyclicControl control, Set<String> symbols) {
-        control.enter(this, () -> {
-            element.collectFirstAllowedSymbol(control, symbols);
-        });
     }
 }

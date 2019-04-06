@@ -1,6 +1,7 @@
 package org.bakasoft.gramat.parsing;
 
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.Stringifier;
 import org.bakasoft.gramat.parsing.elements.*;
 
 public class GStringifier {
@@ -73,18 +74,7 @@ public class GStringifier {
     }
 
     private static void stringifyString(GString str, StringBuilder output, boolean grouped) {
-        output.append('"');
-        output.append(str.content
-                .replace("\\", "\\\\")
-                .replace("/", "\\/")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\b", "\\b")
-                .replace("\f", "\\f")
-                .replace("\t", "\\t")
-        );
-        output.append('"');
+        Stringifier.literal(str.content, output);
     }
 
     private static void stringifyObject(GObject object, StringBuilder output, boolean grouped) {
