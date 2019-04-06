@@ -16,18 +16,8 @@ public class GToken extends GLiteral {
     }
 
     public static GToken expectToken(Tape tape) {
-        if (GElement.isLetter(tape)) {
-            String content = GElement.expectName(tape, "token");
+        String content = GElement.expectName(tape, "token");
 
-            return new GToken(content);
-        }
-        else if (GElement.isChar(tape, '"')) {
-            String content = GString.expectQuotedToken(tape);
-
-            return new GToken(content);
-        }
-        else {
-            throw new GrammarException("Invalid token", tape.getLocation());
-        }
+        return new GToken(content);
     }
 }

@@ -1,11 +1,11 @@
-@import "url.gmt"
+@import 'url.gmt'
 
-@test "http://www.google.com/search?q=gramat#search" Url {
-    scheme: "http"
-    host: "www.google.com"
-    path: "/search"
+@test 'http://www.google.com/search?q=gramat#search' Url {
+    scheme: 'http'
+    host: 'www.google.com'
+    path: '/search'
     query: [
-        { name: "q" text: "gramat" }
+        { name: 'q' text: 'gramat' }
     ]
-    fragment: "search"
+    fragment: 'search'
 }

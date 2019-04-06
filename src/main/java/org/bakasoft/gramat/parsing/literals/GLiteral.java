@@ -87,7 +87,7 @@ abstract public class GLiteral {
     }
 
     public static GLiteral tryLiteral(Tape tape) {
-        if (GElement.isChar(tape, '"') || GElement.isLetter(tape)) {
+        if (GElement.isChar(tape, '\'') || GElement.isLetter(tape)) {
             return GToken.expectToken(tape);
         }
         else if (GElement.isChar(tape, '[')) {

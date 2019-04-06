@@ -2,10 +2,12 @@ package org.bakasoft.gramat.parsing.elements.captures;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class GTransform extends GCapture {
 
@@ -30,7 +32,17 @@ public class GTransform extends GCapture {
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        throw new UnsupportedOperationException("custom transformation are not implemented yet: " + name);
+        if (name == null) {
+            throw new RuntimeException("missing transformation name");
+        }
+
+        Function<String, String> transformation = gramat.getTransformation(name);
+
+        if (transformation == null) {
+            throw new RuntimeException("not implemented transformation: " + name);
+        }
+
+        return new Transformation(expression.compile(gramat, compiled), transformation);
     }
 
     @Override

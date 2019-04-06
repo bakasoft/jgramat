@@ -42,7 +42,7 @@ public class GString extends GElement {
     }
 
     public static GString expectString(Tape tape) {
-        String content = expectQuotedToken(tape);
+        String content = expectQuotedToken(tape, '"');
 
         return new GString(content);
     }

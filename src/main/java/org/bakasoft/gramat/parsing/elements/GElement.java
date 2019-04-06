@@ -254,6 +254,10 @@ abstract public class GElement {
     }
 
     public static String expectName(Tape tape, String description) {
+        if (isChar(tape, '\'')) {
+            return expectQuotedToken(tape, '\'');
+        }
+
         String name = tryName(tape);
 
         if (name == null) {
@@ -410,8 +414,8 @@ abstract public class GElement {
         return obj.toString();
     }
 
-    public static String expectQuotedToken(Tape tape) {
-        String literal = tryQuotedToken(tape);
+    public static String expectQuotedToken(Tape tape, char delimiter) {
+        String literal = tryQuotedToken(tape, delimiter);
 
         if (literal == null) {
             throw new RuntimeException("Expected string literal");
@@ -420,22 +424,22 @@ abstract public class GElement {
         return literal;
     }
 
-    public static String tryQuotedToken(Tape tape) {
+    public static String tryQuotedToken(Tape tape, char delimiter) {
         int pos0 = tape.getPosition();
         StringBuilder content = new StringBuilder();
 
-        if (!trySymbol(tape, '\"')) {
+        if (!trySymbol(tape, delimiter)) {
             tape.setPosition(pos0);
             return null;
         }
 
-        while (!isChar(tape, '\"')) {
+        while (!isChar(tape, delimiter)) {
             char c = readStringChar(tape);
 
             content.append(c);
         }
 
-        expectSymbol(tape, '\"');
+        expectSymbol(tape, delimiter);
 
         return content.toString();
     }
@@ -462,13 +466,32 @@ abstract public class GElement {
                     return '\r';
                 case 't':
                     return '\t';
-                // TODO implement unicode
+                case 'u':
+                    return expectCharFromHex(tape);
                 default:
                     throw new GrammarException("Invalid escape sequence: " + inspect(c), tape.getLocation());
             }
         }
 
         return c; // TODO allow only accepted characters
+    }
+
+    private static char expectCharFromHex(Tape tape) {
+        char[] hex = new char[4];
+
+        for (int i = 0; i < hex.length; i++) {
+            char c = tape.peek();
+            if (c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F' || c >= '0' && c <= '9') {
+                hex[i] = c;
+
+                tape.moveForward();
+            }
+            else {
+                throw new GrammarException("expected hexadecimal character", tape.getLocation());
+            }
+        }
+
+        return (char)Integer.parseInt(new String(hex), 16);
     }
 
 }

@@ -5,10 +5,15 @@ import org.bakasoft.gramat.diff.Diff;
 import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GMap;
 import org.bakasoft.gramat.parsing.literals.GToken;
+import org.bakasoft.gramat.plugins.ParserPlugin;
+import org.bakasoft.gramat.plugins.Plugin;
+import org.bakasoft.gramat.plugins.TransformationPlugin;
+import org.bakasoft.gramat.plugins.TypePlugin;
 import org.bakasoft.gramat.util.FileHelper;
 
 import java.nio.file.Path;
@@ -21,43 +26,40 @@ public class Gramat {
     private final ArrayList<GRule> rules;
     private final ArrayList<GTest> tests;
 
-    // TODO ensure that parser and type names are not duplicated
-    private final HashMap<String, Function<String,?>> parsers;
-    private final HashMap<String, Class<?>> typeMap;
+    private final HashMap<String, Plugin> plugins;
 
     private Function<String, Class<?>> typeResolver;
 
     public Gramat() {
         this.rules = new ArrayList<>();
         this.tests = new ArrayList<>();
-        this.parsers = new HashMap<>();
-        this.typeMap = new HashMap<>();
+        this.plugins = new HashMap<>();
 
         // built-in parsers
-        DefaultParsers.init(parsers);
+        DefaultParsers.init(plugins);
     }
 
-    public void clear() {
-        rules.clear();
-        tests.clear();
-        parsers.clear();
-        typeMap.clear();
-        typeResolver = null;
+    public Gramat(Gramat base) {
+        rules = new ArrayList<>(base.rules);
+        tests = new ArrayList<>(base.tests);
+        plugins = new HashMap<>(base.plugins);
+        typeResolver = base.typeResolver;
     }
 
     public Class<?> getType(String name) {
-        Class<?> type = typeMap.get(name);
+        Plugin plugin = plugins.get(name);
 
-        if (type != null) {
-            return type;
+        if (plugin != null) {
+            if (plugin instanceof TypePlugin) {
+                return ((TypePlugin)plugin).type;
+            }
+            else {
+                throw new RuntimeException("not a type: " + name);
+            }
         }
 
         if (typeResolver != null) {
-            type = typeResolver.apply(name);
-
-            if (type != null) {
-                return type;
-            }
+            return typeResolver.apply(name);
         }
 
         return null;
@@ -68,11 +70,15 @@ public class Gramat {
     }
 
     public void addType(String name, Class<?> type) {
-        if (typeMap.containsKey(name)) {
-            throw new RuntimeException("already defined type " + name);
+        addPlugin(name, new TypePlugin(type));
+    }
+
+    public void addPlugin(String name, Plugin plugin) {
+        if (plugins.get(name) != null) {
+            throw new RuntimeException("already defined plug-in " + name);
         }
 
-        typeMap.put(name, type);
+        plugins.put(name, plugin);
     }
 
     public Function<String, Class<?>> getTypeResolver() {
@@ -84,10 +90,15 @@ public class Gramat {
     }
 
     public Function<String, ?> getParser(String name) {
-        Function<String, ?> parser = parsers.get(name);
+        Plugin plugin = plugins.get(name);
 
-        if (parser != null) {
-            return parser;
+        if (plugin != null) {
+            if (plugin instanceof ParserPlugin) {
+                return ((ParserPlugin)plugin).parser;
+            }
+            else {
+                throw new RuntimeException("not a parser: " + name);
+            }
         }
 
         return null;
@@ -98,11 +109,26 @@ public class Gramat {
     }
 
     public void addParser(String name, Function<String, ?> parser) {
-        if (parsers.containsKey(name)) {
-            throw new RuntimeException("parser already added: " + name);
+        addPlugin(name, new ParserPlugin(parser));
+    }
+
+    public void addTransformation(String name, Function<String, String> transformation) {
+        addPlugin(name, new TransformationPlugin(transformation));
+    }
+
+    public Function<String, String> getTransformation(String name) {
+        Plugin plugin = plugins.get(name);
+
+        if (plugin != null) {
+            if (plugin instanceof TransformationPlugin) {
+                return ((TransformationPlugin)plugin).transformation;
+            }
+            else {
+                throw new RuntimeException("not a transformation: " + name);
+            }
         }
 
-        parsers.put(name, parser);
+        return null;
     }
 
     public Map<String, Element> compile() {
@@ -129,11 +155,19 @@ public class Gramat {
         return compiled;
     }
 
-    public void test() {
-        Gramat testGramat = new Gramat();
-        testGramat.clear();
+    public void removeTypes() {
+        for (Map.Entry<String, Plugin> entry : plugins.entrySet()) {
+            Object value = entry.getValue();
 
-        testGramat.rules.addAll(rules);
+            if (value instanceof TypePlugin || value instanceof ParserPlugin) {
+                entry.setValue(null);
+            }
+        }
+    }
+
+    public void test() {
+        Gramat testGramat = new Gramat(this);
+        testGramat.removeTypes();
 
         Map<String, Element> elements = testGramat.compile();
         Comparator comparator = new Comparator(value -> {

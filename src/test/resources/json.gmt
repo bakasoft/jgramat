@@ -1,13 +1,25 @@
 Json    = Object | Array | String | Number | Boolean | Null
 Object  = <object: "{" ws { <set key-value: String, ws ":" ws, Json> ws / "," ws } "}">
 Array   = <list: "[" ws { <add: Json> ws / "," ws } "]">
-String  = <value: "\"" { escape-seq | !"\"" } "\"" >
+String  = <value: "\"" { escaped-char | !"\"" } "\"" >
 Number  = <value: ["-"] ("0" | `1..9` {digit}) [ "." {1 digit} ] [ `e E` [`- +`] {1 digit} ]>
 Boolean = <value: "true" | "false">
 Null    = <value: "null">
 
 // Characters
-escape-seq = <transform: "\\" (`" \\ / b f n r t` | "u" {4; hex}) >
+
+escaped-char = <replace {
+    '\\"': '"'
+    '\\\\': '\\'
+    '\\/': '/'
+    '\\n': '\n'
+    '\\r': '\r'
+    '\\t': '\t'
+    '\\b': '\u0008'
+    '\\f': '\u000C'
+}: "\\" `" \\ / b f n r t`>
+
+escape-seq = escaped-char | <transform hex-to-char: <ignore: "\\u"> {4; hex}>
 hex = `a..f A..F 0..9`
 digit = `0..9`
-ws = `\s \t \r \n`
+ws = {`\s \t \r \n`}
