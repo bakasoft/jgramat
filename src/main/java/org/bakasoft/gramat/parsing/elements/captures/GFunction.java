@@ -9,22 +9,24 @@ import java.util.Map;
 
 public class GFunction extends GCapture {
 
+    public final String name;
     public final String[] arguments;
     public final GElement expression;
 
-    public GFunction(GLiteral[] options, GElement[] arguments) {
-        this.arguments = getArrayStrings(options);
-        this.expression = getSingleExpression(arguments);
+    public GFunction(String name, String[] arguments, GElement expression) {
+        this.name = name;
+        this.arguments = arguments;
+        this.expression = expression;
     }
 
     @Override
     public GElement simplify() {
-        throw new UnsupportedOperationException();
+        return new GFunction(name, arguments, expression.simplify());
     }
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("functions are not implemented yet");
     }
 
     @Override

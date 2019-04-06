@@ -21,11 +21,6 @@ public class GObject extends GCapture {
         this.expression = Objects.requireNonNull(expression);
     }
 
-    public GObject(GLiteral[] options, GElement[] arguments) {
-        this.typeName = getOptionalString(options);
-        this.expression = getSingleExpression(arguments);
-    }
-
     @Override
     public GElement simplify() {
         GElement simplified = expression.simplify();
@@ -51,12 +46,6 @@ public class GObject extends GCapture {
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
         Element element = expression.compile(gramat, compiled);
-
-        if (expression.isPlain(gramat)) {
-            Function<String, ?> converter = gramat.getParser(typeName);
-
-            return new ValueElement(converter, element);
-        }
 
         Class<?> type = gramat.getType(typeName);
 

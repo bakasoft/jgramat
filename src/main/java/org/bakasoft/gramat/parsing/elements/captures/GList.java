@@ -2,23 +2,38 @@ package org.bakasoft.gramat.parsing.elements.captures;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.elements.ListElement;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
 import java.util.Map;
 
 public class GList extends GCapture {
-    public GList(GLiteral[] options, GElement[] arguments) {
+
+    public final String typeName;
+    public final GElement expression;
+
+    public GList(String typeName, GElement expression) {
+        this.typeName = typeName;
+        this.expression = expression;
     }
 
     @Override
     public GElement simplify() {
-        throw new UnsupportedOperationException();
+        GElement simpleExpression = expression.simplify();
+
+        if (simpleExpression == null) {
+            return null;
+        }
+
+        return new GList(typeName, simpleExpression);
     }
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        throw new UnsupportedOperationException();
+        Class<?> type = gramat.getType(typeName);
+
+        return new ListElement(type, expression.compile(gramat, compiled));
     }
 
     @Override

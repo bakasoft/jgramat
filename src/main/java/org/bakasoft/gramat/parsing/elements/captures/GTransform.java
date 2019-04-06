@@ -12,19 +12,25 @@ public class GTransform extends GCapture {
     public final String name;
     public final GElement expression;
 
-    public GTransform(GLiteral[] options, GElement[] arguments) {
-        this.name = getOptionalString(options);
-        this.expression = getSingleExpression(arguments);
+    public GTransform(String name, GElement expression) {
+        this.name = name;
+        this.expression = expression;
     }
 
     @Override
     public GElement simplify() {
-        throw new UnsupportedOperationException();
+        GElement simpleExpression = expression.simplify();
+
+        if (simpleExpression == null) {
+            return null;
+        }
+
+        return new GTransform(name, simpleExpression);
     }
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("custom transformation are not implemented yet: " + name);
     }
 
     @Override

@@ -9,7 +9,7 @@ public class Transformation extends Element {
     private final Function<String, String> transformation;
     private final Element element;
 
-    public Transformation(Function<String, String> transformation, Element element) {
+    public Transformation(Element element, Function<String, String> transformation) {
         this.transformation = Objects.requireNonNull(transformation);
         this.element = element;
     }

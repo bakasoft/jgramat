@@ -51,36 +51,4 @@ public class GNamedProperty extends GCapture {
     public boolean isOptional(Gramat gramat) {
         return expression.isOptional(gramat);
     }
-
-    public static GNamedProperty expectProperty(Tape tape) {
-        expectSymbol(tape, '<');
-
-        skipVoid(tape);
-
-        String propertyName = expectName(tape, "property name");
-
-        skipVoid(tape);
-
-        boolean appendMode;
-
-        if (trySymbols(tape, "+:")) {
-            appendMode = true;
-        }
-        else if (trySymbol(tape, ':')) {
-            appendMode = false;
-        }
-        else {
-            throw new GrammarException("Expected property mode: " + inspect("+:") + " or " + inspect(':'), tape.getLocation());
-        }
-
-        skipVoid(tape);
-
-        GElement expression = expectExpression(tape);
-
-        skipVoid(tape);
-
-        expectSymbol(tape, '>');
-
-        return new GNamedProperty(propertyName, appendMode, expression);
-    }
 }

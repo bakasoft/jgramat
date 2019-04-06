@@ -13,19 +13,19 @@ public class GInvocation extends GCapture {
 
     public final GElement[] arguments;
 
-    public GInvocation(GLiteral[] options, GElement[] arguments) {
-        this.functionName = getSingleString(options);
+    public GInvocation(String functionName, GElement[] arguments) {
+        this.functionName = functionName;
         this.arguments = arguments;
     }
 
     @Override
     public GElement simplify() {
-        throw new UnsupportedOperationException();
+        return new GInvocation(functionName, simplifyAll(arguments));
     }
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("function invocation is not implemented yet");
     }
 
     @Override

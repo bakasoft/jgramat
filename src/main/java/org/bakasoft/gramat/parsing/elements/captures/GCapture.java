@@ -5,6 +5,7 @@ import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 import org.bakasoft.gramat.parsing.literals.GMap;
+import org.bakasoft.gramat.parsing.literals.GToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,20 +13,68 @@ import java.util.Map;
 
 abstract public class GCapture extends GElement {
 
-    private static GCapture validate(Tape tape, String name, GLiteral[] options, GElement[] arguments) {
-        // TODO move constructors logic to here
-        if ("object".equals(name)) {
-            return new GObject(options, arguments);
+    private static GCapture validate(Tape tape, String kind, GLiteral[] options, GElement[] arguments) {
+        if ("object".equals(kind)) {
+            String type = getOptionalString(options);
+            GElement expression = getSingleExpression(arguments);
+            return new GObject(type, expression);
         }
-        else if ("list".equals(name)) {
-            return new GList(options, arguments);
+        else if ("list".equals(kind)) {
+            String type = getOptionalString(options);
+            GElement expression = getSingleExpression(arguments);
+            return new GList(type, expression);
         }
-        else if ("value".equals(name)) {
-            return new GValue(options, arguments);
+        else if ("value".equals(kind)) {
+            String type = getOptionalString(options);
+            GElement expression = getSingleExpression(arguments);
+            return new GValue(type, expression);
         }
-        else if ("set".equals(name) || "add".equals(name)) {
+        else if ("transform".equals(kind)) {
+            String transformName = getOptionalString(options);
+            GElement expression = getSingleExpression(arguments);
+            return new GTransform(transformName, expression);
+        }
+        else if ("function".equals(kind)) {
+            String[] functionArgs = getArrayStrings(options);
+            GElement functionBody = getSingleExpression(arguments);
+            return new GFunction(null, functionArgs, functionBody);
+        }
+        else if ("call".equals(kind)) {
+            String functionName = getSingleString(options);
+            return new GInvocation(functionName, arguments);
+        }
+        else if ("ignore".equals(kind)) {
+            if (options.length != 0) {
+                throw new RuntimeException("expected no option");
+            }
+
+            GElement expression = getSingleExpression(arguments);
+            return new GIgnore(expression);
+        }
+        else if ("replace".equals(kind)) {
+            if (options.length != 1) {
+                throw new RuntimeException();
+            }
+
+            GLiteral option = options[0];
+
+            if (option instanceof GMap) {
+                Map<String, String> replacements = getStringMap((GMap)option);
+                GElement expression = getSingleExpression(arguments);
+                return new GReplaceMap(replacements, expression);
+            }
+            else if (option instanceof GToken) {
+                String replacement = getSingleString(options);
+                GElement expression = getSingleExpression(arguments);
+                return new GReplaceString(replacement, expression);
+            }
+            else {
+                throw new RuntimeException();
+            }
+        }
+        else if ("set".equals(kind) || "add".equals(kind)) {
             String propertyName = getFistString(options);
-            boolean appendMode = "add".equals(name);
+            boolean appendMode = "add".equals(kind);
 
             if (arguments.length == 1) {
                 return new GNamedProperty(propertyName, appendMode, arguments[0]);
@@ -44,32 +93,17 @@ abstract public class GCapture extends GElement {
                 }
 
                 if (arguments.length == 3) {
-                    return new GDynamicProperty(arguments[0], arguments[1], appendMode, arguments[2], invertedMode);
+                    return new GDynamicProperty(arguments[0], arguments[1], arguments[2], appendMode, invertedMode);
                 }
 
-                return new GDynamicProperty(arguments[0], null, appendMode, arguments[1], invertedMode);
+                return new GDynamicProperty(arguments[0], null, arguments[1], appendMode, invertedMode);
             }
             else {
                 throw new GrammarException("invalid number of arguments", tape.getLocation());
             }
         }
-        else if ("transform".equals(name)) {
-            return new GTransform(options, arguments);
-        }
-        else if ("replace".equals(name)) {
-            return new GReplaceString(options, arguments);
-        }
-        else if ("ignore".equals(name)) {
-            return new GIgnore(options, arguments);
-        }
-        else if ("function".equals(name)) {
-            return new GFunction(options, arguments);
-        }
-        else if ("call".equals(name)) {
-            return new GInvocation(options, arguments);
-        }
 
-        throw new GrammarException("invalid capture: " + name, tape.getLocation());
+        throw new GrammarException("invalid capture: " + kind, tape.getLocation());
     }
 
     public static GCapture expectCapture(Tape tape) {
@@ -108,7 +142,7 @@ abstract public class GCapture extends GElement {
         return validate(tape, name, options.toArray(new GLiteral[0]), arguments.toArray(new GElement[0]));
     }
 
-    public static String getSingleString(GLiteral[] arguments) {
+    private static String getSingleString(GLiteral[] arguments) {
         if (arguments.length != 1) {
             throw new RuntimeException("Expected only one argument");
         }
@@ -116,7 +150,7 @@ abstract public class GCapture extends GElement {
         return arguments[0].resolveString();
     }
 
-    public static String getOptionalString(GLiteral[] arguments) {
+    private static String getOptionalString(GLiteral[] arguments) {
         if (arguments.length == 0) {
             return null;
         }
@@ -127,7 +161,7 @@ abstract public class GCapture extends GElement {
         return arguments[0].resolveString();
     }
 
-    public static String getFistString(GLiteral[] arguments) {
+    private static String getFistString(GLiteral[] arguments) {
         if (arguments.length == 0) {
             return null;
         }
@@ -135,7 +169,7 @@ abstract public class GCapture extends GElement {
         return arguments[0].resolveString();
     }
 
-    public static String[] getArrayStrings(GLiteral[] arguments) {
+    private static String[] getArrayStrings(GLiteral[] arguments) {
         String[] result = new String[arguments.length];
 
         for (int i = 0; i < result.length; i++) {
@@ -145,16 +179,7 @@ abstract public class GCapture extends GElement {
         return result;
     }
 
-    public static Map<String, String> getStringMap(GLiteral[] arguments) {
-        if (arguments.length != 1) {
-            throw new RuntimeException("Expected only one argument");
-        }
-
-        if (!(arguments[0] instanceof GMap)) {
-            throw new RuntimeException("Expected a map of string-string");
-        }
-
-        GMap map = (GMap)arguments[0];
+    private static Map<String, String> getStringMap(GMap map) {
         HashMap<String, String> result = new HashMap<>();
 
         for (String key : map.keySet()) {
@@ -171,7 +196,7 @@ abstract public class GCapture extends GElement {
         return result;
     }
 
-    public static GElement getSingleExpression(GElement[] arguments) {
+    private static GElement getSingleExpression(GElement[] arguments) {
         if (arguments.length != 1) {
             throw new RuntimeException("Expected only one expression");
         }
