@@ -1,11 +1,9 @@
-/* Simple URL Example */
-
-Entry = <object: <set name: {1 !("=" | "&" | "#") }> [ "=" <set text: { !("&" | "#") }> ]>
-
-// simple URL example
 Url = <object:
     [ <set scheme: {1 !":" }> ":" ]
     [ "//" [ <set userinfo: { !"@" }> "@" ] <set host: {1 !(":" | "/") }> [ ":" <set port: {1 !"/" }> ] ]
     <set path: {1 !"?" }>
-    [ "?" { <add query: Entry> / {1 "&" } } { "&" } ]
-    [ "#" <set fragment: { !$ }> ]> $
+    [<set query: <object Query:
+        "?" { <set key-value: {1 !("=" | "&" | "#") }, [ <ignore: "="> { !("&" | "#") } ]> / {1 "&" } } { "&" }
+    >>]
+    [ "#" <set fragment: { !$ }> ]
+> $

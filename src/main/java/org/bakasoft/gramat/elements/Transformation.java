@@ -39,6 +39,6 @@ public class Transformation extends Element {
 
     @Override
     public Element link() {
-        return element.link();
+        return new Transformation(element.link(), transformation);
     }
 }
