@@ -1,9 +1,8 @@
 Query = <object Query:
   { <set key-value:
     {1 !("=" | "&" | "#") },
-    [ <ignore: "="> { !("&" | "#") } ]
-  > / {1 "&" } } { "&" }
->
+    [ <ignore: "="> { !("&" | "#") } ] >
+  / {1 "&" } } { "&" } >
 
 Url = <object:
   [ <set scheme: {1 !":" }> ":" ]
@@ -12,5 +11,4 @@ Url = <object:
     [ ":" <set port: {1 !"/" }> ] ]
   <set path: {1 !"?" }>
   [ "?" <set query: Query> ]
-  [ "#" <set fragment: { !$ }> ]
-> $
+  [ "#" <set fragment: { !$ }> ] > $
