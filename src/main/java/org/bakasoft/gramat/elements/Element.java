@@ -27,6 +27,10 @@ abstract public class Element {
         Context ctx = new Context(tape);
 
         if (parse(ctx)) {
+            if (tape.alive()) {
+                throw new GrammarException("expected end of string", tape.getLocation());
+            }
+
             return ctx.builder.pop();
         }
 

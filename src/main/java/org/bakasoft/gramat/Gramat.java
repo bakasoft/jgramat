@@ -191,12 +191,27 @@ public class Gramat {
                 throw new RuntimeException("rule not found: " + test.rule);
             }
 
-            Tape tape = new Tape("test", test.input);
-            Object actual = rule.capture(tape);
-            Diff diff = comparator.diff(test.output, actual);
+            Tape tape = new Tape(test.input, test.input);
 
-            if (diff != null) {
-                throw new DiffException(diff);
+            try {
+                Object actual = rule.capture(tape);
+
+                if (test.failMode) {
+                    throw new RuntimeException("Expected to fail: " + actual);
+                }
+
+                if (test.output != null) {
+                    Diff diff = comparator.diff(test.output, actual);
+
+                    if (diff != null) {
+                        throw new DiffException(diff);
+                    }
+                }
+            }
+            catch(GrammarException e) {
+                if (!test.failMode) {
+                    throw e;
+                }
             }
         }
     }

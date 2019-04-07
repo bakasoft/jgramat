@@ -1,14 +1,14 @@
-Query = <object Query:
+Query = <object:
   { <set key-value:
-    {1 !("=" | "&" | "#") },
-    [ <ignore: "="> { !("&" | "#") } ] >
-  / {1 "&" } } { "&" } >
+    {1 !(`= & #`|$) },
+    [ <ignore: `=`> { !(`& #`|$) } ] >
+  / {1 `&` } } { `&` } >
 
 Url = <object:
-  [ <set scheme: {1 !":" }> ":" ]
-  [ "//" [ <set userinfo: { !"@" }> "@" ]
-    <set host: {1 !(":" | "/") }>
-    [ ":" <set port: {1 !"/" }> ] ]
-  <set path: {1 !"?" }>
-  [ "?" <set query: Query> ]
-  [ "#" <set fragment: { !$ }> ] > $
+  [ <set scheme: {1 !`:` }> `:` ]
+  [ "//" [ <set userinfo: { !`@` }> `@` ]
+    <set host: {1 !(`: /`|$) }>
+    [ `:` <set port: {1 !(`/`|$) }> ] ]
+  [ <set path: `/` {1 !(`? #`|$)}> ]
+  [ `?` <set query: Query> ]
+  [ `#` <set fragment: {!$}> ] >

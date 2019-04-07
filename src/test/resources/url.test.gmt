@@ -1,9 +1,13 @@
 @import 'url.gmt'
 
-@test 'http://www.google.com/search?q=gramat#search' Url {
+@pass '' Url
+@pass 'ftp://www.google.com' Url
+@pass 'http://www.google.com/search?q=gramat#search' Url {
     scheme: 'http'
     host: 'www.google.com'
     path: '/search'
     query: { 'q': 'gramat' }
     fragment: 'search'
 }
+
+@fail 'a' Url

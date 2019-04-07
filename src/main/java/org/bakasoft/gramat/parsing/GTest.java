@@ -9,11 +9,13 @@ public class GTest {
     public final String input;
     public final String rule;
     public final GLiteral output;
+    public final boolean failMode;
 
-    public GTest(String input, String rule, GLiteral output) {
+    public GTest(String input, String rule, GLiteral output, boolean failMode) {
         this.input = Objects.requireNonNull(input);
         this.rule = Objects.requireNonNull(rule);
-        this.output = Objects.requireNonNull(output);
+        this.output = output;
+        this.failMode = failMode;
     }
 
 }

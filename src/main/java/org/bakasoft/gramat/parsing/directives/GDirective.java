@@ -43,15 +43,28 @@ public class GDirective {
                 gramat.load(resolvedPath);
             }
         }
-        else if ("test".equals(name)) {
-            if (arguments.length != 3) {
-                throw new RuntimeException("Expected 3 options for test");
+        else if ("pass".equals(name)) {
+            if (arguments.length > 3) {
+                throw new RuntimeException("Expected <=3 options for test");
             }
 
             gramat.addTest(new GTest(
                     arguments[0].resolveString(),
                     arguments[1].resolveString(),
-                    arguments[2]
+                    arguments.length == 3 ? arguments[2] : null,
+                    false
+            ));
+        }
+        else if ("fail".equals(name)) {
+            if (arguments.length != 2) {
+                throw new RuntimeException("Expected 2 options for test");
+            }
+
+            gramat.addTest(new GTest(
+                    arguments[0].resolveString(),
+                    arguments[1].resolveString(),
+                    null,
+                    true
             ));
         }
         else {
