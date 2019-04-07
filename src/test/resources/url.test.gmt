@@ -4,8 +4,6 @@
     scheme: 'http'
     host: 'www.google.com'
     path: '/search'
-    query: {
-        'q': 'gramat'
-    }
+    query: { 'q': 'gramat' }
     fragment: 'search'
 }
