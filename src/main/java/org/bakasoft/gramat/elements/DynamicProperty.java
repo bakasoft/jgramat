@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 
 public class DynamicProperty extends Property {
@@ -67,11 +68,11 @@ public class DynamicProperty extends Property {
     }
 
     @Override
-    public Element link() {
-        return new DynamicProperty(
-                nameElement.link(),
-                (separatorElement != null ? separatorElement.link() : null),
-                valueElement.link(),
-                appendMode, invertedMode);
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            nameElement = resolveInto(rules, control, nameElement);
+            separatorElement = resolveInto(rules, control, separatorElement);
+            valueElement = resolveInto(rules, control, valueElement);
+        }
     }
 }

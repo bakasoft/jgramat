@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -41,8 +42,10 @@ public class ValueElement extends Element {
     }
 
     @Override
-    public Element link() {
-        return new ValueElement(parser, element.link());
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            element = resolveInto(rules, control, element);
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.Stringifier;
 
+import java.util.Map;
 import java.util.Set;
 
 public class SingleChar extends Element {
@@ -38,8 +39,8 @@ public class SingleChar extends Element {
     }
 
     @Override
-    public Element link() {
-        return this;
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        // nothing to be linked
     }
 
 }

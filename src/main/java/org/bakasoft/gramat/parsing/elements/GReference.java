@@ -22,15 +22,7 @@ public class GReference extends GElement {
 
     @Override
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        return new Reference(ruleName, () -> {
-            Element element = compiled.get(ruleName);
-
-            if (element == null) {
-                throw new RuntimeException("rule not found: " + ruleName);
-            }
-
-            return element;
-        });
+        return new Reference(ruleName);
     }
 
     @Override

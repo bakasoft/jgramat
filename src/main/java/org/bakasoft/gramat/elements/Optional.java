@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Optional extends Element {
@@ -31,7 +32,9 @@ public class Optional extends Element {
     }
 
     @Override
-    public Element link() {
-        return new Optional(element.link());
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            element = resolveInto(rules, control, element);
+        }
     }
 }

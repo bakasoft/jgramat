@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Sequence extends Element {
@@ -51,8 +52,10 @@ public class Sequence extends Element {
     }
 
     @Override
-    public Element link() {
-        return new Sequence(linkAll(elements));
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            resolveAllInto(rules, control, elements);
+        }
     }
 
 }

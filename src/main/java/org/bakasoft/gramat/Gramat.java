@@ -3,9 +3,7 @@ package org.bakasoft.gramat;
 import org.bakasoft.gramat.diff.Comparator;
 import org.bakasoft.gramat.diff.Diff;
 import org.bakasoft.gramat.diff.DiffException;
-import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GMap;
@@ -146,13 +144,17 @@ public class Gramat {
         }
 
         // link
-        for (Map.Entry<String, Element> entry : compiled.entrySet()) {
-            Element linked = entry.getValue().link();
-
-            entry.setValue(linked);
-        }
+        resolveReferences(compiled);
 
         return compiled;
+    }
+
+    private void resolveReferences(HashMap<String, Element> compiled) {
+        HashSet<Element> control = new HashSet<>();
+
+        for (Map.Entry<String, Element> entry : compiled.entrySet()) {
+            entry.getValue().resolveInto(compiled, control);
+        }
     }
 
     public void removeTypes() {

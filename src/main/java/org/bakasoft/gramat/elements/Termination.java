@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Termination extends Element {
@@ -31,8 +32,8 @@ public class Termination extends Element {
     }
 
     @Override
-    public Element link() {
-        return this;
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        // nothing to be linked
     }
 
 }

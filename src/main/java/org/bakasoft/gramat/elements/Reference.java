@@ -1,41 +1,37 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class Reference extends Element {
 
     private final String name;
 
-    private final Supplier<Element> elementResolver;
-
-    public Reference(String name, Supplier<Element> elementResolver) {
+    public Reference(String name) {
         this.name = name;
-        this.elementResolver = elementResolver;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
     protected boolean parseImpl(Context ctx) {
-        return elementResolver.get().parse(ctx);
+        throw new RuntimeException("unresolved element: " + name);
     }
 
     @Override
     public boolean isOptional(Set<Element> control) {
-        Element element = elementResolver.get();
-
-        return control.add(element) && element.isOptional(control);
+        throw new RuntimeException("unresolved element: " + name);
     }
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        Element element = elementResolver.get();
-        if (control.add(element)) {
-            element.collectFirstAllowedSymbol(control, symbols);
-        }
+        throw new RuntimeException("unresolved element: " + name);
     }
 
     @Override
-    public Element link() {
-        return elementResolver.get();
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        throw new RuntimeException("unresolved element: " + name);
     }
 }

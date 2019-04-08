@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -7,7 +8,7 @@ import java.util.function.Function;
 public class Transformation extends Element {
 
     private final Function<String, String> transformation;
-    private final Element element;
+    private Element element;
 
     public Transformation(Element element, Function<String, String> transformation) {
         this.transformation = Objects.requireNonNull(transformation);
@@ -38,7 +39,9 @@ public class Transformation extends Element {
     }
 
     @Override
-    public Element link() {
-        return new Transformation(element.link(), transformation);
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            element = resolveInto(rules, control, element);
+        }
     }
 }

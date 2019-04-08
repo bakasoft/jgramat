@@ -5,6 +5,7 @@ import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 abstract public class Element {
@@ -21,7 +22,7 @@ abstract public class Element {
 
     abstract public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols);
 
-    abstract public Element link();
+    abstract public void resolveInto(Map<String, Element> rules, Set<Element> control);
 
     public final Object capture(Tape tape) {
         Context ctx = new Context(tape);
@@ -55,14 +56,36 @@ abstract public class Element {
         }
     }
 
-    public static Element[] linkAll(Element[] elements) {
-        Element[] linked = new Element[elements.length];
-
+    public static void resolveAllInto(Map<String, Element> rules, Set<Element> control, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
-            linked[i] = elements[i].link();
+            elements[i] = resolveInto(rules, control, elements[i]);
+        }
+    }
+
+    public static Element resolveInto(Map<String, Element> rules, Set<Element> control, Element element) {
+        if (element == null) {
+            return null;
+        }
+        else if (element instanceof Reference) {
+            String name = ((Reference) element).getName();
+            Element target = rules.get(name);
+
+            if (target == null) {
+                throw new RuntimeException("rule not found: " + name);
+            }
+            else if (target instanceof Reference) {
+                Reference targetRef = (Reference)target;
+                Element targetResolved = resolveInto(rules, control, targetRef);
+                rules.put(name, targetResolved);
+                return targetResolved;
+            }
+
+            return target;
+        } else {
+            element.resolveInto(rules, control);
         }
 
-        return linked;
+        return element;
     }
 
     public boolean isOptional() {

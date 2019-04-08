@@ -3,6 +3,7 @@ package org.bakasoft.gramat.elements;
 import org.bakasoft.gramat.CharPredicate;
 import org.bakasoft.gramat.GrammarException;
 
+import java.util.Map;
 import java.util.Set;
 
 public class CharRange extends Element {
@@ -46,9 +47,8 @@ public class CharRange extends Element {
         symbols.add(name);
     }
 
-    @Override
-    public Element link() {
-        return this;
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        // nothing to be linked
     }
 
     public String getName() {

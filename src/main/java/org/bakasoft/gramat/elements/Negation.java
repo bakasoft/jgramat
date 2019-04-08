@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.elements;
 
+import java.util.Map;
 import java.util.Set;
 
 public class Negation extends Element {
@@ -43,8 +44,10 @@ public class Negation extends Element {
     }
 
     @Override
-    public Element link() {
-        return new Negation(element.link());
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            element = resolveInto(rules, control, element);
+        }
     }
 
 }

@@ -16,6 +16,7 @@ abstract public class GElement {
 
     abstract public GElement simplify();
 
+    // TODO now map is not required
     abstract public Element compile(Gramat gramat, Map<String, Element> compiled);
 
     abstract public boolean isPlain(Gramat gramat);
