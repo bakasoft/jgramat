@@ -4,6 +4,8 @@ import org.bakasoft.gramat.elements.Alternation;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.Gramat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -13,6 +15,11 @@ public class GAlternation extends GElement {
 
     public GAlternation(GElement[] expressions) {
         this.expressions = Objects.requireNonNull(expressions);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expressions);
     }
 
     @Override

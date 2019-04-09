@@ -5,6 +5,8 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Negation;
 import org.bakasoft.gramat.Gramat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,6 +16,11 @@ public class GNegation extends GElement {
 
     public GNegation(GElement expression) {
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

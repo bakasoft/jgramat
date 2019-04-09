@@ -6,6 +6,8 @@ import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -17,6 +19,11 @@ public class GTransform extends GCapture {
     public GTransform(String name, GElement expression) {
         this.name = name;
         this.expression = expression;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

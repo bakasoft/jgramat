@@ -5,6 +5,8 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GFunction extends GCapture {
@@ -17,6 +19,11 @@ public class GFunction extends GCapture {
         this.name = name;
         this.arguments = arguments;
         this.expression = expression;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

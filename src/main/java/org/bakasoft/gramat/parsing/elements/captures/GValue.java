@@ -7,6 +7,8 @@ import org.bakasoft.gramat.elements.ValueElement;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -18,6 +20,11 @@ public class GValue extends GCapture {
     public GValue(String typeName, GElement expression) {
         this.typeName = typeName;
         this.expression = expression;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

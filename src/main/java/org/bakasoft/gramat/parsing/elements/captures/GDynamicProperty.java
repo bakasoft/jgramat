@@ -5,6 +5,8 @@ import org.bakasoft.gramat.elements.DynamicProperty;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GDynamicProperty extends GCapture {
@@ -23,6 +25,15 @@ public class GDynamicProperty extends GCapture {
         this.appendMode = appendMode;
         this.valueExpression = valueExpression;
         this.invertedMode = invertedMode;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        if (separatorExpression == null) {
+            return Arrays.asList(nameExpression, valueExpression);
+        }
+
+        return Arrays.asList(nameExpression, separatorExpression, valueExpression);
     }
 
     @Override

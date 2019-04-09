@@ -5,8 +5,7 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Repetition;
 import org.bakasoft.gramat.Gramat;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GRepetition extends GElement {
 
@@ -20,6 +19,15 @@ public class GRepetition extends GElement {
         this.maximum = maximum;
         this.expression = Objects.requireNonNull(expression);
         this.separator = separator;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        if (separator == null) {
+            return Arrays.asList(expression);
+        }
+
+        return Arrays.asList(expression, separator);
     }
 
     @Override

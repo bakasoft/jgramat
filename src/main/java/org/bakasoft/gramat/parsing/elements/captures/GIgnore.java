@@ -5,6 +5,8 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GIgnore extends GCapture {
@@ -13,6 +15,11 @@ public class GIgnore extends GCapture {
 
     public GIgnore(GElement expression) {
         this.expression = expression;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

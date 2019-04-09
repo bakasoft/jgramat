@@ -7,6 +7,8 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -19,6 +21,11 @@ public class GObject extends GCapture {
     public GObject(String typeName, GElement expression) {
         this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

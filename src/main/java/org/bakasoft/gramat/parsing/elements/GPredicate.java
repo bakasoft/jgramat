@@ -6,6 +6,8 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class GPredicate extends GElement {
@@ -14,6 +16,11 @@ public class GPredicate extends GElement {
 
     public GPredicate(Condition[] conditions) {
         this.conditions = conditions;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Collections.emptyList();
     }
 
     public static GPredicate expectPredicate(Tape tape) {

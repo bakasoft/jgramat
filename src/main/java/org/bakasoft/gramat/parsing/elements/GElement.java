@@ -8,13 +8,14 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.GStringifier;
 import org.bakasoft.gramat.parsing.elements.captures.GCapture;
 import org.bakasoft.gramat.parsing.elements.captures.GObject;
-import org.bakasoft.gramat.parsing.elements.captures.GNamedProperty;
 
 import java.util.*;
 
 abstract public class GElement {
 
     abstract public GElement simplify();
+
+    abstract public List<GElement> getChildren();
 
     // TODO now map is not required
     abstract public Element compile(Gramat gramat, Map<String, Element> compiled);

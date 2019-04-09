@@ -6,8 +6,7 @@ import org.bakasoft.gramat.elements.SingleChar;
 import org.bakasoft.gramat.elements.Symbol;
 import org.bakasoft.gramat.Gramat;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GString extends GElement {
 
@@ -20,6 +19,11 @@ public class GString extends GElement {
     @Override
     public GElement simplify() {
         return this;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Collections.emptyList();
     }
 
     @Override

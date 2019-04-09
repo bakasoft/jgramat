@@ -1,14 +1,20 @@
-Query = <object:
-  { <set key-value:
-    {1 !(`= & #`|$) },
-    [ <ignore: `=`> { !(`& #`|$) } ] >
-  / {1 `&` } } { `&` } >
+Query = @object(
+  {
+    @set-key-value(
+      {+ <`= & #`|$> },
+      [ @ignore(`=`) { <`& #`|$> } ]
+    )
+    / {+ `&` }
+  }
+  { `&` }
+)
 
-Url = <object:
-  [ <set scheme: {1 !`:` }> `:` ]
-  [ "//" [ <set userinfo: { !`@` }> `@` ]
-    <set host: {1 !(`: /`|$) }>
-    [ `:` <set port: {1 !(`/`|$) }> ] ]
-  [ <set path: `/` {1 !(`? #`|$)}> ]
-  [ `?` <set query: Query> ]
-  [ `#` <set fragment: {!$}> ] >
+Url = @object(
+  [ @set:scheme({+<`:`>}) `:` ]
+  [ "//" [ @set:userinfo({<`@`>}) `@` ]
+    @set:host({+<`: /`|$>})
+    [ `:` @set:port({+<`/`|$>}) ] ]
+  [ @set:path(`/` {+<`? #`|$>}) ]
+  [ `?` @set:query(Query) ]
+  [ `#` @set:fragment({<$>}) ]
+)

@@ -4,10 +4,7 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Sequence;
 import org.bakasoft.gramat.Gramat;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GSequence extends GElement {
 
@@ -63,5 +60,10 @@ public class GSequence extends GElement {
         }
 
         return true;
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expressions);
     }
 }

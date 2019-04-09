@@ -5,8 +5,7 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Optional;
 import org.bakasoft.gramat.Gramat;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GOptional extends GElement {
 
@@ -14,6 +13,11 @@ public class GOptional extends GElement {
 
     public GOptional(GElement expression) {
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

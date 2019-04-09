@@ -7,6 +7,8 @@ import org.bakasoft.gramat.elements.NamedProperty;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,6 +22,11 @@ public class GNamedProperty extends GCapture {
         this.propertyName = propertyName;
         this.appendMode = appendMode;
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Arrays.asList(expression);
     }
 
     @Override

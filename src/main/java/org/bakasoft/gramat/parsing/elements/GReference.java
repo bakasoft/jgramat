@@ -4,6 +4,8 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Reference;
 import org.bakasoft.gramat.Gramat;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -13,6 +15,11 @@ public class GReference extends GElement {
 
     public GReference(String ruleName) {
         this.ruleName = Objects.requireNonNull(ruleName);
+    }
+
+    @Override
+    public List<GElement> getChildren() {
+        return Collections.emptyList();
     }
 
     @Override
