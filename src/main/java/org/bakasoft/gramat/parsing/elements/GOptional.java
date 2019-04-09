@@ -50,18 +50,4 @@ public class GOptional extends GElement {
         return true;
     }
 
-    public static GOptional expectOptional(Tape tape) {
-        expectSymbol(tape, '[');
-
-        skipVoid(tape);
-
-        GElement expression = expectExpression(tape);
-
-        skipVoid(tape);
-
-        expectSymbol(tape, ']');
-
-        return new GOptional(expression);
-    }
-
 }

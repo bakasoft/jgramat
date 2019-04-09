@@ -73,21 +73,4 @@ public class GRule {
     public Element compile(Gramat gramat, Map<String, Element> compiled) {
         return expression.compile(gramat, compiled);
     }
-
-    public static GRule expectRule(Tape tape) {
-        String name = GElement.expectName(tape, "rule name");
-
-        GElement.skipVoid(tape);
-
-        if (!GElement.trySymbol(tape, '=')) {
-            throw new GrammarException("Expected rule assignment: " + GElement.inspect("="), tape.getLocation());
-        }
-
-        GElement.skipVoid(tape);
-
-        GElement expression = GElement.expectExpression(tape);
-
-        return new GRule(name, expression);
-    }
-
 }

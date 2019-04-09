@@ -27,25 +27,4 @@ public class GArray extends GLiteral {
         return Arrays.asList(array); // TODO refactor to toArray
     }
 
-    // parsing
-
-    public static GArray expectArray(Tape tape) {
-        ArrayList<GLiteral> list = new ArrayList<>();
-
-        GElement.expectSymbol(tape, '[');
-
-        GElement.skipVoid(tape);
-
-        GLiteral literal;
-
-        while ((literal = GLiteral.tryLiteral(tape)) != null) {
-            list.add(literal);
-
-            GElement.skipVoid(tape);
-        }
-
-        GElement.expectSymbol(tape, ']');
-
-        return new GArray(list.toArray(new GLiteral[0]));
-    }
 }

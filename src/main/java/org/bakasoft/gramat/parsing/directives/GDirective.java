@@ -72,25 +72,4 @@ public class GDirective {
         }
     }
 
-    // parsing
-
-    public static GDirective expectDirective(Tape tape) {
-        GElement.expectSymbol(tape, '@');
-
-        String name = GElement.expectName(tape, "directive name");
-
-        GElement.skipVoid(tape);
-
-        ArrayList<GLiteral> arguments = new ArrayList<>();
-
-        while (!GElement.tryStatementBeginning(tape)) {
-            GLiteral literal = GLiteral.expectLiteral(tape);
-
-            arguments.add(literal);
-
-            GElement.skipVoid(tape);
-        }
-
-        return new GDirective(name, arguments.toArray(new GLiteral[0]));
-    }
 }

@@ -45,12 +45,6 @@ public class GString extends GElement {
         return true;
     }
 
-    public static GString expectString(Tape tape) {
-        String content = expectQuotedToken(tape, '"');
-
-        return new GString(content);
-    }
-
     @Override
     public boolean isOptional(Gramat gramat) {
         return content.isEmpty();

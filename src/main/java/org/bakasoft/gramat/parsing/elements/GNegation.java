@@ -54,15 +54,4 @@ public class GNegation extends GElement {
         return !expression.isOptional(gramat);
     }
 
-    // parsing
-
-    public static GNegation expectNegation(Tape tape) {
-        expectSymbol(tape, '!');
-
-        skipVoid(tape);
-
-        GElement expression = expectExpressionUnit(tape);
-
-        return new GNegation(expression);
-    }
 }

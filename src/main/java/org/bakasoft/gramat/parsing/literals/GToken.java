@@ -15,9 +15,4 @@ public class GToken extends GLiteral {
         this.content = Objects.requireNonNull(content);
     }
 
-    public static GToken expectToken(Tape tape) {
-        String content = GElement.expectName(tape, "token");
-
-        return new GToken(content);
-    }
 }

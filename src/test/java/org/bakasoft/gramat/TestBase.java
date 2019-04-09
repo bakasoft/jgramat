@@ -3,6 +3,7 @@ package org.bakasoft.gramat;
 import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.framboyan.Framboyan;
+import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
 public class TestBase extends Framboyan {
@@ -29,7 +30,7 @@ public class TestBase extends Framboyan {
     }
 
     protected void testExpression(String code) {
-        GElement exp = GElement.expectExpression(tape(code));
+        GElement exp = Parser.expectExpression(tape(code));
 
         expect(exp).not.toBeNull();
 

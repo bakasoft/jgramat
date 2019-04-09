@@ -13,7 +13,7 @@ import java.util.Map;
 
 abstract public class GCapture extends GElement {
 
-    private static GCapture validate(Tape tape, String kind, GLiteral[] options, GElement[] arguments) {
+    public static GCapture create(Tape tape, String kind, GLiteral[] options, GElement[] arguments) {
         if ("object".equals(kind)) {
             String type = getOptionalString(options);
             GElement expression = getSingleExpression(arguments);
@@ -104,42 +104,6 @@ abstract public class GCapture extends GElement {
         }
 
         throw new GrammarException("invalid capture: " + kind, tape.getLocation());
-    }
-
-    public static GCapture expectCapture(Tape tape) {
-        expectSymbol(tape, '<');
-
-        skipVoid(tape);
-
-        String name = expectName(tape, "capture kind");
-        ArrayList<GLiteral> options = new ArrayList<>();
-        ArrayList<GElement> arguments = new ArrayList<>();
-
-        skipVoid(tape);
-
-        while (!trySymbol(tape, ':')) {
-            GLiteral option = GLiteral.expectLiteral(tape);
-
-            options.add(option);
-
-            skipVoid(tape);
-        }
-
-        skipVoid(tape);
-
-        while (!trySymbol(tape, '>')) {
-            GElement argument = GElement.expectExpression(tape);
-
-            arguments.add(argument);
-
-            skipVoid(tape);
-
-            if (trySymbol(tape, ',')) {
-                skipVoid(tape);
-            }
-        }
-
-        return validate(tape, name, options.toArray(new GLiteral[0]), arguments.toArray(new GElement[0]));
     }
 
     private static String getSingleString(GLiteral[] arguments) {

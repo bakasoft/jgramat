@@ -4,6 +4,7 @@ import org.bakasoft.gramat.diff.Comparator;
 import org.bakasoft.gramat.diff.Diff;
 import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GMap;
@@ -264,7 +265,7 @@ public class Gramat {
     }
 
     public void load(Path path, PathResolver resolver) {
-        GGramat.readGrammarInto(this, resolver, Tape.fromPath(path));
+        Parser.readGrammarInto(this, resolver, Tape.fromPath(path));
     }
 
     public void eval(String code) {
@@ -272,7 +273,7 @@ public class Gramat {
     }
 
     public void eval(String code, PathResolver resolver) {
-        GGramat.readGrammarInto(this, resolver, new Tape(null, code));
+        Parser.readGrammarInto(this, resolver, new Tape(null, code));
     }
 
     // parsing

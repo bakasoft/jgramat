@@ -23,39 +23,6 @@ public class GPredicate extends GElement {
         return Collections.emptyList();
     }
 
-    public static GPredicate expectPredicate(Tape tape) {
-        ArrayList<Condition> conditions = new ArrayList<>();
-
-        expectSymbol(tape, '`');
-
-        while (!isChar(tape, '`')) {
-            if (isWhitespace(tape)) {
-                throw new GrammarException("unexpected whitespace", tape.getLocation());
-            }
-
-            char c = readStringChar(tape);
-
-            if (trySymbols(tape, "..")) {
-                char begin = c;
-                char end = readStringChar(tape);
-
-                conditions.add(new Range(begin, end));
-            }
-            else if (isWhitespace(tape) || isChar(tape, '`')) {
-                conditions.add(new Option(c));
-            }
-            else {
-                throw new GrammarException("expected whitespace", tape.getLocation());
-            }
-
-            skipVoid(tape);
-        }
-
-        expectSymbol(tape, '`');
-
-        return new GPredicate(conditions.toArray(new Condition[0]));
-    }
-
     @Override
     public GElement simplify() {
         return this;

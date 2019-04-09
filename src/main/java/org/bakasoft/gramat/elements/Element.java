@@ -1,6 +1,7 @@
 package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.*;
+import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Set;
 abstract public class Element {
 
     public static Element eval(String code) {
-        return GElement.expectExpression(new Tape(null, code))
+        return Parser.expectExpression(new Tape(null, code))
                 .simplify()
                 .compile(new Gramat(), new HashMap<>());
     }

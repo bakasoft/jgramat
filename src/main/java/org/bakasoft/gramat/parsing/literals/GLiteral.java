@@ -75,28 +75,4 @@ abstract public class GLiteral {
 
         return result.toArray(new String[0]);
     }
-
-    public static GLiteral expectLiteral(Tape tape) {
-        GLiteral literal = tryLiteral(tape);
-
-        if (literal == null) {
-            throw new GrammarException("Expected literal", tape.getLocation());
-        }
-
-        return literal;
-    }
-
-    public static GLiteral tryLiteral(Tape tape) {
-        if (GElement.isChar(tape, '\'') || GElement.isLetter(tape)) {
-            return GToken.expectToken(tape);
-        }
-        else if (GElement.isChar(tape, '[')) {
-            return GArray.expectArray(tape);
-        }
-        else if (GElement.isChar(tape, '{')) {
-            return GMap.expectMap(tape);
-        }
-
-        return null;
-    }
 }

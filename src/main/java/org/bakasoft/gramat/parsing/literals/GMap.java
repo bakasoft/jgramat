@@ -32,33 +32,4 @@ public class GMap extends GLiteral {
         return map;
     }
 
-    // parsing
-
-    public static GMap expectMap(Tape tape) {
-        Map<String, GLiteral> map = new LinkedHashMap<>();
-
-        GElement.expectSymbol(tape, '{');
-
-        GElement.skipVoid(tape);
-
-        while (!GElement.trySymbol(tape, '}')) {
-            String keyName = GElement.expectName(tape, "key name");
-
-            GElement.skipVoid(tape);
-
-            GElement.expectSymbol(tape, ':');
-
-            GElement.skipVoid(tape);
-
-            GLiteral value = GLiteral.expectLiteral(tape);
-
-            GElement.skipVoid(tape);
-
-            if (map.put(keyName, value) != null) {
-                throw new GrammarException("Key already exists: " + GElement.inspect(keyName), tape.getLocation());
-            }
-        }
-
-        return new GMap(map);
-    }
 }
