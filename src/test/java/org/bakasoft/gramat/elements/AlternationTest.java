@@ -6,7 +6,7 @@ public class AlternationTest extends TestBase {{
 
     describe("Alternation", () -> {
         it ("should pass case 1", () -> {
-            Element data = Element.eval("{1 \"0\" | \"1\"} $");
+            Element data = Element.eval("{+ \"0\" | \"1\"} $");
 
             test(data, true, "0");
             test(data, true, "1");

@@ -1,4 +1,4 @@
 package org.bakasoft.gramat.plugins;
 
-public class Plugin {
+public class  Plugin {
 }

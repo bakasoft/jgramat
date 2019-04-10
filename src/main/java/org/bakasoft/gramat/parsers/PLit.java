@@ -1,5 +1,6 @@
 package org.bakasoft.gramat.parsers;
 
+import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.literals.GArray;
@@ -13,8 +14,8 @@ import java.util.Map;
 
 interface PLit {
 
-  static GLiteral expectLiteral(Tape tape) {
-    GLiteral literal = tryLiteral(tape);
+  static GLiteral expectLiteral(Gramat gramat, Tape tape) {
+    GLiteral literal = tryLiteral(gramat, tape);
 
     if (literal == null) {
       throw new GrammarException("Expected literal", tape.getLocation());
@@ -23,15 +24,25 @@ interface PLit {
     return literal;
   }
 
-  static GLiteral tryLiteral(Tape tape) {
-    if (PCom.isChar(tape, '\'') || PCom.isLetter(tape)) {
+  static GLiteral tryLiteral(Gramat gramat, Tape tape) {
+    if (PCom.trySymbol(tape, PCat.VARIABLE_MARK)) {
+      String name = PTok.expectName(tape, "variable name");
+      Object value = gramat.getVariable(name);
+
+      if (value == null) {
+        throw new RuntimeException("not defined variable: " + name);
+      }
+
+      return GLiteral.forceLiteral(value);
+    }
+    else if (PCom.isChar(tape, PCat.QUOTED_TOKEN_DELIMITER) || PCom.isLetter(tape)) {
       return expectToken(tape);
     }
     else if (PCom.isChar(tape, '[')) {
-      return expectArray(tape);
+      return expectArray(gramat, tape);
     }
     else if (PCom.isChar(tape, '{')) {
-      return expectMap(tape);
+      return expectMap(gramat, tape);
     }
 
     return null;
@@ -43,7 +54,7 @@ interface PLit {
     return new GToken(content);
   }
 
-  static GArray expectArray(Tape tape) {
+  static GArray expectArray(Gramat gramat, Tape tape) {
     ArrayList<GLiteral> list = new ArrayList<>();
 
     PCom.expectSymbol(tape, '[');
@@ -52,7 +63,7 @@ interface PLit {
 
     GLiteral literal;
 
-    while ((literal = tryLiteral(tape)) != null) {
+    while ((literal = tryLiteral(gramat, tape)) != null) {
       list.add(literal);
 
       PCom.skipVoid(tape);
@@ -60,11 +71,11 @@ interface PLit {
 
     PCom.expectSymbol(tape, ']');
 
-    return new GArray(list.toArray(new GLiteral[0]));
+    return new GArray(list);
   }
 
-  static GMap expectMap(Tape tape) {
-    Map<String, GLiteral> map = new LinkedHashMap<>();
+  static GMap expectMap(Gramat gramat, Tape tape) {
+    GMap map = new GMap();
 
     PCom.expectSymbol(tape, '{');
 
@@ -79,7 +90,7 @@ interface PLit {
 
       PCom.skipVoid(tape);
 
-      GLiteral value = expectLiteral(tape);
+      GLiteral value = expectLiteral(gramat, tape);
 
       PCom.skipVoid(tape);
 
@@ -88,6 +99,6 @@ interface PLit {
       }
     }
 
-    return new GMap(map);
+    return map;
   }
 }

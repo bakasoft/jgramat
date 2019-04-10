@@ -1,78 +1,107 @@
 package org.bakasoft.gramat.parsing.literals;
 
-import org.bakasoft.gramat.GrammarException;
-import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+public interface GLiteral {
 
-abstract public class GLiteral {
+  GToken forceToken();
+  GArray forceArray();
+  GMap forceMap();
 
-    public String resolveString() {
-        if (this instanceof GToken) {
-            GToken token = (GToken)this;
+  String forceString();
+  List<String> forceStringList();
+  Map<String, String> forceStringMap();
 
-            return token.content;
-        }
-        else if (this instanceof GArray) {
-            GArray array = (GArray)this;
-
-            if (array.size() == 1) {
-                return array.get(0).resolveString();
-            }
-        }
-        else if (this instanceof GMap) {
-            GMap map = (GMap)this;
-
-            if (map.size() == 1) {
-                for (String key : map.keySet()) {
-                    if (map.get(key) == null) {
-                        return key;
-                    }
-                }
-            }
-        }
-
-        throw new RuntimeException("cannot resolve string");
+  static GLiteral forceLiteral(Object value) {
+    if (value == null) {
+      throw new RuntimeException();
+    }
+    else if (value instanceof Map) {
+      return forceMap(value);
+    }
+    else if (value instanceof Collection) {
+      return forceArray(value);
     }
 
-    public String[] resolveStringArray() {
-        ArrayList<String> result = new ArrayList<>();
+    return forceToken(value);
+  }
 
-        if (this instanceof GToken) {
-            GToken token = (GToken)this;
-
-            result.add(token.content);
-        }
-        else if (this instanceof GArray) {
-            GArray array = (GArray)this;
-
-            for (int i = 0; i < array.size(); i++) {
-                GLiteral item = array.get(i);
-
-                if (item instanceof GArray) {
-                    Collections.addAll(result, item.resolveStringArray());
-                }
-
-                result.add(item.resolveString());
-            }
-        }
-        else if (this instanceof GMap) {
-            GMap map = (GMap)this;
-
-            for (String key : map.keySet()) {
-                GLiteral value = map.get(key);
-                String str = value.resolveString();
-
-                result.add(str);
-            }
-        }
-        else {
-            throw new RuntimeException("cannot resolve string list");
-        }
-
-        return result.toArray(new String[0]);
+  static GToken forceToken(Object value) {
+    if (value == null) {
+      throw new RuntimeException();
     }
+    else if (value instanceof GToken) {
+      return (GToken)value;
+    }
+    else if (value instanceof GArray) {
+      return ((GArray)value).forceToken();
+    }
+    else if (value instanceof GMap) {
+      return ((GMap)value).forceToken();
+    }
+
+    return new GToken(String.valueOf(value));
+  }
+
+  static GArray forceArray(Object value) {
+    if (value == null) {
+      throw new RuntimeException();
+    }
+    else if (value instanceof GToken) {
+      return ((GToken)value).forceArray();
+    }
+    else if (value instanceof GArray) {
+      return (GArray)value;
+    }
+    else if (value instanceof GMap) {
+      return ((GMap)value).forceArray();
+    }
+
+    GArray array = new GArray();
+
+    for (Object item : forceCollection(value)) {
+      array.add(forceLiteral(item));
+    }
+
+    return array;
+  }
+
+  static GMap forceMap(Object value) {
+    if (value == null) {
+      throw new RuntimeException();
+    }
+    else if (value instanceof GToken) {
+      return ((GToken)value).forceMap();
+    }
+    else if (value instanceof GArray) {
+      return ((GArray)value).forceMap();
+    }
+    else if (value instanceof GMap) {
+      return (GMap)value;
+    }
+
+    GMap map = new GMap();
+
+    if (value instanceof Map) {
+      for (Map.Entry<?, ?> entry : ((Map<?,?>)value).entrySet()) {
+        map.put(
+            forceToken(entry.getKey()).forceString(),
+            forceLiteral(entry.getValue())
+        );
+      }
+    }
+    else {
+      throw new RuntimeException();
+    }
+
+    return map;
+  }
+
+  static Collection<?> forceCollection(Object value) {
+    if (value instanceof Collection) {
+      return (Collection<?>)value;
+    }
+
+    throw new RuntimeException();
+  }
 }

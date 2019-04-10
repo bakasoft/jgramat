@@ -1,9 +1,6 @@
 package org.bakasoft.gramat.parsers;
 
 import org.bakasoft.gramat.*;
-import org.bakasoft.gramat.parsing.GRule;
-import org.bakasoft.gramat.parsing.directives.GDirective;
-import org.bakasoft.gramat.parsing.elements.GElement;
 
 interface PCom {
 
@@ -100,7 +97,7 @@ interface PCom {
         tape.moveForward();
       }
 
-      if (PCom.trySymbols(tape, "//")) {
+      if (PCom.trySymbols(tape, PCat.INLINE_COMMENT_BEGIN)) {
         active = true;
         while (!PCom.trySymbol(tape, '\n')) {
           if (tape.alive()) {
@@ -111,9 +108,9 @@ interface PCom {
           }
         }
       }
-      else if (PCom.trySymbols(tape, "/*")) {
+      else if (PCom.trySymbols(tape, PCat.BLOCK_COMMENT_BEGIN)) {
         active = true;
-        while (!PCom.trySymbols(tape, "*/")) {
+        while (!PCom.trySymbols(tape, PCat.BLOCK_COMMENT_END)) {
           if (tape.alive()) {
             tape.moveForward();
           }
@@ -163,8 +160,9 @@ interface PCom {
   }
 
   static String inspect(Object obj) {
+    // TODO implement data inspector
+
     if (obj instanceof Character) {
-      // TODO escape string
       return "'" + obj + "'";
     }
 

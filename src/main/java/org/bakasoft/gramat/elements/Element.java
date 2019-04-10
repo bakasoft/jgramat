@@ -12,9 +12,10 @@ import java.util.Set;
 abstract public class Element {
 
     public static Element eval(String code) {
-        return Parser.expectExpression(new Tape(null, code))
+        Gramat gramat = new Gramat();
+        return Parser.expectExpression(gramat, new Tape(null, code))
                 .simplify()
-                .compile(new Gramat(), new HashMap<>());
+                .compile(gramat, new HashMap<>());
     }
 
     abstract protected boolean parseImpl(Context ctx);

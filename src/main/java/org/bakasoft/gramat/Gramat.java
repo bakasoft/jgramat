@@ -7,12 +7,10 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.literals.GArray;
+import org.bakasoft.gramat.parsing.literals.GLiteral;
 import org.bakasoft.gramat.parsing.literals.GMap;
 import org.bakasoft.gramat.parsing.literals.GToken;
-import org.bakasoft.gramat.plugins.ParserPlugin;
-import org.bakasoft.gramat.plugins.Plugin;
-import org.bakasoft.gramat.plugins.TransformationPlugin;
-import org.bakasoft.gramat.plugins.TypePlugin;
+import org.bakasoft.gramat.plugins.*;
 import org.bakasoft.gramat.util.FileHelper;
 
 import java.nio.file.Path;
@@ -173,19 +171,7 @@ public class Gramat {
         testGramat.removeTypes();
 
         Map<String, Element> elements = testGramat.compile();
-        Comparator comparator = new Comparator(value -> {
-            if (value instanceof GMap) {
-                return ((GMap)value).getMap();
-            }
-            else if (value instanceof GArray) {
-                return ((GArray)value).getList();
-            }
-            else if (value instanceof GToken) {
-                return ((GToken)value).content;
-            }
-
-            return value;
-        });
+        Comparator comparator = new Comparator();
 
         for (GTest test : tests) {
             Element rule = elements.get(test.rule);
@@ -276,5 +262,35 @@ public class Gramat {
         Parser.readGrammarInto(this, resolver, new Tape(null, code));
     }
 
-    // parsing
+    public void setVariable(String name, Object value) {
+        Plugin plugin = plugins.get(name);
+
+        if (plugin == null) {
+            addPlugin(name, new PluginVariable(value));
+        }
+        else if (plugin instanceof PluginVariable) {
+            PluginVariable var = (PluginVariable)plugin;
+
+            var.value = value;
+        }
+        else {
+            throw new RuntimeException("plugin is not variable: " +  name);
+        }
+    }
+
+    public Object getVariable(String name) {
+        Plugin plugin = plugins.get(name);
+
+        if (plugin == null) {
+            return null;
+        }
+        else if (plugin instanceof PluginVariable) {
+            PluginVariable var = (PluginVariable)plugin;
+
+            return var.value;
+        }
+        else {
+            throw new RuntimeException("plugin is not variable: " +  name);
+        }
+    }
 }

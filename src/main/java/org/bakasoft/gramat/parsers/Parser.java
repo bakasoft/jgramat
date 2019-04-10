@@ -10,8 +10,8 @@ import org.bakasoft.gramat.parsing.elements.GElement;
 
 public interface Parser {
 
-  static GElement expectExpression(Tape tape) {
-    return PExp.expectExpression(tape);
+  static GElement expectExpression(Gramat gramat, Tape tape) {
+    return PExp.expectExpression(gramat, tape);
   }
 
   static void readGrammarInto(Gramat gramat, PathResolver pathResolver, Tape tape) {
@@ -20,13 +20,13 @@ public interface Parser {
     while(active) {
       PCom.skipVoid(tape);
 
-      if (PCom.isChar(tape, '@')) {
-        GDirective directive = PStm.expectDirective(tape);
+      if (PCom.isChar(tape, PCat.DIRECTIVE_BEGIN)) {
+        GDirective directive = PStm.expectDirective(gramat, tape);
 
         directive.evalDirective(gramat, pathResolver);
       }
       else if (PCom.isLetter(tape)) {
-        GRule rule = PStm.expectRule(tape);
+        GRule rule = PStm.expectRule(gramat, tape);
 
         gramat.addRule(rule);
       }

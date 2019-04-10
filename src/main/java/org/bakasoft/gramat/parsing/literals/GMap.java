@@ -1,35 +1,58 @@
 package org.bakasoft.gramat.parsing.literals;
 
-import org.bakasoft.gramat.GrammarException;
-import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+public class GMap extends HashMap<String, GLiteral> implements GLiteral {
 
-public class GMap extends GLiteral {
+  public GMap() {}
 
-    private final Map<String, GLiteral> map;
-
-    public GMap(Map<String, GLiteral> map) {
-        this.map = map;
+  @Override
+  public GToken forceToken() {
+    if (size() != 1) {
+      throw new RuntimeException("can't convert non-singleton map to token");
     }
 
-    public int size() {
-        return map.size();
+    GLiteral literal = get(null);
+
+    if (literal == null) {
+      throw new RuntimeException();
     }
 
-    public GLiteral get(String key) {
-        return map.get(key);
-    }
+    return literal.forceToken();
+  }
 
-    public Set<String> keySet() {
-        return map.keySet();
-    }
+  @Override
+  public GArray forceArray() {
+    return new GArray(values());
+  }
 
-    public Map<String, GLiteral> getMap() {
-        return map;
-    }
+  @Override
+  public GMap forceMap() {
+    return this;
+  }
 
+  @Override
+  public String forceString() {
+    return forceToken().forceString();
+  }
+
+  @Override
+  public List<String> forceStringList() {
+    return values().stream()
+        .filter(Objects::nonNull)
+        .map(GLiteral::forceString)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Map<String, String> forceStringMap() {
+    Map<String, String> map = new HashMap<>();
+    for (Map.Entry<String, GLiteral> entry : entrySet()) {
+      if (entry.getValue() != null) {
+        map.put(entry.getKey(), entry.getValue().forceString());
+      }
+    }
+    return map;
+  }
 }

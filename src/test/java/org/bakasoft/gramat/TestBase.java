@@ -30,7 +30,8 @@ public class TestBase extends Framboyan {
     }
 
     protected void testExpression(String code) {
-        GElement exp = Parser.expectExpression(tape(code));
+        Gramat gramat = new Gramat();
+        GElement exp = Parser.expectExpression(gramat, tape(code));
 
         expect(exp).not.toBeNull();
 

@@ -1,30 +1,60 @@
 package org.bakasoft.gramat.parsing.literals;
 
-import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public class GArray extends ArrayList<GLiteral> implements GLiteral {
 
-public class GArray extends GLiteral {
+  public GArray() {}
 
-    private final GLiteral[] array;
+  public GArray(Collection<? extends GLiteral> c) {
+    super(c);
+  }
 
-    public GArray(GLiteral[] array) {
-        this.array = array;
+  @Override
+  public GToken forceToken() {
+    if (size() != 1) {
+      throw new RuntimeException();
     }
 
-    public int size() {
-        return array.length;
-    }
+    return get(0).forceToken();
+  }
 
-    public GLiteral get(int index) {
-        return array[index];
-    }
+  @Override
+  public GArray forceArray() {
+    return this;
+  }
 
-    public List<GLiteral> getList() {
-        return Arrays.asList(array); // TODO refactor to toArray
+  @Override
+  public GMap forceMap() {
+    GMap map = new GMap();
+    for (int i = 0; i < size(); i++) {
+      map.put(String.valueOf(i), get(i));
     }
+    return map;
+  }
 
+  @Override
+  public String forceString() {
+    return forceToken().forceString();
+  }
+
+  @Override
+  public List<String> forceStringList() {
+    return stream()
+        .filter(Objects::nonNull)
+        .map(GLiteral::forceString)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Map<String, String> forceStringMap() {
+    HashMap<String, String> map = new HashMap<>();
+    for (int i = 0; i < size(); i++) {
+      if (get(i) != null) {
+        map.put(String.valueOf(i), get(i).forceString());
+      }
+    }
+    return map;
+  }
 }

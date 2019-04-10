@@ -1,15 +1,13 @@
 package org.bakasoft.gramat.parsers;
 
+import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.literals.GLiteral;
 
 interface PTok {
 
   static String expectName(Tape tape, String description) {
-    if (PCom.isChar(tape, '\'')) {
-      return PStr.expectQuotedToken(tape, '\'');
-    }
-
     String name = tryName(tape);
 
     if (name == null) {
@@ -21,18 +19,28 @@ interface PTok {
 
   static String tryName(Tape tape) {
     int pos0 = tape.getPosition();
-    if (PCom.isLetter(tape)) {
-      StringBuilder name = new StringBuilder();
 
-      while (PCom.isLetter(tape) || PCom.isDigit(tape)) {
-        name.append(tape.peek());
-        tape.moveForward();
+    try {
+      if (PCom.isChar(tape, PCat.QUOTED_TOKEN_DELIMITER)) {
+        return PStr.expectQuotedToken(tape, PCat.QUOTED_TOKEN_DELIMITER);
       }
 
-      return name.toString();
-    }
+      if (PCom.isLetter(tape)) {
+        StringBuilder buffer = new StringBuilder();
 
-    tape.setPosition(pos0);
-    return null;
+        while (PCom.isLetter(tape) || PCom.isDigit(tape)) {
+          buffer.append(tape.peek());
+          tape.moveForward();
+        }
+
+        return buffer.toString();
+      }
+
+      tape.setPosition(pos0);
+      return null;
+    }
+    catch(Exception e) {
+      throw new GrammarException("name problem: " + e.getMessage(), tape.getLocationOf(pos0), e);
+    }
   }
 }

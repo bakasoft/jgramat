@@ -6,7 +6,7 @@ public class RepetitionTest extends TestBase {{
 
     describe("Repetition", () -> {
         it ("case1", () -> {
-            Element data = Element.eval("{2,4 \"0\" / \"-\"}");
+            Element data = Element.eval("{2~4 \"0\" / \"-\"}");
 
             test(data, false, "");
             test(data, false, "0");
