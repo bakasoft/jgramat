@@ -45,7 +45,7 @@ public class Inspector {
         }
         else if (value instanceof Inspectable) {
             if (inspected.add(value)) {
-                ((Inspectable) value).inspect(this);
+                ((Inspectable) value).inspectWith(this);
             }
             else {
                 output.append(RECURSION_MARK);
