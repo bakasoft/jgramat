@@ -4,8 +4,8 @@ import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.elements.CharRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
+import org.bakasoft.gramat.inspect.Inspector;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +46,15 @@ public class GPredicate extends GElement {
             if (conditions[i] instanceof Range) {
                 Range range = (Range)conditions[i];
                 predicates[i] = c -> (c >= range.beginChar && c <= range.endChar);
-                name.append(Stringifier.literal(range.beginChar))
-                        .append("..")
-                        .append(Stringifier.literal(range.endChar));
+                name.append("from ")
+                        .append(Inspector.inspect(range.beginChar))
+                        .append(" to ")
+                        .append(Inspector.inspect(range.endChar));
             }
             else if (conditions[i] instanceof Option) {
                 Option option = (Option)conditions[i];
                 predicates[i] = c -> (c == option.value);
-                name.append(Stringifier.literal(option.value));
+                name.append(Inspector.inspect(option.value));
             }
             else {
                 throw new UnsupportedOperationException();

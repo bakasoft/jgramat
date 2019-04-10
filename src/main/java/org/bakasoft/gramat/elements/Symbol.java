@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.Stringifier;
+import org.bakasoft.gramat.inspect.Inspector;
 
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +52,7 @@ public class Symbol extends Element {
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        symbols.add(Stringifier.literal(symbol));
+        symbols.add(Inspector.inspect(symbol));
     }
 
     @Override

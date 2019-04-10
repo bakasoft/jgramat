@@ -28,7 +28,7 @@ public class Termination extends Element {
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        // nothing to collect
+        symbols.add("end of string");
     }
 
     @Override

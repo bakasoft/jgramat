@@ -1,7 +1,7 @@
 package org.bakasoft.gramat.parsing;
 
 import org.bakasoft.gramat.Gramat;
-import org.bakasoft.gramat.Stringifier;
+import org.bakasoft.gramat.inspect.Inspector;
 import org.bakasoft.gramat.parsing.elements.*;
 import org.bakasoft.gramat.parsing.elements.captures.GObject;
 import org.bakasoft.gramat.parsing.elements.captures.GNamedProperty;
@@ -71,7 +71,7 @@ public class GStringifier {
     }
 
     private static void stringifyString(GString str, StringBuilder output, boolean grouped) {
-        Stringifier.literal(str.content, output);
+        output.append(Inspector.inspect(str.content));
     }
 
     private static void stringifyObject(GObject object, StringBuilder output, boolean grouped) {
