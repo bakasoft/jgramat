@@ -12,7 +12,7 @@ abstract public class Element {
 
     public static Element eval(String code) {
         Gramat gramat = new Gramat();
-        return Parser.expectExpression(gramat, new Tape(null, code))
+        return Parser.expectExpression(gramat, new Tape(code))
                 .simplify()
                 .compile(new HashMap<>());
     }
