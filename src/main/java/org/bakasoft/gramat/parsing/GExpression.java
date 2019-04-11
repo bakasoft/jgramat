@@ -23,9 +23,9 @@ abstract public class GExpression extends GElement {
 
   abstract public void validate_r(GControl control);
 
-  abstract public boolean hasWildProducers_r(GControl control);
+  abstract public void countWildProducers_r(AtomicInteger count, GControl control);
 
-  abstract public boolean hasWildMutations_r(GControl control);
+  abstract public void countWildMutations_r(AtomicInteger count, GControl control);
 
   public GExpression(LocationRange location, Gramat gramat) {
     super(location, gramat);
@@ -35,12 +35,16 @@ abstract public class GExpression extends GElement {
     return isOptional_r(new GControl());
   }
 
-  public boolean hasWildProducers() {
-    return hasWildProducers_r(new GControl());
+  public int countWildProducers() {
+    AtomicInteger count = new AtomicInteger(0);
+    countWildProducers_r(count, new GControl());
+    return count.get();
   }
 
-  public boolean hasWildMutations() {
-    return hasWildProducers_r(new GControl());
+  public int countWildMutations() {
+    AtomicInteger count = new AtomicInteger(0);
+    countWildProducers_r(count, new GControl());
+    return count.get();
   }
 
   public int count(Predicate<GExpression> condition) {

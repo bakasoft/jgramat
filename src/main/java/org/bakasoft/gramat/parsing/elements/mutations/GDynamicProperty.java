@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GDynamicProperty extends GExpression {
+public class GDynamicProperty extends GMutation {
 
     public final GExpression nameExpression;
     public final GExpression separatorExpression;
@@ -54,13 +54,11 @@ public class GDynamicProperty extends GExpression {
 
     @Override
     public Element compile(Map<String, Element> compiled) {
-        return new DynamicProperty(
-                nameExpression.compile(compiled),
-                separatorExpression != null ? separatorExpression.compile(compiled) : null,
-                valueExpression.compile(compiled),
-                appendMode,
-                invertedMode
-        );
+        Element cName = nameExpression.compile(compiled);
+        Element cSeparator = separatorExpression != null ? separatorExpression.compile(compiled) : null;
+        Element cValue = compileValue(valueExpression, compiled);
+
+        return new DynamicProperty(cName, cSeparator, cValue,  appendMode, invertedMode);
     }
 
     @Override
@@ -70,26 +68,13 @@ public class GDynamicProperty extends GExpression {
 
     @Override
     public void validate_r(GControl control) {
-        if (nameExpression.hasWildMutations() || nameExpression.hasWildProducers()) {
+        if (nameExpression.countWildMutations() + nameExpression.countWildProducers() > 0) {
             throw new GrammarException("Property names cannot have mutations or producers inside.", nameExpression.location);
         }
-        else if (valueExpression.hasWildMutations()) {
-            throw new GrammarException("Property values cannot have other mutations inside.", valueExpression.location);
-        }
-        else if (separatorExpression != null && (separatorExpression.hasWildMutations() || separatorExpression.hasWildProducers())) {
+        else if (separatorExpression != null && (separatorExpression.countWildMutations() + separatorExpression.countWildProducers() > 0)) {
             throw new GrammarException("Property separators cannot have mutations or producers inside.", separatorExpression.location);
         }
-    }
 
-    @Override
-    public boolean hasWildProducers_r(GControl control) {
-        // properties absorb producers
-        return false;
-    }
-
-    @Override
-    public boolean hasWildMutations_r(GControl control) {
-        // this is a wild mutation!
-        return false;
+        validateValueExpression(valueExpression);
     }
 }

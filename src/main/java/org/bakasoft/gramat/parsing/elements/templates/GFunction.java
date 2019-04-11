@@ -8,6 +8,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GFunction extends GExpression1C {
 
@@ -41,12 +42,12 @@ public class GFunction extends GExpression1C {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
         throw new GrammarException("Functions are not implemented yet.", location);
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
         throw new GrammarException("Functions are not implemented yet.", location);
     }
 

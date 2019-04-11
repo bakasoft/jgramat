@@ -9,6 +9,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GOptional extends GExpression1C {
 
@@ -38,20 +39,20 @@ public class GOptional extends GExpression1C {
 
     @Override
     public void validate_r(GControl control) {
-        if (expression.hasWildProducers()) {
+        if (expression.countWildProducers() > 0) {
             // TODO validate this
             throw new GrammarException("There cannot be producers inside optionals, consider wrapping them with mutations.", expression.location);
         }
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return expression.hasWildProducers_r(control);
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        expression.countWildProducers_r(count, control);
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return expression.hasWildMutations_r(control);
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        expression.countWildMutations_r(count, control);
     }
 
 }

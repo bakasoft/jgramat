@@ -9,6 +9,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression0C;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GReference extends GExpression0C {
 
@@ -41,15 +42,19 @@ public class GReference extends GExpression0C {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
         GExpression expression = gramat.findExpression(ruleName);
-        return control.add(expression) && expression.hasWildProducers_r(control);
+        if (control.add(expression)) {
+            expression.countWildProducers_r(count, control);
+        }
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
         GExpression expression = gramat.findExpression(ruleName);
-        return control.add(expression) && expression.hasWildMutations_r(control);
+        if (control.add(expression)) {
+            expression.countWildMutations_r(count, control);
+        }
     }
 
 }

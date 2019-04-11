@@ -9,6 +9,7 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GRepetition extends GExpression {
 
@@ -76,19 +77,19 @@ public class GRepetition extends GExpression {
         if (expression.isOptional()) {
             throw new GrammarException("Optional expressions are not allowed inside repetitions to avoid infinite loops.", expression.location);
         }
-        else if (expression.hasWildProducers()) {
+        else if (expression.countWildProducers() > 0) {
             throw new GrammarException("There cannot be producers inside repetitions, consider wrapping them with mutations.", expression.location);
         }
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return expression.hasWildProducers_r(control);
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        expression.countWildProducers_r(count, control);
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return expression.hasWildMutations_r(control);
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        expression.countWildMutations_r(count, control);
     }
 
 }

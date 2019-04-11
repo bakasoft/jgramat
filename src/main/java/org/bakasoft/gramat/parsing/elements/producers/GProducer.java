@@ -6,6 +6,8 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 abstract public class GProducer extends GExpression1C {
 
   public GProducer(LocationRange location, GExpression expression) {
@@ -18,20 +20,18 @@ abstract public class GProducer extends GExpression1C {
   }
 
   @Override
-  public final boolean hasWildProducers_r(GControl control) {
-    // this is a producer
-    return true;
+  public final void countWildProducers_r(AtomicInteger count, GControl control) {
+    count.incrementAndGet(); // this is a wild producer!
   }
 
   @Override
-  public final boolean hasWildMutations_r(GControl control) {
-    // producers absorb mutations
-    return false;
+  public final void countWildMutations_r(AtomicInteger count, GControl control) {
+    // nothing to count: producers absorb mutations
   }
 
   @Override
   public void validate_r(GControl control) {
-    if (expression.hasWildProducers()) {
+    if (expression.countWildProducers() > 0) {
       throw new GrammarException("Producers cannot have other producers inside, consider wrapping them with mutations.", expression.location);
     }
   }

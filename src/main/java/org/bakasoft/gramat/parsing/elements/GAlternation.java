@@ -11,6 +11,7 @@ import org.bakasoft.gramat.parsing.util.GExpressionNC;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GAlternation extends GExpressionNC {
 
@@ -42,9 +43,9 @@ public class GAlternation extends GExpressionNC {
 
     @Override
     public void validate_r(GControl control) {
-        if (Arrays.stream(expressions).anyMatch(GExpression::hasWildProducers)) {
+        if (Arrays.stream(expressions).anyMatch(e -> e.countWildProducers() > 0)) {
             for (GExpression expression : expressions) {
-                if (!expression.hasWildProducers()) {
+                if (expression.countWildProducers() == 0) {
                     throw new GrammarException("If one option of an alternation has a producer, all other options must be producers too.", expression.location);
                 }
             }
@@ -52,12 +53,12 @@ public class GAlternation extends GExpressionNC {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        Arrays.stream(expressions).forEach(e -> e.countWildProducers_r(count, control));
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        Arrays.stream(expressions).forEach(e -> e.countWildProducers_r(count, control));
     }
 }

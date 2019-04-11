@@ -120,12 +120,24 @@ interface PCap {
                 boolean invertMode = SET_VALUE_KEY.equals(keyword) || ADD_VALUE_KEY.equals(keyword);
                 emptyLiterals(options);
                 arrayExpressions(arguments, 2, 3);
+                GExpression nameExpression;
+                GExpression separatorExpression;
+                GExpression valueExpression;
+
                 if (arguments.length == 2) {
-                    return new GDynamicProperty(location.range(), gramat,
-                        arguments[0], null, arguments[1], appendMode, invertMode);
+                    nameExpression = arguments[invertMode ? 1 : 0];
+                    separatorExpression = null;
+                    valueExpression = arguments[invertMode ? 0 : 1];
                 }
+                else {
+                    nameExpression = arguments[invertMode ? 2 : 0];
+                    separatorExpression = arguments[1];
+                    valueExpression = arguments[invertMode ? 0 : 2];
+                }
+
                 return new GDynamicProperty(location.range(), gramat,
-                    arguments[0], arguments[1], arguments[2], appendMode, invertMode);
+                    nameExpression, separatorExpression, valueExpression,
+                    appendMode, invertMode);
             }
         }
         catch (Exception e) {

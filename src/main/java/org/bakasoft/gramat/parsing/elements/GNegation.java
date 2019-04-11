@@ -9,6 +9,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GNegation extends GExpression1C {
 
@@ -45,13 +46,13 @@ public class GNegation extends GExpression1C {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return expression.hasWildProducers_r(control);
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        expression.countWildProducers_r(count, control);
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return expression.hasWildMutations_r(control);
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        expression.countWildMutations_r(count, control);
     }
 
 }

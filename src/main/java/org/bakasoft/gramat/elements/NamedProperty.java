@@ -8,17 +8,17 @@ public class NamedProperty extends Property {
     private final String propertyName;
     private final boolean appendMode;
 
-    private Element element;
+    private Element producer;
 
-    public NamedProperty(String propertyName, boolean appendMode, Element element) {
+    public NamedProperty(String propertyName, boolean appendMode, Element producer) {
         this.propertyName = propertyName;
         this.appendMode = appendMode;
-        this.element = element;
+        this.producer = producer;
     }
 
     @Override
     protected boolean parseImpl(Context ctx) {
-        if (parsePushValue(element, ctx)) {
+        if (producer.parse(ctx)) {
             ctx.builder.popValue(propertyName, appendMode);
             return true;
         }
@@ -28,20 +28,20 @@ public class NamedProperty extends Property {
 
     @Override
     public boolean isOptional(Set<Element> control) {
-        return control.add(element) && element.isOptional(control);
+        return control.add(producer) && producer.isOptional(control);
     }
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        if (control.add(element)) {
-            element.collectFirstAllowedSymbol(control, symbols);
+        if (control.add(producer)) {
+            producer.collectFirstAllowedSymbol(control, symbols);
         }
     }
 
     @Override
     public void resolveInto(Map<String, Element> rules, Set<Element> control) {
         if (control.add(this)) {
-            element = resolveInto(rules, control, element);
+            producer = resolveInto(rules, control, producer);
         }
     }
 }

@@ -7,15 +7,15 @@ public class DynamicProperty extends Property {
 
     private Element nameElement;
     private Element separatorElement;
-    private Element valueElement;
+    private Element valueProducer;
 
     private final boolean appendMode;
     private final boolean invertedMode;
 
-    public DynamicProperty(Element nameElement, Element separatorElement, Element valueElement, boolean appendMode, boolean invertedMode) {
+    public DynamicProperty(Element nameElement, Element separatorElement, Element valueProducer, boolean appendMode, boolean invertedMode) {
         this.nameElement = nameElement;
         this.separatorElement = separatorElement;
-        this.valueElement = valueElement;
+        this.valueProducer = valueProducer;
         this.appendMode = appendMode;
         this.invertedMode = invertedMode;
     }
@@ -23,7 +23,7 @@ public class DynamicProperty extends Property {
     @Override
     protected boolean parseImpl(Context ctx) {
         if (invertedMode) {
-            if (parsePushValue(valueElement, ctx) && (separatorElement == null || separatorElement.parse(ctx))) {
+            if (valueProducer.parse(ctx) && (separatorElement == null || separatorElement.parse(ctx))) {
                 String propertyName = parseText(nameElement, ctx);
 
                 if (propertyName != null) {
@@ -37,7 +37,7 @@ public class DynamicProperty extends Property {
 
             if (propertyName != null
                     && (separatorElement == null || separatorElement.parse(ctx))
-                    && parsePushValue(valueElement, ctx)) {
+                    && valueProducer.parse(ctx)) {
                 ctx.builder.popValue(propertyName, appendMode);
                 return true;
             }
@@ -50,14 +50,14 @@ public class DynamicProperty extends Property {
     public boolean isOptional(Set<Element> control) {
         return control.add(nameElement) && nameElement.isOptional(control)
                 && (separatorElement == null || control.add(separatorElement) && separatorElement.isOptional(control))
-                && control.add(valueElement) && valueElement.isOptional(control);
+                && control.add(valueProducer) && valueProducer.isOptional(control);
     }
 
     @Override
     public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
         if (invertedMode) {
-            if (control.add(valueElement)) {
-                valueElement.collectFirstAllowedSymbol(control, symbols);
+            if (control.add(valueProducer)) {
+                valueProducer.collectFirstAllowedSymbol(control, symbols);
             }
         }
         else {
@@ -72,7 +72,7 @@ public class DynamicProperty extends Property {
         if (control.add(this)) {
             nameElement = resolveInto(rules, control, nameElement);
             separatorElement = resolveInto(rules, control, separatorElement);
-            valueElement = resolveInto(rules, control, valueElement);
+            valueProducer = resolveInto(rules, control, valueProducer);
         }
     }
 }

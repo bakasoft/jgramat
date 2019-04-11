@@ -9,29 +9,45 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class GNamedProperty extends GExpression1C {
+public class GNamedProperty extends GMutation {
 
     public final String propertyName;
     public final boolean appendMode;
+    public final GExpression expression;
 
     public GNamedProperty(LocationRange location, String propertyName, boolean appendMode, GExpression expression) {
-        super(location, expression);
+        super(location, expression.gramat);
         this.propertyName = propertyName;
         this.appendMode = appendMode;
+        this.expression = expression;
     }
 
     @Override
-    public GExpression simplify(GExpression simpleExpression) {
+    public GExpression simplify() {
+        GExpression simpleExpression = expression.simplify();
+
+        if (simpleExpression == null) {
+            return null;
+        }
+
         return new GNamedProperty(location, propertyName, appendMode, simpleExpression);
     }
 
     @Override
+    public List<GExpression> getChildren() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public Element compile(Map<String, Element> compiled) {
+        Element cValue = compileValue(expression, compiled);
+
         return new NamedProperty(
                 propertyName,
                 appendMode,
-                expression.compile(compiled));
+                cValue);
     }
 
     @Override
@@ -41,21 +57,7 @@ public class GNamedProperty extends GExpression1C {
 
     @Override
     public void validate_r(GControl control) {
-        if (expression.hasWildMutations()) {
-            throw new GrammarException("Property values cannot have other mutations inside.", expression.location);
-        }
-    }
-
-    @Override
-    public boolean hasWildProducers_r(GControl control) {
-        // properties absorb producers
-        return false;
-    }
-
-    @Override
-    public boolean hasWildMutations_r(GControl control) {
-        // this is a wild mutation!
-        return true;
+        validateValueExpression(expression);
     }
 
 }

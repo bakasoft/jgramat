@@ -6,6 +6,8 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 abstract public class GTransformation extends GExpression1C {
 
   public GTransformation(LocationRange location, GExpression expression) {
@@ -14,10 +16,10 @@ abstract public class GTransformation extends GExpression1C {
 
   @Override
   public void validate_r(GControl control) {
-    if (expression.hasWildProducers()) {
+    if (expression.countWildProducers() > 0) {
       throw new GrammarException("Transformations cannot have wild producers.", expression.location);
     }
-    else if (expression.hasWildMutations()) {
+    else if (expression.countWildMutations() > 0) {
       throw new GrammarException("Transformations cannot have wild mutations.", expression.location);
     }
   }
@@ -28,12 +30,12 @@ abstract public class GTransformation extends GExpression1C {
   }
 
   @Override
-  public final boolean hasWildProducers_r(GControl control) {
-    return expression.hasWildProducers_r(control);
+  public final void countWildProducers_r(AtomicInteger count, GControl control) {
+    expression.countWildProducers_r(count, control);
   }
 
   @Override
-  public final boolean hasWildMutations_r(GControl control) {
-    return expression.hasWildMutations_r(control);
+  public final void countWildMutations_r(AtomicInteger count, GControl control) {
+    expression.countWildMutations_r(count, control);
   }
 }

@@ -10,6 +10,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GSequence extends GExpressionNC {
 
@@ -49,7 +50,7 @@ public class GSequence extends GExpressionNC {
         boolean hasProducer = false;
 
         for (GExpression expression : expressions) {
-            if (expression.hasWildProducers()) {
+            if (expression.countWildProducers() > 0) {
                 if (hasProducer) {
                     throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
                 }
@@ -62,13 +63,13 @@ public class GSequence extends GExpressionNC {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        Arrays.stream(expressions).forEach(e -> e.countWildProducers_r(count, control));
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return Arrays.stream(expressions).anyMatch(e -> e.hasWildMutations_r(control));
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        Arrays.stream(expressions).forEach(e -> e.countWildMutations_r(count, control));
     }
 
     @Override

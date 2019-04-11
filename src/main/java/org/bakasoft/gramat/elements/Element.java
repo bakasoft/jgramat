@@ -71,14 +71,16 @@ abstract public class Element {
             String name = ((Reference) element).getName();
             Element target = rules.get(name);
 
+            if (target instanceof Reference) {
+                Reference targetRef = (Reference)target;
+
+                target = resolveInto(rules, control, targetRef);
+
+                rules.put(name, target);
+            }
+
             if (target == null) {
                 throw new RuntimeException("rule not found: " + name);
-            }
-            else if (target instanceof Reference) {
-                Reference targetRef = (Reference)target;
-                Element targetResolved = resolveInto(rules, control, targetRef);
-                rules.put(name, targetResolved);
-                return targetResolved;
             }
 
             return target;

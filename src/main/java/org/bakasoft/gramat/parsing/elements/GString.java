@@ -10,6 +10,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression0C;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GString extends GExpression0C {
 
@@ -50,12 +51,12 @@ public class GString extends GExpression0C {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
-        return false;
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
+        // nothing to count
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
-        return false;
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
+        // nothing to count
     }
 }

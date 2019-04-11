@@ -9,6 +9,7 @@ import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GInvocation extends GExpressionNC {
 
@@ -40,12 +41,12 @@ public class GInvocation extends GExpressionNC {
     }
 
     @Override
-    public boolean hasWildProducers_r(GControl control) {
+    public void countWildProducers_r(AtomicInteger count, GControl control) {
         throw new GrammarException("Function invocation is not implemented yet.", location);
     }
 
     @Override
-    public boolean hasWildMutations_r(GControl control) {
+    public void countWildMutations_r(AtomicInteger count, GControl control) {
         throw new GrammarException("Function invocation is not implemented yet.", location);
     }
 
