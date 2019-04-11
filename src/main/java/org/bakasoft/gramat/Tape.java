@@ -1,5 +1,7 @@
 package org.bakasoft.gramat;
 
+import org.bakasoft.gramat.inspect.Inspector;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,11 +15,19 @@ public class Tape {
 
     private int position;
 
-    public Tape(String name, String content) {
-        this(name, content.toCharArray());
+    public Tape(String content) {
+        this(content.toCharArray(), null);
     }
 
-    public Tape(String name, char[] content) {
+    public Tape(char[] content) {
+        this(content, null);
+    }
+
+    public Tape(String content, String name) {
+        this(content.toCharArray(), name);
+    }
+
+    public Tape(char[] content, String name) {
         this.name = name;
         this.content = content;
         this.length = content.length;
@@ -34,7 +44,7 @@ public class Tape {
 
     public char peek() {
         if (position >= length) {
-            throw new GrammarException();
+            throw new RuntimeException();
         }
 
         return content[position];
@@ -55,7 +65,7 @@ public class Tape {
 //            System.out.println(generateSample());
         }
         else {
-            throw new GrammarException();
+            throw new RuntimeException();
         }
     }
 
@@ -67,7 +77,7 @@ public class Tape {
         int column = 0;
         int line = 1;
 
-        for (int i = 0; i < p; i++) {
+        for (int i = 0; i <= p; i++) {
             // if last char is a line feed
             if (i > 0 && i - 1 < length && content[i - 1] == '\n') {
                 line++;
@@ -77,7 +87,7 @@ public class Tape {
             column++;
         }
 
-        return new Location(name, p, line, column);
+        return new Location(this, p, line, column);
     }
 
     public String substring(int startIndex, int endIndex) {
@@ -94,32 +104,41 @@ public class Tape {
             byte[] data = Files.readAllBytes(path);
             String content = new String(data);
 
-            return new Tape(path.toString(), content);
+            return new Tape(content, path.toString());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String generateSample() {
-        final int LENGTH = 30;
-        int start = Math.max(0, position - LENGTH / 2);
-        int end = Math.min(length, start + LENGTH);
-        StringBuilder sample = new StringBuilder();
+    public String generateSample(int sampleSize) {
+        Inspector inspector = new Inspector();
+        int start = Math.max(0, position - sampleSize / 2);
+        int end = Math.min(length, start + sampleSize);
 
-        for (int i = 0; i < end; i++) {
-            if (i == position) {
-                sample.append('[');
-                sample.append(content[i]);
-                sample.append(']');
-            }
-            else {
-                sample.append(' ');
-                sample.append(content[i]);
-                sample.append(' ');
-            }
+        if (start == 0) {
+            inspector.appendChar('"');
+        }
+        else {
+            inspector.appendChar('…');
         }
 
-        return sample.toString();
+        for (int i = 0; i < end; i++) {
+            inspector.appendStringChar(content[i], '"');
+        }
+
+        if (end == length) {
+            inspector.appendChar('"');
+        }
+        else {
+            inspector.appendChar('…');
+        }
+
+        return inspector.getOutput();
+    }
+
+    @Override
+    public String toString() {
+        return name != null ? name : generateSample(10);
     }
 }

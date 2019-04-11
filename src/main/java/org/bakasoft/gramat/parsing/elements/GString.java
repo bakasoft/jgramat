@@ -1,33 +1,32 @@
 package org.bakasoft.gramat.parsing.elements;
 
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
 import org.bakasoft.gramat.elements.Symbol;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.GExpression0C;
 
 import java.util.*;
 
-public class GString extends GElement {
+public class GString extends GExpression0C {
 
     public final String content;
 
-    public GString(String content) {
+    public GString(LocationRange location, Gramat gramat, String content) {
+        super(location, gramat);
         this.content = Objects.requireNonNull(content);
     }
 
     @Override
-    public GElement simplify() {
+    public GExpression simplify() {
         return this;
     }
 
     @Override
-    public List<GElement> getChildren() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Element compile(Gramat gramat, Map<String, Element> compiled) {
+    public Element compile(Map<String, Element> compiled) {
         if (content.isEmpty()) {
             return null;
         }
@@ -41,12 +40,22 @@ public class GString extends GElement {
     }
 
     @Override
-    public boolean isPlain(Gramat gramat) {
-        return true;
+    public boolean isOptional_r(GControl control) {
+        return content.isEmpty();
     }
 
     @Override
-    public boolean isOptional(Gramat gramat) {
-        return content.isEmpty();
+    public void validate_r(GControl control) {
+        // nothing to validate yet
+    }
+
+    @Override
+    public boolean hasWildProducers_r(GControl control) {
+        return false;
+    }
+
+    @Override
+    public boolean hasWildMutations_r(GControl control) {
+        return false;
     }
 }

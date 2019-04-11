@@ -4,12 +4,12 @@ import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.parsers.Parser;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.GExpression;
 
 public class TestBase extends Framboyan {
 
     protected Tape tape(String content) {
-        return new Tape("test", content);
+        return new Tape(content, "test");
     }
 
     protected void test(String code, boolean expectedResult, String input) {
@@ -17,7 +17,7 @@ public class TestBase extends Framboyan {
     }
 
     protected void test(Element element, boolean expectedResult, String input) {
-        Tape tape = new Tape(null, input);
+        Tape tape = new Tape(input);
         boolean actualResult = element.parse(new Context(tape));
 
         if (expectedResult) {
@@ -31,7 +31,7 @@ public class TestBase extends Framboyan {
 
     protected void testExpression(String code) {
         Gramat gramat = new Gramat();
-        GElement exp = Parser.expectExpression(gramat, tape(code));
+        GExpression exp = Parser.expectExpression(gramat, tape(code));
 
         expect(exp).not.toBeNull();
 

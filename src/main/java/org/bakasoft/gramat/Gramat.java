@@ -6,10 +6,6 @@ import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
-import org.bakasoft.gramat.parsing.literals.GArray;
-import org.bakasoft.gramat.parsing.literals.GLiteral;
-import org.bakasoft.gramat.parsing.literals.GMap;
-import org.bakasoft.gramat.parsing.literals.GToken;
 import org.bakasoft.gramat.plugins.*;
 import org.bakasoft.gramat.util.FileHelper;
 
@@ -41,6 +37,26 @@ public class Gramat {
         tests = new ArrayList<>(base.tests);
         plugins = new HashMap<>(base.plugins);
         typeResolver = base.typeResolver;
+    }
+
+    public GExpression findExpression(String name) {
+        GExpression expression = getExpression(name);
+
+        if (expression == null) {
+            throw new RuntimeException("not found: " + name);
+        }
+
+        return expression;
+    }
+
+    public GExpression getExpression(String name) {
+        for (GRule rule : rules) {
+            if (Objects.equals(rule.name, name)) {
+                return rule.expression;
+            }
+        }
+
+        return null;
     }
 
     public Class<?> getType(String name) {
@@ -133,13 +149,15 @@ public class Gramat {
 
         // simplify & compile
         for (int i = 0; i < rules.size(); i++) {
-            GRule simpleRule = rules.get(i).simplify();
+            GRule rule = rules.get(i).simplify();
 
-            rules.set(i, simpleRule);
+            rules.set(i, rule);
 
-            Element element = simpleRule.compile(this, compiled);
+            rule.validate();
 
-            compiled.put(simpleRule.name, element);
+            Element element = rule.compile(compiled);
+
+            compiled.put(rule.name, element);
         }
 
         // link
@@ -180,7 +198,7 @@ public class Gramat {
                 throw new RuntimeException("rule not found: " + test.rule);
             }
 
-            Tape tape = new Tape(test.input, test.input);
+            Tape tape = new Tape(test.input);
 
             try {
                 Object actual = rule.capture(tape);
@@ -259,7 +277,7 @@ public class Gramat {
     }
 
     public void eval(String code, PathResolver resolver) {
-        Parser.readGrammarInto(this, resolver, new Tape(null, code));
+        Parser.readGrammarInto(this, resolver, new Tape(code));
     }
 
     public void setVariable(String name, Object value) {

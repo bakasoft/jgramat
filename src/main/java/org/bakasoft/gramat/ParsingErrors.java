@@ -29,7 +29,7 @@ public class ParsingErrors {
     }
 
     public Location getLocation() {
-        return lastSuccess != null ? tape.getLocationOf(lastSuccess.getPosition() + 1) : null;
+        return lastSuccess;
     }
 
     public Set<String> getAllowedSymbols() {

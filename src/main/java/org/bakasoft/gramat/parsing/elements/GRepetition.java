@@ -1,79 +1,94 @@
 package org.bakasoft.gramat.parsing.elements;
 
-import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Repetition;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.util.GControl;
 
 import java.util.*;
 
-public class GRepetition extends GElement {
+public class GRepetition extends GExpression {
 
-    public final Integer minimum;
-    public final Integer maximum;
-    public final GElement expression;
-    public final GElement separator;
+    public final int minimum;
+    public final int maximum;
+    public final GExpression expression;
+    public final GExpression separator;
 
-    public GRepetition(Integer minimum, Integer maximum, GElement expression, GElement separator) {
-        this.minimum = minimum;
-        this.maximum = maximum;
+    public GRepetition(LocationRange location, Gramat gramat, Integer minimum, Integer maximum, GExpression expression, GExpression separator) {
+        super(location, gramat);
+        this.minimum = minimum != null ? minimum : 0;
+        this.maximum = maximum != null ? maximum : 0;
         this.expression = Objects.requireNonNull(expression);
         this.separator = separator;
     }
 
     @Override
-    public List<GElement> getChildren() {
+    public List<GExpression> getChildren() {
         if (separator == null) {
-            return Arrays.asList(expression);
+            return Collections.singletonList(expression);
         }
 
         return Arrays.asList(expression, separator);
     }
 
     @Override
-    public GElement simplify() {
-        GElement simpleExpression = expression.simplify();
+    public GExpression simplify() {
+        GExpression simpleExpression = expression.simplify();
 
         if (simpleExpression == null) {
             return null;
         }
 
-        GElement simpleSeparator = separator != null ? separator.simplify() : null;
-        int min = minimum != null ? minimum : 0;
-        int max = maximum != null ? maximum : 0;
+        GExpression simpleSeparator = separator != null ? separator.simplify() : null;
 
         // no repetition at all
-        if (min == 1 && max == 1) {
+        if (minimum == 1 && maximum == 1) {
             return simpleExpression;
         }
         // optional substitution
-        else if (min == 0 && max == 1) {
-            return new GOptional(simpleExpression).simplify();
+        else if (minimum == 0 && maximum == 1) {
+            return new GOptional(location, simpleExpression).simplify();
         }
 
         // TODO add no separator simplification
 
-        return new GRepetition(minimum, maximum, simpleExpression, simpleSeparator);
+        return new GRepetition(location, gramat, minimum, maximum, simpleExpression, simpleSeparator);
     }
 
     @Override
-    public Element compile(Gramat gramat, Map<String, Element> compiled) {
+    public Element compile(Map<String, Element> compiled) {
         return new Repetition(
-                expression.compile(gramat, compiled),
-                minimum != null ? minimum : 0,
-                maximum != null ? maximum : 0,
-                separator != null ? separator.compile(gramat, compiled) : null
+                expression.compile(compiled), minimum, maximum,
+                separator != null ? separator.compile(compiled) : null
         );
     }
 
     @Override
-    public boolean isPlain(Gramat gramat) {
-        return expression.isPlain(gramat)
-                && (separator == null || separator.isPlain(gramat));
+    public boolean isOptional_r(GControl control) {
+        return minimum == 0 || expression.isOptional_r(control);
     }
 
     @Override
-    public boolean isOptional(Gramat gramat) {
-        return minimum == null || minimum == 0 || expression.isOptional(gramat);
+    public void validate_r(GControl control) {
+        if (expression.isOptional()) {
+            throw new GrammarException("Optional expressions are not allowed inside repetitions to avoid infinite loops.", expression.location);
+        }
+        else if (expression.hasWildProducers()) {
+            throw new GrammarException("There cannot be producers inside repetitions, consider wrapping them with mutations.", expression.location);
+        }
     }
+
+    @Override
+    public boolean hasWildProducers_r(GControl control) {
+        return expression.hasWildProducers_r(control);
+    }
+
+    @Override
+    public boolean hasWildMutations_r(GControl control) {
+        return expression.hasWildMutations_r(control);
+    }
+
 }

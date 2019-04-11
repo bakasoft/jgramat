@@ -3,14 +3,14 @@ package org.bakasoft.gramat.parsers;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.GRule;
 import org.bakasoft.gramat.parsing.directives.GDirective;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.GElement;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
-import java.util.ArrayList;
-
+// Parsing statements
 interface PStm {
 
   static boolean isStatementBeginning(Tape tape) {
@@ -39,7 +39,6 @@ interface PStm {
     return result;
   }
 
-
   static GRule expectRule(Gramat gramat, Tape tape) {
     String name = PTok.expectName(tape, "rule name");
 
@@ -51,7 +50,7 @@ interface PStm {
 
     PCom.skipVoid(tape);
 
-    GElement expression = PExp.expectExpression(gramat, tape);
+    GExpression expression = PExp.expectExpression(gramat, tape);
 
     return new GRule(name, expression);
   }

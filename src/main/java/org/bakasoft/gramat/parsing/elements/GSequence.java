@@ -1,33 +1,31 @@
 package org.bakasoft.gramat.parsing.elements;
 
+import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Sequence;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.GExpressionNC;
 
 import java.util.*;
 
-public class GSequence extends GElement {
+public class GSequence extends GExpressionNC {
 
-    public final GElement[] expressions;
-
-    public GSequence(GElement[] expressions) {
-        this.expressions = Objects.requireNonNull(expressions);
+    public GSequence(LocationRange location, Gramat gramat, GExpression[] expressions) {
+        super(location, gramat, expressions);
     }
 
     @Override
-    public GElement simplify() {
-        GElement[] simplification = simplifyAll(expressions);
-
-        if (simplification.length == 0) {
-            return null;
-        }
-        else if (simplification.length == 1) {
-            return simplification[0];
+    public GExpression simplify(GExpression[] simpleExpressions) {
+        if (simpleExpressions.length == 1) {
+            return simpleExpressions[0];
         }
 
         // flatten sequences
-        ArrayList<GElement> flattened = new ArrayList<>();
-        for (GElement e : simplification) {
+        ArrayList<GExpression> flattened = new ArrayList<>();
+        for (GExpression e : simpleExpressions) {
             if (e instanceof GSequence) {
                 GSequence seq = (GSequence)e;
 
@@ -38,32 +36,44 @@ public class GSequence extends GElement {
             }
         }
 
-        return new GSequence(toArray(flattened));
+        return new GSequence(location, gramat, flattened.toArray(new GExpression[0]));
     }
 
     @Override
-    public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        return new Sequence(compileAll(expressions, gramat, compiled));
+    public Element compile(Map<String, Element> compiled) {
+        return new Sequence(compileAll(expressions, compiled));
     }
 
     @Override
-    public boolean isPlain(Gramat gramat) {
-        return areAllPlain(expressions, gramat);
-    }
+    public void validate_r(GControl control) {
+        boolean hasProducer = false;
 
-    @Override
-    public boolean isOptional(Gramat gramat) {
-        for (GElement expression : expressions) {
-            if (!expression.isOptional(gramat)) {
-                return false;
+        for (GExpression expression : expressions) {
+            if (expression.hasWildProducers()) {
+                if (hasProducer) {
+                    throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
+                }
+
+                hasProducer = true;
             }
         }
 
-        return true;
+        validate_r(control, expressions);
     }
 
     @Override
-    public List<GElement> getChildren() {
-        return Arrays.asList(expressions);
+    public boolean hasWildProducers_r(GControl control) {
+        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
+    }
+
+    @Override
+    public boolean hasWildMutations_r(GControl control) {
+        return Arrays.stream(expressions).anyMatch(e -> e.hasWildMutations_r(control));
+    }
+
+    @Override
+    public boolean isOptional_r(GControl control) {
+        return expressions.length == 0
+            || Arrays.stream(expressions).allMatch(e -> e.isOptional_r(control));
     }
 }

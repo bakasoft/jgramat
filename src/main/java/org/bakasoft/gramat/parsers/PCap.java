@@ -1,88 +1,116 @@
-package org.bakasoft.gramat.parsing.elements.captures;
+package org.bakasoft.gramat.parsers;
 
+import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.Location;
 import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.elements.templates.*;
+import org.bakasoft.gramat.parsing.elements.mutations.GDynamicProperty;
+import org.bakasoft.gramat.parsing.elements.mutations.GNamedProperty;
+import org.bakasoft.gramat.parsing.elements.producers.GList;
+import org.bakasoft.gramat.parsing.elements.producers.GObject;
+import org.bakasoft.gramat.parsing.elements.producers.GValue;
+import org.bakasoft.gramat.parsing.elements.transforms.GIgnore;
+import org.bakasoft.gramat.parsing.elements.transforms.GReplaceMap;
+import org.bakasoft.gramat.parsing.elements.transforms.GReplaceString;
+import org.bakasoft.gramat.parsing.elements.transforms.GTransform;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 import org.bakasoft.gramat.parsing.literals.GMap;
 import org.bakasoft.gramat.parsing.literals.GToken;
 
-import java.util.HashMap;
 import java.util.Map;
 
-abstract public class GCapture extends GElement {
+// Parsing capturing
+interface PCap {
 
-    private static final String OBJECT = "object";
-    private static final String LIST = "list";
-    private static final String VALUE = "value";
-    private static final String TRANSFORM = "transform";
-    private static final String FUNCTION = "function";
-    private static final String CALL = "call";
-    private static final String IGNORE = "ignore";
-    private static final String REPLACE = "replace";
-    private static final String SET = "set";
-    private static final String ADD = "add";
-    private static final String SET_KEY_VALUE = "set-key-value";
-    private static final String SET_VALUE_KEY = "set-value-key";
-    private static final String ADD_KEY_VALUE = "add-key-value";
-    private static final String ADD_VALUE_KEY = "add-value-key";
+    String OBJECT = "object";
+    String LIST = "list";
+    String VALUE = "value";
+    String TRANSFORM = "transform";
+    String FUNCTION = "function";
+    String CALL = "call";
+    String IGNORE = "ignore";
+    String REPLACE = "replace";
+    String SET = "set";
+    String ADD = "add";
+    String SET_KEY_VALUE = "set-key-value";
+    String SET_VALUE_KEY = "set-value-key";
+    String ADD_KEY_VALUE = "add-key-value";
+    String ADD_VALUE_KEY = "add-value-key";
 
-    public static GCapture create(Tape tape, String keyword, GArray options, GElement[] arguments) {
+    static GExpression create(Location location, Gramat gramat, Tape tape, String keyword, GArray options, GExpression[] arguments) {
         try {
             if (OBJECT.equals(keyword)) {
                 return new GObject(
+                    location.range(),
                     optionalString(options),
                     mandatoryExpression(arguments)
                 );
             } else if (LIST.equals(keyword)) {
                 return new GList(
+                    location.range(),
                     optionalString(options),
                     mandatoryExpression(arguments)
                 );
             } else if (VALUE.equals(keyword)) {
                 return new GValue(
+                    location.range(),
                     optionalString(options),
                     mandatoryExpression(arguments)
                 );
             } else if (TRANSFORM.equals(keyword)) {
                 return new GTransform(
+                    location.range(),
                     optionalString(options),
                     mandatoryExpression(arguments)
                 );
             } else if (FUNCTION.equals(keyword)) {
-                return new GFunction(null,
+                return new GFunction(
+                    location.range(),
+                    null,
                     options.forceStringList().toArray(new String[0]),
                     mandatoryExpression(arguments));
             } else if (CALL.equals(keyword)) {
                 return new GInvocation(
+                    location.range(),
+                    gramat,
                     mandatoryString(options),
                     arrayExpressions(arguments, 1, null)
                 );
             } else if (IGNORE.equals(keyword)) {
                 emptyLiterals(options);
-                return new GIgnore(mandatoryExpression(arguments));
+                return new GIgnore(
+                    location.range(),
+                    mandatoryExpression(arguments));
             } else if (REPLACE.equals(keyword)) {
                 GLiteral literal = singleLiteral(options);
 
                 if (literal instanceof GMap) {
                     Map<String, String> replacements = literal.forceStringMap();
-                    return new GReplaceMap(replacements,
+                    return new GReplaceMap(
+                        location.range(),
+                        replacements,
                         mandatoryExpression(arguments));
                 } else if (literal instanceof GToken) {
                     String replacement = literal.forceString();
-                    return new GReplaceString(replacement,
+                    return new GReplaceString(
+                        location.range(),
+                        replacement,
                         mandatoryExpression(arguments));
                 } else {
                     throw new RuntimeException();
                 }
             } else if (SET.equals(keyword)) {
                 return new GNamedProperty(
+                    location.range(),
                     mandatoryString(options),
                     false,
                     mandatoryExpression(arguments));
             } else if (ADD.equals(keyword)) {
                 return new GNamedProperty(
+                    location.range(),
                     optionalString(options),
                     true,
                     mandatoryExpression(arguments));
@@ -93,9 +121,11 @@ abstract public class GCapture extends GElement {
                 emptyLiterals(options);
                 arrayExpressions(arguments, 2, 3);
                 if (arguments.length == 2) {
-                    return new GDynamicProperty(arguments[0], null, arguments[1], appendMode, invertMode);
+                    return new GDynamicProperty(location.range(), gramat,
+                        arguments[0], null, arguments[1], appendMode, invertMode);
                 }
-                return new GDynamicProperty(arguments[0], arguments[1], arguments[2], appendMode, invertMode);
+                return new GDynamicProperty(location.range(), gramat,
+                    arguments[0], arguments[1], arguments[2], appendMode, invertMode);
             }
         }
         catch (Exception e) {
@@ -105,13 +135,13 @@ abstract public class GCapture extends GElement {
         throw new GrammarException("invalid capture: " + keyword, tape.getLocation());
     }
 
-    private static void emptyLiterals(GArray literals) throws Exception {
+    static void emptyLiterals(GArray literals) throws Exception {
         if (literals.size() > 0) {
             throw new Exception("no expected arguments");
         }
     }
 
-    private static GLiteral singleLiteral(GArray literals) throws Exception {
+    static GLiteral singleLiteral(GArray literals) throws Exception {
         if (literals.size() != 1) {
             throw new Exception("expected only one argument");
         }
@@ -119,7 +149,7 @@ abstract public class GCapture extends GElement {
         return literals.get(0);
     }
 
-    private static String optionalString(GArray literals) throws Exception {
+    static String optionalString(GArray literals) throws Exception {
         if (literals.size() == 0) {
             return null;
         }
@@ -127,11 +157,11 @@ abstract public class GCapture extends GElement {
         return singleLiteral(literals).forceString();
     }
 
-    private static String mandatoryString(GArray literals) throws Exception {
+    static String mandatoryString(GArray literals) throws Exception {
         return singleLiteral(literals).forceString();
     }
 
-    private static GElement[] arrayExpressions(GElement[] elements, int minimum, Integer maximum) throws Exception {
+    static GExpression[] arrayExpressions(GExpression[] elements, int minimum, Integer maximum) throws Exception {
         if (elements.length < minimum) {
             throw new Exception("not expected less than " + minimum + " arguments: " + elements.length);
         }
@@ -142,7 +172,7 @@ abstract public class GCapture extends GElement {
         return elements;
     }
 
-    private static GElement mandatoryExpression(GElement[] elements) throws Exception {
+    static GExpression mandatoryExpression(GExpression[] elements) throws Exception {
         if (elements.length != 1) {
             throw new Exception("Expected only one expression");
         }

@@ -3,8 +3,8 @@ package org.bakasoft.gramat.parsing;
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.inspect.Inspector;
 import org.bakasoft.gramat.parsing.elements.*;
-import org.bakasoft.gramat.parsing.elements.captures.GObject;
-import org.bakasoft.gramat.parsing.elements.captures.GNamedProperty;
+import org.bakasoft.gramat.parsing.elements.producers.GObject;
+import org.bakasoft.gramat.parsing.elements.mutations.GNamedProperty;
 
 public class GStringifier {
 
@@ -152,9 +152,9 @@ public class GStringifier {
     private static void stringifyRepetition(GRepetition rep, StringBuilder output, boolean grouped) {
         output.append('{');
 
-        if (rep.minimum != null) {
+        if (rep.minimum > 0) {
             output.append(rep.minimum);
-            if (rep.maximum != null) {
+            if (rep.maximum > 0) {
                 output.append(',');
                 output.append(rep.maximum);
 

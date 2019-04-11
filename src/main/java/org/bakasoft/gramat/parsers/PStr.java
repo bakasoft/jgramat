@@ -4,6 +4,7 @@ import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.elements.GString;
 
+// Parsing strings
 interface PStr {
 
   static String expectQuotedToken(Tape tape, char delimiter) {

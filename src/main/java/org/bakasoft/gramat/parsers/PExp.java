@@ -2,19 +2,22 @@ package org.bakasoft.gramat.parsers;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.Location;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.elements.*;
-import org.bakasoft.gramat.parsing.elements.captures.GCapture;
 import org.bakasoft.gramat.parsing.literals.GArray;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
 import java.util.ArrayList;
 
+// Parsing expressions
 interface PExp {
 
-  static GElement expectExpression(Gramat gramat, Tape tape) {
-    ArrayList<GElement> expressions = new ArrayList<>();
-    ArrayList<GElement> buffer = new ArrayList<>();
+  static GExpression expectExpression(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
+    ArrayList<GExpression> expressions = new ArrayList<>();
+    ArrayList<GExpression> buffer = new ArrayList<>();
     Runnable flushBuffer = () -> {
       if (buffer.isEmpty()) {
         throw new GrammarException("expected some elements", tape.getLocation());
@@ -23,13 +26,13 @@ interface PExp {
         expressions.add(buffer.get(0));
       }
       else {
-        expressions.add(new GSequence(buffer.toArray(new GElement[0])));
+        expressions.add(new GSequence(location.range(), gramat, buffer.toArray(new GExpression[0])));
       }
 
       buffer.clear();
     };
 
-    GElement unit;
+    GExpression unit;
     boolean createAlternation = false;
 
     while ((unit = tryExpressionUnit(gramat, tape)) != null) {
@@ -67,10 +70,10 @@ interface PExp {
       return expressions.get(0);
     }
 
-    return new GAlternation(expressions.toArray(new GElement[0]));
+    return new GAlternation(location.range(), gramat, expressions.toArray(new GExpression[0]));
   }
 
-  static GElement tryExpressionUnit(Gramat gramat, Tape tape) {
+  static GExpression tryExpressionUnit(Gramat gramat, Tape tape) {
     int pos0 = tape.getPosition();
 
     // check for statements beginning
@@ -79,7 +82,7 @@ interface PExp {
       return null;
     }
     else if (PCom.isLetter(tape)) {
-      return expectReference(tape);
+      return expectReference(gramat, tape);
     }
     else if (PCom.isChar(tape, PCat.CAPTURE_BEGIN)) {
       return expectCapture(gramat, tape);
@@ -97,13 +100,13 @@ interface PExp {
       return expectGroup(gramat, tape);
     }
     else if (PCom.isChar(tape, PCat.SYMBOL_DELIMITER)) {
-      return expectString(tape);
+      return expectString(gramat, tape);
     }
     else if (PCom.isChar(tape, PCat.PREDICATE_DELIMITER)) {
-      return expectPredicate(tape);
+      return expectPredicate(gramat, tape);
     }
     else if (PCom.trySymbol(tape, PCat.END_OPERATOR)) {
-      return new GTerminator();
+      return expectTerminator(gramat, tape);
     }
 
     // unknown char
@@ -111,35 +114,36 @@ interface PExp {
     return null;
   }
 
-  static GElement expectReference(Tape tape) {
+  static GReference expectReference(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
     String name = PTok.expectName(tape, "reference");
 
-    return new GReference(name);
+    return new GReference(location.range(), gramat, name);
   }
 
-  static GString expectString(Tape tape) {
+  static GString expectString(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
     String content = PStr.expectQuotedToken(tape, PCat.SYMBOL_DELIMITER);
 
-    return new GString(content);
+    return new GString(location.range(), gramat, content);
   }
 
-  static GElement expectGroup(Gramat gramat, Tape tape) {
+  static GExpression expectGroup(Gramat gramat, Tape tape) {
     PCom.expectSymbol(tape, PCat.GROUP_BEGIN);
-
     PCom.skipVoid(tape);
 
-    GElement expression = expectExpression(gramat, tape);
+    GExpression expression = expectExpression(gramat, tape);
 
     PCom.skipVoid(tape);
-
     PCom.expectSymbol(tape, PCat.GROUP_END);
 
     return expression;
   }
 
   static GRepetition expectRepetition(Gramat gramat, Tape tape) {
-    PCom.expectSymbol(tape, PCat.REPETITION_BEGIN);
+    Location location = tape.getLocation();
 
+    PCom.expectSymbol(tape, PCat.REPETITION_BEGIN);
     PCom.skipVoid(tape);
 
     Integer minimum;
@@ -176,8 +180,8 @@ interface PExp {
       }
     }
 
-    GElement expression = expectExpression(gramat, tape);
-    GElement separator;
+    GExpression expression = expectExpression(gramat, tape);
+    GExpression separator;
 
     PCom.skipVoid(tape);
 
@@ -194,10 +198,11 @@ interface PExp {
 
     PCom.expectSymbol(tape, PCat.REPETITION_END);
 
-    return new GRepetition(minimum, maximum, expression, separator);
+    return new GRepetition(location.range(), gramat, minimum, maximum, expression, separator);
   }
 
-  static GPredicate expectPredicate(Tape tape) {
+  static GPredicate expectPredicate(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
     ArrayList<GPredicate.Condition> conditions = new ArrayList<>();
 
     PCom.expectSymbol(tape, PCat.PREDICATE_DELIMITER);
@@ -226,40 +231,41 @@ interface PExp {
 
     PCom.expectSymbol(tape, PCat.PREDICATE_DELIMITER);
 
-    return new GPredicate(conditions.toArray(new GPredicate.Condition[0]));
+    return new GPredicate(location.range(), gramat, conditions.toArray(new GPredicate.Condition[0]));
   }
 
   static GOptional expectOptional(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
+
     PCom.expectSymbol(tape, PCat.OPTIONAL_BEGIN);
-
     PCom.skipVoid(tape);
 
-    GElement expression = expectExpression(gramat, tape);
+    GExpression expression = expectExpression(gramat, tape);
 
     PCom.skipVoid(tape);
-
     PCom.expectSymbol(tape, PCat.OPTIONAL_END);
 
-    return new GOptional(expression);
+    return new GOptional(location.range(), expression);
   }
 
   static GNegation expectNegation(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
+
     PCom.expectSymbol(tape, PCat.NEGATION_BEGIN);
-
     PCom.skipVoid(tape);
 
-    GElement expression = expectExpression(gramat, tape);
+    GExpression expression = expectExpression(gramat, tape);
 
     PCom.skipVoid(tape);
-
     PCom.expectSymbol(tape, PCat.NEGATION_END);
 
-    return new GNegation(expression);
+    return new GNegation(location.range(), expression);
   }
 
-  static GCapture expectCapture(Gramat gramat, Tape tape) {
-    PCom.expectSymbol(tape, PCat.CAPTURE_BEGIN);
+  static GExpression expectCapture(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
 
+    PCom.expectSymbol(tape, PCat.CAPTURE_BEGIN);
     PCom.skipVoid(tape);
 
     String keyword = PTok.expectName(tape, "capture keyword");
@@ -267,7 +273,7 @@ interface PExp {
     PCom.skipVoid(tape);
 
     GArray options = new GArray();
-    ArrayList<GElement> arguments = new ArrayList<>();
+    ArrayList<GExpression> arguments = new ArrayList<>();
 
     while (PCom.trySymbol(tape, PCat.CAPTURE_ARGUMENT_MARK)) {
       PCom.skipVoid(tape);
@@ -283,7 +289,7 @@ interface PExp {
       PCom.skipVoid(tape);
 
       do {
-        GElement argument = expectExpression(gramat, tape);
+        GExpression argument = expectExpression(gramat, tape);
 
         arguments.add(argument);
 
@@ -296,9 +302,13 @@ interface PExp {
       while (!PCom.trySymbol(tape, PCat.GROUP_END));
     }
 
-    return GCapture.create(tape, keyword,
+    return PCap.create(location, gramat, tape, keyword,
         options,
-        arguments.toArray(new GElement[0]));
+        arguments.toArray(new GExpression[0]));
   }
 
+  static GExpression expectTerminator(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
+    return new GTerminator(location.range(), gramat);
+  }
 }

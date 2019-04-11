@@ -4,13 +4,14 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.PathResolver;
 import org.bakasoft.gramat.Tape;
+import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.GRule;
 import org.bakasoft.gramat.parsing.directives.GDirective;
-import org.bakasoft.gramat.parsing.elements.GElement;
+import org.bakasoft.gramat.parsing.GElement;
 
 public interface Parser {
 
-  static GElement expectExpression(Gramat gramat, Tape tape) {
+  static GExpression expectExpression(Gramat gramat, Tape tape) {
     return PExp.expectExpression(gramat, tape);
   }
 

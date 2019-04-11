@@ -2,15 +2,10 @@ package org.bakasoft.gramat.parsing.directives;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.PathResolver;
-import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.GTest;
-import org.bakasoft.gramat.parsing.elements.GElement;
 import org.bakasoft.gramat.parsing.literals.GArray;
-import org.bakasoft.gramat.parsing.literals.GLiteral;
-import org.bakasoft.gramat.parsing.literals.GToken;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

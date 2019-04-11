@@ -75,8 +75,9 @@ public class ObjectBuilder {
         else if (values.size() == 1) {
             return values.get(0);
         }
-
-        return values.toArray();
+        else {
+            throw new RuntimeException("too many results");
+        }
     }
 
     abstract private static class Edit {

@@ -12,5 +12,5 @@
     <orderEntry type="module" module-name="org.bakasoft.gramat.gramat.main" />
     <orderEntry type="library" name="Gradle: com.github.bakasoft:framboyan:v1.1" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="org.bakasoft.gramat.gramat.main" />
+  <component name="TestModuleProperties" production-module="gramat.main" />
 </module>

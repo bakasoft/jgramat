@@ -5,6 +5,7 @@ import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.literals.GLiteral;
 
+// Parsing tokens
 interface PTok {
 
   static String expectName(Tape tape, String description) {

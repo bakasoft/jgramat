@@ -2,7 +2,6 @@ package org.bakasoft.gramat.elements;
 
 import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.parsers.Parser;
-import org.bakasoft.gramat.parsing.elements.GElement;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ abstract public class Element {
         Gramat gramat = new Gramat();
         return Parser.expectExpression(gramat, new Tape(null, code))
                 .simplify()
-                .compile(gramat, new HashMap<>());
+                .compile(new HashMap<>());
     }
 
     abstract protected boolean parseImpl(Context ctx);

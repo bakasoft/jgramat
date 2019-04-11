@@ -2,6 +2,7 @@ package org.bakasoft.gramat.parsers;
 
 import org.bakasoft.gramat.*;
 
+// Parsing common things
 interface PCom {
 
   static boolean trySymbol(Tape tape, char symbol) {

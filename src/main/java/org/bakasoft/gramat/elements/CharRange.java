@@ -16,7 +16,7 @@ public class CharRange extends Element {
         this.predicate = predicate;
 
         if (predicate == null) {
-            throw new GrammarException();
+            throw new RuntimeException();
         }
     }
 

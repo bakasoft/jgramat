@@ -1,61 +1,63 @@
 package org.bakasoft.gramat.parsing.elements;
 
+import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Alternation;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.GExpressionNC;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public class GAlternation extends GElement {
+public class GAlternation extends GExpressionNC {
 
-    public final GElement[] expressions;
-
-    public GAlternation(GElement[] expressions) {
-        this.expressions = Objects.requireNonNull(expressions);
+    public GAlternation(LocationRange location, Gramat gramat, GExpression[] expressions) {
+        super(location, gramat, expressions);
     }
 
     @Override
-    public List<GElement> getChildren() {
-        return Arrays.asList(expressions);
-    }
-
-    @Override
-    public GElement simplify() {
-        GElement[] simplification = simplifyAll(expressions);
-
-        if (simplification.length == 0) {
-            return null;
-        }
-        else if (simplification.length == 1) {
-            return simplification[0];
+    public GExpression simplify(GExpression[] simpleExpressions) {
+        if (simpleExpressions.length == 1) {
+            return simpleExpressions[0];
         }
 
-        return new GAlternation(simplification);
+        return new GAlternation(location, gramat, simpleExpressions);
     }
 
     @Override
-    public boolean isPlain(Gramat gramat) {
-        return areAllPlain(expressions, gramat);
-    }
-
-    @Override
-    public boolean isOptional(Gramat gramat) {
-        for (GElement expression : expressions) {
-            if (!expression.isOptional(gramat)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public Element compile(Gramat gramat, Map<String, Element> compiled) {
-        Element[] elements = compileAll(expressions, gramat, compiled);
+    public Element compile(Map<String, Element> compiled) {
+        Element[] elements = compileAll(expressions, compiled);
 
         return new Alternation(elements);
+    }
+
+    @Override
+    public boolean isOptional_r(GControl control) {
+        return expressions.length == 0
+            || Arrays.stream(expressions).allMatch(e -> e.isOptional_r(control));
+    }
+
+    @Override
+    public void validate_r(GControl control) {
+        if (Arrays.stream(expressions).anyMatch(GExpression::hasWildProducers)) {
+            for (GExpression expression : expressions) {
+                if (!expression.hasWildProducers()) {
+                    throw new GrammarException("If one option of an alternation has a producer, all other options must be producers too.", expression.location);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean hasWildProducers_r(GControl control) {
+        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
+    }
+
+    @Override
+    public boolean hasWildMutations_r(GControl control) {
+        return Arrays.stream(expressions).anyMatch(e -> e.hasWildProducers_r(control));
     }
 }

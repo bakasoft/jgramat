@@ -1,10 +1,5 @@
 package org.bakasoft.gramat.parsing.literals;
 
-import org.bakasoft.gramat.GrammarException;
-import org.bakasoft.gramat.Tape;
-import org.bakasoft.gramat.parsing.elements.GElement;
-import org.bakasoft.gramat.parsing.elements.GString;
-
 import java.util.*;
 
 public class GToken implements GLiteral {

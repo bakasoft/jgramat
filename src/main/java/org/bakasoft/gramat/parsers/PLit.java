@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// Parsing literals
 interface PLit {
 
   static GLiteral expectLiteral(Gramat gramat, Tape tape) {

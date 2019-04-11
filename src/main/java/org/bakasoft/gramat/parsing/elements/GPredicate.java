@@ -5,31 +5,28 @@ import org.bakasoft.gramat.elements.CharRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
 import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.GExpression0C;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-public class GPredicate extends GElement {
+public class GPredicate extends GExpression0C {
 
     public final Condition[] conditions;
 
-    public GPredicate(Condition[] conditions) {
+    public GPredicate(LocationRange location, Gramat gramat, Condition[] conditions) {
+        super(location, gramat);
         this.conditions = conditions;
     }
 
     @Override
-    public List<GElement> getChildren() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public GElement simplify() {
+    public GExpression simplify() {
         return this;
     }
 
     @Override
-    public Element compile(Gramat gramat, Map<String, Element> compiled) {
+    public Element compile(Map<String, Element> compiled) {
         // case when there is only one char
         if (conditions.length == 1 && conditions[0] instanceof Option) {
             Option o = (Option)conditions[0];
@@ -72,15 +69,24 @@ public class GPredicate extends GElement {
         });
     }
 
-
     @Override
-    public boolean isPlain(Gramat gramat) {
-        return true;
+    public boolean isOptional_r(GControl control) {
+        return conditions.length == 0;
     }
 
     @Override
-    public boolean isOptional(Gramat gramat) {
-        return conditions.length == 0;
+    public void validate_r(GControl control) {
+        // nothing to validate yet
+    }
+
+    @Override
+    public boolean hasWildProducers_r(GControl control) {
+        return false;
+    }
+
+    @Override
+    public boolean hasWildMutations_r(GControl control) {
+        return false;
     }
 
     public interface Condition {}
