@@ -1,5 +1,7 @@
 package org.bakasoft.gramat.inspect;
 
+import org.bakasoft.gramat.util.CodeWriter;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -10,7 +12,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-public class Inspector {
+public class Inspector extends CodeWriter {
 
     public static final String RECURSION_MARK = "...";
     public static final String NULL_MARK = "null";
@@ -18,17 +20,8 @@ public class Inspector {
 
     public static String inspect(Object value) {
         Inspector output = new Inspector();
-        output.append(value);
+        output.writeAny(value);
         return output.getOutput();
-    }
-
-    @Override
-    public String toString() {
-        return output.toString();
-    }
-
-    public String getOutput() {
-        return output.toString();
     }
 
     private final StringBuilder output;
@@ -39,7 +32,7 @@ public class Inspector {
         inspected = new HashSet<>();
     }
 
-    public void append(Object value) {
+    public void writeAny(Object value) {
         if (value == null) {
             output.append(NULL_MARK);
         }
@@ -55,26 +48,26 @@ public class Inspector {
             output.append(value.toString());
         }
         else if (value instanceof Character) {
-            appendString(value.toString(), STRING_DELIMITER);
+            writeString(value.toString(), STRING_DELIMITER);
         }
         else if (value instanceof CharSequence) {
-            appendString((CharSequence)value, STRING_DELIMITER);
+            writeString((CharSequence)value, STRING_DELIMITER);
         }
         else if (value instanceof Collection) {
-            appendCollection((Collection<?>)value);
+            writeCollection((Collection<?>)value);
         }
         else if (value instanceof Map) {
-            appendMap((Map<?, ?>)value);
+            writeMap((Map<?, ?>)value);
         }
         else if (value.getClass().isArray()) {
-            appendArray(value);
+            writeArray(value);
         }
         else {
-            appendObject(value);
+            writeObject(value);
         }
     }
 
-    public void appendArray(Object array) {
+    public void writeArray(Object array) {
         if (array == null) {
             output.append(NULL_MARK);
         }
@@ -90,7 +83,7 @@ public class Inspector {
                     output.append(',');
                 }
 
-                append(item);
+                writeAny(item);
             }
 
             output.append(']');
@@ -100,7 +93,7 @@ public class Inspector {
         }
     }
 
-    public void appendCollection(Collection<?> collection) {
+    public void writeCollection(Collection<?> collection) {
         if (collection == null) {
             output.append(NULL_MARK);
         }
@@ -113,7 +106,7 @@ public class Inspector {
                     output.append(',');
                 }
 
-                append(item);
+                writeAny(item);
 
                 addComma = true;
             }
@@ -125,7 +118,7 @@ public class Inspector {
         }
     }
 
-    public void appendMap(Map<?,?> map) {
+    public void writeMap(Map<?,?> map) {
         if (map == null) {
             output.append(NULL_MARK);
         }
@@ -137,9 +130,9 @@ public class Inspector {
                     output.append(',');
                 }
 
-                append(entry.getKey());
+                writeAny(entry.getKey());
                 output.append(':');
-                append(entry.getValue());
+                writeAny(entry.getValue());
 
                 addComma = true;
             }
@@ -150,38 +143,28 @@ public class Inspector {
         }
     }
 
-    public void appendChar(char c) {
-        output.append(c);
+    public void writeString(CharSequence content, char delimiter) {
+        writeString(content, delimiter, delimiter);
     }
 
-    public void appendChars(CharSequence text) {
-        if (text != null) {
-            output.append(text);
-        }
-    }
-
-    public void appendString(CharSequence content, char delimiter) {
-        appendString(content, delimiter, delimiter);
-    }
-
-    public void appendString(CharSequence content, char beginDelimiter, char endDelimiter) {
+    public void writeString(CharSequence content, char beginDelimiter, char endDelimiter) {
         if (content == null) {
             output.append(NULL_MARK);
         }
         else {
             output.append(beginDelimiter);
             for (int i = 0; i < content.length(); i++) {
-                appendStringChar(content.charAt(i), beginDelimiter, endDelimiter);
+                writeStringChar(content.charAt(i), beginDelimiter, endDelimiter);
             }
             output.append(endDelimiter);
         }
     }
 
-    public void appendStringChar(char c, char delimiter) {
-        appendStringChar(c, delimiter, delimiter);
+    public void writeStringChar(char c, char delimiter) {
+        writeStringChar(c, delimiter, delimiter);
     }
 
-    public void appendStringChar(char c, char beginDelimiter, char endDelimiter) {
+    public void writeStringChar(char c, char beginDelimiter, char endDelimiter) {
         switch(c) {
             // special escapes
             case '\\':
@@ -219,7 +202,7 @@ public class Inspector {
         }
     }
 
-    public void appendObject(Object instance) {
+    public void writeObject(Object instance) {
         if (instance == null) {
             output.append(NULL_MARK);
         }
@@ -244,16 +227,16 @@ public class Inspector {
                         if (getter != null && getter.getParameterCount() == 0) {
                             String key = property.getName();
                             output.append(',');
-                            appendString(key, STRING_DELIMITER);
+                            writeString(key, STRING_DELIMITER);
                             output.append(':');
                             try {
                                 Object value = getter.invoke(instance);
 
-                                append(value);
+                                writeAny(value);
                             }
                             catch (Exception e) {
                                 output.append('!');
-                                appendString(e.getMessage() != null
+                                writeString(e.getMessage() != null
                                     ? e.getMessage() : e.getClass().getSimpleName(), '<', '>');
                             }
                         }
@@ -270,6 +253,11 @@ public class Inspector {
         else {
             output.append(RECURSION_MARK);
         }
+    }
+
+    @Override
+    public String toString() {
+        return output.toString();
     }
 
 }

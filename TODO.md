@@ -1,0 +1,1 @@
+- add `#schema` directive to validate the schema

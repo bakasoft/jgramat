@@ -6,6 +6,10 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,4 +55,8 @@ public class GFunction extends GExpression1C {
         throw new GrammarException("Functions are not implemented yet.", location);
     }
 
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        throw new GrammarException("Functions are not implemented yet.", location);
+    }
 }

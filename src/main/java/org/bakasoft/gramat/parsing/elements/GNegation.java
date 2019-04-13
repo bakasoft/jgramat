@@ -7,6 +7,10 @@ import org.bakasoft.gramat.elements.Negation;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +23,10 @@ public class GNegation extends GExpression1C {
 
     @Override
     public GExpression simplify(GExpression simpleExpression) {
+        if (expression.isOptional()) {
+            throw new GrammarException("Optional expressions are not allowed inside negations to avoid infinite loops.", expression.location);
+        }
+
         // remove double negation
         if (simpleExpression instanceof GNegation) {
             return ((GNegation)simpleExpression).expression;
@@ -39,10 +47,7 @@ public class GNegation extends GExpression1C {
 
     @Override
     public void validate_r(GControl control) {
-        // TODO verify that negations should not contain producers
-        if (expression.isOptional()) {
-            throw new GrammarException("Optional expressions are not allowed inside negations to avoid infinite loops.", expression.location);
-        }
+
     }
 
     @Override
@@ -55,4 +60,15 @@ public class GNegation extends GExpression1C {
         expression.countWildMutations_r(count, control);
     }
 
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        return control.type(this, result -> {
+            result.addType(expression.generateSchemaType(control, parentEntity, parentField));
+
+            // TODO verify that negations should not contain producers
+            // if (type != null) {
+            //     throw new GrammarException("Negations cannot contain producers.", expression.location);
+            // }
+        });
+    }
 }

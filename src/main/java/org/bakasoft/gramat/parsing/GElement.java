@@ -2,6 +2,10 @@ package org.bakasoft.gramat.parsing;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.LocationRange;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 abstract public class GElement {
 

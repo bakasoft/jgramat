@@ -12,11 +12,8 @@ import java.util.function.Function;
 
 public class GValue extends GProducer {
 
-    public final String typeName;
-
     public GValue(LocationRange location, String typeName, GExpression expression) {
-        super(location, expression);
-        this.typeName = typeName;
+        super(location, typeName, false, expression);
     }
 
     @Override

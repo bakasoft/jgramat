@@ -45,10 +45,16 @@ public class CodeWriter {
         output.append(c);
     }
 
-    public void write(String code) {
-        for (int i = 0; i < code.length(); i++) {
-            write(code.charAt(i));
+    public void write(CharSequence code) {
+        if (code != null) {
+            for (int i = 0; i < code.length(); i++) {
+                write(code.charAt(i));
+            }
         }
+    }
+
+    public String getOutput() {
+        return output.toString();
     }
 
     @Override

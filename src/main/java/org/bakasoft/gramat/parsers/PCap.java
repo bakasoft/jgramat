@@ -5,6 +5,7 @@ import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.Location;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.GExpression;
+import org.bakasoft.gramat.parsing.elements.producers.GUnion;
 import org.bakasoft.gramat.parsing.elements.templates.*;
 import org.bakasoft.gramat.parsing.elements.mutations.GDynamicProperty;
 import org.bakasoft.gramat.parsing.elements.mutations.GNamedProperty;
@@ -28,6 +29,7 @@ interface PCap {
     String OBJECT = "object";
     String LIST = "list";
     String VALUE = "value";
+    String UNION = "union";
     String TRANSFORM = "transform";
     String FUNCTION = "function";
     String CALL = "call";
@@ -60,6 +62,8 @@ interface PCap {
                     optionalString(options),
                     mandatoryExpression(arguments)
                 );
+            } else if (UNION.equals(keyword)) {
+                return new GUnion(location.range(), gramat, arguments);
             } else if (TRANSFORM.equals(keyword)) {
                 return new GTransform(
                     location.range(),

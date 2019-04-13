@@ -6,7 +6,12 @@ import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
 import org.bakasoft.gramat.plugins.*;
+import org.bakasoft.gramat.schema.Schema;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 import org.bakasoft.gramat.util.FileHelper;
 
 import java.nio.file.Path;
@@ -147,12 +152,20 @@ public class Gramat {
     public Map<String, Element> compile() {
         HashMap<String, Element> compiled = new HashMap<>();
 
-        // simplify & compile
+        // TODO simplification should be done immediately after parsing
+        // simplify rules
         for (int i = 0; i < rules.size(); i++) {
             GRule rule = rules.get(i).simplify();
 
             rules.set(i, rule);
+        }
 
+        // validate rules
+        // TODO should the schema be validated?
+        generateSchema();
+
+        // compile rules
+        for (GRule rule : rules) {
             rule.validate();
 
             Element element = rule.compile(compiled);
@@ -310,5 +323,18 @@ public class Gramat {
         else {
             throw new RuntimeException("plugin is not variable: " +  name);
         }
+    }
+
+    public Schema generateSchema() {
+        Schema schema = new Schema();
+        SchemaControl control = new SchemaControl(schema);
+
+        for (GRule rule : rules) {
+            rule.expression.generateSchemaType(control, null, null);
+        }
+
+        System.out.println(schema.inspect());
+
+        return schema;
     }
 }

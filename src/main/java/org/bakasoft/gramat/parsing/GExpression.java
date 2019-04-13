@@ -5,6 +5,10 @@ import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.elements.GReference;
 import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +30,9 @@ abstract public class GExpression extends GElement {
   abstract public void countWildProducers_r(AtomicInteger count, GControl control);
 
   abstract public void countWildMutations_r(AtomicInteger count, GControl control);
+
+//  public abstract void collectSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField, SchemaType result);
+  public abstract SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField);
 
   public GExpression(LocationRange location, Gramat gramat) {
     super(location, gramat);

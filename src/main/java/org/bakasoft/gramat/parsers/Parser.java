@@ -29,7 +29,7 @@ public interface Parser {
       else if (PCom.isLetter(tape)) {
         GRule rule = PStm.expectRule(gramat, tape);
 
-        gramat.addRule(rule);
+        gramat.addRule(rule.simplify());
       }
       else {
         active = false;

@@ -5,13 +5,44 @@ import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 abstract public class GProducer extends GExpression1C {
 
-  public GProducer(LocationRange location, GExpression expression) {
+  public final String typeName;
+  public final boolean appendMode;
+
+  public GProducer(LocationRange location, String typeName, boolean appendMode, GExpression expression) {
     super(location, expression);
+    this.typeName = typeName;
+    this.appendMode = appendMode;
+  }
+
+  public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+    String name = (typeName != null ? typeName : "Type" + Integer.toHexString(hashCode()));
+    SchemaEntity entity = control.schema.mergeEntity(name);
+
+    return control.type(this, () -> {
+      SchemaType result = new SchemaType();
+
+      result.addEntity(entity);
+
+      if (appendMode) {
+        result.setList(true);
+      }
+
+      return result;
+    }, () -> {
+      // parent field is null because producers absorb mutations
+      if (expression.generateSchemaType(control, entity, null).hasEntities()) {
+        throw new GrammarException("Nested types are not supported.", expression.location);
+      }
+    });
   }
 
   @Override

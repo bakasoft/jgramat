@@ -117,21 +117,21 @@ public class Tape {
         int end = Math.min(length, start + sampleSize);
 
         if (start == 0) {
-            inspector.appendChar('"');
+            inspector.write('"');
         }
         else {
-            inspector.appendChar('…');
+            inspector.write('…');
         }
 
         for (int i = 0; i < end; i++) {
-            inspector.appendStringChar(content[i], '"');
+            inspector.writeStringChar(content[i], '"');
         }
 
         if (end == length) {
-            inspector.appendChar('"');
+            inspector.write('"');
         }
         else {
-            inspector.appendChar('…');
+            inspector.write('…');
         }
 
         return inspector.getOutput();

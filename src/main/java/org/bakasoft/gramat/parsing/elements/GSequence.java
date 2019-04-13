@@ -8,6 +8,10 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,19 +51,19 @@ public class GSequence extends GExpressionNC {
 
     @Override
     public void validate_r(GControl control) {
-        boolean hasProducer = false;
-
-        for (GExpression expression : expressions) {
-            if (expression.countWildProducers() > 0) {
-                if (hasProducer) {
-                    throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
-                }
-
-                hasProducer = true;
-            }
-        }
-
-        validate_r(control, expressions);
+//        boolean hasProducer = false;
+//
+//        for (GExpression expression : expressions) {
+//            if (expression.countWildProducers() > 0) {
+//                if (hasProducer) {
+//                    throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
+//                }
+//
+//                hasProducer = true;
+//            }
+//        }
+//
+//        validate_r(control, expressions);
     }
 
     @Override
@@ -76,5 +80,20 @@ public class GSequence extends GExpressionNC {
     public boolean isOptional_r(GControl control) {
         return expressions.length == 0
             || Arrays.stream(expressions).allMatch(e -> e.isOptional_r(control));
+    }
+
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        return control.type(this, result -> {
+            for (GExpression expression : expressions) {
+                SchemaType type = expression.generateSchemaType(control, parentEntity, parentField);
+
+                if (result.hasEntities()) {
+                    throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
+                }
+
+                result.addType(type);
+            }
+        });
     }
 }

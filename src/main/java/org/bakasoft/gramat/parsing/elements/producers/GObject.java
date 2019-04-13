@@ -4,18 +4,13 @@ import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.ObjectElement;
 import org.bakasoft.gramat.parsing.GExpression;
-import org.bakasoft.gramat.parsing.util.GControl;
-import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.*;
 
 public class GObject extends GProducer {
 
-    public final String typeName;
-
     public GObject(LocationRange location, String typeName, GExpression expression) {
-        super(location, expression);
-        this.typeName = typeName;
+        super(location, typeName, false, expression);
     }
 
     @Override
@@ -31,5 +26,4 @@ public class GObject extends GProducer {
 
         return new ObjectElement(type, element);
     }
-
 }

@@ -8,6 +8,11 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.Schema;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -43,13 +48,13 @@ public class GAlternation extends GExpressionNC {
 
     @Override
     public void validate_r(GControl control) {
-        if (Arrays.stream(expressions).anyMatch(e -> e.countWildProducers() > 0)) {
-            for (GExpression expression : expressions) {
-                if (expression.countWildProducers() == 0) {
-                    throw new GrammarException("If one option of an alternation has a producer, all other options must be producers too.", expression.location);
-                }
-            }
-        }
+//        if (Arrays.stream(expressions).anyMatch(e -> e.countWildProducers() > 0)) {
+//            for (GExpression expression : expressions) {
+//                if (expression.countWildProducers() == 0) {
+//                    throw new GrammarException("If one option of an alternation has a producer, all other options must be producers too.", expression.location);
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -60,5 +65,20 @@ public class GAlternation extends GExpressionNC {
     @Override
     public void countWildMutations_r(AtomicInteger count, GControl control) {
         Arrays.stream(expressions).forEach(e -> e.countWildProducers_r(count, control));
+    }
+
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        return control.type(this, result -> {
+            for (GExpression currentExpr : expressions) {
+                SchemaType currentType = currentExpr.generateSchemaType(control, parentEntity, parentField);
+
+                if (currentType.hasEntities()) {
+                    throw new GrammarException("Alternations can't have producers, use @union instead.", currentExpr.location);
+                }
+            }
+
+            // must be empty type
+        });
     }
 }

@@ -2,6 +2,7 @@ package org.bakasoft.gramat.parsers;
 
 import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.GrammarException;
+import org.bakasoft.gramat.Location;
 import org.bakasoft.gramat.Tape;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.GRule;
@@ -40,6 +41,7 @@ interface PStm {
   }
 
   static GRule expectRule(Gramat gramat, Tape tape) {
+    Location location = tape.getLocation();
     String name = PTok.expectName(tape, "rule name");
 
     PCom.skipVoid(tape);
@@ -52,7 +54,7 @@ interface PStm {
 
     GExpression expression = PExp.expectExpression(gramat, tape);
 
-    return new GRule(name, expression);
+    return new GRule(location.range(), name, expression);
   }
 
   static GDirective expectDirective(Gramat gramat, Tape tape) {

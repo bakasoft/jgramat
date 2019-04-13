@@ -1,3 +1,13 @@
 #import 'json.gmt'
 
 #pass '{}' Json {}
+
+/*
+#schema Object {
+  :
+}
+
+#schema Json [
+
+]
+*/

@@ -12,11 +12,8 @@ import java.util.Map;
 
 public class GList extends GProducer {
 
-    public final String typeName;
-
     public GList(LocationRange location, String typeName, GExpression expression) {
-        super(location, expression);
-        this.typeName = typeName;
+        super(location, typeName, true, expression);
     }
 
     @Override

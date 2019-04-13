@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.parsing;
 
-import org.bakasoft.gramat.Gramat;
+import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsing.elements.templates.*;
 import org.bakasoft.gramat.parsing.elements.producers.GList;
@@ -8,17 +8,22 @@ import org.bakasoft.gramat.parsing.elements.producers.GObject;
 import org.bakasoft.gramat.parsing.elements.producers.GValue;
 import org.bakasoft.gramat.parsing.elements.transforms.GTransform;
 import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.Schema;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
-public class GRule {
+public class GRule extends GElement {
 
   public final String name;
   public final GExpression expression;
 
-  public GRule(String name, GExpression expression) {
+  public GRule(LocationRange location, String name, GExpression expression) {
+    super(location, expression.gramat);
     this.name = Objects.requireNonNull(name);
     this.expression = Objects.requireNonNull(expression);
   }
@@ -30,7 +35,7 @@ public class GRule {
       return null;
     }
 
-    return new GRule(name, resolveNames(name, simplified));
+    return new GRule(location, name, resolveNames(name, simplified));
   }
 
   private static GExpression resolveNames(String name, GExpression expression) {
@@ -76,4 +81,5 @@ public class GRule {
   public void validate() {
     expression.validate_r(new GControl());
   }
+
 }

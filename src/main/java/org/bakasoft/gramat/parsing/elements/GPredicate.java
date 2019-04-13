@@ -8,6 +8,10 @@ import org.bakasoft.gramat.inspect.Inspector;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression0C;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,6 +92,11 @@ public class GPredicate extends GExpression0C {
     @Override
     public void countWildMutations_r(AtomicInteger count, GControl control) {
         // nothing to count
+    }
+
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        return new SchemaType(); // empty type
     }
 
     public interface Condition {}

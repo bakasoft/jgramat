@@ -7,6 +7,11 @@ import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.ValueElement;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.Schema;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,11 +44,32 @@ abstract public class GMutation extends GExpression {
   }
 
   static void validateValueExpression(GExpression valueExpression) {
-    if (valueExpression.countWildMutations() > 0) {
-      throw new GrammarException("Property values cannot have other mutations inside.", valueExpression.location);
+//    if (valueExpression.countWildMutations() > 0) {
+//      throw new GrammarException("Property values cannot have other mutations inside.", valueExpression.location);
+//    }
+//    else if (valueExpression.countWildProducers() >= 2) {
+//      throw new GrammarException("Property values must have only one producer inside.", valueExpression.location);
+//    }
+  }
+
+  static SchemaType generateSchemaType(String propertyName, LocationRange location, GExpression expression, boolean appendMode, SchemaEntity parentEntity, SchemaField parentField, SchemaControl control) {
+    if (parentEntity == null) {
+      throw new GrammarException("Properties must be inside a type.", location);
     }
-    else if (valueExpression.countWildProducers() >= 2) {
-      throw new GrammarException("Property values must have only one producer inside.", valueExpression.location);
+    else if (parentField != null) {
+      throw new GrammarException("Nested properties are not supported.", location);
     }
+
+    return control.type(expression, () -> {
+      System.out.println("MUTATION " + propertyName + "...");
+      SchemaField field = parentEntity.mergeProperty(propertyName);
+      SchemaType type = expression.generateSchemaType(control, parentEntity, field);
+
+      if (appendMode) {
+        field.setList(true);
+      }
+
+      field.setType(type);
+    });
   }
 }

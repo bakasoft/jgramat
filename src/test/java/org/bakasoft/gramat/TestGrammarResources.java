@@ -12,7 +12,7 @@ public class TestGrammarResources extends TestBase {{
             gramat.load(Paths.get("/Users/sergio.pedraza/bakasoft/jgramat/src/test/resources/url.test.gmt"));
             gramat.test();
         });
-        it ("JSON case", () -> {
+        fit ("JSON case", () -> {
             Gramat gramat = new Gramat();
             gramat.addTransformation("hex-to-char",
                     input -> String.valueOf((char)Integer.parseInt(input, 16)));

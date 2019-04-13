@@ -4,8 +4,6 @@ import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.Transformation;
 import org.bakasoft.gramat.parsing.GExpression;
-import org.bakasoft.gramat.parsing.util.GControl;
-import org.bakasoft.gramat.parsing.util.GExpression1C;
 
 import java.util.Map;
 
@@ -24,5 +22,4 @@ public class GIgnore extends GTransformation {
     public Element compile(Map<String, Element> compiled) {
         return new Transformation(expression.compile(compiled), input -> "");
     }
-
 }

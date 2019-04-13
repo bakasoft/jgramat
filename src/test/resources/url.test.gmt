@@ -11,3 +11,14 @@
 }
 
 #fail 'a' Url
+
+/*
+#schema Url {
+  scheme
+  userinfo
+  host
+  port
+  query: { : }
+  fragment
+}
+*/

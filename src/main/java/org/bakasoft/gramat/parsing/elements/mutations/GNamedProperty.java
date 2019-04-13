@@ -1,15 +1,16 @@
 package org.bakasoft.gramat.parsing.elements.mutations;
 
-import org.bakasoft.gramat.GrammarException;
 import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.NamedProperty;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
-import org.bakasoft.gramat.parsing.util.GExpression1C;
+import org.bakasoft.gramat.parsing.util.SchemaControl;
+import org.bakasoft.gramat.schema.SchemaEntity;
+import org.bakasoft.gramat.schema.SchemaField;
+import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GNamedProperty extends GMutation {
 
@@ -60,4 +61,9 @@ public class GNamedProperty extends GMutation {
         validateValueExpression(expression);
     }
 
+    @Override
+    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+        return generateSchemaType(propertyName, location, expression, appendMode,
+            parentEntity, parentField, control);
+    }
 }
