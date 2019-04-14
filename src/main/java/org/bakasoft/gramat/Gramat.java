@@ -177,11 +177,11 @@ public class Gramat {
         return compiled;
     }
 
-    private void resolveReferences(HashMap<String, Element> compiled) {
+    private void resolveReferences(HashMap<String, Element> rules) {
         HashSet<Element> control = new HashSet<>();
 
-        for (Map.Entry<String, Element> entry : compiled.entrySet()) {
-            entry.getValue().resolveInto(compiled, control);
+        for (Map.Entry<String, Element> entry : rules.entrySet()) {
+            entry.getValue().resolveInto(rules, control);
         }
     }
 

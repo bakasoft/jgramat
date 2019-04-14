@@ -5,12 +5,7 @@ import java.util.Set;
 
 public class Termination extends Element {
 
-    // TODO what happen with the constructors?
-    // TODO does this be mapped to `$`?
-
-    public Termination() {
-
-    }
+    public Termination() {}
 
     @Override
     protected boolean parseImpl(Context ctx) {

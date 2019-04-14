@@ -47,15 +47,15 @@ public class CharRange extends Element {
         symbols.add(name);
     }
 
-    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
-        // nothing to be linked
-    }
-
     public String getName() {
         return name;
     }
 
     public CharPredicate getPredicate() {
         return predicate;
+    }
+
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        // nothing to be linked
     }
 }

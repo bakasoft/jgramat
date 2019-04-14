@@ -64,16 +64,17 @@ public class Repetition extends Element {
     }
 
     @Override
-    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
-        if (control.add(this)) {
-            element = resolveInto(rules, control, element);
+    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
+        if (control.add(element)) {
+            element.collectFirstAllowedSymbol(control, symbols);
         }
     }
 
     @Override
-    public void collectFirstAllowedSymbol(Set<Element> control, Set<String> symbols) {
-        if (control.add(element)) {
-            element.collectFirstAllowedSymbol(control, symbols);
+    public void resolveInto(Map<String, Element> rules, Set<Element> control) {
+        if (control.add(this)) {
+            element = resolveInto(rules, control, element);
+            separator = resolveInto(rules, control, element);
         }
     }
 }
