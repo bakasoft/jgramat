@@ -74,7 +74,7 @@ public class Repetition extends Element {
     public void resolveInto(Map<String, Element> rules, Set<Element> control) {
         if (control.add(this)) {
             element = resolveInto(rules, control, element);
-            separator = resolveInto(rules, control, element);
+            separator = resolveInto(rules, control, separator);
         }
     }
 }

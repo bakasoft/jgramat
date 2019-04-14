@@ -37,32 +37,32 @@ public class GPredicate extends GExpression0C {
             return new SingleChar(o.value);
         }
 
-        StringBuilder name = new StringBuilder();
+        Inspector inspector = new Inspector();
         CharPredicate[] predicates = new CharPredicate[conditions.length];
         for (int i = 0; i < predicates.length; i++) {
             if (i > 0) {
-                name.append(' ');
+                inspector.write(' ');
             }
 
             if (conditions[i] instanceof Range) {
                 Range range = (Range)conditions[i];
                 predicates[i] = c -> (c >= range.beginChar && c <= range.endChar);
-                name.append("from ")
-                        .append(Inspector.inspect(range.beginChar))
-                        .append(" to ")
-                        .append(Inspector.inspect(range.endChar));
+                inspector.write("from ");
+                inspector.writeString(range.beginChar, '"');
+                inspector.write(" to ");
+                inspector.writeString(range.endChar, '"');
             }
             else if (conditions[i] instanceof Option) {
                 Option option = (Option)conditions[i];
                 predicates[i] = c -> (c == option.value);
-                name.append(Inspector.inspect(option.value));
+                inspector.writeString(option.value, '"');
             }
             else {
                 throw new UnsupportedOperationException();
             }
         }
 
-        return new CharRange(name.toString(), c -> {
+        return new CharRange(inspector.getOutput(), c -> {
             for (CharPredicate predicate : predicates) {
                 if (predicate.test(c)) {
                     return true;
