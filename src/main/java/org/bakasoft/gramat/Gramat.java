@@ -6,6 +6,7 @@ import org.bakasoft.gramat.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
+import org.bakasoft.gramat.parsing.elements.producers.GProducer;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
 import org.bakasoft.gramat.plugins.*;
 import org.bakasoft.gramat.schema.Schema;
@@ -327,7 +328,10 @@ public class Gramat {
         SchemaControl control = new SchemaControl(schema);
 
         for (GRule rule : rules) {
-            rule.expression.generateSchemaType(control, null, null);
+            // TODO should this be filtered?
+            if (rule.expression instanceof GProducer) {
+                rule.expression.generateSchemaType(control, null, null);
+            }
         }
 
         System.out.println(schema.inspect());
