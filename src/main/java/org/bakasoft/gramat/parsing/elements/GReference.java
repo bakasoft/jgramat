@@ -8,7 +8,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression0C;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -62,9 +61,7 @@ public class GReference extends GExpression0C {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-        GExpression expression = gramat.findExpression(ruleName);
-
-        return expression.generateSchemaType(control, parentEntity, parentField);
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+        return control.reference(this, parentType, parentField);
     }
 }

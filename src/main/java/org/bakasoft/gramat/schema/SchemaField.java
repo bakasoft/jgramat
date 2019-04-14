@@ -5,15 +5,13 @@ import org.bakasoft.gramat.inspect.Inspector;
 
 public class SchemaField implements Inspectable {
 
-  private final SchemaEntity entity;
   private final String name;
 
   private SchemaType type;
 
   private boolean isList;
 
-  public SchemaField(SchemaEntity entity, String name) {
-    this.entity = entity;
+  public SchemaField(String name) {
     this.name = name;
   }
 
@@ -33,7 +31,7 @@ public class SchemaField implements Inspectable {
         output.write('[');
       }
 
-      type.inspectWith(output);
+      type.inspectReferenceWith(output);
 
       if (listMode) {
         output.write(']');
@@ -62,10 +60,6 @@ public class SchemaField implements Inspectable {
 
   public SchemaType getType() {
     return type;
-  }
-
-  public SchemaEntity getEntity() {
-    return entity;
   }
 
 }

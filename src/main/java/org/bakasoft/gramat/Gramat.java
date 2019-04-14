@@ -9,9 +9,6 @@ import org.bakasoft.gramat.parsing.*;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
 import org.bakasoft.gramat.plugins.*;
 import org.bakasoft.gramat.schema.Schema;
-import org.bakasoft.gramat.schema.SchemaEntity;
-import org.bakasoft.gramat.schema.SchemaField;
-import org.bakasoft.gramat.schema.SchemaType;
 import org.bakasoft.gramat.util.FileHelper;
 
 import java.nio.file.Path;

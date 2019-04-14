@@ -8,7 +8,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -55,7 +54,7 @@ public class GInvocation extends GExpressionNC {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
         throw new GrammarException("Function invocation is not implemented yet.", location);
     }
 }

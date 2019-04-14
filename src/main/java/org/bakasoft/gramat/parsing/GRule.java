@@ -2,17 +2,13 @@ package org.bakasoft.gramat.parsing;
 
 import org.bakasoft.gramat.LocationRange;
 import org.bakasoft.gramat.elements.Element;
+import org.bakasoft.gramat.parsing.elements.producers.GUnion;
 import org.bakasoft.gramat.parsing.elements.templates.*;
 import org.bakasoft.gramat.parsing.elements.producers.GList;
 import org.bakasoft.gramat.parsing.elements.producers.GObject;
 import org.bakasoft.gramat.parsing.elements.producers.GValue;
 import org.bakasoft.gramat.parsing.elements.transforms.GTransform;
 import org.bakasoft.gramat.parsing.util.GControl;
-import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.Schema;
-import org.bakasoft.gramat.schema.SchemaEntity;
-import org.bakasoft.gramat.schema.SchemaField;
-import org.bakasoft.gramat.schema.SchemaType;
 
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +52,12 @@ public class GRule extends GElement {
 
       if (gValue.typeName == null) {
         return new GValue(gValue.location, name, gValue.expression);
+      }
+    } else if (expression instanceof GUnion) {
+      GUnion gUnion = (GUnion) expression;
+
+      if (gUnion.typeName == null) {
+        return new GUnion(gUnion.location, expression.gramat, name, gUnion.expressions);
       }
     } else if (expression instanceof GTransform) {
       GTransform gTran = (GTransform) expression;

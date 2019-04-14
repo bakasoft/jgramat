@@ -8,7 +8,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -61,14 +60,8 @@ public class GNegation extends GExpression1C {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-        return control.type(this, result -> {
-            result.addType(expression.generateSchemaType(control, parentEntity, parentField));
-
-            // TODO verify that negations should not contain producers
-            // if (type != null) {
-            //     throw new GrammarException("Negations cannot contain producers.", expression.location);
-            // }
-        });
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+        // TODO verify that negations should not contain producers
+        return expression.generateSchemaType(control, parentType, parentField);
     }
 }

@@ -9,7 +9,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -83,17 +82,19 @@ public class GSequence extends GExpressionNC {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-        return control.type(this, result -> {
-            for (GExpression expression : expressions) {
-                SchemaType type = expression.generateSchemaType(control, parentEntity, parentField);
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+        SchemaType result = null;
 
-                if (result.hasEntities()) {
-                    throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
-                }
+        for (GExpression expression : expressions) {
+            SchemaType type = expression.generateSchemaType(control, parentType, parentField);
 
-                result.addType(type);
+            if (type != null && result != null) {
+                throw new GrammarException("There cannot be more than one producer in the same sequence.", expression.location);
             }
-        });
+
+            result = type;
+        }
+
+        return result;
     }
 }

@@ -1,66 +1,86 @@
 package org.bakasoft.gramat.parsing.util;
 
 import org.bakasoft.gramat.parsing.GExpression;
-import org.bakasoft.gramat.schema.Schema;
-import org.bakasoft.gramat.schema.SchemaEntity;
-import org.bakasoft.gramat.schema.SchemaType;
+import org.bakasoft.gramat.parsing.elements.GReference;
+import org.bakasoft.gramat.parsing.elements.producers.GProducer;
+import org.bakasoft.gramat.parsing.elements.producers.GUnion;
+import org.bakasoft.gramat.schema.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SchemaControl {
 
-  public final Schema schema; // TODO change to private and pass schema as argument
+  private final Schema schema;
   private final HashMap<GExpression, SchemaType> typeMap;
-  private final HashMap<GExpression, SchemaEntity> entityMap;
   private final Stack<GExpression> typeStack;
-  private final Stack<GExpression> entityStack;
-
 
   public SchemaControl(Schema schema) {
     this.schema = schema;
     this.typeMap = new HashMap<>();
-    this.entityMap = new HashMap<>();
     this.typeStack = new Stack<>();
-    this.entityStack = new Stack<>();
   }
 
-  public SchemaType type(GExpression expression, Runnable initializer) {
-    return type(expression, SchemaType::new, result -> initializer.run());
+  public SchemaType union(GUnion expression, Consumer<SchemaType> initializer) {
+    return type(expression, initializer, () -> {
+      String name = expression.typeName != null ? expression.typeName
+          : "Union" + Integer.toHexString(expression.hashCode());
+
+      return schema.mergeType(name);
+    });
   }
 
-  public SchemaType type(GExpression expression, Consumer<SchemaType> initializer) {
-    return type(expression, SchemaType::new, initializer);
+  public SchemaType producer(GProducer expression, Consumer<SchemaType> initializer) {
+    return type(expression, initializer, () -> {
+      String name = (expression.typeName != null ? expression.typeName
+          : "Type" + Integer.toHexString(expression.hashCode()));
+      SchemaType type = schema.mergeType(name);
+
+      if (expression.appendMode) {
+        type.setList(true);
+      }
+
+      return type;
+    });
   }
 
-  public SchemaType type(GExpression expression, Supplier<SchemaType> generator, Runnable initializer) {
-    return type(expression, generator, result -> initializer.run());
+  public SchemaType reference(GReference reference, SchemaType parentType, SchemaField parentField) {
+    GExpression expression = reference.gramat.findExpression(reference.ruleName);
+
+    if (typeStack.contains(expression)) {
+      if (!typeMap.containsKey(expression)) {
+        throw new RuntimeException("it must be initialized!");
+      }
+
+      return typeMap.get(expression);
+    }
+
+    return expression.generateSchemaType(this, parentType, parentField);
   }
 
-  public SchemaType type(GExpression expression, Supplier<SchemaType> generator, Consumer<SchemaType> initializer) {
-    SchemaType value;
+  private SchemaType type(GExpression expression, Consumer<SchemaType> initializer, Supplier<SchemaType> generator) {
+    SchemaType type;
 
     if (typeMap.containsKey(expression)) {
-      value = typeMap.get(expression);
+      type = typeMap.get(expression);
     }
     else {
-      value = generator.get();
+      type = generator.get();
 
-      typeMap.put(expression, value);
+      typeMap.put(expression, type);
     }
 
     if (typeStack.contains(expression)) {
-      return value;
+      return type;
     }
 
     typeStack.push(expression);
-    initializer.accept(value);
+    initializer.accept(type);
     typeStack.pop();
 
-    return value;
+    return type;
   }
 
 }

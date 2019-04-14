@@ -8,38 +8,38 @@ import java.util.Objects;
 
 public class Schema implements Inspectable {
 
-  private final ArrayList<SchemaEntity> entities;
+  private final ArrayList<SchemaType> types;
 
   public Schema() {
-    entities = new ArrayList<>();
+    types = new ArrayList<>();
   }
 
-  public SchemaEntity mergeEntity(String name) {
-    SchemaEntity entity = getEntity(name);
+  public SchemaType mergeType(String name) {
+    SchemaType type = getType(name);
 
-    if (entity != null) {
-      return entity;
+    if (type != null) {
+      return type;
     }
 
-    return createEntity(name);
+    return createType(name);
   }
 
-  public SchemaEntity createEntity(String name) {
-    if (getEntity(name) != null) {
+  public SchemaType createType(String name) {
+    if (getType(name) != null) {
       throw new RuntimeException("type already exists: " + name);
     }
 
-    SchemaEntity entity = new SchemaEntity(this, name);
+    SchemaType type = new SchemaType(name);
 
-    entities.add(entity);
+    types.add(type);
 
-    return entity;
+    return type;
   }
 
-  public SchemaEntity getEntity(String name) {
-    for (SchemaEntity entity : entities) {
-      if (Objects.equals(name, entity.getName())) {
-        return entity;
+  public SchemaType getType(String name) {
+    for (SchemaType type : types) {
+      if (Objects.equals(name, type.getName())) {
+        return type;
       }
     }
 
@@ -48,15 +48,15 @@ public class Schema implements Inspectable {
 
   @Override
   public void inspectWith(Inspector output) {
-    for (SchemaEntity entity : entities) {
-      entity.inspectWith(output);
+    for (SchemaType type : types) {
+      type.inspectWith(output);
       output.breakLine();
       output.breakLine();
     }
   }
 
-  public SchemaEntity[] getEntities() {
-    return entities.toArray(new SchemaEntity[0]);
+  public SchemaType[] getTypes() {
+    return types.toArray(new SchemaType[0]);
   }
 
   @Override

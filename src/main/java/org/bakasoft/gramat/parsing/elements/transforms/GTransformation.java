@@ -6,7 +6,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -44,12 +43,11 @@ abstract public class GTransformation extends GExpression1C {
   }
 
   @Override
-  public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-    return control.type(this, () -> {
-      if (expression.generateSchemaType(control, parentEntity, parentField).hasEntities()) {
-        throw new GrammarException("Transformations cannot contain producers, they are designed only for text.", expression.location);
-      }
-      // must be empty type
-    });
+  public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+    if (expression.generateSchemaType(control, parentType, parentField) != null) {
+      throw new GrammarException("Transformations cannot contain producers, they are designed only for text.", expression.location);
+    }
+
+    return null;
   }
 }

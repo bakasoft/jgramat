@@ -9,8 +9,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpressionNC;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.Schema;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -68,17 +66,15 @@ public class GAlternation extends GExpressionNC {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-        return control.type(this, result -> {
-            for (GExpression currentExpr : expressions) {
-                SchemaType currentType = currentExpr.generateSchemaType(control, parentEntity, parentField);
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+        for (GExpression currentExpr : expressions) {
+            SchemaType type = currentExpr.generateSchemaType(control, parentType, parentField);
 
-                if (currentType.hasEntities()) {
-                    throw new GrammarException("Alternations can't have producers, use @union instead.", currentExpr.location);
-                }
+            if (type != null) {
+                throw new GrammarException("Alternations can't have producers, use @union instead.", currentExpr.location);
             }
+        }
 
-            // must be empty type
-        });
+        return null; // empty type
     }
 }

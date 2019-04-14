@@ -6,7 +6,6 @@ import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression1C;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -23,23 +22,10 @@ abstract public class GProducer extends GExpression1C {
     this.appendMode = appendMode;
   }
 
-  public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-    String name = (typeName != null ? typeName : "Type" + Integer.toHexString(hashCode()));
-    SchemaEntity entity = control.schema.mergeEntity(name);
-
-    return control.type(this, () -> {
-      SchemaType result = new SchemaType();
-
-      result.addEntity(entity);
-
-      if (appendMode) {
-        result.setList(true);
-      }
-
-      return result;
-    }, () -> {
+  public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+   return control.producer(this, entity -> {
       // parent field is null because producers absorb mutations
-      if (expression.generateSchemaType(control, entity, null).hasEntities()) {
+      if (expression.generateSchemaType(control, entity, null) != null) {
         throw new GrammarException("Nested types are not supported.", expression.location);
       }
     });

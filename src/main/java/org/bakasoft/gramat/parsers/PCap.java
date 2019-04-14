@@ -63,7 +63,7 @@ interface PCap {
                     mandatoryExpression(arguments)
                 );
             } else if (UNION.equals(keyword)) {
-                return new GUnion(location.range(), gramat, arguments);
+                return new GUnion(location.range(), gramat, null, arguments);
             } else if (TRANSFORM.equals(keyword)) {
                 return new GTransform(
                     location.range(),

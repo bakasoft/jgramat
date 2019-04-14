@@ -8,7 +8,6 @@ import org.bakasoft.gramat.Gramat;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -101,13 +100,11 @@ public class GRepetition extends GExpression {
     }
 
     @Override
-    public SchemaType generateSchemaType(SchemaControl control, SchemaEntity parentEntity, SchemaField parentField) {
-        return control.type(this, () -> {
-            if (expression.generateSchemaType(control, parentEntity, parentField).hasEntities()) {
-                throw new GrammarException("There cannot be producers inside repetitions, consider wrapping them with mutations.", expression.location);
-            }
+    public SchemaType generateSchemaType(SchemaControl control, SchemaType parentType, SchemaField parentField) {
+        if (expression.generateSchemaType(control, parentType, parentField) != null) {
+            throw new GrammarException("There cannot be producers inside repetitions, consider wrapping them with mutations.", expression.location);
+        }
 
-            // must be empty type
-        });
+        return null; // empty type
     }
 }

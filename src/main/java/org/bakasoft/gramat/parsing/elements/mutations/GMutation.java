@@ -8,8 +8,6 @@ import org.bakasoft.gramat.elements.ValueElement;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.SchemaControl;
-import org.bakasoft.gramat.schema.Schema;
-import org.bakasoft.gramat.schema.SchemaEntity;
 import org.bakasoft.gramat.schema.SchemaField;
 import org.bakasoft.gramat.schema.SchemaType;
 
@@ -52,24 +50,23 @@ abstract public class GMutation extends GExpression {
 //    }
   }
 
-  static SchemaType generateSchemaType(String propertyName, LocationRange location, GExpression expression, boolean appendMode, SchemaEntity parentEntity, SchemaField parentField, SchemaControl control) {
-    if (parentEntity == null) {
+  static SchemaType generateSchemaType(String propertyName, LocationRange location, GExpression expression, boolean appendMode, SchemaType parentType, SchemaField parentField, SchemaControl control) {
+    if (parentType == null) {
       throw new GrammarException("Properties must be inside a type.", location);
     }
     else if (parentField != null) {
       throw new GrammarException("Nested properties are not supported.", location);
     }
 
-    return control.type(expression, () -> {
-      System.out.println("MUTATION " + propertyName + "...");
-      SchemaField field = parentEntity.mergeProperty(propertyName);
-      SchemaType type = expression.generateSchemaType(control, parentEntity, field);
+    SchemaField field = parentType.mergeProperty(propertyName);
+    SchemaType type = expression.generateSchemaType(control, parentType, field);
 
-      if (appendMode) {
-        field.setList(true);
-      }
+    if (appendMode) {
+      field.setList(true);
+    }
 
-      field.setType(type);
-    });
+    field.setType(type);
+
+    return null; // empty type
   }
 }

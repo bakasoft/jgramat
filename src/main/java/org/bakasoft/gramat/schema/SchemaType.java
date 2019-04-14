@@ -4,35 +4,117 @@ import org.bakasoft.gramat.inspect.Inspectable;
 import org.bakasoft.gramat.inspect.Inspector;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
 public class SchemaType implements Inspectable {
 
-  private final ArrayList<SchemaEntity> entitiesBuffer;
-  private final ArrayList<SchemaType> typesBuffer;
+  private final String name;
+  private final ArrayList<SchemaType> types;
+  private final ArrayList<SchemaField> properties;
 
   private boolean isList;
 
-  public SchemaType() {
-    this.entitiesBuffer = new ArrayList<>();
-    this.typesBuffer = new ArrayList<>();
+  public SchemaType(String name) {
+    this.name = Objects.requireNonNull(name);
+    this.isList = false;
+    this.types = new ArrayList<>();
+    this.properties = new ArrayList<>();
   }
 
-  public boolean addType(SchemaType type) {
-    if (typesBuffer.contains(type)) {
+
+  public SchemaField mergeProperty(String name) {
+    // TODO should not be union
+    SchemaField field = getProperty(name);
+
+    if (field != null) {
+      return field;
+    }
+
+    return createField(name);
+  }
+
+  public SchemaField createField(String name) {
+    if (getProperty(name) != null) {
+      throw new RuntimeException("property already exists: " + name);
+    }
+
+    SchemaField type = new SchemaField(name);
+
+    properties.add(type);
+
+    return type;
+  }
+
+  public SchemaField getProperty(String name) {
+    for (SchemaField property : properties) {
+      if (Objects.equals(name, property.getName())) {
+        return property;
+      }
+    }
+
+    return null;
+  }
+
+  public boolean add(SchemaType value) {
+    // TODO should not have properties
+    if (types.contains(value)) {
       return false;
     }
 
-    return typesBuffer.add(type);
+    return types.add(value);
   }
 
-  public boolean addEntity(SchemaEntity value) {
-    if (entitiesBuffer.contains(value)) {
-      return false;
+  @Override
+  public void inspectWith(Inspector output) {
+    if (types.size() > 0) {
+      inspectWithUnion(output);
+    }
+    else {
+      inspectWithEntity(output);
+    }
+  }
+
+  public void inspectWithEntity(Inspector output) {
+    output.write("type ");
+    inspectReferenceWith(output);
+    output.write(" {");
+    output.breakLine();
+
+    output.indent(+1);
+
+    for (SchemaField property : properties) {
+      property.inspectWith(output);
+      output.breakLine();
     }
 
-    return entitiesBuffer.add(value);
+    output.indent(-1);
+
+    output.write('}');
+  }
+
+  public void inspectWithUnion(Inspector output) {
+    output.write("union ");
+    inspectReferenceWith(output);
+    output.write(" = ");
+
+    if (types.isEmpty()) {
+      output.write('*');
+    }
+    else {
+      for (int i = 0; i < types.size(); i++) {
+        if (i > 0) {
+          output.write(" | ");
+        }
+        types.get(i).inspectReferenceWith(output);
+      }
+    }
+  }
+
+  public void inspectReferenceWith(Inspector output) {
+    output.write(name);
+
+    if (isList) {
+      output.write("[]");
+    }
   }
 
   public boolean isList() {
@@ -43,88 +125,12 @@ public class SchemaType implements Inspectable {
     isList = list;
   }
 
-  @Override
-  public void inspectWith(Inspector output) {
-    if (isList) {
-      output.write('[');
-    }
-
-    List<SchemaEntity> entities = collectEntities();
-
-    if (entities.isEmpty()) {
-      output.write('*');
-    }
-    else {
-      for (int i = 0; i < entities.size(); i++) {
-        if (i > 0) {
-          output.write(" | ");
-        }
-        entities.get(i).inspectReferenceWith(output);
-      }
-    }
-
-    if (isList) {
-      output.write(']');
-    }
+  public String getName() {
+    return name;
   }
 
   @Override
   public String toString() {
     return inspect();
-  }
-
-  // recursive actions //
-
-  private boolean collect(Set<SchemaType> control, Predicate<SchemaEntity> action) {
-    for (SchemaEntity entity : entitiesBuffer) {
-      if (!action.test(entity)) {
-        return false; // short circuit! ⚡
-      }
-    }
-
-    for (SchemaType type : typesBuffer) {
-      if (control.add(type)) {
-        if (!type.collect(control, action)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  public List<SchemaEntity> collectEntities() {
-    ArrayList<SchemaEntity> result = new ArrayList<>();
-
-    collect(new HashSet<>(), entity -> {
-      if (!result.contains(entity)) {
-        result.add(entity);
-      }
-      return true; // don't break circuit
-    });
-
-    return result;
-  }
-
-  public boolean hasEntities() {
-    AtomicBoolean result = new AtomicBoolean(false);
-
-    collect(new HashSet<>(), entity -> {
-      result.set(true);
-      return false; // make short circuit!
-    });
-
-    return result.get();
-  }
-
-  public boolean isEmpty() {
-    AtomicBoolean result = new AtomicBoolean(true);
-
-    collect(new HashSet<>(), entity -> {
-      result.set(false);
-      return false; // make short circuit!
-    });
-
-    return result.get();
   }
 }
