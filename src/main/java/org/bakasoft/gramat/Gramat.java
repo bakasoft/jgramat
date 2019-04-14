@@ -329,7 +329,7 @@ public class Gramat {
 
         for (GRule rule : rules) {
             // TODO should this be filtered?
-            if (rule.expression instanceof GProducer) {
+            if (rule.expression.countWildMutations() > 0) {
                 rule.expression.generateSchemaType(control, null, null);
             }
         }
