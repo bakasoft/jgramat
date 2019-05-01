@@ -1,0 +1,20 @@
+Query = @object(
+  {
+    @set-key-value(
+      {+ <`= & #`|$> },
+      [ @ignore(`=`) { <`& #`|$> } ]
+    )
+    / {+ `&` }
+  }
+  { `&` }
+)
+
+Url = @object(
+  [ @set:scheme({+<`:`>}) `:` ]
+  [ "//" [ @set:userinfo({<`@`>}) `@` ]
+    @set:host({+<`: /`|$>})
+    [ `:` @set:port({+<`/`|$>}) ] ]
+  [ @set:path(`/` {+<`? #`|$>}) ]
+  [ `?` @set:query(Query) ]
+  [ `#` @set:fragment({<$>}) ]
+)
