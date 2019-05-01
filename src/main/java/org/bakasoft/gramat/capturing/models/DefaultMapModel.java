@@ -1,10 +1,14 @@
-package org.bakasoft.gramat.capturing;
+package org.bakasoft.gramat.capturing.models;
 
-public class DefaultMapWrapper implements ObjectWrapper {
+import org.bakasoft.gramat.capturing.DefaultList;
+import org.bakasoft.gramat.capturing.DefaultMap;
+import org.bakasoft.gramat.capturing.ObjectModel;
+
+public class DefaultMapModel implements ObjectModel {
 
     private final DefaultMap map;
 
-    public DefaultMapWrapper() {
+    public DefaultMapModel() {
         map = new DefaultMap();
     }
 

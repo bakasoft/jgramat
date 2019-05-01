@@ -1,7 +1,7 @@
 package org.bakasoft.gramat.parsing;
 
 import org.bakasoft.gramat.Gramat;
-import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.framboyan.inspect.Inspector;
 import org.bakasoft.gramat.parsing.elements.*;
 import org.bakasoft.gramat.parsing.elements.producers.GObject;
 import org.bakasoft.gramat.parsing.elements.mutations.GNamedProperty;

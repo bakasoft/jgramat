@@ -2,7 +2,7 @@ package org.bakasoft.gramat;
 
 public class ParseTest extends TestBase {{
 
-    describe("Parsing test", () -> {
+    pass("Parsing test", () -> {
 //        it("parse alternation", () -> {
 //            testExpression("a|b|(a|b|value)|value");
 //            testExpression("a|b");

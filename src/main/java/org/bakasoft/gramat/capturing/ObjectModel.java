@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.capturing;
 
-public interface ObjectWrapper {
+public interface ObjectModel {
 
     Object getInstance();
 

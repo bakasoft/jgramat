@@ -1,7 +1,7 @@
 package org.bakasoft.gramat.schema;
 
-import org.bakasoft.gramat.inspect.Inspectable;
-import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.framboyan.inspect.Inspectable;
+import org.bakasoft.framboyan.inspect.Inspector;
 
 import java.util.ArrayList;
 import java.util.Objects;

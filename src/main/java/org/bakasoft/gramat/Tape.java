@@ -1,6 +1,6 @@
 package org.bakasoft.gramat;
 
-import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.framboyan.inspect.Inspector;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -112,7 +112,8 @@ public class Tape {
     }
 
     public String generateSample(int sampleSize) {
-        Inspector inspector = new Inspector();
+        StringBuilder output = new StringBuilder();
+        Inspector inspector = new Inspector(output);
         int start = Math.max(0, position - sampleSize / 2);
         int end = Math.min(length, start + sampleSize);
 
@@ -134,7 +135,7 @@ public class Tape {
             inspector.write('…');
         }
 
-        return inspector.getOutput();
+        return output.toString();
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.bakasoft.gramat.TestBase;
 
 public class NegationTest extends TestBase {{
 
-    it("Negation", ()-> {
+    pass("Negation", ()-> {
         Element element = Element.eval("\"(\" {<\")\">} \")\"");
 
         test(element, false, "");

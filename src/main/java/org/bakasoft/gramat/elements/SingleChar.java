@@ -1,6 +1,6 @@
 package org.bakasoft.gramat.elements;
 
-import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.framboyan.inspect.Inspector;
 
 import java.util.Map;
 import java.util.Set;

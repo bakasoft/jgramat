@@ -4,18 +4,18 @@ plugins {
 }
 
 group 'org.bakasoft.gramat'
-version '0.1'
+version '0.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    testCompile 'com.github.bakasoft:framboyan:v1.1'
+    compile 'com.github.bakasoft:polysynth:master'
+    compile 'com.github.bakasoft:framboyan:2.0.0'
 }
 
 jar {

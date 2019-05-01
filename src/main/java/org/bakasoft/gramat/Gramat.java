@@ -1,8 +1,8 @@
 package org.bakasoft.gramat;
 
-import org.bakasoft.gramat.diff.Comparator;
-import org.bakasoft.gramat.diff.Diff;
-import org.bakasoft.gramat.diff.DiffException;
+import org.bakasoft.framboyan.diff.Diff;
+import org.bakasoft.framboyan.diff.DiffItem;
+import org.bakasoft.framboyan.diff.DiffException;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.*;
@@ -200,7 +200,7 @@ public class Gramat {
         testGramat.removeTypes();
 
         Map<String, Element> elements = testGramat.compile();
-        Comparator comparator = new Comparator();
+        Diff diff = new Diff();
 
         for (GTest test : tests) {
             Element rule = elements.get(test.rule);
@@ -219,10 +219,10 @@ public class Gramat {
                 }
 
                 if (test.output != null) {
-                    Diff diff = comparator.diff(test.output, actual);
+                    DiffItem diffItem = diff.diff(test.output, actual);
 
-                    if (diff != null) {
-                        throw new DiffException(diff);
+                    if (diffItem != null) {
+                        throw new DiffException(diffItem);
                     }
                 }
             }

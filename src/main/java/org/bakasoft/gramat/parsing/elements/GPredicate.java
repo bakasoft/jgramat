@@ -4,7 +4,7 @@ import org.bakasoft.gramat.*;
 import org.bakasoft.gramat.elements.CharRange;
 import org.bakasoft.gramat.elements.Element;
 import org.bakasoft.gramat.elements.SingleChar;
-import org.bakasoft.gramat.inspect.Inspector;
+import org.bakasoft.framboyan.inspect.Inspector;
 import org.bakasoft.gramat.parsing.GExpression;
 import org.bakasoft.gramat.parsing.util.GControl;
 import org.bakasoft.gramat.parsing.util.GExpression0C;
@@ -37,7 +37,8 @@ public class GPredicate extends GExpression0C {
             return new SingleChar(o.value);
         }
 
-        Inspector inspector = new Inspector();
+        StringBuilder output = new StringBuilder();
+        Inspector inspector = new Inspector(output);
         CharPredicate[] predicates = new CharPredicate[conditions.length];
         for (int i = 0; i < predicates.length; i++) {
             if (i > 0) {
@@ -62,7 +63,7 @@ public class GPredicate extends GExpression0C {
             }
         }
 
-        return new CharRange(inspector.getOutput(), c -> {
+        return new CharRange(output.toString(), c -> {
             for (CharPredicate predicate : predicates) {
                 if (predicate.test(c)) {
                     return true;

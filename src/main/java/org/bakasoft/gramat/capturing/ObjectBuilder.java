@@ -1,21 +1,32 @@
 package org.bakasoft.gramat.capturing;
 
+import org.bakasoft.gramat.capturing.edits.*;
+import org.bakasoft.gramat.capturing.models.DefaultListModel;
+import org.bakasoft.gramat.capturing.models.DefaultMapModel;
+import org.bakasoft.gramat.capturing.models.TypedListModel;
+import org.bakasoft.gramat.capturing.models.TypedObjectModel;
+import org.bakasoft.polysynth.Polysynth;
+import org.bakasoft.polysynth.schemas.ArraySchema;
+import org.bakasoft.polysynth.schemas.ObjectSchema;
+
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.function.Function;
 
 public class ObjectBuilder {
 
+    private final Polysynth polysynth;
     private final Stack<ArrayList<Edit>> stack;
 
     public ObjectBuilder() {
+        polysynth = new Polysynth();
         stack = new Stack<>();
 
         stack.push(new ArrayList<>());
     }
 
     public void openObject(Class<?> type) {
-        stack.peek().add(new OpenObject(type));
+        stack.peek().add(new OpenObject(this, type));
     }
 
     public void pushObject() {
@@ -23,7 +34,7 @@ public class ObjectBuilder {
     }
 
     public void openList(Class<?> type) {
-        stack.peek().add(new OpenList(type));
+        stack.peek().add(new OpenList(this, type));
     }
 
     public void pushList() {
@@ -62,7 +73,7 @@ public class ObjectBuilder {
         }
 
         ArrayList<Edit> edits = stack.pop();
-        Stack<ObjectWrapper> wrappers = new Stack<>();
+        Stack<ObjectModel> wrappers = new Stack<>();
         Stack<Object> values = new Stack<>();
 
         for (Edit edit : edits) {
@@ -80,130 +91,33 @@ public class ObjectBuilder {
         }
     }
 
-    abstract private static class Edit {
+    public ObjectModel createObjectWrapper(Class<?> objectType) {
+        ObjectModel wrapper;
 
-        abstract void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values);
+        if (objectType != null) {
+            ObjectSchema schema = polysynth.getSchema(objectType).toObject();
+
+            wrapper = new TypedObjectModel(schema);
+        }
+        else {
+            wrapper = new DefaultMapModel();
+        }
+
+        return wrapper;
     }
 
-    private static class OpenObject extends Edit {
-        final Class<?> objectType;
+    public ObjectModel createListWrapper(Class<?> listType) {
+        ObjectModel wrapper;
 
-        OpenObject(Class<?> objectType) {
-            this.objectType = objectType;
+        if (listType != null) {
+            ArraySchema schema = polysynth.getSchema(listType).toArray();
+
+            wrapper = new TypedListModel(schema);
+        }
+        else {
+            wrapper = new DefaultListModel();
         }
 
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            ObjectWrapper wrapper;
-
-            if (objectType != null) {
-                wrapper = new TypedWrapper(objectType);
-            }
-            else {
-                wrapper = new DefaultMapWrapper();
-            }
-
-            wrappers.push(wrapper);
-        }
+        return wrapper;
     }
-
-    public static class OpenList extends Edit {
-        final Class<?> listType;
-
-        OpenList(Class<?> listType) {
-            this.listType = listType;
-        }
-
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            ObjectWrapper wrapper;
-
-            if (listType != null) {
-                wrapper = new TypedWrapper(listType);
-            }
-            else {
-                wrapper = new DefaultListWrapper();
-            }
-
-            wrappers.push(wrapper);
-        }
-    }
-
-    private static class PushObject extends Edit {
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            if (wrappers.isEmpty()) {
-                throw new RuntimeException();
-            }
-
-            ObjectWrapper wrapper = wrappers.pop();
-
-            values.push(wrapper.getInstance());
-        }
-    }
-
-    private static class PushList extends Edit { // TODO is it the same than PushObject?
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            if (wrappers.isEmpty()) {
-                throw new RuntimeException();
-            }
-
-            ObjectWrapper wrapper = wrappers.pop();
-
-            values.push(wrapper.getInstance());
-        }
-    }
-
-    private static class PushValue extends Edit {
-        final String text;
-        final Function<String, ?> parser;
-
-        PushValue(String text, Function<String, ?> parser) {
-            this.parser = parser;
-            this.text = text;
-        }
-
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            Object value;
-
-            if (parser != null) {
-                value = parser.apply(text);
-            }
-            else {
-                value = text;
-            }
-
-            values.push(value);
-        }
-    }
-
-    private static class PopValue extends Edit {
-        final String name;
-        final boolean appendMode;
-
-        PopValue(String name, boolean appendMode) {
-            this.name = name;
-            this.appendMode = appendMode;
-        }
-
-        @Override
-        void compile(Stack<ObjectWrapper> wrappers, Stack<Object> values) {
-            if (values.isEmpty() || wrappers.isEmpty()) {
-                throw new RuntimeException();
-            }
-
-            Object value = values.pop();
-            ObjectWrapper wrapper = wrappers.peek();
-
-            if (appendMode) {
-                wrapper.addValue(name, value);
-            }
-            else {
-                wrapper.setValue(name, value);
-            }
-        }
-    }
-
 }

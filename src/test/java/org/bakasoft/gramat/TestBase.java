@@ -1,12 +1,12 @@
 package org.bakasoft.gramat;
 
+import org.bakasoft.framboyan.test.FramboyanTest;
 import org.bakasoft.gramat.elements.Context;
 import org.bakasoft.gramat.elements.Element;
-import org.bakasoft.framboyan.Framboyan;
 import org.bakasoft.gramat.parsers.Parser;
 import org.bakasoft.gramat.parsing.GExpression;
 
-public class TestBase extends Framboyan {
+public class TestBase extends FramboyanTest {
 
     protected Tape tape(String content) {
         return new Tape(content, "test");
@@ -37,7 +37,7 @@ public class TestBase extends Framboyan {
 
         String generatedCode = exp.stringify();
 
-        expect(generatedCode).toBe(code);
+        expect(generatedCode).toEqual(code);
     }
 
 }

@@ -1,10 +1,13 @@
-package org.bakasoft.gramat.capturing;
+package org.bakasoft.gramat.capturing.models;
 
-public class DefaultListWrapper implements ObjectWrapper {
+import org.bakasoft.gramat.capturing.DefaultList;
+import org.bakasoft.gramat.capturing.ObjectModel;
+
+public class DefaultListModel implements ObjectModel {
 
     private final DefaultList list;
 
-    public DefaultListWrapper() {
+    public DefaultListModel() {
         list = new DefaultList();
     }
 
