@@ -1,11 +1,7 @@
 package org.gramat.capturing;
 
 import org.gramat.capturing.edits.*;
-import org.gramat.capturing.edits.*;
-import org.gramat.capturing.models.DefaultListModel;
-import org.gramat.capturing.models.DefaultMapModel;
-import org.gramat.capturing.models.TypedListModel;
-import org.gramat.capturing.models.TypedObjectModel;
+import org.gramat.capturing.models.*;
 import org.bakasoft.polysynth.Polysynth;
 import org.bakasoft.polysynth.schemas.ArraySchema;
 import org.bakasoft.polysynth.schemas.ObjectSchema;

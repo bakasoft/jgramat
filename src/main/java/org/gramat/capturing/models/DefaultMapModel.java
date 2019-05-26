@@ -1,9 +1,5 @@
 package org.gramat.capturing.models;
 
-import org.gramat.capturing.DefaultList;
-import org.gramat.capturing.DefaultMap;
-import org.gramat.capturing.ObjectModel;
-
 public class DefaultMapModel implements ObjectModel {
 
     private final DefaultMap map;

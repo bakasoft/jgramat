@@ -1,4 +1,6 @@
-package org.gramat.capturing;
+package org.gramat.capturing.edits;
+
+import org.gramat.capturing.models.ObjectModel;
 
 import java.util.Stack;
 

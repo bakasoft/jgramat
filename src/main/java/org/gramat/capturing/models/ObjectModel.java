@@ -1,4 +1,4 @@
-package org.gramat.capturing;
+package org.gramat.capturing.models;
 
 public interface ObjectModel {
 

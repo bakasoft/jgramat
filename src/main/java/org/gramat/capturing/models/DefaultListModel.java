@@ -1,8 +1,5 @@
 package org.gramat.capturing.models;
 
-import org.gramat.capturing.DefaultList;
-import org.gramat.capturing.ObjectModel;
-
 public class DefaultListModel implements ObjectModel {
 
     private final DefaultList list;

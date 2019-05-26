@@ -1,9 +1,7 @@
 package org.gramat.capturing.edits;
 
-import org.gramat.capturing.*;
-import org.gramat.capturing.Edit;
 import org.gramat.capturing.ObjectBuilder;
-import org.gramat.capturing.ObjectModel;
+import org.gramat.capturing.models.ObjectModel;
 
 import java.util.Stack;
 

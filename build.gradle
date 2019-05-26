@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.bakasoft:polysynth:master'
-    compile 'com.github.bakasoft:framboyan:2.0.0'
+    compile 'com.github.bakasoft:polysynth:0.1.0'
+    compile 'com.github.bakasoft:framboyan:2.1.0'
 }
 
 jar {

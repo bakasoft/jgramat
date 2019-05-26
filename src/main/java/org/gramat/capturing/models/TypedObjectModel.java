@@ -1,6 +1,5 @@
 package org.gramat.capturing.models;
 
-import org.gramat.capturing.ObjectModel;
 import org.bakasoft.polysynth.schemas.ArraySchema;
 import org.bakasoft.polysynth.schemas.ObjectSchema;
 

@@ -1,9 +1,9 @@
 package org.gramat;
 
-import org.bakasoft.framboyan.test.Framboyan;
+import org.bakasoft.framboyan.test.TestRunner;
 
 public class RunTests {
     public static void main(String[] args) {
-        Framboyan.run("org.gramat");
+        TestRunner.run("org.gramat");
     }
 }

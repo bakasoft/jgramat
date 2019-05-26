@@ -1,12 +1,12 @@
 package org.gramat;
 
-import org.bakasoft.framboyan.test.FramboyanTest;
+import org.bakasoft.framboyan.test.TestCase;
 import org.gramat.elements.Context;
 import org.gramat.elements.Element;
 import org.gramat.parsers.Parser;
 import org.gramat.parsing.GExpression;
 
-public class TestBase extends FramboyanTest {
+abstract public class TestBase extends TestCase {
 
     protected Tape tape(String content) {
         return new Tape(content, "test");

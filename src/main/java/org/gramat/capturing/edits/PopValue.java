@@ -1,7 +1,6 @@
 package org.gramat.capturing.edits;
 
-import org.gramat.capturing.Edit;
-import org.gramat.capturing.ObjectModel;
+import org.gramat.capturing.models.ObjectModel;
 
 import java.util.Stack;
 
@@ -25,9 +24,18 @@ public class PopValue implements Edit {
     ObjectModel wrapper = wrappers.peek();
 
     if (appendMode) {
-      wrapper.addValue(name, value);
+      if (name != null) {
+        wrapper.addValue(name, value);
+      }
+      else {
+        wrapper.addValue(value);
+      }
     }
     else {
+      if (name == null) {
+        throw new RuntimeException();
+      }
+
       wrapper.setValue(name, value);
     }
   }
