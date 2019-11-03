@@ -1,2 +1,10 @@
 rootProject.name = 'jgramat'
 
+sourceControl {
+    gitRepository("https://github.com/bakasoft/framboyan.git") {
+        producesModule("bakasoft:framboyan")
+    }
+    gitRepository("https://github.com/bakasoft/polysynth.git") {
+        producesModule("bakasoft:polysynth")
+    }
+}
