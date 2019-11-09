@@ -5,6 +5,6 @@ import java.nio.file.Path;
 @FunctionalInterface
 public interface PathResolver {
 
-    Path resolve(String path);
+    String read(String path);
 
 }

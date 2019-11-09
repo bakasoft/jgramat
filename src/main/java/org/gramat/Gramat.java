@@ -279,11 +279,17 @@ public class Gramat {
     }
 
     public void load(Path path) {
-        load(path, FileHelper.createPathResolver(path));
+        load(path.toString(), FileHelper.createPathResolver(path));
     }
 
-    public void load(Path path, PathResolver resolver) {
-        Parser.readGrammarInto(this, resolver, Tape.fromPath(path));
+    public void load(String path, PathResolver resolver) {
+        String content = resolver.read(path);
+        Tape tape = new Tape(content, path);
+        load(tape, resolver);
+    }
+
+    public void load(Tape tape, PathResolver resolver) {
+        Parser.readGrammarInto(this, resolver, tape);
     }
 
     public void eval(String code) {

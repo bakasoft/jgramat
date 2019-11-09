@@ -23,7 +23,7 @@ public class FileHelper {
             root = path;
         }
 
-        return root::resolve;
+        return p -> readAllString(root.resolve(p));
     }
 
     public static String readAllString(Path path) {

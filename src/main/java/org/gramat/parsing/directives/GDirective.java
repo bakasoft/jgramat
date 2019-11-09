@@ -24,13 +24,7 @@ public class GDirective {
             List<String> paths = arguments.forceStringList();
 
             for (String path : paths) {
-                Path resolvedPath = pathResolver.resolve(path);
-
-                if (resolvedPath == null) {
-                    throw new RuntimeException("cannot resolve: " + path);
-                }
-
-                gramat.load(resolvedPath);
+                gramat.load(path, pathResolver);
             }
         }
         else if ("pass".equals(name)) {
