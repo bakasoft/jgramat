@@ -1,15 +1,14 @@
 plugins {
     id 'java'
-    id 'java-library'
 }
 
 group 'gramat'
-version '0.1.1'
+version '0.1.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile 'bakasoft:polysynth:0.1.1'
-    compile 'bakasoft:framboyan:2.1.1'
+    implementation 'bakasoft:polysynth:0.1.1'
+    implementation 'bakasoft:framboyan:2.1.1'
 }
