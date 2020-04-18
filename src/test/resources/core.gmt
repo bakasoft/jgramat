@@ -1,0 +1,12 @@
+ws = { " " | "\n" }
+
+alpha = `a-z A-Z _ @ $`
+digit = `0-9`
+
+name_keyword = alpha { alpha | digit }
+name_delimited = "`" {<"`">} "`"  // TODO: add escaped chars support
+
+@string name = name_keyword | name_delimited
+
+@string access_modifier = "protect" | "share" | "export"
+@string field_type = "let" | "var"

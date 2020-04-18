@@ -1,0 +1,20 @@
+@import 'core.gmt'
+
+@object MemberPath = @set('nameChain': @list({1 name / ws "." ws }))
+
+@object ImportedElement = [ @set('extendedType': name)  ws "." ws ] @set('name': name)
+
+@object ImportStatement =
+    "import" ws @set('importedElements': @list({1 ImportedElement / ws "," ws })) ws
+    "from" ws @set('module': MemberPath)
+
+@object Expression = {1`0-9`}
+@object TypeReference = @set('typeName': name) // TODO: generic params
+
+@object FieldStatement =
+    [ @set('accessModifier': access_modifier) ws ]
+    @set('fieldType': field_type) ws @set('name': name)
+    [ ws @set('dataType': TypeReference) ]
+    [ ws "=" ws @set('initialValue': Expression) ]
+
+@object SourceFile = ^ { ImportStatement | FieldStatement / ws } $

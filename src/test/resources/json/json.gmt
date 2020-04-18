@@ -1,0 +1,22 @@
+value = ws (string | number | object | array | keyword) ws
+
+escaped-unicode = "u" {4; hex-digit}
+
+hex-digit = `a-f A-F 0-9`
+
+ws = {`\u0020 \r \n \t`}
+
+object = "{" ws { string ws ":" value / "," ws } "}"
+
+array = "[" ws { value / "," } "]"
+
+string = "\"" { <`" \\`> | escaped-char } "\""
+
+escaped-char = "\\" (`" \\ / b f n r t` | escaped-unicode)
+
+keyword = "true" | "false" | "null"
+
+number =
+    ["-"] (`1-9` {`0-9`} | "0")
+    ["." {1 `0-9`}]
+    [ [`e E`] [`+ -`] {1 `0-9`} ]
