@@ -5,13 +5,17 @@ import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
-public class StringLiteralExp extends ValueExp {
+import java.util.Objects;
 
-    private final String value;
+public class AttributeExp extends Expression {
 
-    public StringLiteralExp(Location location, String value) {
+    private String name;
+    private Expression valueExpression;
+
+    public AttributeExp(Location location, String name, Expression valueExpression) {
         super(location);
-        this.value = value;
+        this.name = Objects.requireNonNull(name);
+        this.valueExpression = Objects.requireNonNull(valueExpression);
     }
 
     @Override
@@ -21,16 +25,20 @@ public class StringLiteralExp extends ValueExp {
 
     @Override
     public Expression optimize() {
+        valueExpression = valueExpression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
+        valueExpression = valueExpression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
+        valueExpression = valueExpression.debug();
         return new DebugExp(this);
     }
+
 }

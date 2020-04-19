@@ -7,7 +7,7 @@ import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class ObjectExp extends ValueExp {
+public class ObjectExp extends Expression {
 
     private final String typeName;
 
@@ -15,7 +15,7 @@ public class ObjectExp extends ValueExp {
 
     public ObjectExp(Location location, String typeName, Expression expression) {
         super(location);
-        this.typeName = Objects.requireNonNull(typeName);
+        this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
     }
 
@@ -34,10 +34,12 @@ public class ObjectExp extends ValueExp {
     public Expression link(LinkContext context) {
         expression = expression.link(context);
 
-        Class<?> type = context.getType(typeName);
+        if (typeName != null) {
+            Class<?> type = context.getType(typeName);
 
-        if (type != null) {
-            return new TypedObjectExp(location, type, expression);
+            if (type != null) {
+                return new TypedObjectExp(location, type, expression);
+            }
         }
 
         return this;

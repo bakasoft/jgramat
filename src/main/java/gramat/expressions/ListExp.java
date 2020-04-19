@@ -7,12 +7,14 @@ import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class ListExp extends ValueExp {
+public class ListExp extends Expression {
 
+    private String typeName;
     private Expression expression;
 
-    public ListExp(Location location, Expression expression) {
+    public ListExp(Location location, String typeName, Expression expression) {
         super(location);
+        this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
     }
 

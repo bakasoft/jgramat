@@ -1,5 +1,6 @@
 package gramat.parsers;
 
+import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class CoreParsers {
 
-    public static NamedExpression parseNamedExpression(Source source) {
+    public static NamedExpression parseNamedExpression(ParseContext context, Source source) {
         int pos0 = source.getPosition();
         boolean isObject = false;
         boolean isString = false;
@@ -38,7 +39,7 @@ public class CoreParsers {
 
         BaseParsers.skipBlanks(source);
 
-        Expression expression = parseExpression(source);
+        Expression expression = parseExpression(context, source);
 
         if (expression == null) {
             throw source.error("Expected an expression");
@@ -50,65 +51,53 @@ public class CoreParsers {
             expression = new ObjectExp(location, name, expression);
         }
         else if (isString) {
-            expression = new StringExp(location, expression);
+            expression = new ValueExp(location, name, expression);
         }
 
         return new NamedExpression(location, name, expression);
     }
 
-    public static Expression parseItem(Source source) {
+    public static Expression parseItem(ParseContext context, Source source) {
         Expression e;
 
-        e = TextParsers.parsePredicate(source);
+        e = TextParsers.parsePredicate(context, source);
         if (e != null) { return e; }
 
-        e = TextParsers.parseLiteral(source);
+        e = TextParsers.parseLiteral(context, source);
         if (e != null) { return e; }
 
-        e = OtherParsers.parseReference(source);
+        e = OtherParsers.parseReference(context, source);
         if (e != null) { return e; }
 
-        e = OtherParsers.parseBegin(source);
+        e = OtherParsers.parseBegin(context, source);
         if (e != null) { return e; }
 
-        e = OtherParsers.parseEnd(source);
+        e = OtherParsers.parseEnd(context, source);
         if (e != null) { return e; }
 
-        e = ValueParsers.parseString(source);
+        e = ValueParsers.parseValue(context, source);
         if (e != null) { return e; }
 
-        e = ValueParsers.parseStringLiteral(source);
+        e = GroupParsers.parseNegation(context, source);
         if (e != null) { return e; }
 
-        e = ValueParsers.parseObject(source);
+        e = GroupParsers.parseOptional(context, source);
         if (e != null) { return e; }
 
-        e = ValueParsers.parseList(source);
+        e = GroupParsers.parseRepetition(context, source);
         if (e != null) { return e; }
 
-        e = ValueParsers.parseAttribute(source);
-        if (e != null) { return e; }
-
-        e = GroupParsers.parseNegation(source);
-        if (e != null) { return e; }
-
-        e = GroupParsers.parseOptional(source);
-        if (e != null) { return e; }
-
-        e = GroupParsers.parseRepetition(source);
-        if (e != null) { return e; }
-
-        return GroupParsers.parseGroup(source);
+        return GroupParsers.parseGroup(context, source);
     }
 
-    public static Expression parseExpression(Source source) {
+    public static Expression parseExpression(ParseContext context, Source source) {
         var pos0 = source.getPosition();
         var altSeq = new ArrayList<ArrayList<Expression>>();
 
         altSeq.add(new ArrayList<>());
 
         while (source.alive()) {
-            var item = parseItem(source);
+            var item = parseItem(context, source);
 
             if (item == null) {
                 break;

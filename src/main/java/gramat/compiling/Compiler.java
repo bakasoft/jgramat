@@ -7,6 +7,7 @@ import gramat.expressions.NamedExpression;
 import gramat.parsers.BaseParsers;
 import gramat.parsers.CoreParsers;
 import gramat.util.FileTool;
+import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
@@ -14,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Compiler implements LinkContext {
+public class Compiler implements LinkContext, ParseContext {
 
     private Path workingDir;
 
@@ -143,7 +144,7 @@ public class Compiler implements LinkContext {
     }
 
     private boolean parseRule(Source source) {
-        var rule = CoreParsers.parseNamedExpression(source);
+        var rule = CoreParsers.parseNamedExpression(this, source);
 
         if (rule == null) {
             return false;
@@ -223,5 +224,10 @@ public class Compiler implements LinkContext {
     public Class<?> getType(String name) {
         System.out.println(name);
         return null;
+    }
+
+    @Override
+    public void warning(String message, Location location) {
+        System.err.println(message + " <- " + location);
     }
 }

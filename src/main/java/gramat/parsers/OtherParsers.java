@@ -1,12 +1,13 @@
 package gramat.parsers;
 
+import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
 public class OtherParsers {
 
-    public static Reference parseReference(Source source) {
+    public static Reference parseReference(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
         var name = BaseParsers.readKeyword(source);
@@ -26,7 +27,7 @@ public class OtherParsers {
         return new Reference(new Location(source, pos0), name);
     }
 
-    public static EndSource parseEnd(Source source) {
+    public static EndSource parseEnd(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
         if (!source.pull('$')) {
@@ -36,7 +37,7 @@ public class OtherParsers {
         return new EndSource(source.locationOf(pos0));
     }
 
-    public static BeginSource parseBegin(Source source) {
+    public static BeginSource parseBegin(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
         if (!source.pull('^')) {

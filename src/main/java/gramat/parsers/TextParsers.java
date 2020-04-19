@@ -1,5 +1,6 @@
 package gramat.parsers;
 
+import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class TextParsers {
 
-    public static Literal parseLiteral(Source source) {
+    public static Literal parseLiteral(ParseContext context, Source source) {
         var pos0 = source.getPosition();
         var value = BaseParsers.readString(source, '\"');
 
@@ -19,7 +20,7 @@ public class TextParsers {
         return new Literal(new Location(source, pos0), value);
     }
 
-    public static Expression parsePredicate(Source source) {
+    public static Expression parsePredicate(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
         if (!source.pull('`')) {
@@ -80,7 +81,13 @@ public class TextParsers {
         source.expect('`');
 
         if (items.size() == 1){
-            return items.get(0);
+            var expression = items.get(0);
+
+            if (expression instanceof CharLiteral) {
+                context.warning("Use a string literal", expression.getLocation());
+            }
+
+            return expression;
         }
 
         return new Alternation(source.locationOf(pos0), items.toArray(Expression[]::new));

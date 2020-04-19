@@ -7,12 +7,15 @@ import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class StringExp extends ValueExp {
+public class DynObjectExp extends Expression {
+
+    private Expression typeExp;
 
     private Expression expression;
 
-    public StringExp(Location location, Expression expression) {
+    public DynObjectExp(Location location, Expression typeExp, Expression expression) {
         super(location);
+        this.typeExp = Objects.requireNonNull(typeExp);
         this.expression = Objects.requireNonNull(expression);
     }
 
@@ -23,19 +26,23 @@ public class StringExp extends ValueExp {
 
     @Override
     public Expression optimize() {
+        typeExp = typeExp.optimize();
         expression = expression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
+        typeExp = typeExp.link(context);
         expression = expression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
+        typeExp = expression.debug();
         expression = expression.debug();
         return new DebugExp(this);
     }
+
 }

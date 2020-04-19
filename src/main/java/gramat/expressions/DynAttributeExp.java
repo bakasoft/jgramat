@@ -7,12 +7,12 @@ import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class Attribute extends Expression {
+public class DynAttributeExp extends Expression {
 
     private Expression nameExpression;
     private Expression valueExpression;
 
-    public Attribute(Location location, Expression nameExpression, Expression valueExpression) {
+    public DynAttributeExp(Location location, Expression nameExpression, Expression valueExpression) {
         super(location);
         this.nameExpression = Objects.requireNonNull(nameExpression);
         this.valueExpression = Objects.requireNonNull(valueExpression);

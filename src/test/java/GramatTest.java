@@ -10,7 +10,7 @@ public class GramatTest {
         try {
             var parser = new Compiler();
 
-            parser.parseFile(Paths.get(GramatTest.class.getResource("/json/test.gmt").toURI()));
+            parser.parseFile(Paths.get(GramatTest.class.getResource("/url.gmt").toURI()));
 
             parser.compile(false);
             parser.test();

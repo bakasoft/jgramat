@@ -7,15 +7,14 @@ import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class TypedObjectExp extends Expression {
+public class DynListExp extends Expression {
 
-    private final Class<?> type;
-
+    private Expression typeName;
     private Expression expression;
 
-    public TypedObjectExp(Location location, Class<?> type, Expression expression) {
+    public DynListExp(Location location, Expression typeName, Expression expression) {
         super(location);
-        this.type = Objects.requireNonNull(type);
+        this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
     }
 
@@ -41,5 +40,5 @@ public class TypedObjectExp extends Expression {
         expression = expression.debug();
         return new DebugExp(this);
     }
-
 }
+
