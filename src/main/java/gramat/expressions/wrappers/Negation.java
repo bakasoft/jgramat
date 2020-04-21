@@ -1,46 +1,54 @@
-package gramat.expressions;
+package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class DynObjectExp extends Expression {
-
-    private Expression typeExp;
+public class Negation extends Expression {
 
     private Expression expression;
 
-    public DynObjectExp(Location location, Expression typeExp, Expression expression) {
+    public Negation(Location location, Expression expression) {
         super(location);
-        this.typeExp = Objects.requireNonNull(typeExp);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("not implemented");
+    protected boolean evalImpl(EvalContext context) {
+        var pos0 = context.source.getPosition();
+
+        if (expression.eval(context)) {
+            context.source.setPosition(pos0);
+            return false;
+        }
+
+        if (context.source.alive()) {
+            context.source.moveNext();
+            return true;
+        }
+
+        context.source.setPosition(pos0);
+        return false;
     }
 
     @Override
     public Expression optimize() {
-        typeExp = typeExp.optimize();
+        // TODO
         expression = expression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
-        typeExp = typeExp.link(context);
         expression = expression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
-        typeExp = expression.debug();
         expression = expression.debug();
         return new DebugExp(this);
     }

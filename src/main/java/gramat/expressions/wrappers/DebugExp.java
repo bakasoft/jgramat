@@ -1,9 +1,8 @@
-package gramat.expressions;
+package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
-import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
@@ -12,19 +11,19 @@ public class DebugExp extends Expression {
     private Expression expression;
 
     public DebugExp(Expression expression) {
-        super(Objects.requireNonNull(expression).location);
+        super(Objects.requireNonNull(expression).getLocation());
         this.expression = expression;
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        var location = source.getLocation();
+    protected boolean evalImpl(EvalContext context) {
+        var location = context.source.getLocation();
 
         System.out.println(" ".repeat(context.debugTabs) + expression + " <- " + location);
 
         context.debugTabs++;
 
-        boolean result = expression.eval(source, context);
+        boolean result = expression.eval(context);
 
         context.debugTabs--;
 

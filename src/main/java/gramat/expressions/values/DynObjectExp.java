@@ -1,64 +1,58 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
 import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
+import gramat.values.WildObject;
 
 import java.util.Objects;
 
-public class NamedExpression extends Expression {
+public class DynObjectExp extends Expression {
 
-    private final String name;
+    private Expression typeExp;
 
     private Expression expression;
 
-    public NamedExpression(Location location, String name, Expression expression) {
+    public DynObjectExp(Location location, Expression typeExp, Expression expression) {
         super(location);
-        this.name = Objects.requireNonNull(name);
+        this.typeExp = Objects.requireNonNull(typeExp);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        int pos0 = context.source.getPosition();
-        if (expression.eval(context)) {
-            int posF = context.source.getPosition();
+        var typeName = typeExp.capture(context);  // TODO should this be wrapped?
 
-            context.mark(pos0, posF, name);
-            return true;
+        if (typeName == null) {
+            return false;
         }
-        return false;
-    }
 
-    public String getName() {
-        return name;
-    }
+        // TODO find real type
 
-    public Expression getExpression() {
-        return expression;
+        return context.useObject(expression, typeName);
     }
 
     @Override
     public Expression optimize() {
+        typeExp = typeExp.optimize();
         expression = expression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
+        typeExp = typeExp.link(context);
         expression = expression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
+        typeExp = expression.debug();
         expression = expression.debug();
         return new DebugExp(this);
     }
 
-    @Override
-    public String toString() {
-        return "named-expression(" + name + ")";
-    }
 }

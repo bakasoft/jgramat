@@ -1,9 +1,10 @@
 package gramat.expressions;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
+import gramat.values.PlainValue;
 
 abstract public class Expression {
 
@@ -11,7 +12,32 @@ abstract public class Expression {
     abstract public Expression link(LinkContext context);
     abstract public DebugExp debug();
 
-    abstract public boolean eval(Source source, EvalContext context);
+    abstract protected boolean evalImpl(EvalContext context);
+
+    public boolean eval(EvalContext context) {
+        context.begin();
+
+        if (evalImpl(context)) {
+            context.commit();
+            return true;
+        }
+        else {
+            context.rollback();
+            return false;
+        }
+    }
+
+    public String capture(EvalContext context) {
+        var pos0 = context.source.getPosition();
+
+        if (eval(context)) {
+            var posF = context.source.getPosition();
+
+            return context.source.extract(pos0, posF);
+        }
+
+        return null;
+    }
 
     protected final Location location;
 

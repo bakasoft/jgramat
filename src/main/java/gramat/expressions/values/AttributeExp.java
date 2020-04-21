@@ -1,45 +1,48 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class DynAttributeExp extends Expression {
+public class AttributeExp extends Expression {
 
-    private Expression nameExpression;
+    private final String name;
     private Expression valueExpression;
 
-    public DynAttributeExp(Location location, Expression nameExpression, Expression valueExpression) {
+    public AttributeExp(Location location, String name, Expression valueExpression) {
         super(location);
-        this.nameExpression = Objects.requireNonNull(nameExpression);
+        this.name = Objects.requireNonNull(name);
         this.valueExpression = Objects.requireNonNull(valueExpression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("not implemented");
+    protected boolean evalImpl(EvalContext context) {
+        if (valueExpression.eval(context)) {
+            context.set(name);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public Expression optimize() {
-        nameExpression = nameExpression.optimize();
         valueExpression = valueExpression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
-        nameExpression = nameExpression.link(context);
         valueExpression = valueExpression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
-        nameExpression = nameExpression.debug();
         valueExpression = valueExpression.debug();
         return new DebugExp(this);
     }

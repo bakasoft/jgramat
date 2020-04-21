@@ -2,6 +2,9 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
+import gramat.expressions.flat.CharLiteral;
+import gramat.expressions.flat.CharRange;
+import gramat.expressions.flat.Literal;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 

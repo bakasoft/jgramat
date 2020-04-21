@@ -9,10 +9,15 @@
   { "&" }
 
 @object Url =
-  [ @set('scheme': @string({+ <":">})) ":" ]
-  [ "//" [ @set('userinfo': @string({ <"@"> })) "@" ]
-    @set('host': @string({+ <`: /`|$> }))
-    [ ":" @set('port': @integer({+ <"/"|$> })) ] ]
-  [ @set('path': @string("/" {+ <`? #`|$> })) ]
+  ^
+  [ @set('scheme': @string({+ <":"> })) ":" ]
+  [
+    "//"
+    [ @set('user_info': @string({+ <"@"> })) "@" ]
+    @set('host': @string({+ <`: /` | $> }))
+    [ ":" @set('port': @integer({+ `0-9` })) ]
+  ]
+  @set('path': @string("/" {+ <`? #` | $> }))
   [ "?" @set('query': Query) ]
   [ "#" @set('fragment': @string({<$>})) ]
+  $

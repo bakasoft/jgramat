@@ -206,4 +206,8 @@ public class Source {
     public Location getLocation() {
         return locationOf(position);
     }
+
+    public String extract(int begin, int end) {
+        return new String(content, begin, end - begin);
+    }
 }

@@ -1,35 +1,33 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
+import gramat.values.TypedObject;
 
 import java.util.Objects;
 
-public class Optional extends Expression {
+public class TypedObjectExp extends Expression {
+
+    private final Class<?> type;
 
     private Expression expression;
 
-    public Optional(Location location, Expression expression) {
+    public TypedObjectExp(Location location, Class<?> type, Expression expression) {
         super(location);
+        this.type = Objects.requireNonNull(type);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        var pos0 = source.getPosition();
-
-        if (!expression.eval(source, context)) {
-            source.setPosition(pos0);
-        }
-
-        return true;
+    protected boolean evalImpl(EvalContext context) {
+        return context.useObject(expression, type);
     }
 
     @Override
     public Expression optimize() {
-        // TODO
         expression = expression.optimize();
         return this;
     }
@@ -45,6 +43,5 @@ public class Optional extends Expression {
         expression = expression.debug();
         return new DebugExp(this);
     }
-
 
 }

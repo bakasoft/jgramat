@@ -2,9 +2,9 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.Expression;
-import gramat.expressions.Negation;
-import gramat.expressions.Optional;
-import gramat.expressions.Repetition;
+import gramat.expressions.wrappers.Negation;
+import gramat.expressions.wrappers.Optional;
+import gramat.expressions.wrappers.Repetition;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 

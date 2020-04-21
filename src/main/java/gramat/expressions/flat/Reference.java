@@ -1,10 +1,11 @@
-package gramat.expressions;
+package gramat.expressions.flat;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
-import gramat.util.parsing.Source;
 
 public class Reference extends Expression {
 
@@ -16,8 +17,8 @@ public class Reference extends Expression {
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("Expression not compiled: " + name);
+    protected boolean evalImpl(EvalContext context) {
+        throw context.source.error("Expression not compiled: " + name);
     }
 
     @Override

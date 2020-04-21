@@ -1,26 +1,29 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
+import gramat.values.WildObject;
 
 import java.util.Objects;
 
-public class ValueExp extends Expression {
+public class ObjectExp extends Expression {
 
-    private final String parser;
+    private final String typeName;
+
     private Expression expression;
 
-    public ValueExp(Location location, String parser, Expression expression) {
+    public ObjectExp(Location location, String typeName, Expression expression) {
         super(location);
-        this.parser = parser;
+        this.typeName = typeName;
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("not implemented");
+    protected boolean evalImpl(EvalContext context) {
+        return context.useObject(expression, typeName);
     }
 
     @Override
@@ -32,6 +35,15 @@ public class ValueExp extends Expression {
     @Override
     public Expression link(LinkContext context) {
         expression = expression.link(context);
+
+        if (typeName != null) {
+            Class<?> type = context.getType(typeName);
+
+            if (type != null) {
+                return new TypedObjectExp(location, type, expression);
+            }
+        }
+
         return this;
     }
 
@@ -40,4 +52,5 @@ public class ValueExp extends Expression {
         expression = expression.debug();
         return new DebugExp(this);
     }
+
 }

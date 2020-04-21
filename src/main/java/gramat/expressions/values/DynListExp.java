@@ -1,30 +1,41 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
+import gramat.values.WildList;
 
 import java.util.Objects;
 
 public class DynListExp extends Expression {
 
-    private Expression typeName;
+    private Expression typeExp;
     private Expression expression;
 
-    public DynListExp(Location location, Expression typeName, Expression expression) {
+    public DynListExp(Location location, Expression typeExp, Expression expression) {
         super(location);
-        this.typeName = typeName;
+        this.typeExp = Objects.requireNonNull(typeExp);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("not implemented");
+    protected boolean evalImpl(EvalContext context) {
+        var typeName = typeExp.capture(context);
+
+        if (typeName == null) {
+            return false;
+        }
+
+        // TODO find real type
+
+        return context.useList(expression, typeName);
     }
 
     @Override
     public Expression optimize() {
+        typeExp = typeExp.optimize();
         expression = expression.optimize();
         return this;
     }
@@ -32,11 +43,13 @@ public class DynListExp extends Expression {
     @Override
     public Expression link(LinkContext context) {
         expression = expression.link(context);
+        expression = expression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
+        expression = expression.debug();
         expression = expression.debug();
         return new DebugExp(this);
     }

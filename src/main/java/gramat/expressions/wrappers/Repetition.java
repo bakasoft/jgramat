@@ -1,9 +1,9 @@
-package gramat.expressions;
+package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
@@ -23,14 +23,14 @@ public class Repetition extends Expression {
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        var pos0 = source.getPosition();
+    protected boolean evalImpl(EvalContext context) {
+        var pos0 = context.source.getPosition();
         var hits = 0;
         var expect_more = false;
 
-        while (expression.eval(source, context)) {
+        while (expression.eval(context)) {
             if (separator != null){
-                if (separator.eval(source, context)) {
+                if (separator.eval(context)) {
                     expect_more = true;
                 } else {
                     expect_more = false;
@@ -46,7 +46,7 @@ public class Repetition extends Expression {
         }
 
         if (expect_more || (minCount != null && hits < minCount)) {
-            source.setPosition(pos0);
+            context.source.setPosition(pos0);
             return false;
         }
 

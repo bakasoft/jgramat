@@ -1,9 +1,10 @@
-package gramat.expressions;
+package gramat.expressions.flat;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 public class Literal extends Expression {
 
@@ -15,8 +16,8 @@ public class Literal extends Expression {
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        return source.pull(value);
+    protected boolean evalImpl(EvalContext context) {
+        return context.source.pull(value);
     }
 
     @Override

@@ -10,4 +10,8 @@ public class GramatException extends RuntimeException {
         super(cause);
     }
 
+    public GramatException(Exception cause, String message) {
+        super(message, cause);
+    }
+
 }

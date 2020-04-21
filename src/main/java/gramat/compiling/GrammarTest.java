@@ -29,9 +29,9 @@ public class GrammarTest {
             throw new ParseException("Expression not found: " + expressionName, location);
         }
 
-        EvalContext evalContext = new EvalContext();
+        EvalContext evalContext = new EvalContext(source);
 
-        boolean matches = expression.eval(source, evalContext);
+        boolean matches = expression.eval(evalContext);
 
         if (expectedMatch && !matches) {
             throw new ParseException("Expected to pass: " + expressionName, location);
@@ -41,6 +41,7 @@ public class GrammarTest {
         }
 
         // TODO check eval result
+        System.out.println(evalContext.getValue());
     }
 
     public String getExpressionName() {

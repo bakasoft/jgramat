@@ -1,42 +1,37 @@
-package gramat.expressions;
+package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
 import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
+import gramat.values.PlainValue;
 
 import java.util.Objects;
 
-public class NamedExpression extends Expression {
+public class ValueExp extends Expression {
 
-    private final String name;
-
+    private final String parser;
     private Expression expression;
 
-    public NamedExpression(Location location, String name, Expression expression) {
+    public ValueExp(Location location, String parser, Expression expression) {
         super(location);
-        this.name = Objects.requireNonNull(name);
+        this.parser = parser;
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        int pos0 = context.source.getPosition();
-        if (expression.eval(context)) {
-            int posF = context.source.getPosition();
+        var pos0 = context.source.getPosition();
 
-            context.mark(pos0, posF, name);
+        if (expression.eval(context)) {
+            var posF = context.source.getPosition();
+
+            context.sendSegment(pos0, posF, parser);
             return true;
         }
+
         return false;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Expression getExpression() {
-        return expression;
     }
 
     @Override
@@ -48,6 +43,7 @@ public class NamedExpression extends Expression {
     @Override
     public Expression link(LinkContext context) {
         expression = expression.link(context);
+        // TODO link the parser with a function
         return this;
     }
 
@@ -55,10 +51,5 @@ public class NamedExpression extends Expression {
     public DebugExp debug() {
         expression = expression.debug();
         return new DebugExp(this);
-    }
-
-    @Override
-    public String toString() {
-        return "named-expression(" + name + ")";
     }
 }

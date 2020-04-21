@@ -1,12 +1,11 @@
 package gramat.expressions;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.flat.Nop;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -20,16 +19,17 @@ public class Alternation extends Expression {
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        var pos0 = source.getPosition();
+    protected boolean evalImpl(EvalContext context) {
+        int pos0 = context.source.getPosition();
 
         for (var expression : expressions) {
-            if (expression.eval(source, context)) {
+            if (expression.eval(context)) {
                 return true;
             }
+            else {
+                context.source.setPosition(pos0);
+            }
         }
-
-        source.setPosition(pos0);
         return false;
     }
 

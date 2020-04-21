@@ -1,31 +1,24 @@
-package gramat.expressions;
+package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
 import java.util.Objects;
 
-public class Negation extends Expression {
+public class Optional extends Expression {
 
     private Expression expression;
 
-    public Negation(Location location, Expression expression) {
+    public Optional(Location location, Expression expression) {
         super(location);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        var pos0 = source.getPosition();
-
-        if (expression.eval(source, context)) {
-            source.setPosition(pos0);
-            return false;
-        }
-
-        source.moveNext();
+    protected boolean evalImpl(EvalContext context) {
+        expression.eval(context);
         return true;
     }
 
@@ -47,5 +40,6 @@ public class Negation extends Expression {
         expression = expression.debug();
         return new DebugExp(this);
     }
+
 
 }

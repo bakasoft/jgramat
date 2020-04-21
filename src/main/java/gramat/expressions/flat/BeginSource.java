@@ -1,18 +1,20 @@
-package gramat.expressions;
+package gramat.expressions.flat;
 
 import gramat.compiling.LinkContext;
+import gramat.expressions.Expression;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.util.parsing.Source;
 
-public class Nop extends Expression {
-    public Nop(Location location) {
+public class BeginSource extends Expression {
+
+    public BeginSource(Location location) {
         super(location);
     }
 
     @Override
-    public boolean eval(Source source, EvalContext context) {
-        throw source.error("not implemented");
+    protected boolean evalImpl(EvalContext context) {
+        return context.source.getPosition() == 0;
     }
 
     @Override
@@ -29,4 +31,5 @@ public class Nop extends Expression {
     public DebugExp debug() {
         return new DebugExp(this);
     }
+
 }

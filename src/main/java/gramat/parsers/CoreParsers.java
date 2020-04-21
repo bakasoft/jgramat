@@ -2,6 +2,8 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
+import gramat.expressions.values.ObjectExp;
+import gramat.expressions.values.ValueExp;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 

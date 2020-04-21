@@ -2,7 +2,7 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
-import gramat.util.parsing.Location;
+import gramat.expressions.values.*;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
