@@ -5,6 +5,7 @@ import gramat.util.parsing.Source;
 import gramat.values.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class EditBuilder {
@@ -28,7 +29,10 @@ public class EditBuilder {
 
     public void rollback() {
         current = stack.pop();
-        current.next = null;
+
+        if (current != null) {
+            current.next = null;
+        }
     }
 
     public void add(Edit edit) {
@@ -42,6 +46,22 @@ public class EditBuilder {
         }
 
         current = node;
+    }
+
+    private static Value collapseValues(List<Value> bufferedValues) {
+        if (bufferedValues.isEmpty()) {
+            return new NullValue();
+        } else if (bufferedValues.size() == 1) {
+            return bufferedValues.get(0);
+        }
+
+        var result = new ConcatenatedValue();
+
+        for (var value : bufferedValues) {
+            value.concat(result);
+        }
+
+        return result;
     }
 
     public Object build(Source source) {
@@ -89,13 +109,7 @@ public class EditBuilder {
 
                 var bufferedValues = bufferStack.peek();
 
-                if (bufferedValues.isEmpty()) {
-                    throw new GramatException("not captured value to set");
-                } else if (bufferedValues.size() > 1) {
-                    throw new GramatException("too much values to set");
-                }
-
-                var setValue = bufferedValues.get(0);
+                var setValue = collapseValues(bufferedValues);
 
                 bufferedValues.clear();
 
@@ -123,6 +137,10 @@ public class EditBuilder {
             else if (node.edit instanceof EditSendSegment) {
                 var edit = (EditSendSegment)node.edit;
                 bufferStack.peek().add(new PlainValue(source.extract(edit.pos0, edit.posF), edit.parser));
+            }
+            else if (node.edit instanceof EditSendFragment) {
+                var edit = (EditSendFragment)node.edit;
+                bufferStack.peek().add(new PlainValue(edit.fragment, null));
             }
             else if (node.edit instanceof EditMark) {
                 var edit = (EditMark)node.edit;

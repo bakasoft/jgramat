@@ -1,22 +1,30 @@
-value = ws (string | number | object | array | keyword) ws
+Json = ws (Object | Array | String | Number | Boolean | Null) ws
 
-escaped-unicode = "u" {4; hex-digit}
+@object Object  = `{` ws { @set(String: ws `:` ws Json) ws / `,` ws } `}`
 
-hex-digit = `a-f A-F 0-9`
+@list Array = `[` ws { Json ws / `,` ws } `]`
 
-ws = {`\u0020 \r \n \t`}
+@number Number  =
+    [`-`] (`0` | `1-9` { `0-9` })
+    [ `.` {+ `0-9`} ]
+    [ [`e E`] [`- +`] {+ `0-9` } ]
 
-object = "{" ws { string ws ":" value / "," ws } "}"
+@boolean Boolean = "true" | "false"
 
-array = "[" ws { value / "," } "]"
+@null Null = "null"
 
-string = "\"" { <`" \\`> | escaped-char } "\""
+@string String  = `"` { escaped-char | @string(<`"`>) } `"`
 
-escaped-char = "\\" (`" \\ / b f n r t` | escaped-unicode)
+escaped-char =
+    "\\" (
+        @string("\"" | "\\" | "/") |
+        @map('\n': "n") |
+        @map('\r': "r") |
+        @map('\t': "t") |
+        @map('\u0008': "b") |
+        @map('\u000C': "f") |
+        "u" @hex-to-char({4; hex})
+    )
 
-keyword = "true" | "false" | "null"
-
-number =
-    ["-"] (`1-9` {`0-9`} | "0")
-    ["." {1 `0-9`}]
-    [ [`e E`] [`+ -`] {1 `0-9`} ]
+hex = `a-f A-F 0-9`
+ws = {`\s \t \r \n`}

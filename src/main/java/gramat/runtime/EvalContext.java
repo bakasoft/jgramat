@@ -57,6 +57,10 @@ public class EvalContext {
         return open_edit(expression, new EditOpenWildObject(typeName));
     }
 
+    public void sendFragment(String value) {
+        edits.add(new EditSendFragment(value));
+    }
+
     public void sendSegment(int pos0, int posF, String parser) {
         edits.add(new EditSendSegment(pos0, posF, parser));
     }

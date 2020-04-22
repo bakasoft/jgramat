@@ -119,6 +119,8 @@ public class GroupParsers {
             return null;
         }
 
+        BaseParsers.skipBlanks(source);
+
         var pos0 = source.getPosition();
         var expression = CoreParsers.parseExpression(context, source);
 

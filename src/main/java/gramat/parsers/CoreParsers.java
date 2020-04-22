@@ -13,16 +13,19 @@ public class CoreParsers {
 
     public static NamedExpression parseNamedExpression(ParseContext context, Source source) {
         int pos0 = source.getPosition();
-        boolean isObject = false;
-        boolean isString = false;
+        String keyword;
 
-        if (source.pull("@object")) {
-            isObject = true;
+        if (source.pull('@')) {
+            keyword = BaseParsers.readKeyword(source);
+
+            if (keyword == null) {
+                throw source.error("Expected keyword");
+            }
+
             BaseParsers.skipBlanks(source);
         }
-        else if (source.pull("@string")) {
-            isString = true;
-            BaseParsers.skipBlanks(source);
+        else {
+            keyword = null;
         }
 
         String name = BaseParsers.readKeyword(source);
@@ -49,11 +52,8 @@ public class CoreParsers {
 
         var location = source.locationOf(pos0);
 
-        if (isObject) {
-            expression = new ObjectExp(location, name, expression);
-        }
-        else if (isString) {
-            expression = new ValueExp(location, name, expression);
+        if (keyword != null) {
+            expression = ValueParsers.makeValue(location, keyword, null, null, expression);
         }
 
         return new NamedExpression(location, name, expression);

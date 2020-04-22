@@ -151,6 +151,9 @@ public class BaseParsers {
             else if (escaped == 'f') {
                 return '\f';
             }
+            else if (escaped == 's') {
+                return ' ';
+            }
             else if (escaped == 'u') {
                 var hex = source.readText(4);
                 var cod = Integer.parseInt(hex, 16);

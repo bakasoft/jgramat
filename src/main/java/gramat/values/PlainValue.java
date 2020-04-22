@@ -15,4 +15,9 @@ public class PlainValue implements Value {
         // TODO: implement parser logic
         return value;
     }
+
+    @Override
+    public void concat(ConcatenatedValue value) {
+        value.add(this.value, this.parser);
+    }
 }

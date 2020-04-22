@@ -3,6 +3,7 @@ package gramat.parsers;
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.expressions.values.*;
+import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
@@ -81,6 +82,10 @@ public class ValueParsers {
 
         var loc0 = source.locationOf(pos0);
 
+        return makeValue(loc0, keyword, nameLit, nameExp, valueExp);
+    }
+
+    public static Expression makeValue(Location loc0, String keyword, String nameLit, Expression nameExp, Expression valueExp) {
         switch (keyword) {
             case "set":
                 if (nameLit != null) {
@@ -101,14 +106,17 @@ public class ValueParsers {
                     return new DynObjectExp(loc0, nameExp, valueExp);
                 }
                 return new ObjectExp(loc0, nameLit, valueExp);
-            case "value":
-                if (nameExp != null) {
-                    throw source.error("dynamic parsers not implemented.");
+            case "map":
+                if (nameLit == null) {
+                    throw new ParseException("expected replacement.", loc0);
                 }
-                return new ValueExp(loc0, nameLit, valueExp);
+                else if (nameExp != null) {
+                    throw new ParseException("dynamic mappings are not implemented.", loc0);
+                }
+                return new MapExp(loc0, nameLit, valueExp);
             default:
                 if (nameLit != null || nameExp != null) {
-                    throw source.error("Unexpected parser name.");
+                    throw new ParseException("Unexpected parser name: " + nameLit, loc0);
                 }
                 return new ValueExp(loc0, keyword, valueExp);
         }

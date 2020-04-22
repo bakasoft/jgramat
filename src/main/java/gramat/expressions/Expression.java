@@ -33,6 +33,7 @@ abstract public class Expression {
         if (eval(context)) {
             var posF = context.source.getPosition();
 
+            // TODO consider joining all the sent values
             return context.source.extract(pos0, posF);
         }
 

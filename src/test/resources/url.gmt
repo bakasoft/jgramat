@@ -8,16 +8,14 @@
    }
   { "&" }
 
+@set scheme = @string({+ <":"> })
+@set user_info = @string({+ <"@"> })
+@set host = @string({+ <`: /` | $> })
+@set port = @integer({+ `0-9` })
+@set path = @string("/" {+ <`? #` | $> })
+@set query = Query
+@set fragment = @string({<$>})
+
 @object Url =
-  ^
-  [ @set('scheme': @string({+ <":"> })) ":" ]
-  [
-    "//"
-    [ @set('user_info': @string({+ <"@"> })) "@" ]
-    @set('host': @string({+ <`: /` | $> }))
-    [ ":" @set('port': @integer({+ `0-9` })) ]
-  ]
-  @set('path': @string("/" {+ <`? #` | $> }))
-  [ "?" @set('query': Query) ]
-  [ "#" @set('fragment': @string({<$>})) ]
-  $
+  ^ [ scheme ":" ] [ "//" [ user_info "@" ] host [ ":" port ] ]
+  path [ "?" query ] [ "#" fragment ] $
