@@ -28,17 +28,32 @@ public class Compiler implements LinkContext, ParseContext {
 
     private final HashMap<String, ValueParser> valueParsers;
 
+    private final HashMap<String, Class<?>> types;
+
     public Compiler() {
         rules = new ArrayList<>();
         parsedFiles = new HashSet<>();
         tests = new ArrayList<>();
         valueParsers = new HashMap<>();
+        types = new HashMap<>();
 
         setParser("boolean", new BooleanParser());
         setParser("integer", new IntegerParser());
         setParser("number", new NumberParser());
         setParser("string", new StringParser());
         setParser("hex-to-char", new HexToCharParser());
+    }
+
+    public Grammar createGrammar() {
+        var expressions = new HashMap<String, Expression>();
+
+        for (var expression : rules) {
+            if (expressions.put(expression.getName(), expression) != null) {
+                throw new GramatException("duplicated expression: " + expression.getName());
+            }
+        }
+
+        return new Grammar(expressions, types);
     }
 
     public void compile() {
@@ -236,10 +251,13 @@ public class Compiler implements LinkContext, ParseContext {
         return expression;
     }
 
+    public void setType(String name, Class<?> type) {
+        types.put(name, type);
+    }
+
     @Override
     public Class<?> getType(String name) {
-        System.out.println(name);
-        return null;
+        return types.get(name);
     }
 
     @Override
