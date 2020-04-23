@@ -4,7 +4,7 @@ alpha = 'a-z A-Z _ @ $'
 digit = '0-9'
 hex = 'a-f A-F 0-9'
 
-escaped-char =
+EscapedChar =
     "\\" (
         @string("\"" | "\\" | "/") |
         @map(`\n`: "n") |
@@ -16,7 +16,7 @@ escaped-char =
     )
 
 
-@join name_delimited = "`" { escaped-char | @string(<"`">)} "`"
-@string name_keyword = alpha { alpha | digit }
+@join NameDelimited = "`" { EscapedChar | @string(<"`">)} "`"
+@string NameKeyword = alpha { alpha | digit }
 
-name = name_keyword | name_delimited
+Name = NameKeyword | NameDelimited

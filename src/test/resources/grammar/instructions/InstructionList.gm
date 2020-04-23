@@ -1,0 +1,9 @@
+@object Argument = [ @set(`name`: Name) ws ":" ws ] @set(`expression`: Expression)
+
+@list ArgumentList = "(" ws { Argument / ws "," ws } ws ")"
+
+@object Invocation =
+    [ @set(`baseMember`: Name) ws "." ws ]
+    @set(`targetMember`: Name) ws @set(`arguments`: ArgumentList)
+
+@list InstructionList = { Invocation }

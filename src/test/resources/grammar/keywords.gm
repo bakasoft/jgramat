@@ -1,3 +1,2 @@
-
-@string access_modifier = "protect" | "share" | "export"
-@string field_type = "let" | "var"
+@string AccessModifier = "protect" | "share" | "export"
+@string FieldType = "let" | "var"

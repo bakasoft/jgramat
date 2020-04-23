@@ -1,0 +1,6 @@
+@object SourceFile =
+    ^ { ImportStatement |
+        FieldStatement |
+        FunctionStatement |
+        ClassStatement |
+        InterfaceStatement / ws } $

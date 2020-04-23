@@ -1,16 +1,16 @@
 @import `core.gm`
 @import `keywords.gm`
-@import `import.gm`
+@import `references.gm`
+@import `expressions.gm`
 
-@object MemberPath = @set(`nameChain`: @list({1 name / ws "." ws }))
+@import `instructions/InstructionList.gm`
 
-@object Expression = {+ '0-9'}
-@object TypeReference = @set(`typeName`: name) // TODO: generic params
+@import `statements/ImportStatement.gm`
+@import `statements/FieldStatement.gm`
+@import `statements/FunctionStatement.gm`
+@import `statements/ClassStatement.gm`
+@import `statements/InterfaceStatement.gm`
 
-@object FieldStatement =
-    [ @set(`accessModifier`: access_modifier) ws ]
-    @set(`fieldType`: field_type) ws @set(`name`: name)
-    [ ws @set(`dataType`: TypeReference) ]
-    [ ws "=" ws @set(`initialValue`: Expression) ]
+@import `source.gm`
 
-@object SourceFile = ^ { ImportStatement | FieldStatement / ws } $
+

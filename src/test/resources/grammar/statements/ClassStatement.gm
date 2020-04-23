@@ -1,0 +1,52 @@
+@object ClassStatement =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "class" ws @set(`name`: Name)
+    [ ws @set(`genericParameters`: GenericParameterList) ]
+    [ ws "extends" ws @set(`superClass`: TypeRef) ]
+    [ ws "implements" ws @set(`superInterfaces`: TypeRefList) ]
+    [ ws "{" ws @set(`members`: ClassMemberList) ws "}" ]
+
+@list ClassMemberList = { ClassMember / ws }
+
+ClassMember =
+    ClassField |
+    ClassFunction |
+    ClassGetter |
+    ClassSetter |
+    ClassOperation |
+    ClassConstructor
+
+@object ClassField =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    @set(`fieldType`: FieldType) ws @set(`name`: Name)
+    [ ws @set(`dataType`: TypeRef) ]
+    [ ws "=" ws @set(`initialValue`: Expression) ]
+
+@object ClassFunction =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "function" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws @set(`returnType`: TypeRef) ]
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+
+@object ClassGetter =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "getter" ws @set(`name`: Name)
+    [ ws @set(`returnType`: TypeRef) ]
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+
+@object ClassSetter =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "setter" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+
+@object ClassOperation =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "operation" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws @set(`returnType`: TypeRef) ]
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+
+@object ClassConstructor =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "constructor" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws ":" ws @set(`superInvocation`: Invocation) ]
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]

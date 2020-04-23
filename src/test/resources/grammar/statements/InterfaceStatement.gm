@@ -1,0 +1,44 @@
+@object InterfaceStatement =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "interface" ws @set(`name`: Name)
+    [ ws @set(`genericParameters`: GenericParameterList) ]
+    [ ws "implements" ws @set(`superInterfaces`: TypeRefList) ]
+    [ ws "{" ws @set(`members`: InterfaceMemberList) ws "}" ]
+
+@list InterfaceMemberList = { InterfaceMember / ws }
+
+InterfaceMember =
+    InterfaceField |
+    InterfaceFunction |
+    InterfaceGetter |
+    InterfaceSetter |
+    InterfaceOperation |
+    InterfaceConstructor
+
+@object InterfaceField =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    @set(`fieldType`: FieldType) ws @set(`name`: Name)
+    [ ws @set(`dataType`: TypeRef) ]
+
+@object InterfaceFunction =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "function" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws @set(`returnType`: TypeRef) ]
+
+@object InterfaceGetter =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "getter" ws @set(`name`: Name)
+    [ ws @set(`returnType`: TypeRef) ]
+
+@object InterfaceSetter =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "setter" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+
+@object InterfaceOperation =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "operation" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws @set(`returnType`: TypeRef) ]
+
+@object InterfaceConstructor =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "constructor" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)

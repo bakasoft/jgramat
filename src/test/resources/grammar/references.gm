@@ -1,0 +1,15 @@
+@object ModulePath = @set(`nameChain`: @list({+ Name / ws "." ws }))
+
+@object TypeRef = @set(`typeName`: Name) [ ws @set(`genericArguments`: GenericArgumentList) ]
+
+@list TypeRefList = {+ TypeRef / ws "," ws }
+
+@object GenericArgument = @set(`type`: TypeRef)
+
+@object GenericArgumentList = "<" ws {+ GenericArgument / ws "," ws } ws ">"
+
+
+
+@object GenericParameter = @set(`name`: Name) [ ws @set(`type`: TypeRef) ]
+
+@list GenericParameterList = "<" ws {+ GenericParameter / ws "," ws } ws ">"

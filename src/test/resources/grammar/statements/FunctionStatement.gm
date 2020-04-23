@@ -1,0 +1,14 @@
+@object FunctionStatement =
+    [ @set(`accessModifier`: AccessModifier) ws ]
+    "function" ws [ @set(`extendedType`: Name)  ws "." ws ]
+    @set(`name`: Name) ws @set(`parameters`: ParameterList)
+    [ ws @set(`returnType`: TypeRef) ]
+    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+
+@list ParameterList = "(" ws { FunctionParameter / ws "," ws } ")"
+
+@object FunctionParameter =
+    [ @set(`fieldType`: FieldType) ws ]
+    @set(`name`: Name)
+    [ ws @set(`dataType`: TypeRef) ]
+    [ ws "=" ws @set(`defaultValue`: Expression) ]
