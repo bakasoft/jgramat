@@ -60,9 +60,7 @@ public class Compiler implements LinkContext, ParseContext {
         for (var rule : rules) {
             rule.link(this);
         }
-    }
 
-    public void test() {
         for (var test : tests) {
             test.run(this);
         }

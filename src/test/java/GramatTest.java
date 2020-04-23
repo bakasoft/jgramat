@@ -13,7 +13,6 @@ public class GramatTest {
         parser.parseFile(Paths.get(GramatTest.class.getResource("/json/test.gmt").toURI()));
 
         parser.compile(false);
-        parser.test();
     }
 
 }
