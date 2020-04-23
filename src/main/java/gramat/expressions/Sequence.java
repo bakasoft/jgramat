@@ -48,10 +48,4 @@ public class Sequence extends Expression {
         linkAll(context, expressions);
         return this;
     }
-
-    @Override
-    public DebugExp debug() {
-        debugAll(expressions);
-        return new DebugExp(this);
-    }
 }

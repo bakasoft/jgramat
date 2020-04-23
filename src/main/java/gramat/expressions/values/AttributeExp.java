@@ -43,10 +43,4 @@ public class AttributeExp extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        valueExpression = valueExpression.debug();
-        return new DebugExp(this);
-    }
-
 }

@@ -54,12 +54,6 @@ public class Alternation extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        debugAll(expressions);
-        return new DebugExp(this);
-    }
-
-    @Override
     public String toString() {
         return "alternation(" + expressions.length + ")";
     }

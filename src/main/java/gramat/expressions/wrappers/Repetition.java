@@ -76,17 +76,6 @@ public class Repetition extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        expression = expression.debug();
-
-        if (separator != null) {
-            separator = separator.debug();
-        }
-
-        return new DebugExp(this);
-    }
-
-    @Override
     public String toString() {
         return "repetition(" + expression + ")";
     }

@@ -2,6 +2,7 @@ package gramat.runtime;
 
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
+import gramat.expressions.NamedExpression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
@@ -18,6 +19,10 @@ public class EvalContext {
 
     public int debugTabs = 0;
 
+    public int lastCommitPosition;
+
+    public String lastCommitName;
+
     public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
         this.source = source;
         this.edits = new EditBuilder();
@@ -32,7 +37,19 @@ public class EvalContext {
         edits.begin();
     }
 
-    public void commit() {
+    public void commit(Expression expression) {
+        var pos = source.getPosition();
+        if (pos > lastCommitPosition) {
+            if (expression instanceof NamedExpression) {
+                lastCommitName = ((NamedExpression)expression).getName();
+            }
+            else {
+                lastCommitName = expression.toString();
+            }
+
+            lastCommitPosition = pos;
+        }
+
         edits.commit();
     }
 
@@ -98,4 +115,6 @@ public class EvalContext {
     public EvalContext createEmptyContext() {
         return new EvalContext(source, typeMapping);
     }
+
+
 }

@@ -35,11 +35,5 @@ public class ListExp extends Expression {
         expression = expression.link(context);
         return this;
     }
-
-    @Override
-    public DebugExp debug() {
-        expression = expression.debug();
-        return new DebugExp(this);
-    }
 }
 

@@ -51,11 +51,4 @@ public class DynObjectExp extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        typeExp = expression.debug();
-        expression = expression.debug();
-        return new DebugExp(this);
-    }
-
 }

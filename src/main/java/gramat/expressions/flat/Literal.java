@@ -32,11 +32,6 @@ public class Literal extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        return new DebugExp(this);
-    }
-
-    @Override
     public String toString() {
         return "Literal{" +
                 "value='" + value + '\'' +

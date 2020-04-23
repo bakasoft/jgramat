@@ -1,16 +1,13 @@
 package gramat.expressions;
 
 import gramat.compiling.LinkContext;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.PlainValue;
 
 abstract public class Expression {
 
     abstract public Expression optimize();
     abstract public Expression link(LinkContext context);
-    abstract public DebugExp debug();
 
     abstract protected boolean evalImpl(EvalContext context);
 
@@ -18,7 +15,7 @@ abstract public class Expression {
         context.begin();
 
         if (evalImpl(context)) {
-            context.commit();
+            context.commit(this);
             return true;
         }
         else {
@@ -66,9 +63,4 @@ abstract public class Expression {
         }
     }
 
-    public static void debugAll(Expression[] expressions) {
-        for (int i = 0; i < expressions.length; i++) {
-            expressions[i] = expressions[i].debug();
-        }
-    }
 }

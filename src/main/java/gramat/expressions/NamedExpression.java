@@ -52,12 +52,6 @@ public class NamedExpression extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        expression = expression.debug();
-        return new DebugExp(this);
-    }
-
-    @Override
     public String toString() {
         return "named-expression(" + name + ")";
     }

@@ -45,11 +45,6 @@ public class DebugExp extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        return this;
-    }
-
-    @Override
     public String toString() {
         return expression.toString();
     }

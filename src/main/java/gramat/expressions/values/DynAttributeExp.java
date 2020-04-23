@@ -53,11 +53,4 @@ public class DynAttributeExp extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        nameExpression = nameExpression.debug();
-        valueExpression = valueExpression.debug();
-        return new DebugExp(this);
-    }
-
 }

@@ -41,8 +41,4 @@ public class Reference extends Expression {
         return name;
     }
 
-    @Override
-    public DebugExp debug() {
-        return new DebugExp(this);
-    }
 }

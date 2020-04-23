@@ -41,11 +41,6 @@ public class CharRange extends Expression {
     }
 
     @Override
-    public DebugExp debug() {
-        return new DebugExp(this);
-    }
-
-    @Override
     public String toString() {
         return "CharRange{" +
                 "beginChar=" + beginChar +

@@ -58,19 +58,8 @@ public class Compiler implements LinkContext, ParseContext {
     }
 
     public void compile() {
-        compile(false);
-    }
-
-    public void compile(boolean debug) {
-        if (debug) {
-            for (var rule : rules) {
-                rule.debug();
-            }
-        }
-        else {
-            for (var rule : rules) {
-                rule.optimize();
-            }
+        for (var rule : rules) {
+            rule.optimize();
         }
 
         for (var rule : rules) {

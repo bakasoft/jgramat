@@ -39,10 +39,4 @@ public class NullExp extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        expression = expression.debug();
-        return new DebugExp(this);
-    }
-
 }

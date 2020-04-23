@@ -38,7 +38,8 @@ public class Grammar {
         var context = createEvalContext(source);
 
         if (!expression.eval(context)) {
-            throw new ParseException(expressionName + " did not match.", context.source.getLocation());
+            var errLoc = context.source.locationOf(context.lastCommitPosition);
+            throw new ParseException(expressionName + " did not match: " + context.lastCommitName, errLoc);
         }
 
         return context.getValue();

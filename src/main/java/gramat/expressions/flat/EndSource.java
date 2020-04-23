@@ -27,8 +27,4 @@ public class EndSource extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        return new DebugExp(this);
-    }
 }

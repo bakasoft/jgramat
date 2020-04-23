@@ -26,8 +26,4 @@ public class Nop extends Expression {
         return this;
     }
 
-    @Override
-    public DebugExp debug() {
-        return new DebugExp(this);
-    }
 }
