@@ -7,6 +7,7 @@ import gramat.expressions.Expression;
 import gramat.expressions.NamedExpression;
 import gramat.parsers.BaseParsers;
 import gramat.parsers.CoreParsers;
+import gramat.parsers.Mark;
 import gramat.util.FileTool;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
@@ -107,11 +108,11 @@ public class Compiler implements LinkContext, ParseContext {
         if (source.pull("@load")) {
             BaseParsers.skipBlanks(source);
 
-            source.expect('(');
+            source.expect(Mark.GROUP_BEGIN);
 
             BaseParsers.skipBlanks(source);
 
-            var path = BaseParsers.readString(source, '\'');
+            var path = BaseParsers.readString(source, Mark.TOKEN_DELIMITER);
 
             if (path == null) {
                 throw source.error("Expected file path");
@@ -122,12 +123,12 @@ public class Compiler implements LinkContext, ParseContext {
 
             BaseParsers.skipBlanks(source);
 
-            source.expect(')');
+            source.expect(Mark.GROUP_END);
 
             return input;
         }
 
-        var value = BaseParsers.readString(source, '\'');
+        var value = BaseParsers.readString(source, Mark.TOKEN_DELIMITER);
 
         if (value == null) {
             return null;
@@ -188,7 +189,7 @@ public class Compiler implements LinkContext, ParseContext {
 
         BaseParsers.skipBlanks(source);
 
-        String path = BaseParsers.readString(source, '\'');
+        String path = BaseParsers.readString(source, Mark.TOKEN_DELIMITER);
 
         if (path == null) {
             throw source.error("Expected file path string.");

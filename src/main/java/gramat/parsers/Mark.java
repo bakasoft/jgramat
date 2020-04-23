@@ -9,9 +9,9 @@ public class Mark {
     public static final String NULL_KEYWORD = "null";
     public static final String MAP_KEYWORD = "map";
 
-    public static final char TOKEN_DELIMITER = '\'';
+    public static final char TOKEN_DELIMITER = '`';
     public static final char LITERAL_DELIMITER = '\"';
-    public static final char PREDICATE_DELIMITER = '`';
+    public static final char PREDICATE_DELIMITER = '\'';
     public static final char PREDICATE_ITEM_SEPARATOR = ' ';
     public static final char PREDICATE_RANGE_SEPARATOR = '-';
 

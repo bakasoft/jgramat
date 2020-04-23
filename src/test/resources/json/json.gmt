@@ -1,30 +1,30 @@
 Json = ws (Object | Array | String | Number | Boolean | Null) ws
 
-@object Object  = `{` ws { @set(String: ws `:` ws Json) ws / `,` ws } `}`
+@object Object  = '{' ws { @set(String: ws ':' ws Json) ws / ',' ws } '}'
 
-@list Array = `[` ws { Json ws / `,` ws } `]`
+@list Array = '[' ws { Json ws / ',' ws } ']'
 
 @number Number  =
-    [`-`] (`0` | `1-9` { `0-9` })
-    [ `.` {+ `0-9`} ]
-    [ [`e E`] [`- +`] {+ `0-9` } ]
+    ['-'] ('0' | '1-9' { '0-9' })
+    [ '.' {+ '0-9'} ]
+    [ ['e E'] ['- +'] {+ '0-9' } ]
 
 @boolean Boolean = "true" | "false"
 
 @null Null = "null"
 
-@join String  = `"` { escaped-char | @string(<`"`>) } `"`
+@join String  = '"' { escaped-char | @string(<'"'>) } '"'
 
 escaped-char =
     "\\" (
         @string("\"" | "\\" | "/") |
-        @map('\n': "n") |
-        @map('\r': "r") |
-        @map('\t': "t") |
-        @map('\u0008': "b") |
-        @map('\u000C': "f") |
+        @map(`\n`: "n") |
+        @map(`\r`: "r") |
+        @map(`\t`: "t") |
+        @map(`\u0008`: "b") |
+        @map(`\u000C`: "f") |
         "u" @hex-to-char({4; hex})
     )
 
-hex = `a-f A-F 0-9`
-ws = {`\s \t \r \n`}
+hex = 'a-f A-F 0-9'
+ws = {'\s \t \r \n'}
