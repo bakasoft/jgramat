@@ -3,6 +3,7 @@ package gramat.parsers;
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.expressions.values.*;
+import gramat.expressions.wrappers.DebugExp;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -139,6 +140,11 @@ public class ValueParsers {
                     throw new ParseException("dynamic mappings are not implemented.", loc0);
                 }
                 return new MapExp(loc0, nameLit, valueExp);
+            case Mark.DEBUG_KEYWORD:
+                if (nameLit != null || nameExp != null) {
+                    throw new ParseException("Unexpected name", loc0);
+                }
+                return new DebugExp(loc0, valueExp);
             default:
                 if (nameLit != null || nameExp != null) {
                     throw new ParseException("Unexpected parser name: " + nameLit, loc0);

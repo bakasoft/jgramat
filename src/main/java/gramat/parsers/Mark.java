@@ -8,6 +8,7 @@ public class Mark {
     public static final String JOIN_KEYWORD = "join";
     public static final String NULL_KEYWORD = "null";
     public static final String MAP_KEYWORD = "map";
+    public static final String DEBUG_KEYWORD = "debug";
 
     public static final char TOKEN_DELIMITER = '`';
     public static final char LITERAL_DELIMITER = '\"';

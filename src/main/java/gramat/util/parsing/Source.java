@@ -196,6 +196,10 @@ public class Source {
 
     public int getPosition() { return position; }
 
+    public int getLength() { return length; }
+
+    public char getChar(int index) { return content[index]; }
+
     public void setPosition(int position) { this.position = position; }
 
     @Override

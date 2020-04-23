@@ -17,7 +17,9 @@ public class EvalContext {
 
     public final Source source;
 
-    public int debugTabs = 0;
+    private int debugTabs = 0;
+
+    public boolean debugMode = false;
 
     public int lastCommitPosition;
 
@@ -33,8 +35,13 @@ public class EvalContext {
         return typeMapping.get(name);
     }
 
-    public void begin() {
+    public void begin(Expression expression) {
         edits.begin();
+
+        if (debugMode) {
+            printDebugLine("begin", expression);
+            debugTabs++;
+        }
     }
 
     public void commit(Expression expression) {
@@ -51,10 +58,51 @@ public class EvalContext {
         }
 
         edits.commit();
+
+        if (debugMode) {
+            debugTabs--;
+            printDebugLine("commit", expression);
+        }
     }
 
-    public void rollback() {
+    public void rollback(Expression expression) {
         edits.rollback();
+
+        if (debugMode) {
+            debugTabs--;
+            printDebugLine("rollback", expression);
+        }
+    }
+
+    private void printDebugLine(String action, Expression expression) {
+        StringBuilder sample = new StringBuilder();
+
+        int pos = source.getPosition();
+
+        for (int i = pos - 10; i <= pos + 10; i++) {
+            if (pos >= 0 && pos < source.getLength()) {
+                var c = source.getChar(i);
+
+                if (Character.isISOControl(c)) {
+                    c = ' ';
+                }
+
+                if (i == pos) {
+                    sample.append('[');
+                    sample.append(c);
+                    sample.append(']');
+                }
+                else if (i == pos - 1) {
+                    sample.append(c);
+                }
+                else {
+                    sample.append(c);
+                    sample.append(' ');
+                }
+            }
+        }
+
+        System.out.println(sample + " " + action + " " + expression);
     }
 
     public Object getValue() {

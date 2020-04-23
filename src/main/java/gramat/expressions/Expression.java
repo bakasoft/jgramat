@@ -12,14 +12,14 @@ abstract public class Expression {
     abstract protected boolean evalImpl(EvalContext context);
 
     public boolean eval(EvalContext context) {
-        context.begin();
+        context.begin(this);
 
         if (evalImpl(context)) {
             context.commit(this);
             return true;
         }
         else {
-            context.rollback();
+            context.rollback(this);
             return false;
         }
     }
