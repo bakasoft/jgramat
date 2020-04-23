@@ -2,6 +2,7 @@ package gramat;
 
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
+import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
 import java.util.Map;
@@ -37,7 +38,7 @@ public class Grammar {
         var context = createEvalContext(source);
 
         if (!expression.eval(context)) {
-            throw new GramatException("No value was generated.");
+            throw new ParseException(expressionName + " did not match.", context.source.getLocation());
         }
 
         return context.getValue();

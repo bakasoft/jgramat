@@ -1,0 +1,22 @@
+ws = {`\s \n \r \t`}
+
+alpha = `a-z A-Z _ @ $`
+digit = `0-9`
+hex = `a-f A-F 0-9`
+
+escaped-char =
+    "\\" (
+        @string("\"" | "\\" | "/") |
+        @map('\n': "n") |
+        @map('\r': "r") |
+        @map('\t': "t") |
+        @map('\u0008': "b") |
+        @map('\u000C': "f") |
+        "u" @hex-to-char({4; hex})
+    )
+
+
+@join name_delimited = "`" { escaped-char | @string(<"`">)} "`"
+@string name_keyword = alpha { alpha | digit }
+
+name = name_keyword | name_delimited

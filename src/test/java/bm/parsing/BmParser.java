@@ -23,7 +23,7 @@ public class BmParser {
         var compiler = new Compiler();
 
         try {
-            compiler.parseFile(Paths.get(BmParser.class.getResource("/grammar/bm.gmt").toURI()));
+            compiler.parseFile(Paths.get(BmParser.class.getResource("/grammar/bm.gm").toURI()));
         } catch (URISyntaxException e) {
             throw new BmException("Cannot load the Bm grammar.", e);
         }
