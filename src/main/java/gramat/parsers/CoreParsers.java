@@ -2,8 +2,6 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
-import gramat.expressions.values.ObjectExp;
-import gramat.expressions.values.ValueExp;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
@@ -15,7 +13,7 @@ public class CoreParsers {
         int pos0 = source.getPosition();
         String keyword;
 
-        if (source.pull('@')) {
+        if (source.pull(Mark.VALUE_MARK)) {
             keyword = BaseParsers.readKeyword(source);
 
             if (keyword == null) {
@@ -37,7 +35,7 @@ public class CoreParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull('=')) {
+        if (!source.pull(Mark.ASSIGNMENT_MARK)) {
             source.setPosition(pos0);
             return null;
         }
@@ -109,7 +107,7 @@ public class CoreParsers {
 
             BaseParsers.skipBlanks(source);
 
-            if (source.pull('|')) {
+            if (source.pull(Mark.ALTERNATION_MARK)) {
                 BaseParsers.skipBlanks(source);
 
                 if (altSeq.get(altSeq.size()-1).size() == 0) {

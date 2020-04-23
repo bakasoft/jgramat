@@ -1,6 +1,5 @@
 package gramat.parsers;
 
-import gramat.compiling.Compiler;
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.expressions.values.*;
@@ -13,7 +12,7 @@ public class ValueParsers {
     public static Expression parseValue(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('@')) {
+        if (!source.pull(Mark.VALUE_MARK)) {
             return null;
         }
 
@@ -25,14 +24,14 @@ public class ValueParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull('(')) {
+        if (!source.pull(Mark.GROUP_BEGIN)) {
             source.setPosition(pos0);
             return null;
         }
 
         BaseParsers.skipBlanks(source);
 
-        var nameLit = BaseParsers.readString(source, '\'');
+        var nameLit = BaseParsers.readString(source, Mark.TOKEN_DELIMITER);
         Expression nameExp;
         Expression valueExp;
 
@@ -41,7 +40,7 @@ public class ValueParsers {
 
             BaseParsers.skipBlanks(source);
 
-            if (!source.pull(':')) {
+            if (!source.pull(Mark.NAME_SEPARATOR)) {
                 throw source.error("Expected :");
             }
 
@@ -62,7 +61,7 @@ public class ValueParsers {
 
             BaseParsers.skipBlanks(source);
 
-            if (source.pull(':')) {
+            if (source.pull(Mark.NAME_SEPARATOR)) {
                 BaseParsers.skipBlanks(source);
 
                 nameExp = expression;
@@ -77,8 +76,8 @@ public class ValueParsers {
             }
         }
 
-        if (!source.pull(')')) {
-            throw source.error("Expected )");
+        if (!source.pull(Mark.GROUP_END)) {
+            throw source.error("Expected " + Mark.GROUP_END);
         }
 
         var loc0 = source.locationOf(pos0);
@@ -88,7 +87,7 @@ public class ValueParsers {
 
     public static Expression makeValue(ParseContext context, Location loc0, String keyword, String nameLit, Expression nameExp, Expression valueExp) {
         switch (keyword) {
-            case "set":
+            case Mark.SET_KEYWORD:
                 if (nameLit != null) {
                     return new AttributeExp(loc0, nameLit, valueExp);
                 }
@@ -97,7 +96,7 @@ public class ValueParsers {
                 }
 
                 return new DynAttributeExp(loc0, nameExp, valueExp);
-            case "object":
+            case Mark.OBJECT_KEYWORD:
                 if (nameExp != null && nameLit == null) {
                     return new DynObjectExp(loc0, nameExp, valueExp);
                 }
@@ -110,7 +109,7 @@ public class ValueParsers {
                 }
 
                 return new ObjectExp(loc0, nameLit, valueExp);
-            case "list":
+            case Mark.LIST_KEYWORD:
                 if (nameExp != null && nameLit == null) {
                     return new DynListExp(loc0, nameExp, valueExp);
                 }
@@ -122,17 +121,17 @@ public class ValueParsers {
                     }
                 }
                 return new ListExp(loc0, nameLit, valueExp);
-            case "join":
+            case Mark.JOIN_KEYWORD:
                 if (nameLit != null || nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new JoinExp(loc0, valueExp);
-            case "null":
+            case Mark.NULL_KEYWORD:
                 if (nameLit != null || nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new NullExp(loc0, valueExp);
-            case "map":
+            case Mark.MAP_KEYWORD:
                 if (nameLit == null) {
                     throw new ParseException("expected replacement.", loc0);
                 }

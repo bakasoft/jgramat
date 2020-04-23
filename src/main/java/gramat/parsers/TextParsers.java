@@ -14,7 +14,7 @@ public class TextParsers {
 
     public static Literal parseLiteral(ParseContext context, Source source) {
         var pos0 = source.getPosition();
-        var value = BaseParsers.readString(source, '\"');
+        var value = BaseParsers.readString(source, Mark.LITERAL_DELIMITER);
 
         if (value == null) {
             return null;
@@ -26,7 +26,7 @@ public class TextParsers {
     public static Expression parsePredicate(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('`')) {
+        if (!source.pull(Mark.PREDICATE_DELIMITER)) {
             return null;
         }
 
@@ -35,7 +35,7 @@ public class TextParsers {
         boolean expectMore = false;
 
         while (source.alive()) {
-            var begin = BaseParsers.readStringChar(source, '`');
+            var begin = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
             if (begin == null) {
                 if (expectMore) {
@@ -44,17 +44,17 @@ public class TextParsers {
                 break;
             }
 
-            var sep = BaseParsers.readStringChar(source, '`');
+            var sep = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
-            if (sep == null || sep == ' ') {
+            if (sep == null || sep == Mark.PREDICATE_ITEM_SEPARATOR) {
                 var location = source.locationOf(source.getPosition() - 1);
 
                 items.add(new CharLiteral(location, begin));
 
                 expectMore = (sep != null);
             }
-            else if (sep == '-') {
-                var end = BaseParsers.readStringChar(source, '`');
+            else if (sep == Mark.PREDICATE_RANGE_SEPARATOR) {
+                var end = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
                 if (end == null) {
                     throw source.error("expected end char");
@@ -64,12 +64,12 @@ public class TextParsers {
 
                 items.add(new CharRange(location, begin, end));
 
-                var sep2 = BaseParsers.readStringChar(source, '`');
+                var sep2 = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
                 if (sep2 == null) {
                     break;
                 }
-                else if (sep2 == ' ') {
+                else if (sep2 == Mark.PREDICATE_ITEM_SEPARATOR) {
                     expectMore = true;
                 }
                 else {
@@ -81,7 +81,7 @@ public class TextParsers {
             }
         }
 
-        source.expect('`');
+        source.expect(Mark.PREDICATE_DELIMITER);
 
         if (items.size() == 1){
             var expression = items.get(0);

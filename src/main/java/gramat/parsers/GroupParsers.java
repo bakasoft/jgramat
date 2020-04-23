@@ -13,7 +13,7 @@ public class GroupParsers {
     public static Repetition parseRepetition(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('{')) {
+        if (!source.pull(Mark.REPETITION_BEGIN)) {
             return null;
         }
 
@@ -22,7 +22,7 @@ public class GroupParsers {
         Integer min;
         Integer max;
 
-        if (source.pull('+')) {
+        if (source.pull(Mark.REPETITION_PLUS)) {
             BaseParsers.skipBlanks(source);
 
             min = 1;
@@ -34,7 +34,7 @@ public class GroupParsers {
             if (min != null) {
                 BaseParsers.skipBlanks(source);
 
-                if (source.pull(',')) {
+                if (source.pull(Mark.REPETITION_RANGE_SEPARATOR)) {
                     BaseParsers.skipBlanks(source);
 
                     max = BaseParsers.readInteger(source);
@@ -44,7 +44,7 @@ public class GroupParsers {
                     }
 
                     BaseParsers.skipBlanks(source);
-                } else if (source.pull(';')) {
+                } else if (source.pull(Mark.REPETITION_COUNT_MARK)) {
                     max = min;
 
                     BaseParsers.skipBlanks(source);
@@ -66,7 +66,7 @@ public class GroupParsers {
 
         Expression separator;
 
-        if (source.pull('/')) {
+        if (source.pull(Mark.REPETITION_SEPARATOR_MARK)) {
             BaseParsers.skipBlanks(source);
 
             separator = CoreParsers.parseExpression(context, source);
@@ -79,7 +79,7 @@ public class GroupParsers {
             separator = null;
         }
 
-        if (!source.pull('}')) {
+        if (!source.pull(Mark.REPETITION_END)) {
             throw source.error("expected }");
         }
 
@@ -89,7 +89,7 @@ public class GroupParsers {
     public static Optional parseOptional(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('[')) {
+        if (!source.pull(Mark.OPTIONAL_BEGIN)) {
             source.setPosition(pos0);
             return null;
         }
@@ -105,7 +105,7 @@ public class GroupParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull(']')) {
+        if (!source.pull(Mark.OPTIONAL_END)) {
             source.setPosition(pos0);
             return null;
         }
@@ -115,7 +115,7 @@ public class GroupParsers {
 
 
     public static Expression parseGroup(ParseContext context, Source source) {
-        if (!source.pull('(')) {
+        if (!source.pull(Mark.GROUP_BEGIN)) {
             return null;
         }
 
@@ -131,7 +131,7 @@ public class GroupParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull(')')) {
+        if (!source.pull(Mark.GROUP_END)) {
             source.setPosition(pos0);
             return null;
         }
@@ -140,7 +140,7 @@ public class GroupParsers {
     }
 
     public static Negation parseNegation(ParseContext context, Source source) {
-        if (!source.pull('<')) {
+        if (!source.pull(Mark.NEGATION_BEGIN)) {
             return null;
         }
 
@@ -154,7 +154,7 @@ public class GroupParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull('>')) {
+        if (!source.pull(Mark.NEGATION_END)) {
             source.setPosition(pos0);
             return null;
         }

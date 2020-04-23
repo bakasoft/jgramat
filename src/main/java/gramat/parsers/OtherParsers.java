@@ -21,7 +21,7 @@ public class OtherParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (source.pull('=')) {
+        if (source.pull(Mark.ASSIGNMENT_MARK)) {
             source.setPosition(pos0);
             return null;
         }
@@ -32,7 +32,7 @@ public class OtherParsers {
     public static EndSource parseEnd(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('$')) {
+        if (!source.pull(Mark.END_SOURCE_MARK)) {
             return null;
         }
 
@@ -42,7 +42,7 @@ public class OtherParsers {
     public static BeginSource parseBegin(ParseContext context, Source source) {
         var pos0 = source.getPosition();
 
-        if (!source.pull('^')) {
+        if (!source.pull(Mark.BEGIN_SOURCE_MARK)) {
             return null;
         }
 
