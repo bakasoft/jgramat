@@ -98,13 +98,28 @@ public class ValueParsers {
 
                 return new DynAttributeExp(loc0, nameExp, valueExp);
             case "object":
-                if (nameExp != null) {
+                if (nameExp != null && nameLit == null) {
                     return new DynObjectExp(loc0, nameExp, valueExp);
                 }
+                else if (nameLit != null && nameExp == null) {
+                    var type = context.getType(nameLit);
+
+                    if (type != null) {
+                        return new TypedObjectExp(loc0, type, valueExp);
+                    }
+                }
+
                 return new ObjectExp(loc0, nameLit, valueExp);
             case "list":
-                if (nameExp != null) {
+                if (nameExp != null && nameLit == null) {
                     return new DynListExp(loc0, nameExp, valueExp);
+                }
+                else if (nameLit != null && nameExp == null) {
+                    var type = context.getType(nameLit);
+
+                    if (type != null) {
+                        return new TypedListExp(loc0, type, valueExp);
+                    }
                 }
                 return new ListExp(loc0, nameLit, valueExp);
             case "join":

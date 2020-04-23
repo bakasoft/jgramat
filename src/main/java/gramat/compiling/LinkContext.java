@@ -6,5 +6,4 @@ public interface LinkContext {
 
     NamedExpression getExpression(String name);
 
-    Class<?> getType(String name);
 }

@@ -5,24 +5,23 @@ import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.WildList;
 
 import java.util.Objects;
 
 public class ListExp extends Expression {
 
-    private String typeName;
+    private String typeHint;
     private Expression expression;
 
-    public ListExp(Location location, String typeName, Expression expression) {
+    public ListExp(Location location, String typeHint, Expression expression) {
         super(location);
-        this.typeName = typeName;
+        this.typeHint = typeHint;
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        return context.useList(expression, typeName);
+        return context.useList(expression, typeHint);
     }
 
     @Override

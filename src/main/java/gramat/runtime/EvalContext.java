@@ -5,19 +5,27 @@ import gramat.expressions.Expression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class EvalContext {
+
+    private final Map<String, Class<?>> typeMapping;
+
+    private final EditBuilder edits;
 
     public final Source source;
 
     public int debugTabs = 0;
 
-    private final EditBuilder edits;
-
-    public EvalContext(Source source) {
+    public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
         this.source = source;
         this.edits = new EditBuilder();
+        this.typeMapping = typeMapping;
+    }
+
+    public Class<?> getType(String name) {
+        return typeMapping.get(name);
     }
 
     public void begin() {
@@ -85,5 +93,9 @@ public class EvalContext {
 
     public void set(Location location, String name) {
         edits.add(new EditSet(location, name));
+    }
+
+    public EvalContext createEmptyContext() {
+        return new EvalContext(source, typeMapping);
     }
 }

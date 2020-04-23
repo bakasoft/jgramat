@@ -6,6 +6,8 @@ public interface ParseContext {
 
     ValueParser getParser(String name);
 
+    Class<?> getType(String name);
+
     void warning(String message, Location location);
 
 }

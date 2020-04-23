@@ -5,7 +5,6 @@ import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.WildObject;
 
 import java.util.Objects;
 
@@ -23,13 +22,17 @@ public class DynObjectExp extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        var typeName = typeExp.capture(context);  // TODO should this be wrapped?
+        var typeName = typeExp.captureString(context);
 
         if (typeName == null) {
             return false;
         }
 
-        // TODO find real type
+        var type = context.getType(typeName);
+
+        if (type != null) {
+            return context.useObject(expression, type);
+        }
 
         return context.useObject(expression, typeName);
     }

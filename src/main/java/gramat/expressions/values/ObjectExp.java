@@ -5,25 +5,24 @@ import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.WildObject;
 
 import java.util.Objects;
 
 public class ObjectExp extends Expression {
 
-    private final String typeName;
+    private final String typeHint;
 
     private Expression expression;
 
-    public ObjectExp(Location location, String typeName, Expression expression) {
+    public ObjectExp(Location location, String typeHint, Expression expression) {
         super(location);
-        this.typeName = typeName;
+        this.typeHint = typeHint;
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        return context.useObject(expression, typeName);
+        return context.useObject(expression, typeHint);
     }
 
     @Override
@@ -35,15 +34,6 @@ public class ObjectExp extends Expression {
     @Override
     public Expression link(LinkContext context) {
         expression = expression.link(context);
-
-        if (typeName != null) {
-            Class<?> type = context.getType(typeName);
-
-            if (type != null) {
-                return new TypedObjectExp(location, type, expression);
-            }
-        }
-
         return this;
     }
 

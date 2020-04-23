@@ -5,7 +5,6 @@ import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.WildList;
 
 import java.util.Objects;
 
@@ -22,13 +21,17 @@ public class DynListExp extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        var typeName = typeExp.capture(context);
+        var typeName = typeExp.captureString(context);
 
         if (typeName == null) {
             return false;
         }
 
-        // TODO find real type
+        var type = context.getType(typeName);
+
+        if (type != null) {
+            return context.useList(expression, type);
+        }
 
         return context.useList(expression, typeName);
     }
@@ -43,13 +46,11 @@ public class DynListExp extends Expression {
     @Override
     public Expression link(LinkContext context) {
         expression = expression.link(context);
-        expression = expression.link(context);
         return this;
     }
 
     @Override
     public DebugExp debug() {
-        expression = expression.debug();
         expression = expression.debug();
         return new DebugExp(this);
     }

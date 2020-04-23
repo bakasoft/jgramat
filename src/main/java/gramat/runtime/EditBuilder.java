@@ -51,7 +51,7 @@ public class EditBuilder {
 
     private static Value collapseValues(List<Value> bufferedValues) {
         if (bufferedValues.isEmpty()) {
-            return new NullValue();
+            throw new GramatException("missing value");
         } else if (bufferedValues.size() == 1) {
             return bufferedValues.get(0);
         }

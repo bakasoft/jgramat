@@ -27,22 +27,18 @@ abstract public class Expression {
         }
     }
 
-    public String capture(EvalContext context) {
-        var pos0 = context.source.getPosition();
-        var subContext = new EvalContext(context.source);
+    public String captureString(EvalContext context) {
+        var subContext = context.createEmptyContext();
 
         if (eval(subContext)) {
             var result = subContext.getValue();
 
-            if (result != null) {
-                // TODO validate that it is a string
-                return result.toString();
+            if (result instanceof String) {
+                return (String)result;
             }
-
-            var posF = context.source.getPosition();
-
-            //  TODO should this be removed? Only actual values should be considered as captured
-            return context.source.extract(pos0, posF);
+            else {
+                throw context.source.error("Expected to capture a string.");
+            }
         }
 
         return null;

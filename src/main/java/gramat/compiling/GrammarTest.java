@@ -6,6 +6,8 @@ import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
+import java.util.HashMap;
+
 public class GrammarTest {
 
     private final Location location;
@@ -29,7 +31,7 @@ public class GrammarTest {
             throw new ParseException("Expression not found: " + expressionName, location);
         }
 
-        EvalContext evalContext = new EvalContext(source);
+        EvalContext evalContext = new EvalContext(source, new HashMap<>());
 
         boolean matches = expression.eval(evalContext);
 

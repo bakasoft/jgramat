@@ -5,7 +5,6 @@ import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.WildList;
 
 import java.util.Objects;
 
@@ -23,7 +22,7 @@ public class DynAttributeExp extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         var pos0 = context.source.getPosition();
-        var name = nameExpression.capture(context);
+        var name = nameExpression.captureString(context);
 
         if (name == null) {
             return false;

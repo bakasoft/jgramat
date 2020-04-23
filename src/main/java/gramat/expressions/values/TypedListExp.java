@@ -8,26 +8,20 @@ import gramat.util.parsing.Location;
 
 import java.util.Objects;
 
-public class MapExp extends Expression {
+public class TypedListExp extends Expression {
 
-    private final String replacement;
-
+    private Class<?> type;
     private Expression expression;
 
-    public MapExp(Location location, String replacement, Expression expression) {
+    public TypedListExp(Location location, Class<?> type, Expression expression) {
         super(location);
-        this.replacement = replacement;
+        this.type = Objects.requireNonNull(type);
         this.expression = Objects.requireNonNull(expression);
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        if (expression.eval(context)) {
-            context.sendFragment(replacement);
-            return true;
-        }
-
-        return false;
+        return context.useList(expression, type);
     }
 
     @Override
@@ -47,5 +41,5 @@ public class MapExp extends Expression {
         expression = expression.debug();
         return new DebugExp(this);
     }
-
 }
+
