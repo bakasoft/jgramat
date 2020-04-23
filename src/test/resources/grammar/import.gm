@@ -1,5 +1,5 @@
-@object ImportedElement = [ @set('extendedType': name)  ws "." ws ] @set('name': name)
+@object ImportedElement = [ @set(`extendedType`: name)  ws "." ws ] @set(`name`: name)
 
 @object ImportStatement =
-    "import" ws @set('importedElements': @list({1 ImportedElement / ws "," ws })) ws
-    "from" ws @set('module': MemberPath)
+    "import" ws @set(`importedElements`: @list({1 ImportedElement / ws "," ws })) ws
+    "from" ws @set(`module`: MemberPath)
