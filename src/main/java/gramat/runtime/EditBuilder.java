@@ -158,6 +158,9 @@ public class EditBuilder {
                 var edit = (EditSendFragment)node.edit;
                 bufferStack.peek().add(new PlainValue(edit.fragment, null));
             }
+            else if (node.edit instanceof EditSendNull) {
+                bufferStack.peek().add(new NullValue());
+            }
             else if (node.edit instanceof EditMark) {
                 var edit = (EditMark)node.edit;
             }

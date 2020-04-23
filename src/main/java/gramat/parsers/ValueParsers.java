@@ -1,5 +1,6 @@
 package gramat.parsers;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.expressions.values.*;
@@ -82,10 +83,10 @@ public class ValueParsers {
 
         var loc0 = source.locationOf(pos0);
 
-        return makeValue(loc0, keyword, nameLit, nameExp, valueExp);
+        return makeValue(context, loc0, keyword, nameLit, nameExp, valueExp);
     }
 
-    public static Expression makeValue(Location loc0, String keyword, String nameLit, Expression nameExp, Expression valueExp) {
+    public static Expression makeValue(ParseContext context, Location loc0, String keyword, String nameLit, Expression nameExp, Expression valueExp) {
         switch (keyword) {
             case "set":
                 if (nameLit != null) {
@@ -111,6 +112,11 @@ public class ValueParsers {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new JoinExp(loc0, valueExp);
+            case "null":
+                if (nameLit != null || nameExp != null) {
+                    throw new ParseException("Unexpected name", loc0);
+                }
+                return new NullExp(loc0, valueExp);
             case "map":
                 if (nameLit == null) {
                     throw new ParseException("expected replacement.", loc0);
@@ -123,7 +129,14 @@ public class ValueParsers {
                 if (nameLit != null || nameExp != null) {
                     throw new ParseException("Unexpected parser name: " + nameLit, loc0);
                 }
-                return new ValueExp(loc0, keyword, valueExp);
+
+                var parser = context.getParser(keyword);
+
+                if (parser == null) {
+                    throw new ParseException("Unsupported parser: " + keyword, loc0);
+                }
+
+                return new ValueExp(loc0, parser, valueExp);
         }
     }
 

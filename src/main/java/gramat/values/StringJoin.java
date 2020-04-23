@@ -13,11 +13,11 @@ public class StringJoin implements StringValue, ContainerValue {
     }
 
     @Override
-    public Object build() {
+    public String build() {
         StringBuilder output = new StringBuilder();
 
         for (var item : items) {
-            output.append(item.toString());
+            output.append(item.buildString());
         }
 
         return output.toString();
@@ -31,5 +31,10 @@ public class StringJoin implements StringValue, ContainerValue {
         else {
             throw new GramatException("expected string value to join");
         }
+    }
+
+    @Override
+    public String buildString() {
+        return build();
     }
 }

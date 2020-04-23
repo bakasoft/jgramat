@@ -2,6 +2,7 @@ package gramat.compiling;
 
 import gramat.GramatException;
 import gramat.Grammar;
+import gramat.builtin.*;
 import gramat.expressions.Expression;
 import gramat.expressions.NamedExpression;
 import gramat.parsers.BaseParsers;
@@ -25,10 +26,19 @@ public class Compiler implements LinkContext, ParseContext {
 
     private final List<GrammarTest> tests;
 
+    private final HashMap<String, ValueParser> valueParsers;
+
     public Compiler() {
         rules = new ArrayList<>();
         parsedFiles = new HashSet<>();
         tests = new ArrayList<>();
+        valueParsers = new HashMap<>();
+
+        setParser("boolean", new BooleanParser());
+        setParser("integer", new IntegerParser());
+        setParser("number", new NumberParser());
+        setParser("string", new StringParser());
+        setParser("hex-to-char", new HexToCharParser());
     }
 
     public void compile() {
@@ -200,6 +210,14 @@ public class Compiler implements LinkContext, ParseContext {
         }
 
         return workingDir.resolve(file);
+    }
+
+    public void setParser(String name, ValueParser parser) {
+        valueParsers.put(name, parser);
+    }
+
+    public ValueParser getParser(String name) {
+        return valueParsers.get(name);
     }
 
     @Override

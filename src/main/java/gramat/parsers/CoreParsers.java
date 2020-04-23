@@ -53,7 +53,7 @@ public class CoreParsers {
         var location = source.locationOf(pos0);
 
         if (keyword != null) {
-            expression = ValueParsers.makeValue(location, keyword, null, null, expression);
+            expression = ValueParsers.makeValue(context, location, keyword, null, null, expression);
         }
 
         return new NamedExpression(location, name, expression);

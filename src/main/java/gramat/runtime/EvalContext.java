@@ -1,5 +1,6 @@
 package gramat.runtime;
 
+import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
@@ -70,8 +71,12 @@ public class EvalContext {
         edits.add(new EditSendFragment(source.getLocation(), value));
     }
 
-    public void sendSegment(int pos0, int posF, String parser) {
+    public void sendSegment(int pos0, int posF, ValueParser parser) {
         edits.add(new EditSendSegment(source.locationOf(pos0), pos0, posF, parser));
+    }
+
+    public void sendNull() {
+        edits.add(new EditSendNull(source.getLocation()));
     }
 
     public void mark(int pos0, int posF, String name) {
