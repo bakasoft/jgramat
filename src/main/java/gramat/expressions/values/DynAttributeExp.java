@@ -22,7 +22,8 @@ public class DynAttributeExp extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        var name = nameExpression.capture(context);  // TODO should this be wrapped?
+        var pos0 = context.source.getPosition();
+        var name = nameExpression.capture(context);
 
         if (name == null) {
             return false;
@@ -31,10 +32,11 @@ public class DynAttributeExp extends Expression {
         // TODO find real type
 
         if (valueExpression.eval(context)) {
-            context.set(name);
+            context.set(context.source.locationOf(pos0), name);
             return true;
         }
 
+        context.source.setPosition(pos0);
         return false;
     }
 

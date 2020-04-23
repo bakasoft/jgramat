@@ -4,6 +4,4 @@ public interface Value {
 
     Object build();
 
-    void concat(ConcatenatedValue value);
-
 }

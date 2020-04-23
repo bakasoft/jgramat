@@ -1,6 +1,7 @@
 package gramat.runtime;
 
 import gramat.GramatException;
+import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 import gramat.values.*;
 
@@ -54,14 +55,9 @@ public class EditBuilder {
         } else if (bufferedValues.size() == 1) {
             return bufferedValues.get(0);
         }
-
-        var result = new ConcatenatedValue();
-
-        for (var value : bufferedValues) {
-            value.concat(result);
+        else {
+            throw new GramatException("too much values!");
         }
-
-        return result;
     }
 
     public Object build(Source source) {
@@ -72,29 +68,48 @@ public class EditBuilder {
 
         bufferStack.push(new ArrayList<>());
 
+        var tab = 0;
+
         while (node != null) {
+            System.out.print("..".repeat(tab));
+            System.out.println(node.edit);
             if (node.edit instanceof EditOpenWildObject) {
                 var edit = (EditOpenWildObject)node.edit;
                 valueStack.push(new WildObject(edit.typeName));
                 bufferStack.push(new ArrayList<>());
+                tab++;
             }
             else if (node.edit instanceof EditOpenWildList) {
                 var edit = (EditOpenWildList)node.edit;
                 valueStack.push(new WildList(edit.typeName));
                 bufferStack.push(new ArrayList<>());
+                tab++;
             }
             else if (node.edit instanceof EditOpenTypedObject) {
                 var edit = (EditOpenTypedObject)node.edit;
                 valueStack.push(new TypedObject(edit.type));
                 bufferStack.push(new ArrayList<>());
+                tab++;
             }
             else if (node.edit instanceof EditOpenTypedList) {
                 var edit = (EditOpenTypedList)node.edit;
                 valueStack.push(new TypedList(edit.type));
                 bufferStack.push(new ArrayList<>());
+                tab++;
+            }
+            else if (node.edit instanceof EditOpenJoin) {
+                var edit = (EditOpenJoin)node.edit;
+                valueStack.push(new StringJoin());
+                bufferStack.push(new ArrayList<>());
+                tab++;
             }
             else if (node.edit instanceof EditSet) {
                 var edit = (EditSet)node.edit;
+
+                if (valueStack.isEmpty()) {
+                    throw new ParseException("empty value stack", edit.location);
+                }
+
                 var currentValue = valueStack.peek();
 
                 if (!(currentValue instanceof ObjectValue)) {
@@ -116,20 +131,21 @@ public class EditBuilder {
                 currentObject.set(edit.name, setValue);
             }
             else if (node.edit instanceof EditCloseValue) {
+                tab--;
+
                 var edit = (EditCloseValue)node.edit;
                 var value = valueStack.pop();
                 var buffer = bufferStack.pop();
 
-                if (!buffer.isEmpty()) {
-                    if (value instanceof ListValue) {
-                        var list = (ListValue) value;
+                if (value instanceof ContainerValue) {
+                    var container = (ContainerValue) value;
 
-                        for (var item : buffer) {
-                            list.add(item);
-                        }
-                    } else {
-                        throw new GramatException("expected list");
+                    for (var item : buffer) {
+                        container.add(item);
                     }
+                }
+                else if (!buffer.isEmpty()) {
+                    throw new GramatException("expected list");
                 }
 
                 bufferStack.peek().add(value);
@@ -153,19 +169,8 @@ public class EditBuilder {
         }
 
         var values = bufferStack.pop();
-
-        if (bufferStack.size() > 0) {
-            throw new GramatException("too much values for a result");
-        }
-
-        if (values.isEmpty()) {
-            return null;
-        }
-        else if (values.size() != 1){
-            throw new GramatException("too much values!");
-        }
-
-        return values.get(0).build();
+        var result = collapseValues(values);
+        return result.build();
     }
 
     private static class Node {

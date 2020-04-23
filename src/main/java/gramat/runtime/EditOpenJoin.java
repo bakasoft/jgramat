@@ -2,8 +2,9 @@ package gramat.runtime;
 
 import gramat.util.parsing.Location;
 
-public class EditCloseValue extends Edit {
-    public EditCloseValue(Location location) {
+public class EditOpenJoin extends Edit {
+
+    public EditOpenJoin(Location location) {
         super(location);
     }
 }

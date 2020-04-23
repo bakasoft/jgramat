@@ -1,7 +1,5 @@
 package gramat.values;
 
-import gramat.GramatException;
-
 import java.util.HashMap;
 
 abstract public class ObjectValue implements Value {
@@ -13,11 +11,6 @@ abstract public class ObjectValue implements Value {
             attributes = new HashMap<>();
         }
         return attributes;
-    }
-
-    @Override
-    public void concat(ConcatenatedValue value) {
-        throw new GramatException("cannot concatenate an object");
     }
 
     public void set(String name, Value value) {

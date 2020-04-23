@@ -1,6 +1,6 @@
 package gramat.values;
 
-public class PlainValue implements Value {
+public class PlainValue implements StringValue {
 
     private final String value;
     private final String parser;
@@ -17,7 +17,7 @@ public class PlainValue implements Value {
     }
 
     @Override
-    public void concat(ConcatenatedValue value) {
-        value.add(this.value, this.parser);
+    public String toString() {
+        return this.value;
     }
 }

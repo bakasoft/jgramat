@@ -21,8 +21,10 @@ public class AttributeExp extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
+        var pos0 = context.source.getPosition();
+
         if (valueExpression.eval(context)) {
-            context.set(name);
+            context.set(context.source.locationOf(pos0), name);
             return true;
         }
 

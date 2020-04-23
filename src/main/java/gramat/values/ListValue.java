@@ -5,7 +5,7 @@ import gramat.GramatException;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class ListValue implements Value {
+abstract public class ListValue implements ContainerValue {
 
     private List<Value> values;
 
@@ -14,11 +14,6 @@ abstract public class ListValue implements Value {
             values = new ArrayList<>();
         }
         return values;
-    }
-
-    @Override
-    public void concat(ConcatenatedValue value) {
-        throw new GramatException("cannot concatenate a list");
     }
 
     public void add(Value value) {

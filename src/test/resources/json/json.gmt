@@ -13,7 +13,7 @@ Json = ws (Object | Array | String | Number | Boolean | Null) ws
 
 @null Null = "null"
 
-@string String  = `"` { escaped-char | @string(<`"`>) } `"`
+@join String  = `"` { escaped-char | @string(<`"`>) } `"`
 
 escaped-char =
     "\\" (

@@ -96,16 +96,21 @@ public class ValueParsers {
                 }
 
                 return new DynAttributeExp(loc0, nameExp, valueExp);
-            case "list":
-                if (nameExp != null) {
-                    return new DynListExp(loc0, nameExp, valueExp);
-                }
-                return new ListExp(loc0, nameLit, valueExp);
             case "object":
                 if (nameExp != null) {
                     return new DynObjectExp(loc0, nameExp, valueExp);
                 }
                 return new ObjectExp(loc0, nameLit, valueExp);
+            case "list":
+                if (nameExp != null) {
+                    return new DynListExp(loc0, nameExp, valueExp);
+                }
+                return new ListExp(loc0, nameLit, valueExp);
+            case "join":
+                if (nameLit != null || nameExp != null) {
+                    throw new ParseException("Unexpected name", loc0);
+                }
+                return new JoinExp(loc0, valueExp);
             case "map":
                 if (nameLit == null) {
                     throw new ParseException("expected replacement.", loc0);

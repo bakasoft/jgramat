@@ -29,11 +29,19 @@ abstract public class Expression {
 
     public String capture(EvalContext context) {
         var pos0 = context.source.getPosition();
+        var subContext = new EvalContext(context.source);
 
-        if (eval(context)) {
+        if (eval(subContext)) {
+            var result = subContext.getValue();
+
+            if (result != null) {
+                // TODO validate that it is a string
+                return result.toString();
+            }
+
             var posF = context.source.getPosition();
 
-            // TODO consider joining all the sent values
+            //  TODO should this be removed? Only actual values should be considered as captured
             return context.source.extract(pos0, posF);
         }
 

@@ -41,7 +41,8 @@ public class GrammarTest {
         }
 
         // TODO check eval result
-        System.out.println(evalContext.getValue());
+        System.out.println(
+                evalContext.getValue());
     }
 
     public String getExpressionName() {
