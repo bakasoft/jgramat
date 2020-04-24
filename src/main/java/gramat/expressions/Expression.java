@@ -6,6 +6,8 @@ import gramat.util.parsing.Location;
 
 abstract public class Expression {
 
+    abstract public String getDescription();
+
     abstract public Expression optimize();
     abstract public Expression link(LinkContext context);
 

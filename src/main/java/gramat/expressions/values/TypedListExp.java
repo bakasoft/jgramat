@@ -35,5 +35,10 @@ public class TypedListExp extends Expression {
         expression = expression.link(context);
         return this;
     }
+
+    @Override
+    public String getDescription() {
+        return "Create typed list: " + type;
+    }
 }
 

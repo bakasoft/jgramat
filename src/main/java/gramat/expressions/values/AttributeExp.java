@@ -1,7 +1,6 @@
 package gramat.expressions.values;
 
 import gramat.compiling.LinkContext;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -41,6 +40,11 @@ public class AttributeExp extends Expression {
     public Expression link(LinkContext context) {
         valueExpression = valueExpression.link(context);
         return this;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Set attribute: " + name;
     }
 
 }

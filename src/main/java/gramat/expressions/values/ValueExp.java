@@ -47,4 +47,13 @@ public class ValueExp extends Expression {
         expression = expression.link(context);
         return this;
     }
+
+    @Override
+    public String getDescription() {
+        if (parser != null) {
+            return "Parse value: " + parser;
+        }
+
+        return "Capture value";
+    }
 }

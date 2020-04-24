@@ -1,6 +1,11 @@
+Statement =
+    ImportStatement |
+    FieldStatement |
+    FunctionStatement |
+    ClassStatement |
+    InterfaceStatement
+
+@list StatementList = { ws Statement } ws
+
 @object SourceFile =
-    ^ { ImportStatement |
-        FieldStatement |
-        FunctionStatement |
-        ClassStatement |
-        InterfaceStatement / ws } $
+    ^ @set(`statements`: StatementList) $

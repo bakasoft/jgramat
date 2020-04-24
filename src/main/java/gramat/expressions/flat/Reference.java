@@ -41,4 +41,9 @@ public class Reference extends Expression {
         return name;
     }
 
+    @Override
+    public String getDescription() {
+        return "Reference: " + name;
+    }
+
 }

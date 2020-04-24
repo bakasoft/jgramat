@@ -4,6 +4,7 @@ import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
+import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 
 public class CharRange extends Expression {
@@ -41,10 +42,8 @@ public class CharRange extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "CharRange{" +
-                "beginChar=" + beginChar +
-                ", endChar=" + endChar +
-                '}';
+    public String getDescription() {
+        return "Char Range: " + GramatWriter.toDelimitedString(String.valueOf(beginChar), '\'')
+                + "-"  + GramatWriter.toDelimitedString(String.valueOf(endChar), '\'');
     }
 }

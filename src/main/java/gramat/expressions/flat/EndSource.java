@@ -27,4 +27,9 @@ public class EndSource extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "End of source";
+    }
+
 }

@@ -20,6 +20,7 @@ public class EvalContext {
     private int debugTabs = 0;
 
     public boolean debugMode = false;
+    public boolean softMode = false;
 
     public int lastCommitPosition;
 
@@ -38,7 +39,7 @@ public class EvalContext {
     public void begin(Expression expression) {
         edits.begin();
 
-        if (debugMode) {
+        if (debugMode && !softMode) {
             printDebugLine("begin", expression);
             debugTabs++;
         }
@@ -59,7 +60,7 @@ public class EvalContext {
 
         edits.commit();
 
-        if (debugMode) {
+        if (debugMode && !softMode) {
             debugTabs--;
             printDebugLine("commit", expression);
         }
@@ -68,7 +69,7 @@ public class EvalContext {
     public void rollback(Expression expression) {
         edits.rollback();
 
-        if (debugMode) {
+        if (debugMode && !softMode) {
             debugTabs--;
             printDebugLine("rollback", expression);
         }
@@ -79,8 +80,8 @@ public class EvalContext {
 
         int pos = source.getPosition();
 
-        for (int i = pos - 10; i <= pos + 10; i++) {
-            if (pos >= 0 && pos < source.getLength()) {
+        for (int i = pos - 10; i <= pos + 9; i++) {
+            if (i >= 0 && i < source.getLength()) {
                 var c = source.getChar(i);
 
                 if (Character.isISOControl(c)) {
@@ -100,9 +101,12 @@ public class EvalContext {
                     sample.append(' ');
                 }
             }
+            else {
+                sample.append("  ");
+            }
         }
 
-        System.out.println(sample + " " + action + " " + expression);
+        System.out.println(sample + "| " + " ".repeat(debugTabs) + expression.getDescription() + " - " + action);
     }
 
     public Object getValue() {

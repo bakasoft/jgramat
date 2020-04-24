@@ -51,4 +51,9 @@ public class DynObjectExp extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Create dynamic object";
+    }
+
 }

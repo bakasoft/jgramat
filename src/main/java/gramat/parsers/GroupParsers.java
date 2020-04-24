@@ -74,6 +74,8 @@ public class GroupParsers {
             if (separator == null) {
                 throw source.error("expected expression");
             }
+
+            BaseParsers.skipBlanks(source);
         }
         else {
             separator = null;

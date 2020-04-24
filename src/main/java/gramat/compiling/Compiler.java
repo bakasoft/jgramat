@@ -241,6 +241,11 @@ public class Compiler implements LinkContext, ParseContext {
         return expression;
     }
 
+
+    public void setType(Class<?> type) {
+        setType(type.getSimpleName(), type);
+    }
+
     public void setType(String name, Class<?> type) {
         types.put(name, type);
     }
@@ -254,4 +259,5 @@ public class Compiler implements LinkContext, ParseContext {
     public void warning(String message, Location location) {
         System.err.println(message + " <- " + location);
     }
+
 }

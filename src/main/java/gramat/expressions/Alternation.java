@@ -54,7 +54,7 @@ public class Alternation extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "alternation(" + expressions.length + ")";
+    public String getDescription() {
+        return "Alternation";
     }
 }

@@ -48,4 +48,9 @@ public class Sequence extends Expression {
         linkAll(context, expressions);
         return this;
     }
+
+    @Override
+    public String getDescription() {
+        return "Sequence";
+    }
 }

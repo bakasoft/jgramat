@@ -4,6 +4,7 @@ import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
+import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 
 
@@ -39,9 +40,7 @@ public class CharLiteral extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "CharLiteral{" +
-                "value=" + value +
-                '}';
+    public String getDescription() {
+        return "Char: " + GramatWriter.toDelimitedString(String.valueOf(value), '\'');
     }
 }

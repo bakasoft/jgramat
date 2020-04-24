@@ -3,9 +3,9 @@
     "interface" ws @set(`name`: Name)
     [ ws @set(`genericParameters`: GenericParameterList) ]
     [ ws "implements" ws @set(`superInterfaces`: TypeRefList) ]
-    [ ws "{" ws @set(`members`: InterfaceMemberList) ws "}" ]
+    [ ws @set(`members`: InterfaceMemberList) ]
 
-@list InterfaceMemberList = { InterfaceMember / ws }
+@list InterfaceMemberList = "{" { ws InterfaceMember } ws "}"
 
 InterfaceMember =
     InterfaceField |

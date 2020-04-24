@@ -21,6 +21,8 @@ public class BmParser {
 
     public BmParser(BmTerminal terminal) {
         var compiler = new Compiler();
+        
+        compiler.setType(SourceFile.class);
 
         try {
             compiler.parseFile(Paths.get(BmParser.class.getResource("/grammar/bm.gm").toURI()));

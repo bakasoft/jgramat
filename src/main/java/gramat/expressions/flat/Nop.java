@@ -26,4 +26,9 @@ public class Nop extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "No operation";
+    }
+
 }

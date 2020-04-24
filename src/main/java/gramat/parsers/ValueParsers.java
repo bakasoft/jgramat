@@ -123,7 +123,7 @@ public class ValueParsers {
                 }
                 return new ListExp(loc0, nameLit, valueExp);
             case Mark.JOIN_KEYWORD:
-                if (nameLit != null || nameExp != null) {
+                if (nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new JoinExp(loc0, valueExp);
@@ -146,7 +146,7 @@ public class ValueParsers {
                 }
                 return new DebugExp(loc0, valueExp);
             default:
-                if (nameLit != null || nameExp != null) {
+                if (nameExp != null) {
                     throw new ParseException("Unexpected parser name: " + nameLit, loc0);
                 }
 

@@ -1,10 +1,10 @@
-ws = {'\s \n \r \t'}
+ws: {'\s \n \r \t'}
 
-alpha = 'a-z A-Z _ @ $'
-digit = '0-9'
-hex = 'a-f A-F 0-9'
+alpha: 'a-z A-Z _ @ $'
+digit: '0-9'
+hex: 'a-f A-F 0-9'
 
-EscapedChar =
+EscapedChar:
     "\\" (
         @string("\"" | "\\" | "/") |
         @map(`\n`: "n") |
@@ -16,7 +16,7 @@ EscapedChar =
     )
 
 
-@join NameDelimited = "`" { EscapedChar | @string(<"`">)} "`"
-@string NameKeyword = alpha { alpha | digit }
+@join NameDelimited: "`" { EscapedChar | @string(<"`">)} "`"
+@string NameKeyword: alpha { alpha | digit }
 
-Name = NameKeyword | NameDelimited
+Name: NameKeyword | NameDelimited

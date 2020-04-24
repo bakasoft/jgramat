@@ -35,5 +35,10 @@ public class ListExp extends Expression {
         expression = expression.link(context);
         return this;
     }
+
+    @Override
+    public String getDescription() {
+        return "Create list: " + typeHint;
+    }
 }
 

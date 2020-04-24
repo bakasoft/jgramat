@@ -18,13 +18,13 @@ public class DebugExp extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        var initialValue = context.debugMode;
+        var debugMode0 = context.debugMode;
 
         context.debugMode = true;
 
         boolean result = expression.eval(context);
 
-        context.debugMode = initialValue;
+        context.debugMode = debugMode0;
 
         return result;
     }
@@ -39,5 +39,10 @@ public class DebugExp extends Expression {
     public Expression link(LinkContext context) {
         expression = expression.link(context);
         return this;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Debug expression";
     }
 }

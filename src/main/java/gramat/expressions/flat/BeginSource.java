@@ -18,6 +18,11 @@ public class BeginSource extends Expression {
     }
 
     @Override
+    public String getDescription() {
+        return "Begin of source";
+    }
+
+    @Override
     public Expression optimize() {
         return this;
     }

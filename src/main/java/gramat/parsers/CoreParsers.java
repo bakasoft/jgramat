@@ -35,7 +35,15 @@ public class CoreParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (!source.pull(Mark.ASSIGNMENT_MARK)) {
+        boolean soft;
+
+        if (source.pull(Mark.HARD_ASSIGNMENT_MARK)) {
+            soft = false;
+        }
+        else if (source.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
+            soft = true;
+        }
+        else {
             source.setPosition(pos0);
             return null;
         }
@@ -51,10 +59,10 @@ public class CoreParsers {
         var location = source.locationOf(pos0);
 
         if (keyword != null) {
-            expression = ValueParsers.makeValue(context, location, keyword, null, null, expression);
+            expression = ValueParsers.makeValue(context, location, keyword, name, null, expression);
         }
 
-        return new NamedExpression(location, name, expression);
+        return new NamedExpression(location, name, expression, soft);
     }
 
     public static Expression parseItem(ParseContext context, Source source) {

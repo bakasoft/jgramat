@@ -35,4 +35,9 @@ public class Optional extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Optional";
+    }
+
 }

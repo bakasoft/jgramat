@@ -34,4 +34,9 @@ public class JoinExp  extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Join strings";
+    }
+
 }

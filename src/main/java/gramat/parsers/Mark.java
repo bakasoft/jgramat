@@ -22,7 +22,8 @@ public class Mark {
     public static final char GROUP_BEGIN = '(';
     public static final char GROUP_END = ')';
     public static final char NAME_SEPARATOR = ':';
-    public static final char ASSIGNMENT_MARK = '=';
+    public static final char HARD_ASSIGNMENT_MARK = '=';
+    public static final char SOFT_ASSIGNMENT_MARK = ':';
     public static final char END_SOURCE_MARK = '$';
     public static final char BEGIN_SOURCE_MARK = '^';
 

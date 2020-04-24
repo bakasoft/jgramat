@@ -53,4 +53,9 @@ public class DynAttributeExp extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Set dynamic attribute.";
+    }
+
 }

@@ -21,7 +21,7 @@ public class OtherParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (source.pull(Mark.ASSIGNMENT_MARK)) {
+        if (source.pull(Mark.HARD_ASSIGNMENT_MARK) || source.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
             source.setPosition(pos0);
             return null;
         }

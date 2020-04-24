@@ -25,27 +25,34 @@ public class Repetition extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         var pos0 = context.source.getPosition();
-        var hits = 0;
-        var expect_more = false;
+        var count = 0;
+        var expectMore = false;
 
         while (expression.eval(context)) {
+            count++;
+
             if (separator != null){
                 if (separator.eval(context)) {
-                    expect_more = true;
+                    expectMore = true;
                 } else {
-                    expect_more = false;
+                    expectMore = false;
                     break;
                 }
             }
-
-            hits += 1;
-
-            if (maxCount != null && hits >= maxCount) {
-                break;
+            else {
+                expectMore = false;
             }
         }
 
-        if (expect_more || (minCount != null && hits < minCount)) {
+        if (expectMore) {
+            context.source.setPosition(pos0);
+            return false;
+        }
+        else if (minCount != null && count < minCount) {
+            context.source.setPosition(pos0);
+            return false;
+        }
+        else if (maxCount != null && count > maxCount) {
             context.source.setPosition(pos0);
             return false;
         }
@@ -76,7 +83,7 @@ public class Repetition extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "repetition(" + expression + ")";
+    public String getDescription() {
+        return "Repetition";
     }
 }

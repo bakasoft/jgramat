@@ -12,5 +12,4 @@
 
 @object GenericParameter = @set(`name`: Name) [ ws @set(`type`: TypeRef) ]
 
-@debug XXX = "<" ws {+ GenericParameter / ws "," ws } ws ">"
-@list GenericParameterList = XXX
+@list GenericParameterList = "<" ws {+ GenericParameter / ws "," ws } ws ">"

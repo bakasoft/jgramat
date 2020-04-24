@@ -42,4 +42,9 @@ public class MapExp extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Map to: " + replacement;
+    }
+
 }

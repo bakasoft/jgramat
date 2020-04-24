@@ -38,4 +38,9 @@ public class TypedObjectExp extends Expression {
         return this;
     }
 
+    @Override
+    public String getDescription() {
+        return "Create typed object: " + type;
+    }
+
 }
