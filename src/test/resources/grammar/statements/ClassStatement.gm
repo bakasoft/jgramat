@@ -4,9 +4,9 @@
     [ ws @set(`genericParameters`: GenericParameterList) ]
     [ ws "extends" ws @set(`superClass`: TypeRef) ]
     [ ws "implements" ws @set(`superInterfaces`: TypeRefList) ]
-    [ ws "{" ws @set(`members`: ClassMemberList) ws "}" ]
+    [ ws @set(`members`: ClassMemberList) ]
 
-@list ClassMemberList = { ClassMember / ws }
+@list ClassMemberList = "{" { ws ClassMember } ws "}"
 
 ClassMember =
     ClassField |

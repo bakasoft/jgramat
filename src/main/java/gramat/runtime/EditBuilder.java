@@ -71,8 +71,6 @@ public class EditBuilder {
         var tab = 0;
 
         while (node != null) {
-            System.out.print("..".repeat(tab));
-            System.out.println(node.edit);
             if (node.edit instanceof EditOpenWildObject) {
                 var edit = (EditOpenWildObject)node.edit;
                 valueStack.push(new WildObject(edit.typeName));
@@ -145,7 +143,8 @@ public class EditBuilder {
                     }
                 }
                 else if (!buffer.isEmpty()) {
-                    throw new GramatException("expected list");
+                    // TODO give info of the unexpected object
+                    throw new ParseException("expected list", edit.location);
                 }
 
                 bufferStack.peek().add(value);

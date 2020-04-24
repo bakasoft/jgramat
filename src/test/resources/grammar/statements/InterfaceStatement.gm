@@ -10,8 +10,6 @@
 InterfaceMember =
     InterfaceField |
     InterfaceFunction |
-    InterfaceGetter |
-    InterfaceSetter |
     InterfaceOperation |
     InterfaceConstructor
 
@@ -24,15 +22,6 @@ InterfaceMember =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "function" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
     [ ws @set(`returnType`: TypeRef) ]
-
-@object InterfaceGetter =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "getter" ws @set(`name`: Name)
-    [ ws @set(`returnType`: TypeRef) ]
-
-@object InterfaceSetter =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "setter" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
 
 @object InterfaceOperation =
     [ @set(`accessModifier`: AccessModifier) ws ]
