@@ -1,8 +1,8 @@
 ws: {'\s \n \r \t' | comment}
 
-inline-ws: {'\s \t' | comment}
+i-ws: {'\s \t' | comment}
 
-line-break: inline-ws "\n" ws
+line-break: i-ws "\n" ws
 
 inline-comment: "//" {<"\n">} "\n"
 block-comment: "/*" {<"*/">} "*/"

@@ -1,85 +1,50 @@
-GroupExpr = "(" ws Expression ws ")"
+// Primary
+L0E = LiteralValue
+    | ReferencedValue
+    | @object(`GrpExpr`: "(" ws Expression ws ")")
 
-@object MemberExpr = @set(`names`: @list({+ Name / inline-ws "." inline-ws }))
+// +x, -x, not x
+L1E = @object(`PosExpr`: "+" i-ws @set(`value`: L0E))
+    | @object(`NegExpr`: "-" i-ws @set(`value`: L0E))
+    | @object(`ComExpr`: "not" i-ws @set(`value`: L0E))
+    | L0E
 
-@object InvocationExpr =
-    @set(`member`: MemberExpr)
-    [ inline-ws @set(`optional`: @true("?")) ]
-    inline-ws @set(`arguments`: InvocationArgumentGroup)
+// x*y, x/y, x%y
+L2E = @object(`MulExpr`: @set(`left`: L1E) i-ws "*" i-ws @set(`right`: L2E))
+    | @object(`DivExpr`: @set(`left`: L1E) i-ws "/" i-ws @set(`right`: L2E))
+    | @object(`ModExpr`: @set(`left`: L1E) i-ws "%" i-ws @set(`right`: L2E))
+    | L1E
 
-@object KeyAccessExpr =
-    @set(`member`: MemberExpr)
-    [ inline-ws @set(`optional`: @true("?")) ]
-    inline-ws "[" ws @set(`key`: Expression) ws "]"
+// x+y, x-y
+L3E = @object(`AddExpr`: @set(`left`: L2E) i-ws "+" i-ws @set(`right`: L3E))
+    | @object(`SubExpr`: @set(`left`: L2E) i-ws "-" i-ws @set(`right`: L3E))
+    | L2E
 
-@object PositiveExpr = "+" inline-ws @set(`value`: Expression)
-@object NegativeExpr = "-" inline-ws @set(`value`: Expression)
-@object NegationExpr = "not" inline-ws @set(`value`: Expression)
+// x>y, x<y, x>=x, x<=y, x is y, x as y
+L4E = @object(`GtrExpr`: @set(`left`: L3E) i-ws ">" i-ws @set(`right`: L4E))
+    | @object(`LssExpr`: @set(`left`: L3E) i-ws "<" i-ws @set(`right`: L4E))
+    | @object(`GeqExpr`: @set(`left`: L3E) i-ws ">=" i-ws @set(`right`: L4E))
+    | @object(`LeqExpr`: @set(`left`: L3E) i-ws "<=" i-ws @set(`right`: L4E))
+    | @object(`IsTypeExpr`: @set(`value`: L3E) i-ws "is" i-ws @set(`type`: TypeRef))
+    | @object(`AsTypeExpr`: @set(`value`: L3E) i-ws "as" i-ws @set(`type`: TypeRef))
+    | L3E
 
-@object ConjunctionExpr = @set(`left`: Expression) inline-ws "and" inline-ws @set(`right`: Expression)
-@object ExclusiveDisExpr = @set(`left`: Expression) inline-ws "xor" inline-ws @set(`right`: Expression)
-@object MultiplicationExpr = @set(`left`: Expression) inline-ws "*" inline-ws @set(`right`: Expression)
-@object DivisionExpr = @set(`left`: Expression) inline-ws "/" inline-ws @set(`right`: Expression)
-@object ModuloExpr = @set(`left`: Expression) inline-ws "%" inline-ws @set(`right`: Expression)
+// x==y, x!=y
+L5E = @object(`EquExpr`: @set(`left`: L4E) i-ws "==" i-ws @set(`right`: L5E))
+    | @object(`NeqExpr`: @set(`left`: L4E) i-ws "!=" i-ws @set(`right`: L5E))
+    | L4E
 
-@object DisjunctionExpr = @set(`left`: Expression) inline-ws "or" inline-ws @set(`right`: Expression)
-@object AdditionExpr = @set(`left`: Expression) inline-ws "+" inline-ws @set(`right`: Expression)
-@object SubtractionExpr = @set(`left`: Expression) inline-ws "-" inline-ws @set(`right`: Expression)
+// x and y
+L6E = @object(`ConExpr`: @set(`left`: L5E) i-ws "and" i-ws @set(`right`: L6E))
+    | L5E
 
-@object EqualToExpr = @set(`left`: Expression) inline-ws "==" inline-ws @set(`right`: Expression)
-@object NotEqualToExpr = @set(`left`: Expression) inline-ws "!=" inline-ws @set(`right`: Expression)
-@object GreaterThanExpr = @set(`left`: Expression) inline-ws ">" inline-ws @set(`right`: Expression)
-@object LessThanExpr = @set(`left`: Expression) inline-ws "<" inline-ws @set(`right`: Expression)
-@object GreaterEqualTo = @set(`left`: Expression) inline-ws ">=" inline-ws @set(`right`: Expression)
-@object LessEqualTo = @set(`left`: Expression) inline-ws "<=" inline-ws @set(`right`: Expression)
+// x or y, x xor y
+L7E = @object(`DisExpr`: @set(`left`: L6E) i-ws "or" i-ws @set(`right`: L7E))
+    | @object(`XorExpr`: @set(`left`: L6E) i-ws "xor" i-ws @set(`right`: L7E))
+    | L6E
 
-@object AsTypeExpr = @set(`value`: Expression) inline-ws "as" inline-ws @set(`type`: TypeRef)
-@object IsTypeExpr = @set(`value`: Expression) inline-ws "is" inline-ws @set(`type`: TypeRef)
-@object NullCoalescing = @set(`left`: Expression) inline-ws "??" inline-ws @set(`right`: Expression)
+// x ?? y
+L8E = @object(`NullCoalescing`: @set(`left`: L7E) i-ws "??" i-ws @set(`right`: L8E))
+    | L7E
 
-Expression
-    = GroupExpr
-
-    //| @short(InvocationExpr)
-    //| @short(KeyAccessExpr)
-
-    //| @short(PositiveExpr)
-    //| @short(NegativeExpr)
-    //| @short(NegationExpr)
-
-    //| @short(ConjunctionExpr)
-    //| @short(ExclusiveDisExpr)
-    | MultiplicationExpr
-    | DivisionExpr
-    //| @short(ModuloExpr)
-
-    //| @short(DisjunctionExpr)
-    | AdditionExpr
-    //| @short(SubtractionExpr)
-
-    //| @short(EqualToExpr)
-    //| @short(NotEqualToExpr)
-    //| @short(GreaterThanExpr)
-    //| @short(LessThanExpr)
-    //| @short(GreaterEqualTo)
-    //| @short(LessEqualTo)
-
-    //| @short(AsTypeExpr)
-    //| @short(IsTypeExpr)
-    //| @short(NullCoalescing)
-
-    | MemberExpr
-    | ValueExpression
-
-
-test = ^ Expression $
-@pass test `a * b + c`
-
-
-
-
-@list InvocationArgumentGroup =
-    "(" ws { InvocationArgument / ws "," ws } ws ")"
-
-@object InvocationArgument =
-    [ @set(`name`: Name) ws ":" ws ] @set(`expression`: Expression)
+@debug Expression = L8E

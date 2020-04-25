@@ -13,4 +13,4 @@
 
 @join String = "\"" { EscapedChar | @string(<"\"">) } "\""
 
-ValueExpression = DecInteger | HexInteger | DecNumber | Boolean | Null | String
+LiteralValue = DecInteger | HexInteger | DecNumber | Boolean | Null | String
