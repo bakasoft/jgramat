@@ -1,2 +1,2 @@
-@string AccessModifier = "protect" | "share" | "export"
+@string AccessModifier = "protect" | "share" | "export" | "test"
 @string FieldType = "let" | "var"

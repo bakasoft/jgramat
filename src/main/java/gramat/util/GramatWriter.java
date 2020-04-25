@@ -1,43 +1,140 @@
 package gramat.util;
 
+import java.io.IOException;
+import java.util.Map;
+
 public class GramatWriter {
 
-    public static String toDelimitedString(String value, char delimiter) {
-        var output = new StringBuilder();
+    private final Appendable output;
+    private final String tabSymbol;
 
-        output.append(delimiter);
+    private int tab;
+    private char lastChar;
+
+    public GramatWriter(Appendable output, String tabSymbol) {
+        this.output = output;
+        this.tabSymbol = tabSymbol;
+    }
+
+    public void write(char c) {
+        try {
+            if (tabSymbol != null && lastChar == '\n' && tab > 0) {
+                output.append(tabSymbol.repeat(tab));
+            }
+            output.append(c);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        lastChar = c;
+    }
+
+    public void write(String value) {
+        if (value != null) {
+            var chars = value.toCharArray();
+
+            for (var c : chars) {
+                write(c);
+            }
+        }
+    }
+
+    private void separate() {
+        if (tabSymbol != null) {
+            write(' ');
+        }
+    }
+
+    private void breakLine() {
+        if (tabSymbol != null) {
+            write('\n');
+        }
+    }
+
+    public void writeValue(Object value) {
+        if (value == null) {
+            write("null");
+        }
+        else if (value instanceof String) {
+            writeString((String)value, '\"');
+        }
+        else if (value instanceof Map) {
+            writeMap((Map<?,?>)value);
+        }
+        else {
+            throw new RuntimeException("Not supported value: " + value);
+        }
+    }
+
+    public void writeMap(Map<?, ?> map) {
+        write('{');
+
+        tab++;
+
+        var i = 0;
+
+        for (var entry : map.entrySet()) {
+            if (i > 0) {
+                write(',');
+            }
+
+            breakLine();
+
+            writeValue(entry.getKey());
+            write(':');
+            separate();
+            writeValue(entry.getValue());
+            i++;
+        }
+
+        breakLine();
+
+        tab--;
+
+        write('}');
+    }
+
+    public void writeString(String value, char delimiter) {
+        write(delimiter);
 
         for (var c : value.toCharArray()) {
             if (c == '\n') {
-                output.append("\\n");
+                write("\\n");
             }
             else if (c == '\t') {
-                output.append("\\t");
+                write("\\t");
             }
             else if (c == '\f') {
-                output.append("\\f");
+                write("\\f");
             }
             else if (c == '\b') {
-                output.append("\\b");
+                write("\\b");
             }
             else if (c == delimiter) {
-                output.append('\\');
-                output.append(delimiter);
+                write('\\');
+                write(delimiter);
             }
             else if (Character.isISOControl(c)) {
                 var hex = Integer.toHexString(c);
-                output.append("\\u");
+                write("\\u");
                 if (hex.length() < 4) {
-                    output.append("0".repeat(4 - hex.length()));
+                    write("0".repeat(4 - hex.length()));
                 }
-                output.append(hex);
+                write(hex);
             }
             else {
-                output.append(c);
+                write(c);
             }
         }
 
-        output.append(delimiter);
+        write(delimiter);
+    }
+
+    public static String toDelimitedString(String value, char delimiter) {
+        var output = new StringBuilder();
+        var writer = new GramatWriter(output, null);
+
+        writer.writeString(value, delimiter);
 
         return output.toString();
     }

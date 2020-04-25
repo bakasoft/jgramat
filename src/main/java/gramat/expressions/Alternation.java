@@ -30,6 +30,7 @@ public class Alternation extends Expression {
                 context.source.setPosition(pos0);
             }
         }
+
         return false;
     }
 

@@ -1,26 +1,27 @@
-package gramat.expressions.values;
+package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
-import java.util.Objects;
-
-public class NullExp extends Expression {
+public class ShortCircuit extends Expression {
 
     private Expression expression;
 
-    public NullExp(Location location, Expression expression) {
+    public ShortCircuit(Location location, Expression expression) {
         super(location);
-        this.expression = Objects.requireNonNull(expression);
+        this.expression = expression;
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        if (expression.eval(context)) {
-            context.sendValue(null);
-            return true;
+        if (context.pushCircuit(this)) {
+            boolean result = expression.eval(context);
+
+            context.popCircuit();
+
+            return result;
         }
 
         return false;
@@ -40,7 +41,6 @@ public class NullExp extends Expression {
 
     @Override
     public String getDescription() {
-        return "Create null value";
+        return "Short-circuit";
     }
-
 }

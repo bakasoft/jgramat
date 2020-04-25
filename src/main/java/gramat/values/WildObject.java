@@ -1,6 +1,7 @@
 package gramat.values;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class WildObject extends ObjectValue {
 
@@ -12,14 +13,14 @@ public class WildObject extends ObjectValue {
 
     @Override
     public Object build() {
-        var result = new HashMap<String, Object>();
+        var result = new LinkedHashMap<String, Object>();
         var values = getAttributes();
-
-        values.forEach((key, value) -> result.put(key, value.build()));
 
         if (typeName != null) {
             result.put("@type", typeName);
         }
+
+        values.forEach((key, value) -> result.put(key, value.build()));
 
         return result;
     }

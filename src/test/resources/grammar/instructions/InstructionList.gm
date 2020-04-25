@@ -1,9 +1,23 @@
-@object Argument = [ @set(`name`: Name) ws ":" ws ] @set(`expression`: Expression)
+@list InstructionList = { Instruction / line-break }
 
-@list ArgumentList = "(" ws { Argument / ws "," ws } ws ")"
+@object InstructionBody = "{" ws @set(`instructions`: InstructionList) ws "}"
 
-@object Invocation =
-    [ @set(`baseMember`: Name) ws "." ws ]
-    @set(`targetMember`: Name) ws @set(`arguments`: ArgumentList)
 
-@list InstructionList = { Invocation }
+Instruction = LocalField | InvocationInst | AssignationInst
+
+@object ValuePart = [ @set(`optional`: @true("?")) inline-ws ] "." inline-ws @set(`name`: Name)
+@list ValuePartList = ValuePart { inline-ws ValuePart }
+@object MemberRef =
+    @set(`name`: Name) [ inline-ws @set(`parts`: ValuePartList) ]
+    [ [ inline-ws @set(`optional`: @true("?")) ] inline-ws "[" ws @set(`key`: Expression) ws "]" ]
+
+@object InvocationInst =
+    @set(`member`: MemberRef) inline-ws @set(`arguments`: InvocationArgumentGroup)
+
+@object AssignationInst =
+    @set(`member`: MemberRef) inline-ws "=" inline-ws @set(`value`: Expression)
+
+@object LocalField =
+    @set(`fieldType`: FieldType) ws @set(`name`: Name)
+    [ ws @set(`dataType`: TypeRef) ]
+    [ ws "=" ws @set(`initialValue`: Expression) ]

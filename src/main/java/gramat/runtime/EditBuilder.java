@@ -1,6 +1,7 @@
 package gramat.runtime;
 
 import gramat.GramatException;
+import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 import gramat.values.*;
@@ -49,14 +50,14 @@ public class EditBuilder {
         current = node;
     }
 
-    private static Value collapseValues(List<Value> bufferedValues) {
+    private static Value collapseValues(List<Value> bufferedValues, Location location) {
         if (bufferedValues.isEmpty()) {
-            throw new GramatException("missing value");
+            throw new ParseException("missing value", location);
         } else if (bufferedValues.size() == 1) {
             return bufferedValues.get(0);
         }
         else {
-            throw new GramatException("too much values!");
+            throw new ParseException("too much values!", location);
         }
     }
 
@@ -122,7 +123,7 @@ public class EditBuilder {
 
                 var bufferedValues = bufferStack.peek();
 
-                var setValue = collapseValues(bufferedValues);
+                var setValue = collapseValues(bufferedValues, edit.location);
 
                 bufferedValues.clear();
 
@@ -157,8 +158,9 @@ public class EditBuilder {
                 var edit = (EditSendFragment)node.edit;
                 bufferStack.peek().add(new PlainValue(edit.fragment, null));
             }
-            else if (node.edit instanceof EditSendNull) {
-                bufferStack.peek().add(new NullValue());
+            else if (node.edit instanceof EditSendValue) {
+                var edit = (EditSendValue)node.edit;
+                bufferStack.peek().add(new DirectValue(edit.value));
             }
             else if (node.edit instanceof EditMark) {
                 var edit = (EditMark)node.edit;
@@ -171,7 +173,7 @@ public class EditBuilder {
         }
 
         var values = bufferStack.pop();
-        var result = collapseValues(values);
+        var result = collapseValues(values, source.getLocation());
         return result.build();
     }
 

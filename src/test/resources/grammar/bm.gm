@@ -1,16 +1,12 @@
-@import `core.gm`
-@import `keywords.gm`
-@import `references.gm`
-@import `expressions.gm`
-
 @import `instructions/InstructionList.gm`
-
-@import `statements/ImportStatement.gm`
-@import `statements/FieldStatement.gm`
+@import `source.gm`
 @import `statements/FunctionStatement.gm`
 @import `statements/ClassStatement.gm`
+@import `statements/FieldStatement.gm`
+@import `statements/ImportStatement.gm`
 @import `statements/InterfaceStatement.gm`
-
-@import `source.gm`
-
-
+@import `references.gm`
+@import `expressions/Expression.gm`
+@import `expressions/ValueExpression.gm`
+@import `core.gm`
+@import `keywords.gm`

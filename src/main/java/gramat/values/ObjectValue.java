@@ -1,14 +1,16 @@
 package gramat.values;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 abstract public class ObjectValue implements Value {
 
-    private HashMap<String, Value> attributes;
+    private LinkedHashMap<String, Value> attributes;
 
-    protected HashMap<String, Value> getAttributes() {
+    protected Map<String, Value> getAttributes() {
         if (attributes == null) {
-            attributes = new HashMap<>();
+            attributes = new LinkedHashMap<>();
         }
         return attributes;
     }

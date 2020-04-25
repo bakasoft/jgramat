@@ -1,0 +1,82 @@
+GroupExpr = "(" ws @short(Expression) ws ")"
+
+@list InvocationArgumentGroup =
+    "(" ws { InvocationArgument / ws "," ws } ws ")"
+
+@object InvocationArgument =
+    [ @set(`name`: Name) ws ":" ws ] @set(`expression`: @short(Expression))
+
+
+@object InvocationExpr =
+    @set(`value`: @short(Expression))
+    [ inline-ws @set(`optional`: @true("?")) ]
+    inline-ws @set(`arguments`: InvocationArgumentGroup)
+
+@object MemberAccessExpr =
+    @set(`base`: @short(Expression))
+    [ inline-ws @set(`optional`: @true("?")) ]
+    inline-ws "." inline-ws @set(`target`: @short(Expression))
+
+@object KeyAccessExpr =
+    @set(`value`: @short(Expression))
+    [ inline-ws @set(`optional`: @true("?")) ]
+    inline-ws "[" ws @set(`key`: @short(Expression)) ws "]"
+
+@object PositiveExpr = "+" inline-ws @set(`value`: @short(Expression))
+@object NegativeExpr = "-" inline-ws @set(`value`: @short(Expression))
+@object NegationExpr = "not" inline-ws @set(`value`: @short(Expression))
+
+@object ConjunctionExpr = @set(`left`: @short(Expression)) inline-ws "and" inline-ws @set(`right`: @short(Expression))
+@object ExclusiveDisExpr = @set(`left`: @short(Expression)) inline-ws "xor" inline-ws @set(`right`: @short(Expression))
+@object MultiplicationExpr = @set(`left`: @short(Expression)) inline-ws "*" inline-ws @set(`right`: @short(Expression))
+@object DivisionExpr = @set(`left`: @short(Expression)) inline-ws "/" inline-ws @set(`right`: @short(Expression))
+@object ModuloExpr = @set(`left`: @short(Expression)) inline-ws "%" inline-ws @set(`right`: @short(Expression))
+
+@object DisjunctionExpr = @set(`left`: @short(Expression)) inline-ws "or" inline-ws @set(`right`: @short(Expression))
+@object AdditionExpr = @set(`left`: @short(Expression)) inline-ws "+" inline-ws @set(`right`: @short(Expression))
+@object SubtractionExpr = @set(`left`: @short(Expression)) inline-ws "-" inline-ws @set(`right`: @short(Expression))
+
+@object EqualToExpr = @set(`left`: @short(Expression)) inline-ws "==" inline-ws @set(`right`: @short(Expression))
+@object NotEqualToExpr = @set(`left`: @short(Expression)) inline-ws "!=" inline-ws @set(`right`: @short(Expression))
+@object GreaterThanExpr = @set(`left`: @short(Expression)) inline-ws ">" inline-ws @set(`right`: @short(Expression))
+@object LessThanExpr = @set(`left`: @short(Expression)) inline-ws "<" inline-ws @set(`right`: @short(Expression))
+@object GreaterEqualTo = @set(`left`: @short(Expression)) inline-ws ">=" inline-ws @set(`right`: @short(Expression))
+@object LessEqualTo = @set(`left`: @short(Expression)) inline-ws "<=" inline-ws @set(`right`: @short(Expression))
+
+@object AsTypeExpr = @set(`value`: @short(Expression)) inline-ws "as" inline-ws @set(`type`: TypeRef)
+@object IsTypeExpr = @set(`value`: @short(Expression)) inline-ws "is" inline-ws @set(`type`: TypeRef)
+@object NullCoalescing = @set(`left`: @short(Expression)) inline-ws "??" inline-ws @set(`right`: @short(Expression))
+
+@debug Expression
+    = @short(GroupExpr)
+
+    | @short(InvocationExpr)
+    | @short(MemberAccessExpr)
+    | @short(KeyAccessExpr)
+
+    | @short(PositiveExpr)
+    | @short(NegativeExpr)
+    | @short(NegationExpr)
+
+    | @short(ConjunctionExpr)
+    | @short(ExclusiveDisExpr)
+    | @short(MultiplicationExpr)
+    | @short(DivisionExpr)
+    | @short(ModuloExpr)
+
+    | @short(DisjunctionExpr)
+    | @short(AdditionExpr)
+    | @short(SubtractionExpr)
+
+    | @short(EqualToExpr)
+    | @short(NotEqualToExpr)
+    | @short(GreaterThanExpr)
+    | @short(LessThanExpr)
+    | @short(GreaterEqualTo)
+    | @short(LessEqualTo)
+
+    | @short(AsTypeExpr)
+    | @short(IsTypeExpr)
+    | @short(NullCoalescing)
+
+    | ValueExpression

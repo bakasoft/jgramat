@@ -1,8 +1,17 @@
-ws: {'\s \n \r \t'}
+ws: {'\s \n \r \t' | comment}
+
+inline-ws: {'\s \t' | comment}
+
+line-break: inline-ws "\n" ws
+
+inline-comment: "//" {<"\n">} "\n"
+block-comment: "/*" {<"*/">} "*/"
+comment: inline-comment | block-comment
 
 alpha: 'a-z A-Z _ @ $'
 digit: '0-9'
 hex: 'a-f A-F 0-9'
+
 
 EscapedChar:
     "\\" (

@@ -2,8 +2,10 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
+import gramat.expressions.flat.PrintExp;
 import gramat.expressions.values.*;
 import gramat.expressions.wrappers.DebugExp;
+import gramat.expressions.wrappers.ShortCircuit;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -41,16 +43,17 @@ public class ValueParsers {
 
             BaseParsers.skipBlanks(source);
 
-            if (!source.pull(Mark.NAME_SEPARATOR)) {
-                throw source.error("Expected :");
+            if (source.pull(Mark.NAME_SEPARATOR)) {
+                BaseParsers.skipBlanks(source);
+
+                valueExp = CoreParsers.parseExpression(context, source);
+
+                if (valueExp == null) {
+                    throw source.error("Expected expression");
+                }
             }
-
-            BaseParsers.skipBlanks(source);
-
-            valueExp = CoreParsers.parseExpression(context, source);
-
-            if (valueExp == null) {
-                throw source.error("Expected expression");
+            else {
+                valueExp = null;
             }
         }
         else {
@@ -128,10 +131,15 @@ public class ValueParsers {
                 }
                 return new JoinExp(loc0, valueExp);
             case Mark.NULL_KEYWORD:
-                if (nameLit != null || nameExp != null) {
+                if (nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new NullExp(loc0, valueExp);
+            case Mark.TRUE_KEYWORD:
+                if (nameExp != null) {
+                    throw new ParseException("Unexpected name", loc0);
+                }
+                return new TrueExp(loc0, valueExp);
             case Mark.MAP_KEYWORD:
                 if (nameLit == null) {
                     throw new ParseException("expected replacement.", loc0);
@@ -140,11 +148,21 @@ public class ValueParsers {
                     throw new ParseException("dynamic mappings are not implemented.", loc0);
                 }
                 return new MapExp(loc0, nameLit, valueExp);
+            case Mark.SHORT_CIRCUIT_KEYWORD:
+                if (nameExp != null) {
+                    throw new ParseException("Unexpected name", loc0);
+                }
+                return new ShortCircuit(loc0, valueExp);
             case Mark.DEBUG_KEYWORD:
-                if (nameLit != null || nameExp != null) {
+                if (nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);
                 }
                 return new DebugExp(loc0, valueExp);
+            case Mark.PRINT_KEYWORD:
+                if (valueExp != null) {
+                    throw new ParseException("Unexpected expression", loc0);
+                }
+                return new PrintExp(loc0, nameLit);
             default:
                 if (nameExp != null) {
                     throw new ParseException("Unexpected parser name: " + nameLit, loc0);

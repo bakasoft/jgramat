@@ -7,11 +7,11 @@ import gramat.util.parsing.Location;
 
 import java.util.Objects;
 
-public class NullExp extends Expression {
+public class TrueExp extends Expression {
 
     private Expression expression;
 
-    public NullExp(Location location, Expression expression) {
+    public TrueExp(Location location, Expression expression) {
         super(location);
         this.expression = Objects.requireNonNull(expression);
     }
@@ -19,10 +19,11 @@ public class NullExp extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         if (expression.eval(context)) {
-            context.sendValue(null);
+            context.sendValue(true);
             return true;
         }
 
+        context.sendValue(false);
         return false;
     }
 
@@ -40,7 +41,6 @@ public class NullExp extends Expression {
 
     @Override
     public String getDescription() {
-        return "Create null value";
+        return "True value";
     }
-
 }

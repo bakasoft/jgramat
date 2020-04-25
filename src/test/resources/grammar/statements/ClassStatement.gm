@@ -26,27 +26,27 @@ ClassMember =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "function" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
     [ ws @set(`returnType`: TypeRef) ]
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws @set(`body`: InstructionBody) ]
 
 @object ClassGetter =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "getter" ws @set(`name`: Name)
     [ ws @set(`returnType`: TypeRef) ]
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws @set(`body`: InstructionBody) ]
 
 @object ClassSetter =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "setter" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws @set(`body`: InstructionBody) ]
 
 @object ClassOperation =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "operation" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
     [ ws @set(`returnType`: TypeRef) ]
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws @set(`body`: InstructionBody) ]
 
 @object ClassConstructor =
     [ @set(`accessModifier`: AccessModifier) ws ]
     "constructor" ws @set(`name`: Name) ws @set(`parameters`: ParameterList)
-    [ ws ":" ws @set(`superInvocation`: Invocation) ]
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws ":" ws @set(`superInvocation`: InvocationInst) ]
+    [ ws @set(`body`: InstructionBody) ]

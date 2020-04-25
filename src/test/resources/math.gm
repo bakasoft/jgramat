@@ -1,0 +1,35 @@
+@string num: {+'0-9'}
+@string name: {+'a-z A-Z'}
+
+@object Variable = @set(`name`: name)
+@object Literal = @set(`value`: num)
+
+// Wrappers
+@object Group = "(" @set(`expression`: @short(Expression)) ")"
+
+// Unary Operators
+@object Positive = "+" @set(`expression`: @short(Expression))
+@object Negative = "-" @set(`expression`: @short(Expression))
+
+// Binary Operators
+@object OperationExp = @set(`left`: @short(Expression)) "^" @set(`right`: @short(Expression))
+@object OperationMul = @set(`left`: @short(Expression)) "*" @set(`right`: @short(Expression))
+@object OperationDiv = @set(`left`: @short(Expression)) "/" @set(`right`: @short(Expression))
+@object OperationSum = @set(`left`: @short(Expression)) "+" @set(`right`: @short(Expression))
+@object OperationSub = @set(`left`: @short(Expression)) "-" @set(`right`: @short(Expression))
+
+Expression
+    = Positive
+    | Negative
+    | OperationExp
+    | OperationMul
+    | OperationDiv
+    | OperationSum
+    | OperationSub
+    | Literal
+    | Variable
+    | Group
+
+test = ^ Expression $
+
+@pass test `(a+1)*3^-1`

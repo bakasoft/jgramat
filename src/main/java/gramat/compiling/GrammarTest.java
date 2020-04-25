@@ -2,6 +2,7 @@ package gramat.compiling;
 
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
+import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -43,8 +44,9 @@ public class GrammarTest {
         }
 
         // TODO check eval result
-        System.out.println(
-                evalContext.getValue());
+        var writer = new GramatWriter(System.out, "  ");
+
+        writer.writeValue(evalContext.getValue());
     }
 
     public String getExpressionName() {

@@ -7,6 +7,7 @@ import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
 import java.util.Map;
+import java.util.Stack;
 import java.util.function.Function;
 
 public class EvalContext {
@@ -26,10 +27,39 @@ public class EvalContext {
 
     public String lastCommitName;
 
+    public static class LoopData {
+        public final Expression expression;
+        public final int position;
+
+        public LoopData(Expression expression, int position) {
+            this.expression = expression;
+            this.position = position;
+        }
+    }
+
+    public final Stack<LoopData> loopStack = new Stack<>();
+
     public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
         this.source = source;
         this.edits = new EditBuilder();
         this.typeMapping = typeMapping;
+    }
+
+    public boolean pushCircuit(Expression expression) {
+        var pos0 = source.getPosition();
+
+        for (var item : loopStack) {
+            if (item.expression == expression && item.position == pos0) {
+                return false;
+            }
+        }
+
+        loopStack.push(new EvalContext.LoopData(expression, pos0));
+        return true;
+    }
+
+    public void popCircuit() {
+        loopStack.pop();
     }
 
     public Class<?> getType(String name) {
@@ -75,7 +105,7 @@ public class EvalContext {
         }
     }
 
-    private void printDebugLine(String action, Expression expression) {
+    public void printDebugLine(String action, Expression expression) {
         StringBuilder sample = new StringBuilder();
 
         int pos = source.getPosition();
@@ -101,12 +131,24 @@ public class EvalContext {
                     sample.append(' ');
                 }
             }
+            else if (i == pos) {
+                sample.append("[ ]");
+            }
+            else if (i == pos - 1) {
+                sample.append(" ");
+            }
             else {
                 sample.append("  ");
             }
         }
 
         System.out.println(sample + "| " + " ".repeat(debugTabs) + expression.getDescription() + " - " + action);
+
+        try {
+            Thread.sleep(10);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Object getValue() {
@@ -152,8 +194,8 @@ public class EvalContext {
         edits.add(new EditSendSegment(source.locationOf(pos0), pos0, posF, parser));
     }
 
-    public void sendNull() {
-        edits.add(new EditSendNull(source.getLocation()));
+    public void sendValue(Object value) {
+        edits.add(new EditSendValue(source.getLocation(), value));
     }
 
     public void mark(int pos0, int posF, String name) {
