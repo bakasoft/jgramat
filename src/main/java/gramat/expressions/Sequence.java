@@ -29,6 +29,10 @@ public class Sequence extends Expression {
         return true;
     }
 
+    public Expression[] getExpressions() {
+        return expressions; // TODO don't return the real array
+    }
+
     @Override
     public Expression optimize() {
         if (expressions.length == 0) {

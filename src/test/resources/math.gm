@@ -1,28 +1,28 @@
-@string num: {+'0-9'}
-@string name: {+'a-z A-Z'}
+Test = ^ Expression $
+@pass Test `a*b + c`
+@pass Test `a + b*c`
+@pass Test `(a + b)*c`
+@pass Test `(a + b)*c == 1/3 != 3`
 
-@object Var = @set(`name`: name)
-@object Lit = @set(`value`: num)
+Expression = Level3
 
-// Wrappers
-@object Grp = "(" @set(`expression`: Expr) ")"
+@object Equ = @set(`left`: Level2) ws "==" ws @set(`right`: Level3)
+@object Neq = @set(`left`: Level2) ws "!=" ws @set(`right`: Level3)
+Level3 = Equ | Get | Level2
 
-// Unary Operators
-@object Pos = "+" @set(`expression`: Expr)
-@object Neg = "-" @set(`expression`: Expr)
+@object Add = @set(`left`: Level1) ws "+" ws @set(`right`: Level2)
+@object Sub = @set(`left`: Level1) ws "-" ws @set(`right`: Level2)
+Level2 = Add | Sub | Level1
 
-// Binary Operators
-@object Mul = @set(`left`: Expr) "*" @set(`right`: Expr)
-@object Div = @set(`left`: Expr) "/" @set(`right`: Expr)
-@object Sum = @set(`left`: Expr) "+" @set(`right`: Expr)
-@object Sub = @set(`left`: Expr) "-" @set(`right`: Expr)
+@object Mul = @set(`left`: Level0) ws "*" ws @set(`right`: Level1)
+@object Div = @set(`left`: Level0) ws "/" ws @set(`right`: Level1)
+Level1 = Mul | Div | Level0
 
-Expr = Grp
-     | Pos | Neg
-     | Mul | Div
-     | Sum | Sub
-     | Lit | Var
+Grp = "(" Expression ")"
+@object Var = @set(`value`: letters)
+@object Lit = @set(`value`: digits)
+Level0 = Grp | Var | Lit
 
-@debug test = ^ Expr $
-
-@pass test `a*b+c`
+@string digits: {+'0-9'}
+@string letters: {+'a-z A-Z'}
+ws: {'\s \n \r \t'}

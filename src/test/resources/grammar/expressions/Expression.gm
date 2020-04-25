@@ -72,15 +72,8 @@ Expression
     | ValueExpression
 
 
-expr-test = ^ Expression $
-@pass expr-test `a * b + c`
-
-x = ^ "x" $
-@pass x `y`
-
-
-
-
+test = ^ Expression $
+@pass test `a * b + c`
 
 
 
