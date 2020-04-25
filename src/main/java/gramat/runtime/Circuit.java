@@ -7,34 +7,34 @@ import java.util.HashSet;
 
 public class Circuit {
 
-    private final Circuit parent;
     private final HashMap<Expression, HashSet<Integer>> state;
 
-    public Circuit(Circuit parent) {
-        this.parent = parent;
+    public Circuit() {
         this.state = new HashMap<>();
     }
 
-    private boolean contains(Expression expression, int position) {
-        if (parent != null && parent.contains(expression, position)) {
-            return true;
-        }
-
+    public boolean enter(Expression expression, int position) {
         var positions = state.get(expression);
 
-        return positions != null && positions.contains(position);
-    }
-
-    public boolean enter(Expression expression, int position) {
-        if (contains(expression, position)) {
-            return false;
+        if (positions != null) {
+            return positions.add(position);
         }
 
-        return state.computeIfAbsent(expression, k -> new HashSet<>()).add(position);
+        positions = new HashSet<>();
+        state.put(expression, positions);
+        return positions.add(position);
     }
 
-    public Circuit getParent() {
-        return parent;
+    public void remove(Expression expression, int position) {
+        var positions = state.get(expression);
+
+        if (positions != null) {
+            positions.remove(position);
+
+            if (positions.isEmpty()) {
+                state.remove(expression);
+            }
+        }
     }
 
 }

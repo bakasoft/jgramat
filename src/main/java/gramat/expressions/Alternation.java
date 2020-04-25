@@ -2,10 +2,10 @@ package gramat.expressions;
 
 import gramat.compiling.LinkContext;
 import gramat.expressions.flat.Nop;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 
@@ -21,9 +21,18 @@ public class Alternation extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         int pos0 = context.source.getPosition();
+        var added = new ArrayList<Expression>();
 
         for (var expression : expressions) {
+            if (context.circuit.enter(expression, pos0)) {
+                added.add(expression);
+            }
+            else {
+                continue;
+            }
+
             if (expression.eval(context)) {
+                added.forEach(e -> context.circuit.remove(e, pos0));
                 return true;
             }
             else {
@@ -31,6 +40,7 @@ public class Alternation extends Expression {
             }
         }
 
+        added.forEach(e -> context.circuit.remove(e, pos0));
         return false;
     }
 

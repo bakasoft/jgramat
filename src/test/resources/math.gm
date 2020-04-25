@@ -1,35 +1,28 @@
 @string num: {+'0-9'}
 @string name: {+'a-z A-Z'}
 
-@object Variable = @set(`name`: name)
-@object Literal = @set(`value`: num)
+@object Var = @set(`name`: name)
+@object Lit = @set(`value`: num)
 
 // Wrappers
-@object Group = "(" @set(`expression`: @short(Expression)) ")"
+@object Grp = "(" @set(`expression`: Expr) ")"
 
 // Unary Operators
-@object Positive = "+" @set(`expression`: @short(Expression))
-@object Negative = "-" @set(`expression`: @short(Expression))
+@object Pos = "+" @set(`expression`: Expr)
+@object Neg = "-" @set(`expression`: Expr)
 
 // Binary Operators
-@object OperationExp = @set(`left`: @short(Expression)) "^" @set(`right`: @short(Expression))
-@object OperationMul = @set(`left`: @short(Expression)) "*" @set(`right`: @short(Expression))
-@object OperationDiv = @set(`left`: @short(Expression)) "/" @set(`right`: @short(Expression))
-@object OperationSum = @set(`left`: @short(Expression)) "+" @set(`right`: @short(Expression))
-@object OperationSub = @set(`left`: @short(Expression)) "-" @set(`right`: @short(Expression))
+@object Mul = @set(`left`: Expr) "*" @set(`right`: Expr)
+@object Div = @set(`left`: Expr) "/" @set(`right`: Expr)
+@object Sum = @set(`left`: Expr) "+" @set(`right`: Expr)
+@object Sub = @set(`left`: Expr) "-" @set(`right`: Expr)
 
-Expression
-    = Positive
-    | Negative
-    | OperationExp
-    | OperationMul
-    | OperationDiv
-    | OperationSum
-    | OperationSub
-    | Literal
-    | Variable
-    | Group
+Expr = Grp
+     | Pos | Neg
+     | Mul | Div
+     | Sum | Sub
+     | Lit | Var
 
-test = ^ Expression $
+@debug test = ^ Expr $
 
-@pass test `(a+1)*3^-1`
+@pass test `a*b+c`

@@ -1,18 +1,16 @@
-@object DecInteger = @set(`value`: {+ '1-9' } {'0-9'})
+@object DecInteger = @set(`value`: @string({+ '1-9' } {'0-9'}))
 
-@object HexInteger = "0x" @set(`value`: {+ 'a-f A-F 0-9'})
+@object HexInteger = "0x" @set(`value`: @string({+ 'a-f A-F 0-9'}))
 
 @number DecNumber  =
-    ['-'] ('0' | '1-9' { '0-9' })
-    [ '.' {+ '0-9'} ]
+    ["-"] ("0" | '1-9' { '0-9' })
+    [ "." {+ '0-9'} ]
     [ ['e E'] ['- +'] {+ '0-9' } ]
 
 @boolean Boolean = "true" | "false"
 
 @null Null = "null"
 
-@join String = '"' { EscapedChar | @string(<'"'>) } '"'
+@join String = "\"" { EscapedChar | @string(<"\"">) } "\""
 
-@object Reference = @set(`name`: Name)
-
-ValueExpression = DecInteger | HexInteger | DecNumber | Boolean | Null | String | Name
+ValueExpression = DecInteger | HexInteger | DecNumber | Boolean | Null | String

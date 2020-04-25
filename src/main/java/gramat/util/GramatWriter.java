@@ -1,6 +1,7 @@
 package gramat.util;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
 public class GramatWriter {
@@ -61,9 +62,36 @@ public class GramatWriter {
         else if (value instanceof Map) {
             writeMap((Map<?,?>)value);
         }
+        else if (value instanceof Collection) {
+            writeCollection((Collection<?>)value);
+        }
         else {
             throw new RuntimeException("Not supported value: " + value);
         }
+    }
+
+    public void writeCollection(Collection<?> values) {
+        write('[');
+
+        tab++;
+
+        var i = 0;
+
+        for (var value : values) {
+            if (i > 0) {
+                write(',');
+            }
+
+            breakLine();
+            writeValue(value);
+            i++;
+        }
+
+        breakLine();
+
+        tab--;
+
+        write(']');
     }
 
     public void writeMap(Map<?, ?> map) {

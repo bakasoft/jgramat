@@ -37,7 +37,8 @@ public class GrammarTest {
         boolean matches = expression.eval(evalContext);
 
         if (expectedMatch && !matches) {
-            throw new ParseException("Expected to pass: " + expressionName, location);
+            var errLoc = source.locationOf(evalContext.lastCommitPosition);
+            throw new ParseException(expressionName + " did not match: " + evalContext.lastCommitName, errLoc);
         }
         else if (!expectedMatch && matches) {
             throw new ParseException("Expected to fail: " + expressionName, location);

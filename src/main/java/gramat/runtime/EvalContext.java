@@ -27,6 +27,10 @@ public class EvalContext {
 
     public String lastCommitName;
 
+    public boolean enterCircuit(Expression expression, int pos) {
+        return circuit.enter(expression, pos);
+    }
+
     public static class LoopData {
         public final Expression expression;
         public final int position;
@@ -38,6 +42,8 @@ public class EvalContext {
     }
 
     public final Stack<LoopData> loopStack = new Stack<>();
+
+    public final Circuit circuit = new Circuit();
 
     public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
         this.source = source;
@@ -70,7 +76,7 @@ public class EvalContext {
         edits.begin();
 
         if (debugMode && !softMode) {
-            printDebugLine("begin", expression);
+            printDebugLine(">>", expression);
             debugTabs++;
         }
     }
@@ -92,7 +98,7 @@ public class EvalContext {
 
         if (debugMode && !softMode) {
             debugTabs--;
-            printDebugLine("commit", expression);
+            printDebugLine("**", expression);
         }
     }
 
@@ -101,7 +107,7 @@ public class EvalContext {
 
         if (debugMode && !softMode) {
             debugTabs--;
-            printDebugLine("rollback", expression);
+            printDebugLine("!!", expression);
         }
     }
 
@@ -142,7 +148,7 @@ public class EvalContext {
             }
         }
 
-        System.out.println(sample + "| " + " ".repeat(debugTabs) + expression.getDescription() + " - " + action);
+        System.out.println(sample + "| " + " ".repeat(debugTabs) + action + " - " + expression.getDescription());
 
         try {
             Thread.sleep(10);

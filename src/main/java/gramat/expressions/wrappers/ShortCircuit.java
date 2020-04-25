@@ -2,6 +2,7 @@ package gramat.expressions.wrappers;
 
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.Circuit;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -16,21 +17,27 @@ public class ShortCircuit extends Expression {
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        if (context.pushCircuit(this)) {
-            boolean result = expression.eval(context);
+        boolean result;
+        int pos = context.source.getPosition();
 
-            context.popCircuit();
-
-            return result;
+        if (context.circuit.enter(this, pos)) {
+            System.out.println("GRANTED!");
+            result = expression.eval(context);
+        }
+        else {
+            System.out.println("DENIED!");
+            result = false;
         }
 
-        return false;
+        context.circuit.remove(this, pos);
+
+        return result;
     }
 
     @Override
     public Expression optimize() {
         expression = expression.optimize();
-        return this;
+        return expression; /////////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< this
     }
 
     @Override
