@@ -59,6 +59,9 @@ public class GramatWriter {
         else if (value instanceof String) {
             writeString((String)value, '\"');
         }
+        else if (value instanceof Number) {
+            write(value.toString());
+        }
         else if (value instanceof Map) {
             writeMap((Map<?,?>)value);
         }

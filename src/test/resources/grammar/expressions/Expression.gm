@@ -1,12 +1,12 @@
-// Primary
-L0E = LiteralValue
+// (x), x, literals
+L0E = @object(`GrpExpr`: "(" ws @set(`value`: Expression) ws ")")
     | @object(`RefExpr`: @set(`name`: Name))
-    | @object(`GrpExpr`: "(" ws Expression ws ")")
+    | LiteralValue
 
-// (x), x, x.y, x[y], x(y)
-L1E = @object(`MacExpr`: @set(`left`: L1E) "." @set(`right`: L1E))
+// x.y, x[y], x(y)
+L1E = @object(`MacExpr`: @set(`left`: L0E) "." @set(`right`: L1E))
     | @object(`InvExpr`: @set(`value`: L1E) i-ws "(" ws @set(`arguments`: Name) ws ")")
-    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: Name) ws "]")
+    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: @print(`K1`) Expression) @print(`K2`) ws "]" @print(`K3`))
     | L0E
 
 // +x, -x, not x
@@ -57,5 +57,5 @@ Expression = L9E
 
 test = ^Expression$
 @pass test `a.b.c(d)`
-@pass test `x[y]`
 @pass test `CharTape.new(url)`
+//@pass test `(x)`

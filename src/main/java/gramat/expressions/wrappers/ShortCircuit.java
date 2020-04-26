@@ -6,21 +6,16 @@ import gramat.expressions.Sequence;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.Objects;
+
 
 public class ShortCircuit extends Expression {
 
-    private final Expression[] expressions;
+    private Expression expression;
 
     public ShortCircuit(Location location, Expression expression) {
         super(location);
-
-        if (expression instanceof Sequence) {
-            this.expressions = ((Sequence)expression).getExpressions();
-        }
-        else {
-            throw new RuntimeException("XXX");
-        }
-
+        this.expression = Objects.requireNonNull(expression);
     }
 
     public boolean eval(EvalContext context) {
@@ -29,31 +24,27 @@ public class ShortCircuit extends Expression {
 
     @Override
     public Expression optimize() {
-        optimizeAll(expressions);
+        expression = expression.optimize();
         return this;
     }
 
     @Override
     public Expression link(LinkContext context) {
-        linkAll(context, expressions);
+        expression = expression.link(context);
         return this;
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
-        context.begin(this);
-        int pos0 = context.source.getPosition();
+        int pos = context.source.getPosition();
 
-        for (var expression : expressions) {
-            if (!expression.eval(context)) {
-                context.source.setPosition(pos0);
-                context.rollback(this);
-                return false;
-            }
+        if (context.circuit.enter(expression, pos)) {
+            boolean result = expression.eval(context);
+            context.circuit.remove(expression, pos);
+            return result;
         }
 
-        context.commit(this);
-        return true;
+        return false;
     }
 
     @Override
