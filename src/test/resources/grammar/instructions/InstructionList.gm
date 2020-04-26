@@ -1,7 +1,6 @@
-@list InstructionList = { Instruction / line-break }
-
 @object InstructionBody = "{" ws @set(`instructions`: InstructionList) ws "}"
 
+@list InstructionList = { Instruction / line-break }
 
 Instruction = LocalField | InvocationInst | AssignationInst
 

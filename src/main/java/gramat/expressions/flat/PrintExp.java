@@ -17,11 +17,11 @@ public class PrintExp extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         System.out.println(message + " <- " + context.source.getLocation());
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         return true;
     }
 

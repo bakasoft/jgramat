@@ -1,4 +1,4 @@
-ReferencedValue
+@debug ReferencedValue
     = InvocationExpr
     | KeyAccessExpr
     | MemberExpr
@@ -22,8 +22,6 @@ ReferencedValue
     @set(`member`: MemberExpr)
     [ i-ws @set(`optional`: @true("?")) ]
     i-ws "[" ws @set(`key`: Expression) ws "]"
-
-
 
 
 @list InvocationArgumentGroup =

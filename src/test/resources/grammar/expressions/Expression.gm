@@ -1,50 +1,61 @@
 // Primary
 L0E = LiteralValue
-    | ReferencedValue
+    | @object(`RefExpr`: @set(`name`: Name))
     | @object(`GrpExpr`: "(" ws Expression ws ")")
 
-// +x, -x, not x
-L1E = @object(`PosExpr`: "+" i-ws @set(`value`: L0E))
-    | @object(`NegExpr`: "-" i-ws @set(`value`: L0E))
-    | @object(`ComExpr`: "not" i-ws @set(`value`: L0E))
+// (x), x, x.y, x[y], x(y)
+L1E = @object(`MacExpr`: @set(`left`: L1E) "." @set(`right`: L1E))
+    | @object(`InvExpr`: @set(`value`: L1E) i-ws "(" ws @set(`arguments`: Name) ws ")")
+    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: Name) ws "]")
     | L0E
 
-// x*y, x/y, x%y
-L2E = @object(`MulExpr`: @set(`left`: L1E) i-ws "*" i-ws @set(`right`: L2E))
-    | @object(`DivExpr`: @set(`left`: L1E) i-ws "/" i-ws @set(`right`: L2E))
-    | @object(`ModExpr`: @set(`left`: L1E) i-ws "%" i-ws @set(`right`: L2E))
+// +x, -x, not x
+L2E = @object(`PosExpr`: "+" i-ws @set(`value`: L2E))
+    | @object(`NegExpr`: "-" i-ws @set(`value`: L2E))
+    | @object(`ComExpr`: "not" i-ws @set(`value`: L2E))
     | L1E
 
-// x+y, x-y
-L3E = @object(`AddExpr`: @set(`left`: L2E) i-ws "+" i-ws @set(`right`: L3E))
-    | @object(`SubExpr`: @set(`left`: L2E) i-ws "-" i-ws @set(`right`: L3E))
+// x*y, x/y, x%y
+L3E = @object(`MulExpr`: @set(`left`: L2E) i-ws "*" i-ws @set(`right`: L3E))
+    | @object(`DivExpr`: @set(`left`: L2E) i-ws "/" i-ws @set(`right`: L3E))
+    | @object(`ModExpr`: @set(`left`: L2E) i-ws "%" i-ws @set(`right`: L3E))
     | L2E
 
-// x>y, x<y, x>=x, x<=y, x is y, x as y
-L4E = @object(`GtrExpr`: @set(`left`: L3E) i-ws ">" i-ws @set(`right`: L4E))
-    | @object(`LssExpr`: @set(`left`: L3E) i-ws "<" i-ws @set(`right`: L4E))
-    | @object(`GeqExpr`: @set(`left`: L3E) i-ws ">=" i-ws @set(`right`: L4E))
-    | @object(`LeqExpr`: @set(`left`: L3E) i-ws "<=" i-ws @set(`right`: L4E))
-    | @object(`IsTypeExpr`: @set(`value`: L3E) i-ws "is" i-ws @set(`type`: TypeRef))
-    | @object(`AsTypeExpr`: @set(`value`: L3E) i-ws "as" i-ws @set(`type`: TypeRef))
+// x+y, x-y
+L4E = @object(`AddExpr`: @set(`left`: L3E) i-ws "+" i-ws @set(`right`: L4E))
+    | @object(`SubExpr`: @set(`left`: L3E) i-ws "-" i-ws @set(`right`: L4E))
     | L3E
 
-// x==y, x!=y
-L5E = @object(`EquExpr`: @set(`left`: L4E) i-ws "==" i-ws @set(`right`: L5E))
-    | @object(`NeqExpr`: @set(`left`: L4E) i-ws "!=" i-ws @set(`right`: L5E))
+// x>y, x<y, x>=x, x<=y, x is y, x as y
+L5E = @object(`GtrExpr`: @set(`left`: L4E) i-ws ">" i-ws @set(`right`: L5E))
+    | @object(`LssExpr`: @set(`left`: L4E) i-ws "<" i-ws @set(`right`: L5E))
+    | @object(`GeqExpr`: @set(`left`: L4E) i-ws ">=" i-ws @set(`right`: L5E))
+    | @object(`LeqExpr`: @set(`left`: L4E) i-ws "<=" i-ws @set(`right`: L5E))
+    | @object(`IsTypeExpr`: @set(`value`: L4E) i-ws "is" i-ws @set(`type`: TypeRef))
+    | @object(`AsTypeExpr`: @set(`value`: L4E) i-ws "as" i-ws @set(`type`: TypeRef))
     | L4E
 
-// x and y
-L6E = @object(`ConExpr`: @set(`left`: L5E) i-ws "and" i-ws @set(`right`: L6E))
+// x==y, x!=y
+L6E = @object(`EquExpr`: @set(`left`: L5E) i-ws "==" i-ws @set(`right`: L6E))
+    | @object(`NeqExpr`: @set(`left`: L5E) i-ws "!=" i-ws @set(`right`: L6E))
     | L5E
 
-// x or y, x xor y
-L7E = @object(`DisExpr`: @set(`left`: L6E) i-ws "or" i-ws @set(`right`: L7E))
-    | @object(`XorExpr`: @set(`left`: L6E) i-ws "xor" i-ws @set(`right`: L7E))
+// x and y
+L7E = @object(`ConExpr`: @set(`left`: L6E) i-ws "and" i-ws @set(`right`: L7E))
     | L6E
 
-// x ?? y
-L8E = @object(`NullCoalescing`: @set(`left`: L7E) i-ws "??" i-ws @set(`right`: L8E))
+// x or y, x xor y
+L8E = @object(`DisExpr`: @set(`left`: L7E) i-ws "or" i-ws @set(`right`: L8E))
+    | @object(`XorExpr`: @set(`left`: L7E) i-ws "xor" i-ws @set(`right`: L8E))
     | L7E
 
-@debug Expression = L8E
+// x ?? y
+L9E = @object(`NullCoalescing`: @set(`left`: L8E) i-ws "??" i-ws @set(`right`: L9E))
+    | L8E
+
+Expression = L9E
+
+test = ^Expression$
+@pass test `a.b.c(d)`
+@pass test `x[y]`
+@pass test `CharTape.new(url)`
