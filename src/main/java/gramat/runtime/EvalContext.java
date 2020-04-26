@@ -88,7 +88,7 @@ public class EvalContext {
                 lastCommitName = ((NamedExpression)expression).getName();
             }
             else {
-                lastCommitName = expression.toString();
+                lastCommitName = expression.getDescription();
             }
 
             lastCommitPosition = pos;

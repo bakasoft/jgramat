@@ -5,8 +5,8 @@ L0E = @object(`GrpExpr`: "(" ws @set(`value`: Expression) ws ")")
 
 // x.y, x[y], x(y)
 L1E = @object(`MacExpr`: @set(`left`: L0E) "." @set(`right`: L1E))
-    | @object(`InvExpr`: @set(`value`: L1E) i-ws "(" ws @set(`arguments`: Name) ws ")")
-    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: @print(`K1`) Expression) @print(`K2`) ws "]" @print(`K3`))
+    | @object(`InvExpr`: @set(`value`: L1E) i-ws "(" ws [@set(`arguments`: Name) ws] ")")
+    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: Expression) ws "]")
     | L0E
 
 // +x, -x, not x
@@ -56,6 +56,6 @@ L9E = @object(`NullCoalescing`: @set(`left`: L8E) i-ws "??" i-ws @set(`right`: L
 Expression = L9E
 
 test = ^Expression$
-@pass test `a.b.c(d)`
-@pass test `CharTape.new(url)`
+//@pass test `a.b.c(d)`
+//@pass test `CharTape.new(url)`
 //@pass test `(x)`

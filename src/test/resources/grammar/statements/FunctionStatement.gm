@@ -3,7 +3,7 @@
     "function" ws [ @set(`extendedType`: Name)  ws "." ws ]
     @set(`name`: Name) ws @set(`parameters`: ParameterList)
     [ ws @set(`returnType`: TypeRef) ]
-    [ ws "{" ws @set(`instructions`: InstructionList) ws "}" ]
+    [ ws @set(`body`: InstructionBody) ]
 
 @list ParameterList = "(" ws { FunctionParameter / ws "," ws } ")"
 

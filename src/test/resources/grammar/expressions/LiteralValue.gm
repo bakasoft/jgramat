@@ -12,5 +12,6 @@
 @null Null = "null"
 
 @join String = "\"" { EscapedChar | @string(<"\"">) } "\""
+@string Char = "\'" (EscapedChar | @string(<"\'">)) "\'"
 
-LiteralValue = DecInteger | HexInteger | DecNumber | Boolean | Null | String
+LiteralValue = DecInteger | HexInteger | DecNumber | Boolean | Null | Char | String

@@ -1,8 +1,12 @@
-@object InstructionBody = "{" ws @set(`instructions`: InstructionList) ws "}"
+@object InstructionBody =
+    "{" ws
+    @set(`instructions`:
+        @list(`InstructionList`: { Instruction i-ws "\n" ws })
+    )
+    ws "}"
 
-@list InstructionList = { Instruction / line-break }
 
-Instruction = LocalField | InvocationInst | AssignationInst
+Instruction = LocalField | InvocationInst | AssignationInst | ReturnInst
 
 @object ValuePart = [ @set(`optional`: @true("?")) i-ws ] "." i-ws @set(`name`: Name)
 @list ValuePartList = ValuePart { i-ws ValuePart }
@@ -20,3 +24,5 @@ Instruction = LocalField | InvocationInst | AssignationInst
     @set(`fieldType`: FieldType) ws @set(`name`: Name)
     [ ws @set(`dataType`: TypeRef) ]
     [ ws "=" ws @set(`initialValue`: Expression) ]
+
+@object ReturnInst = "return" i-ws @set(`returnValue`: Expression)
