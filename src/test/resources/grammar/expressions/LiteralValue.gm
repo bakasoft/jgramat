@@ -2,16 +2,19 @@
 
 @object HexInteger = "0x" @set(`value`: @string({+ 'a-f A-F 0-9'}))
 
-@number DecNumber  =
+@object DecNumber  = @set(`value`: @string(
     ["-"] ("0" | '1-9' { '0-9' })
     [ "." {+ '0-9'} ]
     [ ['e E'] ['- +'] {+ '0-9' } ]
+))
 
-@boolean Boolean = "true" | "false"
+@object Boolean = @set(`value`: @string(
+    "true" | "false"
+))
 
-@null Null = "null"
+@object Null = "null"
 
-@join String = "\"" { EscapedChar | @string(<"\"">) } "\""
-@string Char = "\'" (EscapedChar | @string(<"\'">)) "\'"
+@object String = @set(`value`: @join("\"" { EscapedChar | @string(<"\"">) } "\""))
+@object Char = @set(`value`: "\'" (EscapedChar | @string(<"\'">)) "\'")
 
 LiteralValue = DecInteger | HexInteger | DecNumber | Boolean | Null | Char | String

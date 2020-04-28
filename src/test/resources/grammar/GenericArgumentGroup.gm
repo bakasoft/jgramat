@@ -1,0 +1,3 @@
+@object GenericArgument = @set(`type`: TypeRef)
+
+@list GenericArgumentGroup = "<" ws {+ GenericArgument / ws "," ws } ws ">"

@@ -2,8 +2,13 @@ Statement =
     ImportStatement |
     FieldStatement |
     FunctionStatement |
+    ConstructorStatement |
+    GetterStatement |
+    SetterStatement |
     ClassStatement |
-    InterfaceStatement
+    InterfaceStatement |
+    LambdaStatement |
+    ModuleStatement
 
 @list StatementList = { ws Statement } ws
 

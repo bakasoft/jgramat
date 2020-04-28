@@ -5,8 +5,18 @@
     )
     ws "}"
 
-
-Instruction = LocalField | InvocationInst | AssignationInst | ReturnInst
+Instruction = LocalField
+            | ReturnInst
+            | IfElseInst
+            | ThrowInst
+            | LoopInst
+            | WhileInst
+            | ForEachInst
+            | ForWhileInst
+            | BreakInst
+            | InvocationInst
+            | IncrementInst
+            | AssignationInst
 
 @object ValuePart = [ @set(`optional`: @true("?")) i-ws ] "." i-ws @set(`name`: Name)
 @list ValuePartList = ValuePart { i-ws ValuePart }
@@ -26,3 +36,53 @@ Instruction = LocalField | InvocationInst | AssignationInst | ReturnInst
     [ ws "=" ws @set(`initialValue`: Expression) ]
 
 @object ReturnInst = "return" i-ws @set(`returnValue`: Expression)
+
+@object ThrowInst = "throw" i-ws @set(`errorValue`: Expression)
+
+@object LoopInst = "loop" ws @set(`body`: InstructionBody)
+
+@object BreakInst = "break"
+
+@object IfElseInst =
+    @set(`thenBody`:
+        @object(`ConditionedBody`:
+            "if" ws @set(`condition`: Expression)
+            ws @set(`body`: InstructionBody)
+        )
+    )
+    [
+        @set(`elseIfBodies`:
+            {+
+                @object(`ConditionedBody`:
+                    ws ("else" ws "if" | "elif")
+                    ws @set(`condition`: Expression)
+                    ws @set(`body`: InstructionBody)
+                )
+            }
+        )
+    ]
+    [
+        ws "else" ws @set(`elseBody`: InstructionBody)
+    ]
+
+
+@object IncrementInst = @set(`member`: MemberRef) i-ws @set(`operator`: @string("++"|"--"))
+
+@object ForEachInst =
+    "for"
+    ws @set(`itemName`: Name)
+    ws "in"
+    ws @set(`collection`: Expression)
+    ws @set(`body`: InstructionBody)
+
+@object ForWhileInst =
+    "for"
+    ws @set(`assignments`: @list(`AssignmentList`: {+ AssignationInst / ws "," ws }))
+    ws "while" ws @set(`condition`: Expression)
+    ws "step" ws @set(`step`: @list(`InstructionList`: {+ Instruction/ ws "," ws }))
+    ws @set(`body`: InstructionBody)
+
+@object WhileInst =
+    "while"
+    ws @set(`condition`: Expression)
+    ws @set(`body`: InstructionBody)

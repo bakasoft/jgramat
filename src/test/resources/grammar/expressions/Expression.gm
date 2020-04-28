@@ -1,61 +1,76 @@
 // (x), x, literals
 L0E = @object(`GrpExpr`: "(" ws @set(`value`: Expression) ws ")")
-    | @object(`RefExpr`: @set(`name`: Name))
+    | @object(`RefExpr`:
+        @set(`name`: Name)
+        [ i-ws @set(`genericArguments`: GenericArgumentGroup) ]
+    )
     | LiteralValue
 
 // x.y, x[y], x(y)
 L1E = @object(`MacExpr`: @set(`left`: L0E) "." @set(`right`: L1E))
-    | @object(`InvExpr`: @set(`value`: L1E) i-ws "(" ws [@set(`arguments`: Name) ws] ")")
-    | @object(`KacExpr`: @set(`value`: L1E) i-ws "[" ws @set(`key`: Expression) ws "]")
-    | L0E
+    | @object(`InvExpr`: @set(`value`: L1E) i-ws (
+        @set(`operator`: @string("(")) ws [ @set(`arguments`: @list({+Expression / ws "," ws})) ws ] ")" |
+        @set(`operator`: @string("[")) ws [ @set(`arguments`: @list({+Expression / ws "," ws})) ws ] "]"
+    )) | L0E
 
 // +x, -x, not x
-L2E = @object(`PosExpr`: "+" i-ws @set(`value`: L2E))
-    | @object(`NegExpr`: "-" i-ws @set(`value`: L2E))
-    | @object(`ComExpr`: "not" i-ws @set(`value`: L2E))
-    | L1E
+L2E = @object(`UOpExpr`: @set(`operator`: @string("+" | "-" | "not")) i-ws @set(`value`: L2E)) | L1E
 
 // x*y, x/y, x%y
-L3E = @object(`MulExpr`: @set(`left`: L2E) i-ws "*" i-ws @set(`right`: L3E))
-    | @object(`DivExpr`: @set(`left`: L2E) i-ws "/" i-ws @set(`right`: L3E))
-    | @object(`ModExpr`: @set(`left`: L2E) i-ws "%" i-ws @set(`right`: L3E))
-    | L2E
+L3E = @object(`BopExpr`: @set(`left`: L2E) i-ws @set(`operator`: @string("*" | "/" | "%")) i-ws @set(`right`: L3E)) | L2E
 
 // x+y, x-y
-L4E = @object(`AddExpr`: @set(`left`: L3E) i-ws "+" i-ws @set(`right`: L4E))
-    | @object(`SubExpr`: @set(`left`: L3E) i-ws "-" i-ws @set(`right`: L4E))
-    | L3E
+L4E = @object(`BOpExpr`: @set(`left`: L3E) i-ws @set(`operator`: @string("+" | "-")) i-ws @set(`right`: L4E)) | L3E
 
 // x>y, x<y, x>=x, x<=y, x is y, x as y
-L5E = @object(`GtrExpr`: @set(`left`: L4E) i-ws ">" i-ws @set(`right`: L5E))
-    | @object(`LssExpr`: @set(`left`: L4E) i-ws "<" i-ws @set(`right`: L5E))
-    | @object(`GeqExpr`: @set(`left`: L4E) i-ws ">=" i-ws @set(`right`: L5E))
-    | @object(`LeqExpr`: @set(`left`: L4E) i-ws "<=" i-ws @set(`right`: L5E))
-    | @object(`IsTypeExpr`: @set(`value`: L4E) i-ws "is" i-ws @set(`type`: TypeRef))
-    | @object(`AsTypeExpr`: @set(`value`: L4E) i-ws "as" i-ws @set(`type`: TypeRef))
-    | L4E
+L5E = @object(`BOpExpr`: @set(`left`: L4E) i-ws @set(`operator`: @string(">=" | "<=" | ">" | "<" | "is" | "as")) i-ws @set(`right`: L5E)) | L4E
 
 // x==y, x!=y
-L6E = @object(`EquExpr`: @set(`left`: L5E) i-ws "==" i-ws @set(`right`: L6E))
-    | @object(`NeqExpr`: @set(`left`: L5E) i-ws "!=" i-ws @set(`right`: L6E))
-    | L5E
+L6E = @object(`BOpExpr`: @set(`left`: L5E) i-ws @set(`operator`: @string("=="|"!=")) i-ws @set(`right`: L6E)) | L5E
 
 // x and y
-L7E = @object(`ConExpr`: @set(`left`: L6E) i-ws "and" i-ws @set(`right`: L7E))
-    | L6E
+L7E = @object(`BOpExpr`: @set(`left`: L6E) i-ws @set(`operator`: @string("and")) i-ws @set(`right`: L7E)) | L6E
 
 // x or y, x xor y
-L8E = @object(`DisExpr`: @set(`left`: L7E) i-ws "or" i-ws @set(`right`: L8E))
-    | @object(`XorExpr`: @set(`left`: L7E) i-ws "xor" i-ws @set(`right`: L8E))
-    | L7E
+L8E = @object(`BOpExpr`: @set(`left`: L7E) i-ws @set(`operator`: @string("or" | "xor")) i-ws @set(`right`: L8E)) | L7E
 
 // x ?? y
-L9E = @object(`NullCoalescing`: @set(`left`: L8E) i-ws "??" i-ws @set(`right`: L9E))
-    | L8E
+L9E = @object(`BOpExpr`: @set(`left`: L8E) i-ws @set(`operator`: @string("??")) i-ws @set(`right`: L9E)) | L8E
 
-Expression = L9E
+// x catch(...) -> (y) else -> (z)
+L10E = @object(`CatchExpr`:
+    @set(`left`: L9E)
+    @set(`catchCases`:
+        @list(`CatchCaseList`: {+
+            @object(`CatchCase`:
+                i-ws "catch" [ i-ws @set(`parameters`: ParameterGroup) ]
+                i-ws @set(`body`: CatchReturnInstructionBody | InstructionBody)
+            )
+        })
+    )
+    [
+        @set(`elseCase`: @object(`CatchCase`:
+            i-ws "else" [ i-ws @set(`parameters`: ParameterGroup) ]
+            i-ws @set(`body`: CatchReturnInstructionBody | InstructionBody)
+        ))
+    ]
+) | L9E
+
+CatchReturnInstructionBody = @object(`InstructionBody`:
+    "->" ws @set(`instructions`:
+        @list(`InstructionList`:
+            @object(`ReturnInst`:
+                @set(`returnValue`: L9E)
+            )
+        )
+    )
+)
+
+Expression = L10E
 
 test = ^Expression$
 //@pass test `a.b.c(d)`
-//@pass test `CharTape.new(url)`
+//@pass test `Error.new("expected to read a letter")`
 //@pass test `(x)`
+//@pass test `this`
+//@pass test `1 + 1 catch(e) -> (0) catch(e) -> 1 else -> 3`

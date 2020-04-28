@@ -1,0 +1,7 @@
+@list ParameterGroup = "(" ws { Parameter / ws "," ws } ")"
+
+@object Parameter =
+    [ @set(`fieldType`: FieldType) ws ]
+    @set(`name`: Name)
+    [ ws @set(`dataType`: TypeRef) ]
+    [ ws "=" ws @set(`defaultValue`: Expression) ]
