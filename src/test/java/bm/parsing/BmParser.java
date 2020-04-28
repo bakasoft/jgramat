@@ -4,17 +4,19 @@ import bm.BmException;
 import bm.parsing.data.SourceFile;
 import gramat.Grammar;
 import gramat.compiling.Compiler;
+import gramat.util.FileTool;
 import gramat.util.parsing.Source;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 public class BmParser {
+
+    public static final String DEFAULT_BM_FILE = "bm.json";
 
     private final BmTerminal terminal;
     private final Grammar grammar;
@@ -41,22 +43,41 @@ public class BmParser {
 
         terminal.info("Parsing suite: " + suite.getFolder());
 
-        List<Path> files;
+        List<Path> files = FileTool.listVisibleFiles(suite.getFolder());
 
-        try {
-            files = Files.walk(suite.getFolder())
-                    .filter(Files::isRegularFile)
-                    .collect(Collectors.toUnmodifiableList());
-        } catch (IOException e) {
-            throw new BmException("Cannot read suite folder.", e);
+        var bmFilePath = suite.getFolder().resolve(DEFAULT_BM_FILE);
+
+        if (Files.exists(bmFilePath)) {
+            terminal.info("Reading Bm file: " + bmFilePath);
+
+            var bmFile = BmFile.parse(bmFilePath);
+
+            suite.setBmFile(bmFile);
+        }
+        else {
+            terminal.info("Creating Bm file: " + bmFilePath);
+
+            var bmFile = BmFile.create(bmFilePath);
+
+            suite.setBmFile(bmFile);
         }
 
+        var bmFile = suite.getBmFile();
+        var sourceFilePattern = bmFile.getSourceFilePattern();
+
         for (var file : files) {
-            terminal.info("Parsing source file: " + suite.computeFileRef(file));
+            var fileName = file.getFileName().toString();
 
-            var source = parseSourceFile(file);
+            if (sourceFilePattern.matcher(fileName).matches()) {
+                terminal.info("Parsing source file: " + suite.computeFileRef(file));
 
-            suite.add(file, source);
+                var source = parseSourceFile(file);
+
+                suite.add(file, source);
+            }
+            else if (!DEFAULT_BM_FILE.equals(fileName)) {
+                throw new BmException("Unsupported file: " + file);
+            }
         }
 
         return suite;

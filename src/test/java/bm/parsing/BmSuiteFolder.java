@@ -5,12 +5,15 @@ import bm.parsing.data.SourceFile;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BmSuiteFolder {
 
     private final Path folder;
 
     private final List<BmSuiteEntry> entries;
+
+    private BmFile bmFile;
 
     public BmSuiteFolder(Path folder) {
         this.folder = folder.toAbsolutePath().normalize();
@@ -45,5 +48,13 @@ public class BmSuiteFolder {
 
     public Path getFolder() {
         return folder;
+    }
+
+    public void setBmFile(BmFile bmFile) {
+        this.bmFile = bmFile;
+    }
+
+    public BmFile getBmFile() {
+        return Objects.requireNonNull(bmFile);
     }
 }
