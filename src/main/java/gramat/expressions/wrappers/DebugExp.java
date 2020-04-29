@@ -1,11 +1,12 @@
 package gramat.expressions.wrappers;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
-import java.util.Objects;
+import java.util.List;
 
 public class DebugExp extends Expression {
 
@@ -14,6 +15,11 @@ public class DebugExp extends Expression {
     public DebugExp(Location location, Expression expression) {
         super(location);
         this.expression = expression;
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
     }
 
     @Override
@@ -30,15 +36,11 @@ public class DebugExp extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            expression = expression.optimize(context);
+            return this;
+        });
     }
 
     @Override

@@ -4,7 +4,9 @@ import bm.BmException;
 import bm.parsing.data.SourceFile;
 import gramat.Grammar;
 import gramat.compiling.Compiler;
+import gramat.expressions.Expression;
 import gramat.util.FileTool;
+import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
 import java.net.URISyntaxException;
@@ -19,11 +21,14 @@ public class BmParser {
     public static final String DEFAULT_BM_FILE = "bm.json";
 
     private final BmTerminal terminal;
-    private final Grammar grammar;
+    private final Compiler compiler;
+    private final Expression expression;
 
     public BmParser(BmTerminal terminal) {
-        var compiler = new Compiler();
-        
+        this.terminal = terminal;
+
+        compiler = new Compiler();
+
         compiler.setType(SourceFile.class);
 
         try {
@@ -32,10 +37,7 @@ public class BmParser {
             throw new BmException("Cannot load the Bm grammar.", e);
         }
 
-        compiler.compile();
-
-        this.terminal = terminal;
-        this.grammar = compiler.createGrammar();
+        expression = compiler.compileRule("SourceFile");
     }
 
     public BmSuiteFolder parseSuite(Path folder) {
@@ -84,7 +86,16 @@ public class BmParser {
     }
 
     public SourceFile parseSourceFile(Path file) {
-        return grammar.evalValue("SourceFile", Source.fromFile(file), SourceFile.class);
+        var source = Source.fromFile(file);
+        var context = compiler.createEvalContext(source);
+
+        if (!expression.eval(context)) {
+            var errLoc = context.source.locationOf(context.lastCommitPosition);
+            throw new ParseException(" did not match: " + context.lastCommitName, errLoc);
+        }
+
+        var result = context.getValue();
+        return (SourceFile) result;
     }
 
 }

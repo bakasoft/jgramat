@@ -8,7 +8,7 @@ import gramat.expressions.NamedExpression;
 import gramat.parsers.BaseParsers;
 import gramat.parsers.CoreParsers;
 import gramat.parsers.Mark;
-import gramat.util.FileTool;
+import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Compiler implements LinkContext, ParseContext {
+public class Compiler extends LinkContext implements ParseContext {
 
     private Path workingDir;
 
@@ -45,6 +45,10 @@ public class Compiler implements LinkContext, ParseContext {
         setParser("hex-to-char", new HexToCharParser());
     }
 
+    public EvalContext createEvalContext(Source source) {
+        return new EvalContext(source, types);
+    }
+
     public Grammar createGrammar() {
         var expressions = new HashMap<String, Expression>();
 
@@ -57,18 +61,21 @@ public class Compiler implements LinkContext, ParseContext {
         return new Grammar(expressions, types);
     }
 
-    public void compile() {
-        for (var rule : rules) {
-            rule.optimize();
+    public Expression compileRule(String ruleName) {
+        NamedExpression rule = null;
+
+        for (var r : rules) {
+            if (ruleName.equals(r.getName())) {
+                rule = r;
+                break;
+            }
         }
 
-        for (var rule : rules) {
-            rule.link(this);
+        if (rule == null) {
+            throw new GramatException("no rule found");
         }
 
-        for (var test : tests) {
-            test.run(this);
-        }
+        return rule.optimize(this);
     }
 
     public void parse(Source source) {

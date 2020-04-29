@@ -1,11 +1,12 @@
 package gramat.expressions.wrappers;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
-import gramat.expressions.Sequence;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -23,24 +24,20 @@ public class ShortCircuit extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            expression = expression.optimize(context);
+            return this;
+        });
     }
 
     @Override
     protected boolean evalImpl(EvalContext context) {
         int pos = context.source.getPosition();
 
-        if (context.circuit.enter(expression, pos)) {
+        if (context.enter(expression, pos)) {
             boolean result = expression.eval(context);
-            context.circuit.remove(expression, pos);
+            context.remove(expression, pos);
             return result;
         }
 
@@ -50,5 +47,10 @@ public class ShortCircuit extends Expression {
     @Override
     public String getDescription() {
         return "Last-Sequence";
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
     }
 }

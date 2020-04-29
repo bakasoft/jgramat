@@ -1,23 +1,37 @@
 package gramat.expressions.values;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DynObjectExp extends Expression {
 
     private Expression typeExp;
-
     private Expression expression;
 
     public DynObjectExp(Location location, Expression typeExp, Expression expression) {
         super(location);
         this.typeExp = Objects.requireNonNull(typeExp);
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
+    }
+
+    @Override
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            typeExp = typeExp.optimize(context);
+            expression = expression.optimize(context);
+            return this;
+        });
     }
 
     @Override
@@ -35,20 +49,6 @@ public class DynObjectExp extends Expression {
         }
 
         return context.useObject(expression, typeName);
-    }
-
-    @Override
-    public Expression optimize() {
-        typeExp = typeExp.optimize();
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        typeExp = typeExp.link(context);
-        expression = expression.link(context);
-        return this;
     }
 
     @Override

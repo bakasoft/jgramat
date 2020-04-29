@@ -11,7 +11,7 @@ public class MathTest {
 
         parser.parseFile(Paths.get(MathTest.class.getResource("/math.gm").toURI()));
 
-        parser.compile();
+        parser.compileRule("Expression");
     }
 
 }

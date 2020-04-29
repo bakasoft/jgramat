@@ -1,10 +1,12 @@
 package gramat.expressions.wrappers;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Negation extends Expression {
@@ -17,6 +19,11 @@ public class Negation extends Expression {
     }
 
     @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
+    }
+
+    @Override
     protected boolean evalImpl(EvalContext context) {
         var pos0 = context.source.getPosition();
 
@@ -26,6 +33,7 @@ public class Negation extends Expression {
         }
 
         if (context.source.alive()) {
+            // TODO should move always
             context.source.moveNext();
             return true;
         }
@@ -35,16 +43,12 @@ public class Negation extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        // TODO
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            // TODO
+            expression = expression.optimize(context);
+            return this;
+        });
     }
 
     @Override

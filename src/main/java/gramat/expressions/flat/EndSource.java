@@ -1,10 +1,13 @@
 package gramat.expressions.flat;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
+
+import java.util.List;
 
 public class EndSource extends Expression {
 
@@ -13,18 +16,18 @@ public class EndSource extends Expression {
     }
 
     @Override
+    public List<Expression> getInnerExpressions() {
+        return List.of();
+    }
+
+    @Override
+    public Expression optimize(Compiler context) {
+        return this;
+    }
+
+    @Override
     protected boolean evalImpl(EvalContext context) {
         return !context.source.alive();
-    }
-
-    @Override
-    public Expression optimize() {
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        return this;
     }
 
     @Override

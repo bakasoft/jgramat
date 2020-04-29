@@ -6,8 +6,7 @@ import java.nio.file.Path;
 
 public class BmTest {
 
-    @Test
-    public void bmTest() {
+    public static void main(String args[]) {
         var terminal = new BmTerminal();
         var parser = new BmParser(terminal);
         var suite = parser.parseSuite(Path.of("../../bm/bm-core"));

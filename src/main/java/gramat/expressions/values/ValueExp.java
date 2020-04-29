@@ -1,13 +1,13 @@
 package gramat.expressions.values;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.compiling.ValueParser;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
-import gramat.values.PlainValue;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ValueExp extends Expression {
@@ -20,6 +20,11 @@ public class ValueExp extends Expression {
         super(location);
         this.parser = parser;
         this.expression = Objects.requireNonNull(expression);
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
     }
 
     @Override
@@ -37,15 +42,11 @@ public class ValueExp extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            expression = expression.optimize(context);
+            return this;
+        });
     }
 
     @Override

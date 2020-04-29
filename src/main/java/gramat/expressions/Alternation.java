@@ -1,11 +1,12 @@
 package gramat.expressions;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.flat.Nop;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -21,51 +22,66 @@ public class Alternation extends Expression {
     @Override
     protected boolean evalImpl(EvalContext context) {
         int pos0 = context.source.getPosition();
-        var added = new ArrayList<Expression>();
+        Expression lastEnter = null;
+        boolean result = false;
 
         for (var expression : expressions) {
-            if (context.circuit.enter(expression, pos0)) {
-                added.add(expression);
+            if (context.enter(expression, pos0)) {
+                lastEnter = expression;
             }
             else {
                 continue;
             }
 
             if (expression.eval(context)) {
-                added.forEach(e -> context.circuit.remove(e, pos0));
-                return true;
+                result = true;
+                break;
             }
             else {
                 context.source.setPosition(pos0);
             }
         }
 
-        added.forEach(e -> context.circuit.remove(e, pos0));
-        return false;
+        if (lastEnter != null) {
+            for (var expression : expressions) {
+                context.remove(expression, pos0);
+
+                if (lastEnter == expression) {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
-    public Expression optimize() {
-        if (expressions.length == 0) {
-            return new Nop(location);
-        }
-        else if (expressions.length == 1) {
-            return expressions[0].optimize();
-        }
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            if (expressions.length == 0) {
+                return new Nop(location);
+            }
+            else if (expressions.length == 1) {
+                return expressions[0].optimize(context);
+            }
 
-        optimizeAll(expressions);
+            optimizeAll(context, expressions);
 
-        return this;
-    }
+            if (isCyclic()) {
+                return this;
+            }
 
-    @Override
-    public Expression link(LinkContext context) {
-        linkAll(context, expressions);
-        return this;
+            return new LinearAlternation(location, expressions);
+        });
     }
 
     @Override
     public String getDescription() {
         return "Alternation";
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expressions);
     }
 }

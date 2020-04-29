@@ -1,18 +1,20 @@
 package gramat.expressions.wrappers;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Repetition extends Expression {
 
     private Expression expression;
     private Expression separator;
-    private Integer maxCount;
-    private Integer minCount;
+    private final Integer maxCount;
+    private final Integer minCount;
 
     public Repetition(Location location, Expression expression, Integer min, Integer max, Expression separator) {
         super(location);
@@ -20,6 +22,11 @@ public class Repetition extends Expression {
         this.separator = separator;
         this.maxCount = max;
         this.minCount = min;
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression, separator);
     }
 
     @Override
@@ -61,25 +68,17 @@ public class Repetition extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        expression = expression.optimize();
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            // TODO
+            expression = expression.optimize(context);
 
-        if (separator != null) {
-            separator = separator.optimize();
-        }
+            if (separator != null) {
+                separator = separator.optimize(context);
+            }
 
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-
-        if (separator != null) {
-            separator = separator.link(context);
-        }
-
-        return this;
+            return this;
+        });
     }
 
     @Override

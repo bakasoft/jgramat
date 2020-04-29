@@ -1,11 +1,12 @@
 package gramat.expressions.values;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.Expression;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DynAttributeExp extends Expression {
@@ -17,6 +18,11 @@ public class DynAttributeExp extends Expression {
         super(location);
         this.nameExpression = Objects.requireNonNull(nameExpression);
         this.valueExpression = Objects.requireNonNull(valueExpression);
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(nameExpression, valueExpression);
     }
 
     @Override
@@ -40,17 +46,12 @@ public class DynAttributeExp extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        nameExpression = nameExpression.optimize();
-        valueExpression = valueExpression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        nameExpression = nameExpression.link(context);
-        valueExpression = valueExpression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            nameExpression = nameExpression.optimize(context);
+            valueExpression = valueExpression.optimize(context);
+            return this;
+        });
     }
 
     @Override

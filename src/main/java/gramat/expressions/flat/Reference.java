@@ -1,5 +1,6 @@
 package gramat.expressions.flat;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
@@ -7,6 +8,8 @@ import gramat.expressions.wrappers.ShortCircuit;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
+
+import java.util.List;
 
 public class Reference extends Expression {
 
@@ -18,24 +21,24 @@ public class Reference extends Expression {
     }
 
     @Override
+    public List<Expression> getInnerExpressions() {
+        return List.of();
+    }
+
+    @Override
     protected boolean evalImpl(EvalContext context) {
         throw context.source.error("Expression not compiled: " + name);
     }
 
     @Override
-    public Expression optimize() {
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
+    public Expression optimize(Compiler context) {
         var expression = context.getExpression(name);
 
         if (expression == null) {
             throw new ParseException("expression not found: " + name, location);
         }
 
-        return expression;
+        return expression.optimize(context);
     }
 
     public String getName() {

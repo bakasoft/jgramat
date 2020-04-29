@@ -1,10 +1,11 @@
 package gramat.expressions;
 
+import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.List;
 import java.util.Objects;
 
 public class NamedExpression extends Expression {
@@ -54,15 +55,14 @@ public class NamedExpression extends Expression {
     }
 
     @Override
-    public Expression optimize() {
-        expression = expression.optimize();
-        return this;
-    }
-
-    @Override
-    public Expression link(LinkContext context) {
-        expression = expression.link(context);
-        return this;
+    public Expression optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            expression = expression.optimize(context);
+            if (soft) {
+                return expression;
+            }
+            return this;
+        });
     }
 
     @Override
@@ -72,5 +72,10 @@ public class NamedExpression extends Expression {
 
     public boolean isSoft() {
         return soft;
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expression);
     }
 }
