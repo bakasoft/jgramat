@@ -95,7 +95,7 @@ public class EvalContext {
 
     public void rollback(Expression expression) {
         stack = stack.previous;
-        current = stack.node;
+        current = stack != null ? stack.node : null;
 
         if (current != null) {
             current.next = null;

@@ -20,6 +20,10 @@ public class CharLiteral extends Expression {
         this.value = value;
     }
 
+    public char getValue() {
+        return value;
+    }
+
     @Override
     public List<Expression> getInnerExpressions() {
         return List.of();

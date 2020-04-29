@@ -2,9 +2,13 @@ package gramat.expressions;
 
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
+import gramat.expressions.flat.CharLiteral;
+import gramat.expressions.flat.CharRange;
+import gramat.expressions.flat.Literal;
 import gramat.expressions.flat.Nop;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
+import gramat.util.parsing.ParseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -64,6 +68,9 @@ public class Alternation extends Expression {
             else if (expressions.length == 1) {
                 return expressions[0].optimize(context);
             }
+            else if (areLiteral(expressions)) {
+                return new LiteralAlternation(location, makeStrings(expressions));
+            }
 
             optimizeAll(context, expressions);
 
@@ -73,6 +80,39 @@ public class Alternation extends Expression {
 
             return new LinearAlternation(location, expressions);
         });
+    }
+
+    private boolean areLiteral(Expression[] expressions) {
+        for (var expr : expressions) {
+            if (!(expr instanceof Literal || expr instanceof CharLiteral)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static String[] makeStrings(Expression[] expressions) {
+        var result = new String[expressions.length];
+
+        for (int i = 0; i < expressions.length; i++) {
+            String value;
+            var expr = expressions[i];
+
+            if (expr instanceof Literal) {
+                value = ((Literal)expr).getValue();
+            }
+            else if (expr instanceof CharLiteral) {
+                value = String.valueOf(((CharLiteral)expr).getValue());
+            }
+            else {
+                throw new ParseException("unsupported literal", expr.location);
+            }
+
+            result[i] = value;
+        }
+
+        return result;
     }
 
     @Override

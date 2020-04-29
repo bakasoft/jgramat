@@ -19,6 +19,10 @@ public class Literal extends Expression {
         this.value = value;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public List<Expression> getInnerExpressions() {
         return List.of();
