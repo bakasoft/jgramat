@@ -5,12 +5,14 @@ import gramat.compiling.LinkContext;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class LinearAlternation extends Expression {
 
-    private final Expression[] expressions;
+    private Expression[] expressions;
 
     public LinearAlternation(Location location, Expression[] expressions) {
         super(location);
@@ -36,8 +38,36 @@ public class LinearAlternation extends Expression {
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             optimizeAll(context, expressions);
+
+            // collapse sub-sequences
+            if (_contains_alternation(expressions)) {
+                var collapsed = new ArrayList<Expression>();
+
+                for (var expr : expressions) {
+                    if (expr instanceof LinearAlternation) {
+                        var subAlt = (LinearAlternation)expr;
+
+                        collapsed.addAll(Arrays.asList(subAlt.expressions));
+                    }
+                    else {
+                        collapsed.add(expr);
+                    }
+                }
+
+                expressions = collapsed.toArray(Expression[]::new);
+            }
+
             return this;
         });
+    }
+
+    private boolean _contains_alternation(Expression[] expressions) {
+        for (var expr : expressions) {
+            if (expr instanceof LinearAlternation) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

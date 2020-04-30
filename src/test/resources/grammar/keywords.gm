@@ -1,2 +1,5 @@
-@string AccessModifier = "protect" | "share" | "export" | "test"
+ROTE = "r" "ote"
+PROTECT = "p" ROTE "ct"
+
+@string AccessModifier = PROTECT | "share" | "export" | "test"
 @string FieldType = "let" | "var"
