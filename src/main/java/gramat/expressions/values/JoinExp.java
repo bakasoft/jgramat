@@ -3,6 +3,9 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.EditCloseValue;
+import gramat.runtime.EditOpenJoin;
+import gramat.runtime.EditOpenWildList;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -33,7 +36,12 @@ public class JoinExp  extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        return context.useJoin(expression);
+        context.add(new EditOpenJoin(context.source.getLocation()));
+        if (expression.eval(context)) {
+            context.add(new EditCloseValue(context.source.getLocation()));
+            return true;
+        }
+        return false;
     }
 
     @Override

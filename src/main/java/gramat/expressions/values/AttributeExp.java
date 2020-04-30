@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -30,7 +31,7 @@ public class AttributeExp extends DataExpr {
         var pos0 = context.source.getPosition();
 
         if (valueExpression.eval(context)) {
-            context.set(context.source.locationOf(pos0), name);
+            context.add(new EditSet(context.source.locationOf(pos0), name));
             return true;
         }
 

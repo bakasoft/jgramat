@@ -4,6 +4,7 @@ import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
+import gramat.runtime.EditSendSegment;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -34,7 +35,7 @@ public class ValueExp extends DataExpr {
         if (expression.eval(context)) {
             var posF = context.source.getPosition();
 
-            context.sendSegment(pos0, posF, parser);
+            context.add(new EditSendSegment(context.source.locationOf(pos0), pos0, posF, parser));
             return true;
         }
 

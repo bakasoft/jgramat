@@ -3,6 +3,9 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.EditCloseValue;
+import gramat.runtime.EditOpenTypedList;
+import gramat.runtime.EditOpenTypedObject;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -35,7 +38,12 @@ public class TypedListExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        return context.useList(expression, type);
+        context.add(new EditOpenTypedList(context.source.getLocation(), type));
+        if (expression.eval(context)) {
+            context.add(new EditCloseValue(context.source.getLocation()));
+            return true;
+        }
+        return false;
     }
 
     @Override

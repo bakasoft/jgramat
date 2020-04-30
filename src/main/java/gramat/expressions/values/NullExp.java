@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.EditSendValue;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -34,7 +35,7 @@ public class NullExp extends DataExpr {
     @Override
     public boolean eval(EvalContext context) {
         if (expression.eval(context)) {
-            context.sendValue(null);
+            context.add(new EditSendValue(context.source.getLocation(), null));
             return true;
         }
 

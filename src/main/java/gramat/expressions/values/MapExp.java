@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.runtime.EditSendFragment;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -37,7 +38,7 @@ public class MapExp extends DataExpr {
     @Override
     public boolean eval(EvalContext context) {
         if (expression.eval(context)) {
-            context.sendFragment(replacement);
+            context.add(new EditSendFragment(context.source.getLocation(), replacement));
             return true;
         }
 

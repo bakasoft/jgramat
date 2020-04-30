@@ -2,6 +2,7 @@ package gramat.expressions;
 
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
+import gramat.runtime.EditMark;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -34,7 +35,7 @@ public class NamedExpression extends Expression {
         if (expression.eval(context)) {
             int posF = context.source.getPosition();
 
-            context.mark(pos0, posF, name);
+            context.add(new EditMark(context.source.locationOf(pos0), pos0, posF, name));
 
             if (soft) {
                 context.softMode = softMode0;
