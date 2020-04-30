@@ -23,12 +23,12 @@ public class PrintExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return this;
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         System.out.println(message + " <- " + context.source.getLocation());
 //        try {
 //            Thread.sleep(10);

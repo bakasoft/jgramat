@@ -62,6 +62,8 @@ public class Compiler extends LinkContext implements ParseContext {
     }
 
     public Expression compileRule(String ruleName) {
+        System.out.println("Compiling rule: " + ruleName);
+
         NamedExpression rule = null;
 
         for (var r : rules) {

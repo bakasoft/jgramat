@@ -9,7 +9,7 @@ import gramat.util.parsing.Location;
 import java.util.List;
 import java.util.Objects;
 
-public class JoinExp  extends Expression {
+public class JoinExp  extends DataExpr {
 
     private Expression expression;
 
@@ -24,7 +24,7 @@ public class JoinExp  extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             return this;
@@ -32,7 +32,7 @@ public class JoinExp  extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         return context.useJoin(expression);
     }
 

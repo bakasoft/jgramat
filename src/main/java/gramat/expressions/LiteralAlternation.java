@@ -32,7 +32,7 @@ public class LiteralAlternation extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var pos0 = context.source.getPosition();
         var currentStates = roots;
         var state = (CharState)null;
@@ -83,7 +83,7 @@ public class LiteralAlternation extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return this;
     }
 

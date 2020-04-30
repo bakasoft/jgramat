@@ -9,7 +9,7 @@ import gramat.util.parsing.Location;
 import java.util.List;
 import java.util.Objects;
 
-public class ListExp extends Expression {
+public class ListExp extends DataExpr {
 
     private String typeHint;
     private Expression expression;
@@ -26,7 +26,7 @@ public class ListExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             return this;
@@ -34,7 +34,7 @@ public class ListExp extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         return context.useList(expression, typeHint);
     }
 

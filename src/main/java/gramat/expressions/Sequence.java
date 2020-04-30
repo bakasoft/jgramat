@@ -18,7 +18,7 @@ public class Sequence extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         int pos0 = context.source.getPosition();
 
         for (var expression : expressions) {
@@ -36,7 +36,7 @@ public class Sequence extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             if (expressions.length == 0) {
                 return new Nop(location);

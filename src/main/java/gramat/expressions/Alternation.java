@@ -24,7 +24,7 @@ public class Alternation extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         int pos0 = context.source.getPosition();
         Expression lastEnter = null;
         boolean result = false;
@@ -60,7 +60,7 @@ public class Alternation extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             if (expressions.length == 0) {
                 return new Nop(location);

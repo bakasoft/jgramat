@@ -29,7 +29,7 @@ public class Literal extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         if (value.isEmpty()) {
             return new Nop(location);
         }
@@ -41,7 +41,7 @@ public class Literal extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         return context.source.pull(value);
     }
 

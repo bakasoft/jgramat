@@ -23,7 +23,7 @@ public class NamedExpression extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var softMode0 = context.softMode;
 
         if (soft) {
@@ -55,7 +55,7 @@ public class NamedExpression extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             if (soft) {

@@ -26,19 +26,21 @@ public class Reference extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         throw context.source.error("Expression not compiled: " + name);
     }
 
     @Override
-    public Expression optimize(Compiler context) {
-        var expression = context.getExpression(name);
+    public Expression _custom_optimize(Compiler context) {
+        return context.recursiveTransform(this, () -> {
+            var expression = context.getExpression(name);
 
-        if (expression == null) {
-            throw new ParseException("expression not found: " + name, location);
-        }
+            if (expression == null) {
+                throw new ParseException("expression not found: " + name, location);
+            }
 
-        return expression.optimize(context);
+            return expression.optimize(context);
+        });
     }
 
     public String getName() {

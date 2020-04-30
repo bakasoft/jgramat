@@ -24,7 +24,7 @@ public class Negation extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var pos0 = context.source.getPosition();
 
         if (expression.eval(context)) {
@@ -43,7 +43,7 @@ public class Negation extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             // TODO
             expression = expression.optimize(context);

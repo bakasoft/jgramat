@@ -9,7 +9,7 @@ import gramat.util.parsing.Location;
 import java.util.List;
 import java.util.Objects;
 
-public class DynObjectExp extends Expression {
+public class DynObjectExp extends DataExpr {
 
     private Expression typeExp;
     private Expression expression;
@@ -26,7 +26,7 @@ public class DynObjectExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             typeExp = typeExp.optimize(context);
             expression = expression.optimize(context);
@@ -35,7 +35,7 @@ public class DynObjectExp extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var typeName = typeExp.captureString(context);
 
         if (typeName == null) {

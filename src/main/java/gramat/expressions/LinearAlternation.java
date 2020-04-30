@@ -18,7 +18,7 @@ public class LinearAlternation extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         int pos0 = context.source.getPosition();
 
         for (var expression : expressions) {
@@ -33,7 +33,7 @@ public class LinearAlternation extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             optimizeAll(context, expressions);
             return this;

@@ -19,12 +19,8 @@ public class ShortCircuit extends Expression {
         this.expression = Objects.requireNonNull(expression);
     }
 
-    public boolean eval(EvalContext context) {
-        return evalImpl(context);
-    }
-
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             return this;
@@ -32,7 +28,7 @@ public class ShortCircuit extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         int pos = context.source.getPosition();
 
         if (context.enter(expression, pos)) {

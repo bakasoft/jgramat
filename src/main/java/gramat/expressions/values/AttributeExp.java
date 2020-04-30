@@ -9,7 +9,7 @@ import gramat.util.parsing.Location;
 import java.util.List;
 import java.util.Objects;
 
-public class AttributeExp extends Expression {
+public class AttributeExp extends DataExpr {
 
     private final String name;
     private Expression valueExpression;
@@ -26,7 +26,7 @@ public class AttributeExp extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var pos0 = context.source.getPosition();
 
         if (valueExpression.eval(context)) {
@@ -38,7 +38,7 @@ public class AttributeExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             valueExpression = valueExpression.optimize(context);
             return this;

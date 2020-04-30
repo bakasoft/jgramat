@@ -23,7 +23,7 @@ public class DebugExp extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var debugMode0 = context.debugMode;
 
         context.debugMode = true;
@@ -36,7 +36,7 @@ public class DebugExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             return this;

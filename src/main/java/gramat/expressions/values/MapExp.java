@@ -9,7 +9,7 @@ import gramat.util.parsing.Location;
 import java.util.List;
 import java.util.Objects;
 
-public class MapExp extends Expression {
+public class MapExp extends DataExpr {
 
     private final String replacement;
 
@@ -27,7 +27,7 @@ public class MapExp extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
             return this;
@@ -35,7 +35,7 @@ public class MapExp extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         if (expression.eval(context)) {
             context.sendFragment(replacement);
             return true;

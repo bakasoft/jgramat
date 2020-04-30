@@ -27,7 +27,7 @@ public class CharRange extends Expression {
     }
 
     @Override
-    public Expression optimize(Compiler context) {
+    public Expression _custom_optimize(Compiler context) {
         if (beginChar == endChar) {
             return new CharLiteral(location, beginChar);
         }
@@ -35,7 +35,7 @@ public class CharRange extends Expression {
     }
 
     @Override
-    protected boolean evalImpl(EvalContext context) {
+    public boolean eval(EvalContext context) {
         var c = context.source.peek();
 
         if (c == null || c < beginChar || c > endChar) {
