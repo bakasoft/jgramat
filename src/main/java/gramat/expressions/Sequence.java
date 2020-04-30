@@ -6,15 +6,18 @@ import gramat.expressions.flat.Nop;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Sequence extends Expression {
 
-    private final Expression[] expressions;
+    private Expression[] expressions;
 
     public Sequence(Location location, Expression[] expressions) {
         super(location);
-        this.expressions = expressions;
+        this.expressions = Objects.requireNonNull(expressions);
     }
 
     @Override
@@ -44,9 +47,38 @@ public class Sequence extends Expression {
             else if (expressions.length == 1) {
                 return expressions[0].optimize(context);
             }
+
             optimizeAll(context, expressions);
+
+            // collapse sub-sequences
+            if (_contains_sequences(expressions)) {
+                var collapsed = new ArrayList<Expression>();
+
+                for (var expr : expressions) {
+                    if (expr instanceof Sequence) {
+                        var subSeq = (Sequence)expr;
+
+                        collapsed.addAll(Arrays.asList(subSeq.expressions));
+                    }
+                    else {
+                        collapsed.add(expr);
+                    }
+                }
+
+                expressions = collapsed.toArray(Expression[]::new);
+            }
+
             return this;
         });
+    }
+
+    private boolean _contains_sequences(Expression[] expressions) {
+        for (var expr : expressions) {
+            if (expr instanceof Sequence) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
