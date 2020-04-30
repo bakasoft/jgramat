@@ -35,7 +35,7 @@ public class NullExp extends DataExpr {
     @Override
     public boolean eval(EvalContext context) {
         if (expression.eval(context)) {
-            context.add(new EditSendValue(context.source.getLocation(), null));
+            context.add(new EditSendValue(context.source, context.source.getPosition(), null));
             return true;
         }
 

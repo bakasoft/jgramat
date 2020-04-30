@@ -36,9 +36,9 @@ public class JoinExp  extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        context.add(new EditOpenJoin(context.source.getLocation()));
+        context.add(new EditOpenJoin(context.source, context.source.getPosition()));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
         return false;

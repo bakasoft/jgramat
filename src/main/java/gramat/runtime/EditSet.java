@@ -1,13 +1,13 @@
 package gramat.runtime;
 
-import gramat.util.parsing.Location;
+import gramat.util.parsing.Source;
 
 public class EditSet extends Edit {
 
     public final String name;
 
-    public EditSet(Location location, String name) {
-        super(location);
+    public EditSet(Source source, int position, String name) {
+        super(source, position);
         this.name = name;
     }
 

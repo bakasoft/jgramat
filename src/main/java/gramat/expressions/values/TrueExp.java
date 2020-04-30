@@ -34,12 +34,13 @@ public class TrueExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
+        int pos0 = context.source.getPosition();
         if (expression.eval(context)) {
-            context.add(new EditSendValue(context.source.getLocation(), true));
+            context.add(new EditSendValue(context.source, pos0, true));
             return true;
         }
 
-        context.add(new EditSendValue(context.source.getLocation(), false));
+        context.add(new EditSendValue(context.source, pos0, false));
         return false;
     }
 

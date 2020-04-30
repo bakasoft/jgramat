@@ -38,9 +38,9 @@ public class TypedListExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        context.add(new EditOpenTypedList(context.source.getLocation(), type));
+        context.add(new EditOpenTypedList(context.source, context.source.getPosition(), type));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
         return false;

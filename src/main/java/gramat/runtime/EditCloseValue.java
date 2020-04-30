@@ -1,9 +1,9 @@
 package gramat.runtime;
 
-import gramat.util.parsing.Location;
+import gramat.util.parsing.Source;
 
 public class EditCloseValue extends Edit {
-    public EditCloseValue(Location location) {
-        super(location);
+    public EditCloseValue(Source source, int position) {
+        super(source, position);
     }
 }

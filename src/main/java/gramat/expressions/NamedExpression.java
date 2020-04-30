@@ -35,7 +35,7 @@ public class NamedExpression extends Expression {
         if (expression.eval(context)) {
             int posF = context.source.getPosition();
 
-            context.add(new EditMark(context.source.locationOf(pos0), pos0, posF, name));
+            context.add(new EditMark(context.source, pos0, pos0, posF, name));
 
             if (soft) {
                 context.softMode = softMode0;

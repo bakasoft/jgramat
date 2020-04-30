@@ -38,7 +38,7 @@ public class DynAttributeExp extends DataExpr {
         // TODO find real type
 
         if (valueExpression.eval(context)) {
-            context.add(new EditSet(context.source.locationOf(pos0), name));
+            context.add(new EditSet(context.source, pos0, name));
             return true;
         }
 

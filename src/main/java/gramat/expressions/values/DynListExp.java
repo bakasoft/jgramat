@@ -46,9 +46,9 @@ public class DynListExp extends DataExpr {
         var type = context.getType(typeName);
 
         if (type != null) {
-            context.add(new EditOpenTypedList(context.source.getLocation(), type));
+            context.add(new EditOpenTypedList(context.source, context.source.getPosition(), type));
             if (expression.eval(context)) {
-                context.add(new EditCloseValue(context.source.getLocation()));
+                context.add(new EditCloseValue(context.source, context.source.getPosition()));
                 return true;
             }
 
@@ -56,9 +56,9 @@ public class DynListExp extends DataExpr {
             return false;
         }
 
-        context.add(new EditOpenWildList(context.source.getLocation(), typeName));
+        context.add(new EditOpenWildList(context.source, context.source.getPosition(), typeName));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
 

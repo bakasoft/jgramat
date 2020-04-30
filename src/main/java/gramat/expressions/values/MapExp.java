@@ -37,8 +37,9 @@ public class MapExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
+        int pos0 = context.source.getPosition();
         if (expression.eval(context)) {
-            context.add(new EditSendFragment(context.source.getLocation(), replacement));
+            context.add(new EditSendFragment(context.source, pos0, replacement));
             return true;
         }
 

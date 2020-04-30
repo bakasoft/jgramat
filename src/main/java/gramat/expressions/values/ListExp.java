@@ -38,9 +38,9 @@ public class ListExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        context.add(new EditOpenWildList(context.source.getLocation(), typeHint));
+        context.add(new EditOpenWildList(context.source, context.source.getPosition(), typeHint));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
         return false;

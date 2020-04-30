@@ -46,9 +46,9 @@ public class DynObjectExp extends DataExpr {
         var type = context.getType(typeName);
 
         if (type != null) {
-            context.add(new EditOpenTypedObject(context.source.getLocation(), type));
+            context.add(new EditOpenTypedObject(context.source, pos0, type));
             if (expression.eval(context)) {
-                context.add(new EditCloseValue(context.source.getLocation()));
+                context.add(new EditCloseValue(context.source, context.source.getPosition()));
                 return true;
             }
 
@@ -56,9 +56,9 @@ public class DynObjectExp extends DataExpr {
             return false;
         }
 
-        context.add(new EditOpenWildObject(context.source.getLocation(), typeName));
+        context.add(new EditOpenWildObject(context.source, pos0, typeName));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
 

@@ -39,9 +39,10 @@ public class TypedObjectExp extends DataExpr {
 
     @Override
     public boolean eval(EvalContext context) {
-        context.add(new EditOpenTypedObject(context.source.getLocation(), type));
+        int pos0 = context.source.getPosition();
+        context.add(new EditOpenTypedObject(context.source, pos0, type));
         if (expression.eval(context)) {
-            context.add(new EditCloseValue(context.source.getLocation()));
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
             return true;
         }
         return false;

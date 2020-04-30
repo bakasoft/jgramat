@@ -198,7 +198,7 @@ public class EvalContext {
                 var edit = (EditSet)node.edit;
 
                 if (valueStack.isEmpty()) {
-                    throw new ParseException("empty value stack", edit.location);
+                    throw new ParseException("empty value stack", edit.getLocation());
                 }
 
                 var currentValue = valueStack.peek();
@@ -215,7 +215,7 @@ public class EvalContext {
 
                 var bufferedValues = bufferStack.peek();
 
-                var setValue = collapseValues(bufferedValues, edit.location);
+                var setValue = collapseValues(bufferedValues, edit.getLocation());
 
                 bufferedValues.clear();
 
@@ -237,7 +237,7 @@ public class EvalContext {
                 }
                 else if (!buffer.isEmpty()) {
                     // TODO give info of the unexpected object
-                    throw new ParseException("expected list", edit.location);
+                    throw new ParseException("expected list", edit.getLocation());
                 }
 
                 bufferStack.peek().add(value);

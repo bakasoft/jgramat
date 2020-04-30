@@ -2,6 +2,7 @@ package gramat.runtime;
 
 import gramat.compiling.ValueParser;
 import gramat.util.parsing.Location;
+import gramat.util.parsing.Source;
 
 public class EditSendSegment extends Edit {
 
@@ -9,8 +10,8 @@ public class EditSendSegment extends Edit {
     public final int posF;
     public final ValueParser parser;
 
-    public EditSendSegment(Location location, int pos0, int posF, ValueParser parser) {
-        super(location);
+    public EditSendSegment(Source source, int position, int pos0, int posF, ValueParser parser) {
+        super(source, position);
         this.pos0 = pos0;
         this.posF = posF;
         this.parser = parser;

@@ -1,6 +1,6 @@
 package gramat.runtime;
 
-import gramat.util.parsing.Location;
+import gramat.util.parsing.Source;
 
 public class EditMark extends Edit {
 
@@ -8,8 +8,8 @@ public class EditMark extends Edit {
     private final int posF;
     private final String name;
 
-    public EditMark(Location location, int pos0, int posF, String name) {
-        super(location);
+    public EditMark(Source source, int position, int pos0, int posF, String name) {
+        super(source, position);
         this.pos0 = pos0;
         this.posF = posF;
         this.name = name;

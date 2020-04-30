@@ -35,7 +35,7 @@ public class ValueExp extends DataExpr {
         if (expression.eval(context)) {
             var posF = context.source.getPosition();
 
-            context.add(new EditSendSegment(context.source.locationOf(pos0), pos0, posF, parser));
+            context.add(new EditSendSegment(context.source, pos0, pos0, posF, parser));
             return true;
         }
 
