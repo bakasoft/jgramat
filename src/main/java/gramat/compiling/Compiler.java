@@ -4,7 +4,6 @@ import gramat.GramatException;
 import gramat.Grammar;
 import gramat.builtin.*;
 import gramat.expressions.Expression;
-import gramat.expressions.NamedExpression;
 import gramat.parsers.BaseParsers;
 import gramat.parsers.CoreParsers;
 import gramat.parsers.Mark;
@@ -21,7 +20,7 @@ public class Compiler extends LinkContext implements ParseContext {
 
     private Path workingDir;
 
-    private final List<NamedExpression> rules;
+    private final HashMap<String, Expression> rules;
 
     private final Set<Path> parsedFiles;
 
@@ -32,7 +31,7 @@ public class Compiler extends LinkContext implements ParseContext {
     private final HashMap<String, Class<?>> types;
 
     public Compiler() {
-        rules = new ArrayList<>();
+        rules = new HashMap<>();
         parsedFiles = new HashSet<>();
         tests = new ArrayList<>();
         valueParsers = new HashMap<>();
@@ -49,35 +48,18 @@ public class Compiler extends LinkContext implements ParseContext {
         return new EvalContext(source, types);
     }
 
-    public Grammar createGrammar() {
-        var expressions = new HashMap<String, Expression>();
-
-        for (var expression : rules) {
-            if (expressions.put(expression.getName(), expression) != null) {
-                throw new GramatException("duplicated expression: " + expression.getName());
-            }
-        }
-
-        return new Grammar(expressions, types);
-    }
-
     public Expression compileRule(String ruleName) {
         System.out.println("Compiling rule: " + ruleName);
 
-        NamedExpression rule = null;
-
-        for (var r : rules) {
-            if (ruleName.equals(r.getName())) {
-                rule = r;
-                break;
-            }
-        }
+        Expression rule = rules.get(ruleName);
 
         if (rule == null) {
             throw new GramatException("no rule found");
         }
 
-        return rule.optimize(this);
+        var result = rule.optimize(this);
+
+        return result;
     }
 
     public void parse(Source source) {
@@ -166,15 +148,7 @@ public class Compiler extends LinkContext implements ParseContext {
     }
 
     private boolean parseRule(Source source) {
-        var rule = CoreParsers.parseNamedExpression(this, source);
-
-        if (rule == null) {
-            return false;
-        }
-
-        rules.add(rule);
-
-        return true;
+        return CoreParsers.parseNamedExpression(this, source, rules);
     }
 
     private boolean parseImport(Source source) {
@@ -233,21 +207,8 @@ public class Compiler extends LinkContext implements ParseContext {
     }
 
     @Override
-    public NamedExpression getExpression(String name) {
-        NamedExpression expression = null;
-
-        for (var rule : rules) {
-            if (Objects.equals(rule.getName(), name)) {
-                if (expression != null) {
-                    // TODO include other location
-                    throw new ParseException("Ambiguous expression: " + name, rule.getLocation());
-                }
-
-                expression = rule;
-            }
-        }
-
-        return expression;
+    public Expression getExpression(String name) {
+        return rules.get(name);
     }
 
 

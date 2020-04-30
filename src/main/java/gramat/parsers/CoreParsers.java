@@ -3,13 +3,15 @@ package gramat.parsers;
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
 import gramat.util.parsing.Location;
+import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class CoreParsers {
 
-    public static NamedExpression parseNamedExpression(ParseContext context, Source source) {
+    public static boolean parseNamedExpression(ParseContext context, Source source, Map<String, Expression> rules) {
         int pos0 = source.getPosition();
         String keyword;
 
@@ -30,7 +32,7 @@ public class CoreParsers {
 
         if (name == null) {
             source.setPosition(pos0);
-            return null;
+            return false;
         }
 
         BaseParsers.skipBlanks(source);
@@ -45,7 +47,7 @@ public class CoreParsers {
         }
         else {
             source.setPosition(pos0);
-            return null;
+            return false;
         }
 
         BaseParsers.skipBlanks(source);
@@ -62,7 +64,13 @@ public class CoreParsers {
             expression = ValueParsers.makeValue(context, location, keyword, name, null, expression);
         }
 
-        return new NamedExpression(location, name, expression, soft);
+        if (rules.containsKey(name)) {
+            throw new ParseException("Duplicated expression name: " + name, location);
+        }
+        
+        rules.put(name, expression);
+
+        return true;
     }
 
     public static Expression parseItem(ParseContext context, Source source) {

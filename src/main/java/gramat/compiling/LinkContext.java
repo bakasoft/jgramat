@@ -1,14 +1,13 @@
 package gramat.compiling;
 
 import gramat.expressions.Expression;
-import gramat.expressions.NamedExpression;
 
 import java.util.Stack;
 import java.util.function.Supplier;
 
 abstract public class LinkContext {
 
-    abstract public NamedExpression getExpression(String name);
+    abstract public Expression getExpression(String name);
 
     private final Stack<Expression> recursiveStack = new Stack<>();
 

@@ -3,7 +3,6 @@ package gramat.runtime;
 import gramat.GramatException;
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
-import gramat.expressions.NamedExpression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -75,13 +74,7 @@ public class EvalContext {
     public void commit(Expression expression) {
         var pos = source.getPosition();
         if (pos > lastCommitPosition) {
-            if (expression instanceof NamedExpression) {
-                lastCommitName = ((NamedExpression)expression).getName();
-            }
-            else {
-                lastCommitName = expression.getDescription();
-            }
-
+            lastCommitName = expression.getDescription();
             lastCommitPosition = pos;
         }
 
