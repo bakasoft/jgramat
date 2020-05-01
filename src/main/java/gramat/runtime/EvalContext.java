@@ -1,7 +1,6 @@
 package gramat.runtime;
 
 import gramat.GramatException;
-import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
@@ -9,7 +8,6 @@ import gramat.util.parsing.Source;
 import gramat.values.*;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class EvalContext {
 
@@ -313,4 +311,18 @@ public class EvalContext {
         }
 
     }
+
+
+    private final HashMap<Integer, Set<Expression>> cycleControl = new HashMap<>();
+
+    public boolean enterCycle(Expression expression, int position) {
+        Set<Expression> set = cycleControl.computeIfAbsent(position, k -> new HashSet<>());
+
+        return set.add(expression);
+    }
+
+    public void exitCycle(Expression expression, int position) {
+        cycleControl.get(position).remove(expression);
+    }
+
 }

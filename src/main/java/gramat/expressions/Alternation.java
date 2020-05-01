@@ -10,13 +10,15 @@ import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 
 public class Alternation extends Expression {
 
-    private final Expression[] expressions;
+    private Expression[] expressions;
 
     public Alternation(Location location, Expression[] expressions) {
         super(location);
@@ -26,37 +28,16 @@ public class Alternation extends Expression {
     @Override
     public boolean eval(EvalContext context) {
         int pos0 = context.source.getPosition();
-        Expression lastEnter = null;
-        boolean result = false;
 
         for (var expression : expressions) {
-            if (context.enter(expression, pos0)) {
-                lastEnter = expression;
-            }
-            else {
-                continue;
-            }
-
             if (expression.eval(context)) {
-                result = true;
-                break;
-            }
-            else {
+                return true;
+            } else {
                 context.source.setPosition(pos0);
             }
         }
 
-        if (lastEnter != null) {
-            for (var expression : expressions) {
-                context.remove(expression, pos0);
-
-                if (lastEnter == expression) {
-                    break;
-                }
-            }
-        }
-
-        return result;
+        return false;
     }
 
     @Override
@@ -74,12 +55,40 @@ public class Alternation extends Expression {
 
             optimizeAll(context, expressions);
 
-            if (isCyclic()) {
-                return this;
+            // collapse sub-alternations
+            if (_contains_alternation(expressions)) {
+                var collapsed = new ArrayList<Expression>();
+
+                for (var expr : expressions) {
+                    if (expr instanceof Alternation) {
+                        var subAlt = (Alternation)expr;
+
+                        collapsed.addAll(Arrays.asList(subAlt.expressions));
+                    }
+                    else {
+                        collapsed.add(expr);
+                    }
+                }
+
+                expressions = collapsed.toArray(Expression[]::new);
             }
 
-            return new LinearAlternation(location, expressions);
+            return this;
         });
+    }
+
+    private boolean _contains_alternation(Expression[] expressions) {
+        for (var expr : expressions) {
+            if (expr instanceof Alternation) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Expression> getInnerExpressions() {
+        return listOf(expressions);
     }
 
     private boolean areLiteral(Expression[] expressions) {
@@ -117,11 +126,6 @@ public class Alternation extends Expression {
 
     @Override
     public String getDescription() {
-        return "Alternation";
-    }
-
-    @Override
-    public List<Expression> getInnerExpressions() {
-        return listOf(expressions);
+        return "Linear-Alternation";
     }
 }

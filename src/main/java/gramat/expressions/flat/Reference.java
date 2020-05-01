@@ -3,6 +3,7 @@ package gramat.expressions.flat;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.wrappers.CyclicExpr;
 import gramat.expressions.wrappers.DebugExp;
 import gramat.expressions.wrappers.ShortCircuit;
 import gramat.runtime.EvalContext;
@@ -36,6 +37,10 @@ public class Reference extends Expression {
 
         if (expression == null) {
             throw new ParseException("expression not found: " + name, location);
+        }
+
+        if (expression.isCyclic()) {
+            return new CyclicExpr(location, expression.optimize(context));
         }
 
         return expression.optimize(context);
