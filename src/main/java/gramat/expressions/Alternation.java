@@ -27,13 +27,9 @@ public class Alternation extends Expression {
 
     @Override
     public boolean eval(EvalContext context) {
-        int pos0 = context.source.getPosition();
-
         for (var expression : expressions) {
             if (expression.eval(context)) {
                 return true;
-            } else {
-                context.source.setPosition(pos0);
             }
         }
 
