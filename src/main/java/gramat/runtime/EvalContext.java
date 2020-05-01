@@ -290,16 +290,22 @@ public class EvalContext {
     }
 
 
-    private final HashMap<Integer, Set<Expression>> cycleControl = new HashMap<>();
+    private final HashSet<Long> cycleControl = new HashSet<>();
+
+    private long computeExpPosHash(Expression expression, long position) {
+        return (position << 32) | expression.hashCode();
+    }
 
     public boolean enterCycle(Expression expression, int position) {
-        Set<Expression> set = cycleControl.computeIfAbsent(position, k -> new HashSet<>());
+        long hash = computeExpPosHash(expression, position);
 
-        return set.add(expression);
+        return cycleControl.add(hash);
     }
 
     public void exitCycle(Expression expression, int position) {
-        cycleControl.get(position).remove(expression);
+        long hash = computeExpPosHash(expression, position);
+
+        cycleControl.remove(hash);
     }
 
 }
