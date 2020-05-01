@@ -2,6 +2,8 @@ package gramat.expressions;
 
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
+import gramat.expressions.flat.CharLiteral;
+import gramat.expressions.flat.Literal;
 import gramat.expressions.flat.Nop;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -68,8 +70,51 @@ public class Sequence extends Expression {
                 expressions = collapsed.toArray(Expression[]::new);
             }
 
+            expressions = collapse_literals(expressions);
+
             return this;
         });
+    }
+
+    private Expression[] collapse_literals(Expression[] expressions) {
+        var result = new ArrayList<Expression>();
+
+        for (int i = 0; i < expressions.length; i++) {
+            var literals = new ArrayList<Expression>();
+
+            for (int j = i; j < expressions.length; j++) {
+                if (expressions[j] instanceof Literal || expressions[j] instanceof CharLiteral) {
+                    literals.add(expressions[j]);
+                    i = j;
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (literals.size() >= 2) {
+                StringBuilder literal = new StringBuilder();
+
+                for (var expr : literals) {
+                    if (expr instanceof Literal) {
+                        literal.append(((Literal)expr).getValue());
+                    }
+                    else if (expr instanceof CharLiteral) {
+                        literal.append(((CharLiteral)expr).getValue());
+                    }
+                    else {
+                        throw new RuntimeException();
+                    }
+                }
+
+                result.add(new Literal(literals.get(0).location, literal.toString()));
+            }
+            else {
+                result.add(expressions[i]);
+            }
+        }
+
+        return result.toArray(Expression[]::new);
     }
 
     private boolean _contains_sequences(Expression[] expressions) {
