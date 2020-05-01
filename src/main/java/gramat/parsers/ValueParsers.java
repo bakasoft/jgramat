@@ -5,7 +5,6 @@ import gramat.expressions.*;
 import gramat.expressions.flat.PrintExp;
 import gramat.expressions.values.*;
 import gramat.expressions.wrappers.DebugExp;
-import gramat.expressions.wrappers.ShortCircuit;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -148,11 +147,6 @@ public class ValueParsers {
                     throw new ParseException("dynamic mappings are not implemented.", loc0);
                 }
                 return new MapExp(loc0, nameLit, valueExp);
-            case Mark.SHORT_CIRCUIT_KEYWORD:
-                if (nameExp != null) {
-                    throw new ParseException("Unexpected name", loc0);
-                }
-                return new ShortCircuit(loc0, valueExp);
             case Mark.DEBUG_KEYWORD:
                 if (nameExp != null) {
                     throw new ParseException("Unexpected name", loc0);

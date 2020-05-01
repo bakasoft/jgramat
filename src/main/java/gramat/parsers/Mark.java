@@ -9,7 +9,6 @@ public class Mark {
     public static final String NULL_KEYWORD = "null";
     public static final String TRUE_KEYWORD = "true";
     public static final String MAP_KEYWORD = "map";
-    public static final String SHORT_CIRCUIT_KEYWORD = "short";
     public static final String DEBUG_KEYWORD = "debug";
     public static final String PRINT_KEYWORD = "print";
 

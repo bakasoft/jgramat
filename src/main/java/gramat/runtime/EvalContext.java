@@ -28,32 +28,9 @@ public class EvalContext {
 
     private StackItem stack;
 
-    private final HashMap<Expression, HashSet<Integer>> circuitState;
-
     public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
         this.source = source;
         this.typeMapping = typeMapping;
-        this.circuitState = new HashMap<>();
-    }
-
-    public boolean enter(Expression expression, int position) {
-        var positions = circuitState.get(expression);
-
-        if (positions != null) {
-            return positions.add(position);
-        }
-
-        positions = new HashSet<>();
-        circuitState.put(expression, positions);
-        return positions.add(position);
-    }
-
-    public void remove(Expression expression, int position) {
-        var positions = circuitState.get(expression);
-
-        if (positions != null) {
-            positions.remove(position);
-        }
     }
 
     public Class<?> getType(String name) {

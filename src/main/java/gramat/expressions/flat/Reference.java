@@ -1,11 +1,8 @@
 package gramat.expressions.flat;
 
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.CyclicExpr;
-import gramat.expressions.wrappers.DebugExp;
-import gramat.expressions.wrappers.ShortCircuit;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
