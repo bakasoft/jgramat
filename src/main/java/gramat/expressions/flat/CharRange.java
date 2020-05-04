@@ -1,16 +1,18 @@
 package gramat.expressions.flat;
 
+import gramat.automata.raw.RawAutomatable;
+import gramat.automata.raw.RawAutomaton;
+import gramat.automata.raw.RawRangeAutomaton;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
-import gramat.expressions.wrappers.DebugExp;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 
 import java.util.List;
 
-public class CharRange extends Expression {
+public class CharRange extends Expression implements RawAutomatable {
 
     private final char beginChar;
     private final char endChar;
@@ -19,6 +21,11 @@ public class CharRange extends Expression {
         super(location);
         this.beginChar = begin;
         this.endChar = end;
+    }
+
+    @Override
+    public RawAutomaton makeAutomaton() {
+        return new RawRangeAutomaton(beginChar, endChar);
     }
 
     @Override
@@ -50,5 +57,14 @@ public class CharRange extends Expression {
     public String getDescription() {
         return "Char Range: " + GramatWriter.toDelimitedString(String.valueOf(beginChar), '\'')
                 + "-"  + GramatWriter.toDelimitedString(String.valueOf(endChar), '\'');
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "char-range")) {
+            writer.attribute("begin", beginChar);
+            writer.attribute("end", endChar);
+            writer.close();
+        }
     }
 }

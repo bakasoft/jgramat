@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -58,6 +59,15 @@ public class DynAttributeExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Set dynamic attribute.";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "dynamic-attribute")) {
+            writer.attribute("name", nameExpression);
+            writer.attribute("value", valueExpression);
+            writer.close();
+        }
     }
 
 }

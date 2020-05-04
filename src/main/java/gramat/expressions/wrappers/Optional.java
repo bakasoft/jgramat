@@ -3,6 +3,7 @@ package gramat.expressions.wrappers;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -41,6 +42,14 @@ public class Optional extends Expression {
     @Override
     public String getDescription() {
         return "Optional";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "optional")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }

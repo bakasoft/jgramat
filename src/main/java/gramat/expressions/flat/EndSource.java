@@ -4,6 +4,7 @@ import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -33,6 +34,13 @@ public class EndSource extends Expression {
     @Override
     public String getDescription() {
         return "End of source";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "end-of-source")) {
+            writer.close();
+        }
     }
 
 }

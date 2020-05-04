@@ -4,6 +4,7 @@ import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.DebugExp;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -32,6 +33,13 @@ public class Nop extends Expression {
     @Override
     public String getDescription() {
         return "No operation";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "no-operation")) {
+            writer.close();
+        }
     }
 
 }

@@ -1,22 +1,29 @@
 package gramat.expressions.flat;
 
+import gramat.automata.raw.RawAutomatable;
+import gramat.automata.raw.RawAutomaton;
+import gramat.automata.raw.RawLiteralAutomaton;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
-import gramat.expressions.wrappers.DebugExp;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 
 import java.util.List;
 
-public class Literal extends Expression {
+public class Literal extends Expression implements RawAutomatable {
 
     private final String value;
 
     public Literal(Location location, String value) {
         super(location);
         this.value = value;
+    }
+
+    @Override
+    public RawAutomaton makeAutomaton() {
+        return new RawLiteralAutomaton(value);
     }
 
     public String getValue() {
@@ -48,5 +55,13 @@ public class Literal extends Expression {
     @Override
     public String getDescription() {
         return "Literal: " + GramatWriter.toDelimitedString(value, '\"');
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "literal")) {
+            writer.attribute("value", value);
+            writer.close();
+        }
     }
 }

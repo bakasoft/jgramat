@@ -23,7 +23,7 @@ L3E = @object(`BopExpr`: @set(`left`: L2E) i-ws @set(`operator`: @string("*" | "
 L4E = @object(`BOpExpr`: @set(`left`: L3E) i-ws @set(`operator`: @string("+" | "-")) i-ws @set(`right`: L4E)) | L3E
 
 // x>y, x<y, x>=x, x<=y, x is y, x as y
-L5E = @object(`BOpExpr`: @set(`left`: L4E) i-ws @set(`operator`: @string(">=" | "<=" | ">" | "<" | "is" | "as")) i-ws @set(`right`: L5E)) | L4E
+L5E = @object(`BOpExpr`: @set(`left`: L4E) i-ws @set(`operator`: @string(">" ["="] | "<" ["="] | "is" | "as")) i-ws @set(`right`: L5E)) | L4E
 
 // x==y, x!=y
 L6E = @object(`BOpExpr`: @set(`left`: L5E) i-ws @set(`operator`: @string("=="|"!=")) i-ws @set(`right`: L6E)) | L5E

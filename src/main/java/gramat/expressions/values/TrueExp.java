@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendValue;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -47,5 +48,13 @@ public class TrueExp extends DataExpr {
     @Override
     public String getDescription() {
         return "True value";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "true")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 }

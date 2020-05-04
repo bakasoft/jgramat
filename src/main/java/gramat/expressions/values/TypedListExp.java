@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditCloseValue;
 import gramat.runtime.EditOpenTypedList;
 import gramat.runtime.EditOpenTypedObject;
@@ -49,6 +50,15 @@ public class TypedListExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Create typed list: " + type;
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "typed-list")) {
+            writer.attribute("type", type);
+            writer.write(expression);
+            writer.close();
+        }
     }
 }
 

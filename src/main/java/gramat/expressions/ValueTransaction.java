@@ -1,9 +1,11 @@
 package gramat.expressions;
 
 import gramat.compiling.Compiler;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -44,6 +46,14 @@ public class ValueTransaction extends Expression {
     @Override
     public List<Expression> getInnerExpressions() {
         return listOf(expression);
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "value-transation")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }

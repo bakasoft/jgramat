@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.*;
 import gramat.util.parsing.Location;
 
@@ -69,6 +70,15 @@ public class DynObjectExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Create dynamic object";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "dynamic-object")) {
+            writer.attribute("type", typeExp);
+            writer.attribute("expression", expression);
+            writer.close();
+        }
     }
 
 }

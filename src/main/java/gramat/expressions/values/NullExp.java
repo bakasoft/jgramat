@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendValue;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -45,6 +46,14 @@ public class NullExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Create null value";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "null")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }

@@ -2,9 +2,11 @@ package gramat.expressions;
 
 import gramat.compiling.Compiler;
 import gramat.expressions.values.DataExpr;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -131,5 +133,7 @@ abstract public class Expression {
 
         return list;
     }
+
+    abstract public void write(GrammarWriter writer);
 
 }

@@ -3,6 +3,7 @@ package gramat.expressions.flat;
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.expressions.wrappers.CyclicExpr;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
@@ -50,6 +51,14 @@ public class Reference extends Expression {
     @Override
     public String getDescription() {
         return "Reference: " + name;
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "reference")) {
+            writer.attribute("name", name);
+            writer.close();
+        }
     }
 
 }

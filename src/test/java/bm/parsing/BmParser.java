@@ -5,6 +5,7 @@ import bm.parsing.data.SourceFile;
 import gramat.Grammar;
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.util.FileTool;
 import gramat.util.parsing.ParseException;
 import gramat.util.parsing.Source;
@@ -38,6 +39,8 @@ public class BmParser {
         }
 
         expression = compiler.compileRule("SourceFile");
+
+        expression.write(new GrammarWriter(System.out));
     }
 
     public BmSuiteFolder parseSuite(Path folder) {

@@ -1,10 +1,10 @@
 package gramat.expressions;
 
+import gramat.automata.raw.RawAutomatable;
+import gramat.automata.raw.RawSeriesAutomaton;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
-import gramat.expressions.flat.CharLiteral;
-import gramat.expressions.flat.Literal;
 import gramat.expressions.flat.Nop;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -34,10 +34,6 @@ public class Sequence extends Expression {
         }
 
         return true;
-    }
-
-    public Expression[] getExpressions() {
-        return expressions; // TODO don't return the real array
     }
 
     @Override
@@ -70,21 +66,31 @@ public class Sequence extends Expression {
                 expressions = collapsed.toArray(Expression[]::new);
             }
 
-            expressions = collapse_literals(expressions);
+            expressions = collapseAutomatables(context, expressions);
+
+            if (expressions.length == 1) {
+                return expressions[0];
+            }
 
             return this;
         });
     }
 
-    private Expression[] collapse_literals(Expression[] expressions) {
+    public static Expression[] collapseAutomatables(Compiler context, Expression[] expressions) {
         var result = new ArrayList<Expression>();
 
         for (int i = 0; i < expressions.length; i++) {
-            var literals = new ArrayList<Expression>();
+            var automata = new ArrayList<RawAutomatable>();
+            Location location = null;
 
             for (int j = i; j < expressions.length; j++) {
-                if (expressions[j] instanceof Literal || expressions[j] instanceof CharLiteral) {
-                    literals.add(expressions[j]);
+                var expr = expressions[j];
+
+                if (expr instanceof RawAutomatable) {
+                    if (location == null) {
+                        location = expr.location;
+                    }
+                    automata.add((RawAutomatable)expr);
                     i = j;
                 }
                 else {
@@ -92,22 +98,14 @@ public class Sequence extends Expression {
                 }
             }
 
-            if (literals.size() >= 2) {
-                StringBuilder literal = new StringBuilder();
+            if (automata.size() >= 2) {
+                var series = new RawSeriesAutomaton();
 
-                for (var expr : literals) {
-                    if (expr instanceof Literal) {
-                        literal.append(((Literal)expr).getValue());
-                    }
-                    else if (expr instanceof CharLiteral) {
-                        literal.append(((CharLiteral)expr).getValue());
-                    }
-                    else {
-                        throw new RuntimeException();
-                    }
+                for (var automaton : automata) {
+                    series.addAutomaton(automaton.makeAutomaton());
                 }
 
-                result.add(new Literal(literals.get(0).location, literal.toString()));
+                result.add(new CharAutomaton(location, series).optimize(context));
             }
             else {
                 result.add(expressions[i]);
@@ -126,6 +124,10 @@ public class Sequence extends Expression {
         return false;
     }
 
+    public Expression[] getExpressions() {
+        return expressions; // TODO don't return the real array
+    }
+
     @Override
     public List<Expression> getInnerExpressions() {
         return listOf(expressions);
@@ -134,5 +136,13 @@ public class Sequence extends Expression {
     @Override
     public String getDescription() {
         return "Sequence";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "sequence")) {
+            writer.write(expressions);
+            writer.close();
+        }
     }
 }

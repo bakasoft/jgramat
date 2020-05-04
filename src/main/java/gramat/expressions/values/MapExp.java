@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendFragment;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -49,6 +50,15 @@ public class MapExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Map to: " + replacement;
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "map")) {
+            writer.attribute("replacement", replacement);
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }

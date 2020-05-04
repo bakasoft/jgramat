@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditCloseValue;
 import gramat.runtime.EditOpenTypedObject;
 import gramat.runtime.EditOpenWildObject;
@@ -51,6 +52,15 @@ public class TypedObjectExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Create typed object: " + type;
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "typed-object")) {
+            writer.attribute("type", type);
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }

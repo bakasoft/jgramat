@@ -1,11 +1,12 @@
 package gramat.expressions;
 
+import gramat.automata.raw.RawAutomatable;
+import gramat.automata.raw.RawParallelAutomaton;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.flat.CharLiteral;
-import gramat.expressions.flat.CharRange;
 import gramat.expressions.flat.Literal;
 import gramat.expressions.flat.Nop;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
@@ -45,9 +46,6 @@ public class Alternation extends Expression {
             else if (expressions.length == 1) {
                 return expressions[0].optimize(context);
             }
-            else if (areLiteral(expressions)) {
-                return new LiteralAlternation(location, makeStrings(expressions));
-            }
 
             optimizeAll(context, expressions);
 
@@ -69,8 +67,53 @@ public class Alternation extends Expression {
                 expressions = collapsed.toArray(Expression[]::new);
             }
 
+            expressions = collapseAutomatables(context, expressions);
+
+            if (expressions.length == 1) {
+                return expressions[0];
+            }
+
             return this;
         });
+    }
+
+    public static Expression[] collapseAutomatables(Compiler context, Expression[] expressions) {
+        var result = new ArrayList<Expression>();
+
+        for (int i = 0; i < expressions.length; i++) {
+            var automata = new ArrayList<RawAutomatable>();
+            Location location = null;
+
+            for (int j = i; j < expressions.length; j++) {
+                var expr = expressions[j];
+
+                if (expr instanceof RawAutomatable) {
+                    if (location == null) {
+                        location = expr.location;
+                    }
+                    automata.add((RawAutomatable)expr);
+                    i = j;
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (automata.size() >= 2) {
+                var parallel = new RawParallelAutomaton();
+
+                for (var automaton : automata) {
+                    parallel.addAutomaton(automaton.makeAutomaton());
+                }
+
+                result.add(new CharAutomaton(location, parallel).optimize(context));
+            }
+            else {
+                result.add(expressions[i]);
+            }
+        }
+
+        return result.toArray(Expression[]::new);
     }
 
     private boolean _contains_alternation(Expression[] expressions) {
@@ -123,5 +166,13 @@ public class Alternation extends Expression {
     @Override
     public String getDescription() {
         return "Linear-Alternation";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "alternation")) {
+            writer.write(expressions);
+            writer.close();
+        }
     }
 }

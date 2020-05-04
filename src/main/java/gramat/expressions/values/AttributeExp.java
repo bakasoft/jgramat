@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -49,6 +50,15 @@ public class AttributeExp extends DataExpr {
     @Override
     public String getDescription() {
         return "Set attribute: " + name;
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "attribute")) {
+            writer.attribute("name", name);
+            writer.attribute("value", valueExpression);
+            writer.close();
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package gramat.expressions.wrappers;
 
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -46,5 +47,13 @@ public class CyclicExpr extends Expression {
     @Override
     public List<Expression> getInnerExpressions() {
         return listOf(expression);
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "cyclic-control")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 }

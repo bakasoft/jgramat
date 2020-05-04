@@ -3,6 +3,7 @@ package gramat.expressions.wrappers;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -84,5 +85,16 @@ public class Repetition extends Expression {
     @Override
     public String getDescription() {
         return "Repetition";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "repetition")) {
+            writer.attribute("expression", expression);
+            writer.attribute("separator", separator);
+            writer.attribute("max-count", maxCount);
+            writer.attribute("min-count", minCount);
+            writer.close();
+        }
     }
 }

@@ -3,6 +3,7 @@ package gramat.expressions.flat;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -41,6 +42,14 @@ public class PrintExp extends Expression {
     @Override
     public String getDescription() {
         return "Print message";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "print")) {
+            writer.attribute("message", message);
+            writer.close();
+        }
     }
 
 }

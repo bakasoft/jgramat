@@ -3,6 +3,7 @@ package gramat.expressions.wrappers;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -46,5 +47,13 @@ public class DebugExp extends Expression {
     @Override
     public String getDescription() {
         return "Debug expression";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "debug")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 }

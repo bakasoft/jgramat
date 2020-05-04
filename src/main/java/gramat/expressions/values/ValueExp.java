@@ -4,6 +4,7 @@ import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendSegment;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -57,5 +58,13 @@ public class ValueExp extends DataExpr {
         }
 
         return "Capture value";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "value")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 }

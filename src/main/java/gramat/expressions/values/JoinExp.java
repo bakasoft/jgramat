@@ -3,6 +3,7 @@ package gramat.expressions.values;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.output.GrammarWriter;
 import gramat.runtime.EditCloseValue;
 import gramat.runtime.EditOpenJoin;
 import gramat.runtime.EditOpenWildList;
@@ -47,6 +48,14 @@ public class JoinExp  extends DataExpr {
     @Override
     public String getDescription() {
         return "Join strings";
+    }
+
+    @Override
+    public void write(GrammarWriter writer) {
+        if (writer.open(this, "join")) {
+            writer.write(expression);
+            writer.close();
+        }
     }
 
 }
