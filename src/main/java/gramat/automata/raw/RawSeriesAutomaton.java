@@ -28,7 +28,7 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
             return items.get(0);
         }
 
-        return join_literals(join_series(this)).collapse();
+        return join_literals(join_series(this));
     }
 
     private static RawAutomaton join_literals(RawSeriesAutomaton series) {

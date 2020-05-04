@@ -2,9 +2,7 @@ package gramat.parsers;
 
 import gramat.compiling.ParseContext;
 import gramat.expressions.*;
-import gramat.expressions.flat.CharLiteral;
-import gramat.expressions.flat.CharRange;
-import gramat.expressions.flat.Literal;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.Source;
 
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 
 public class TextParsers {
 
-    public static Literal parseLiteral(ParseContext context, Source source) {
+    public static Expression parseLiteral(ParseContext context, Source source) {
         var pos0 = source.getPosition();
         var value = BaseParsers.readString(source, Mark.LITERAL_DELIMITER);
 
@@ -20,7 +18,7 @@ public class TextParsers {
             return null;
         }
 
-        return new Literal(new Location(source, pos0), value);
+        return new CharAutomaton(new Location(source, pos0), value);
     }
 
     public static Expression parsePredicate(ParseContext context, Source source) {
@@ -49,7 +47,7 @@ public class TextParsers {
             if (sep == null || sep == Mark.PREDICATE_ITEM_SEPARATOR) {
                 var location = source.locationOf(source.getPosition() - 1);
 
-                items.add(new CharLiteral(location, begin));
+                items.add(new CharAutomaton(location, begin));
 
                 expectMore = (sep != null);
             }
@@ -62,7 +60,7 @@ public class TextParsers {
 
                 var location = source.locationOf(source.getPosition() - 3);
 
-                items.add(new CharRange(location, begin, end));
+                items.add(new CharAutomaton(location, begin, end));
 
                 var sep2 = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
@@ -84,13 +82,7 @@ public class TextParsers {
         source.expect(Mark.PREDICATE_DELIMITER);
 
         if (items.size() == 1){
-            var expression = items.get(0);
-
-            if (expression instanceof CharLiteral) {
-                context.warning("Use a string literal", expression.getLocation());
-            }
-
-            return expression;
+            return items.get(0);
         }
 
         return new Alternation(source.locationOf(pos0), items.toArray(Expression[]::new));

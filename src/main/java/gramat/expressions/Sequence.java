@@ -1,15 +1,14 @@
 package gramat.expressions;
 
-import gramat.automata.raw.RawAutomatable;
 import gramat.automata.raw.RawSeriesAutomaton;
 import gramat.compiling.Compiler;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.expressions.flat.Nop;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
+import gramat.util.ArrayFilter;
 import gramat.util.parsing.Location;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,89 +38,31 @@ public class Sequence extends Expression {
     @Override
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
-            if (expressions.length == 0) {
-                return new Nop(location);
-            }
-            else if (expressions.length == 1) {
-                return expressions[0].optimize(context);
-            }
+            var filter = new ArrayFilter<>(expressions);
+            filter.map(item -> item.optimize(context));
+            filter.unwrap(Sequence.class, seq -> seq.expressions);
+            filter.ignore(Nop.class);
+            filter.join(CharAutomaton.class, charAutos -> {
+                var series = new RawSeriesAutomaton();
 
-            optimizeAll(context, expressions);
-
-            // collapse sub-sequences
-            if (_contains_sequences(expressions)) {
-                var collapsed = new ArrayList<Expression>();
-
-                for (var expr : expressions) {
-                    if (expr instanceof Sequence) {
-                        var subSeq = (Sequence)expr;
-
-                        collapsed.addAll(Arrays.asList(subSeq.expressions));
-                    }
-                    else {
-                        collapsed.add(expr);
-                    }
+                for (var charAuto : charAutos) {
+                    series.addAutomaton(charAuto.getAutomaton());
                 }
 
-                expressions = collapsed.toArray(Expression[]::new);
+                return new CharAutomaton(location, series).optimize(context);
+            });
+
+            if (filter.empty()) {
+                return new Nop(location);
+            }
+            else if (filter.singleton()) {
+                return filter.first();
             }
 
-            expressions = collapseAutomatables(context, expressions);
-
-            if (expressions.length == 1) {
-                return expressions[0];
-            }
+            expressions = filter.toArray(Expression[]::new);
 
             return this;
         });
-    }
-
-    public static Expression[] collapseAutomatables(Compiler context, Expression[] expressions) {
-        var result = new ArrayList<Expression>();
-
-        for (int i = 0; i < expressions.length; i++) {
-            var automata = new ArrayList<RawAutomatable>();
-            Location location = null;
-
-            for (int j = i; j < expressions.length; j++) {
-                var expr = expressions[j];
-
-                if (expr instanceof RawAutomatable) {
-                    if (location == null) {
-                        location = expr.location;
-                    }
-                    automata.add((RawAutomatable)expr);
-                    i = j;
-                }
-                else {
-                    break;
-                }
-            }
-
-            if (automata.size() >= 2) {
-                var series = new RawSeriesAutomaton();
-
-                for (var automaton : automata) {
-                    series.addAutomaton(automaton.makeAutomaton());
-                }
-
-                result.add(new CharAutomaton(location, series).optimize(context));
-            }
-            else {
-                result.add(expressions[i]);
-            }
-        }
-
-        return result.toArray(Expression[]::new);
-    }
-
-    private boolean _contains_sequences(Expression[] expressions) {
-        for (var expr : expressions) {
-            if (expr instanceof Sequence) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Expression[] getExpressions() {

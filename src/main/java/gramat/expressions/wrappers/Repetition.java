@@ -1,7 +1,8 @@
 package gramat.expressions.wrappers;
 
+import gramat.automata.raw.RawRepetitionAutomaton;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
@@ -76,6 +77,12 @@ public class Repetition extends Expression {
 
             if (separator != null) {
                 separator = separator.optimize(context);
+            }
+
+            if (expression instanceof CharAutomaton && separator == null && minCount == null && maxCount == null) {
+                var automaton = ((CharAutomaton) expression).getAutomaton();
+
+                return new CharAutomaton(expression.getLocation(), new RawRepetitionAutomaton(automaton)).optimize(context);
             }
 
             return this;

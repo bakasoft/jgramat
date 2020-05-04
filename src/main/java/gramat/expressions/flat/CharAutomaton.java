@@ -1,20 +1,32 @@
-package gramat.expressions;
+package gramat.expressions.flat;
 
-import gramat.automata.raw.RawAutomatable;
+import gramat.automata.raw.*;
 import gramat.automata.State;
-import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.Compiler;
+import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
 import java.util.List;
 
-public class CharAutomaton extends Expression implements RawAutomatable {
+public class CharAutomaton extends Expression {
 
     private final RawAutomaton automaton;
 
     private State root;
+
+    public CharAutomaton(Location location, String literal) {
+        this(location, new RawLiteralAutomaton(literal));
+    }
+
+    public CharAutomaton(Location location, char literal) {
+        this(location, new RawCharAutomaton(literal));
+    }
+
+    public CharAutomaton(Location location, char begin, char end) {
+        this(location, new RawRangeAutomaton(begin, end));
+    }
 
     public CharAutomaton(Location location, RawAutomaton automaton) {
         super(location);
@@ -57,8 +69,7 @@ public class CharAutomaton extends Expression implements RawAutomatable {
         }
     }
 
-    @Override
-    public RawAutomaton makeAutomaton() {
+    public RawAutomaton getAutomaton() {
         return automaton;
     }
 
