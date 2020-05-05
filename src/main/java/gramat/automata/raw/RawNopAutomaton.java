@@ -1,8 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
-
-import java.util.Set;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 
 public class RawNopAutomaton extends RawAutomaton {
 
@@ -12,23 +12,7 @@ public class RawNopAutomaton extends RawAutomaton {
     }
 
     @Override
-    public State compile(State s0) {
-        s0.makeAccepted();
-        return s0;
-    }
-
-    @Override
-    public void compile(State s0, State sF) {
-        sF.makeAccepted();
-    }
-
-    @Override
-    public Character getSingleCharOrNull() {
-        return null;
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        return this;
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        return builder.createSegment(s0, s0);
     }
 }

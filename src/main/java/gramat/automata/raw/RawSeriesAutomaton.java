@@ -1,11 +1,13 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
@@ -15,6 +17,20 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
     public RawSeriesAutomaton() {
         super(new ArrayList<>());
+    }
+
+    @Override
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        var last = s0;
+
+        for (var item : items) {
+            var sub = item.build(builder, last);
+
+            last = sub.end;
+        }
+
+        last.makeAccepted();
+        return builder.createSegment(s0, last);
     }
 
     @Override
@@ -61,62 +77,5 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
                 items::addAll);
 
         return new RawSeriesAutomaton(items);
-    }
-
-    @Override
-    public State compile(State s0) {
-        var s = s0;
-
-        for (var automaton : items) {
-            s = automaton.compile(s);
-        }
-
-        s.makeAccepted();
-
-        return s;
-    }
-
-    @Override
-    public void compile(State s0, State sF) {
-        var s = s0;
-
-        for (var i = 0; i < items.size(); i++) {
-            var a = items.get(i);
-
-            if (i == items.size() - 1) {
-                a.compile(s, sF);
-            }
-            else {
-                s = a.compile(s);
-            }
-        }
-
-        sF.makeAccepted();
-    }
-
-    @Override
-    public Character getSingleCharOrNull() {
-        if (items.isEmpty()) {
-            return null;
-        }
-
-        return items.get(0).getSingleCharOrNull();
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        if (items.isEmpty()) {
-            return new RawNopAutomaton();
-        }
-
-        var newItems = new ArrayList<>(items);
-
-        var item0 = newItems.get(0);
-
-        item0 = item0.removeFirstChar();
-
-        newItems.set(0, item0);
-
-        return new RawSeriesAutomaton(newItems);
     }
 }

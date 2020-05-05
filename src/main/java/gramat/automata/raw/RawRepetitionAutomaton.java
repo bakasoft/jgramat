@@ -1,6 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 
 public class RawRepetitionAutomaton extends RawAutomaton {
 
@@ -16,27 +18,17 @@ public class RawRepetitionAutomaton extends RawAutomaton {
     }
 
     @Override
-    public State compile(State s0) {
-        var sF = new State();
-        compile(s0, sF);
-        return sF;
-    }
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        var forwardSegment = automaton.build(builder, s0);
+        var sF = forwardSegment.end;
+        var backwardSegment = automaton.build(builder, sF);
 
-    @Override
-    public void compile(State s0, State sF) {
-        automaton.compile(s0, sF);
-        automaton.compile(sF, sF);
+        builder.replace(backwardSegment.end, s0);
 
+        var segment = builder.createSegment(s0, sF);
+        s0.makeAccepted();
         sF.makeAccepted();
+        return segment;
     }
 
-    @Override
-    public Character getSingleCharOrNull() {
-        return null;
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        return this;
-    }
 }

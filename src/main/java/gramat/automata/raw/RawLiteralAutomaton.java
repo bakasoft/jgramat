@@ -1,8 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
-
-import java.util.Set;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 
 public class RawLiteralAutomaton extends RawStringAutomaton {
 
@@ -18,50 +18,22 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public State compile(State s0) {
-        var sF = new State();
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        var chs = value.toCharArray();
+        var last = s0;
 
-        compile(s0, sF);
+        for (var ch : chs) {
+            var source = last;
+            var target = builder.createState();
 
-        return sF;
-    }
+            builder.createTransition(source, ch, target);
 
-    @Override
-    public void compile(State s0, State sF) {
-        var array = value.toCharArray();
-        var s = s0;
-
-        for (var i = 0; i < array.length; i++) {
-            var c = array[i];
-
-            if (i == array.length - 1) {
-                s.addTransition(sF, c);
-            }
-            else {
-                s = s.makeTransition(c);
-            }
+            last = target;
         }
 
-        sF.makeAccepted();
-    }
+        last.makeAccepted();
 
-    @Override
-    public Character getSingleCharOrNull() {
-        if (value.isEmpty()) {
-            return null;
-        }
-        return value.charAt(0);
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        if (value.length() <= 1) {
-            return new RawNopAutomaton();
-        }
-
-        var newValue = value.substring(1);
-
-        return new RawLiteralAutomaton(newValue);
+        return builder.createSegment(s0, last);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RawParallelAutomaton extends RawCompositeAutomaton {
@@ -17,6 +17,22 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
 
     public RawParallelAutomaton(List<RawAutomaton> items) {
         super(items);
+    }
+
+    @Override
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        var sF = builder.createState();
+        var segment = builder.createSegment(s0, sF);
+
+        sF.makeAccepted();
+
+        for (var item : items) {
+            var sub = item.build(builder, s0);
+
+            builder.replace(sub.end, sF);
+        }
+
+        return segment;
     }
 
     @Override
@@ -54,53 +70,4 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
         return automaton;
     }
 
-    @Override
-    public State compile(State s0) {
-        var sF = new State();
-
-        compile(s0, sF);
-
-        return sF;
-    }
-
-    @Override
-    public void compile(State s0, State sF) {
-        for (var automaton : items) {
-            automaton.compile(s0, sF);
-        }
-
-        sF.makeAccepted();
-    }
-
-    @Override
-    public Character getSingleCharOrNull() {
-        Character result = null;
-
-        for (var item : items) {
-            var ch = item.getSingleCharOrNull();
-
-            if (ch == null) {
-                return null;
-            }
-            else if (result == null) {
-                result = ch;
-            }
-            else if (result != ch) {
-                return null;
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        var newItems = new ArrayList<>(items);
-
-        for (var i = 0; i < newItems.size(); i++) {
-            newItems.set(i, newItems.get(i).removeFirstChar());
-        }
-
-        return new RawParallelAutomaton(newItems);
-    }
 }

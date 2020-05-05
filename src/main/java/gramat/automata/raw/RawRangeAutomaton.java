@@ -1,9 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
-
-import java.util.HashSet;
-import java.util.Set;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
+import gramat.automata.builder.StateBuilder;
 
 public class RawRangeAutomaton extends RawAutomaton {
 
@@ -21,28 +20,13 @@ public class RawRangeAutomaton extends RawAutomaton {
     }
 
     @Override
-    public State compile(State s0) {
-        var sF = s0.makeTransition(begin, end);
+    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
+        var sF = builder.createState();
+
+        builder.createTransition(s0, begin, end, sF);
+
         sF.makeAccepted();
-        return sF;
-    }
 
-    @Override
-    public void compile(State s0, State sF) {
-        s0.addTransition(sF, begin, end);
-        sF.makeAccepted();
-    }
-
-    @Override
-    public Character getSingleCharOrNull() {
-        if (begin == end) {
-            return begin;
-        }
-        return null;
-    }
-
-    @Override
-    protected RawAutomaton removeFirstChar() {
-        throw new RuntimeException("Cannot remove first char");
+        return builder.createSegment(s0, sF);
     }
 }

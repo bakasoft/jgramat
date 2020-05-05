@@ -1,5 +1,6 @@
 package gramat.expressions.flat;
 
+import gramat.automata.builder.AutomatonBuilder;
 import gramat.automata.raw.*;
 import gramat.automata.State;
 import gramat.compiling.Compiler;
@@ -75,7 +76,10 @@ public class CharAutomaton extends Expression {
 
     @Override
     public Expression _custom_optimize(Compiler context) {
-        root = automaton.collapse().compile();
+        var collapsed = automaton.collapse();
+        var segment = collapsed.build();
+
+        root = segment.compile();
 
         return this;
     }

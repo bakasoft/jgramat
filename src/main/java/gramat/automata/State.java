@@ -7,11 +7,11 @@ import java.util.*;
 
 public class State {
 
-    private boolean accepted;
+    private final boolean accepted;
     private final List<Transition> transitions;
 
-    public State() {
-        this.accepted = false;
+    public State(boolean accepted) {
+        this.accepted = accepted;
         this.transitions = new ArrayList<>();
     }
 
@@ -27,64 +27,6 @@ public class State {
 
     public boolean isAccepted() {
         return accepted;
-    }
-
-    public void makeAccepted() {
-        accepted = true;
-    }
-
-    public State makeTransition(char value) {
-        var matching = findTransitionsFor(value);
-
-        if (matching.isEmpty()) {
-            var state = new State();
-
-            state.accepted = accepted;
-
-            transitions.add(new CharTransition(state, value));
-
-            return state;
-        }
-        else if (matching.size() == 1) {
-            var tr = matching.get(0);
-
-            if (accepted) {
-                tr.state.accepted = true;
-            }
-
-            return tr.state;
-        }
-        else {
-            throw new RuntimeException("Ambiguous transition!");
-        }
-    }
-
-    public State makeTransition(char begin, char end) {
-        var matching = findTransitionsFor(begin, end);
-
-        // TODO validate there should not be intersections between transitions
-
-        if (matching.isEmpty()) {
-            var state = new State();
-
-            state.accepted = accepted;
-
-            transitions.add(new RangeTransition(state, begin, end));
-
-            return state;
-        }
-        else if (matching.size() == 1) {
-            var tr = matching.get(0);
-
-            if (accepted) {
-                tr.state.accepted = true;
-            }
-
-            return tr.state;
-        }
-        else {
-            throw new RuntimeException("Ambiguous transition!");
-        }
     }
 
     public void addTransition(State target, char value) {

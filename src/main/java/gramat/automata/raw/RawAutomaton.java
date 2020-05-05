@@ -1,27 +1,20 @@
 package gramat.automata.raw;
 
-import gramat.automata.State;
-
-import java.util.Set;
+import gramat.automata.builder.StateBuilder;
+import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.builder.SegmentBuilder;
 
 abstract public class RawAutomaton {
 
     abstract public RawAutomaton collapse();
 
-    abstract public State compile(State s0);
+    abstract public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0);
 
-    abstract public void compile(State s0, State sF);
+    public SegmentBuilder build() {
+        var builder = new AutomatonBuilder();
+        var s0 = builder.createState();
 
-    abstract public Character getSingleCharOrNull();
-
-    abstract protected RawAutomaton removeFirstChar();
-
-    public State compile() {
-        var s0 = new State();
-
-        compile(s0);
-
-        return s0;
+        return build(builder, s0);
     }
 
 }
