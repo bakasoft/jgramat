@@ -1,7 +1,5 @@
 package gramat.automata.raw;
 
-import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.Segment;
 import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
 

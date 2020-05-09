@@ -1,6 +1,5 @@
 package gramat.expressions.flat;
 
-import gramat.automata.builder.AutomatonBuilder;
 import gramat.automata.nondet.NLanguage;
 import gramat.automata.raw.*;
 import gramat.automata.State;

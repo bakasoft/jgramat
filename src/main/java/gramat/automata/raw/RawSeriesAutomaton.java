@@ -1,15 +1,11 @@
 package gramat.automata.raw;
 
-import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.Segment;
 import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static gramat.util.ListTool.iterate;
 
 
 public class RawSeriesAutomaton extends RawCompositeAutomaton {
