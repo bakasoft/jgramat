@@ -126,7 +126,9 @@ public class GramatWriter {
     }
 
     public void writeString(String value, char delimiter) {
-        write(delimiter);
+        if (delimiter != '\0') {
+            write(delimiter);
+        }
 
         for (var c : value.toCharArray()) {
             if (c == '\n') {
@@ -141,7 +143,7 @@ public class GramatWriter {
             else if (c == '\b') {
                 write("\\b");
             }
-            else if (c == delimiter) {
+            else if (c == delimiter && delimiter != '\0') {
                 write('\\');
                 write(delimiter);
             }
@@ -158,7 +160,9 @@ public class GramatWriter {
             }
         }
 
-        write(delimiter);
+        if (delimiter != '\0') {
+            write(delimiter);
+        }
     }
 
     public static String toDelimitedString(String value, char delimiter) {

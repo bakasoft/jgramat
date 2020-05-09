@@ -1,12 +1,15 @@
 package gramat.automata.raw;
 
 import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.builder.Segment;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static gramat.util.ListTool.iterate;
 
 
 public class RawSeriesAutomaton extends RawCompositeAutomaton {
@@ -20,17 +23,20 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var last = s0;
-
+    public NAutomaton build(NLanguage lang) {
+        var start = lang.state();
+        var reject = lang.state();
+        var last = start;
         for (var item : items) {
-            var sub = item.build(builder, last);
+            var am = item.build(lang);
 
-            last = sub.end;
+            last.linkEmpty(am.start);
+
+            am.reject.linkEmpty(reject);
+
+            last = am.accept;
         }
-
-        last.makeAccepted();
-        return builder.createSegment(s0, last);
+        return lang.automaton(start, reject, last);
     }
 
     @Override

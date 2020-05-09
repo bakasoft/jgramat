@@ -1,8 +1,7 @@
 package gramat.automata.raw;
 
-import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
 
 public class RawCharAutomaton extends RawStringAutomaton {
 
@@ -18,12 +17,14 @@ public class RawCharAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var sF = builder.createState();
-        var segment = builder.createSegment(s0, sF);
-        builder.createTransition(s0, value, sF);
-        sF.makeAccepted();
-        return segment;
+    public NAutomaton build(NLanguage lang) {
+        var s0 = lang.state();
+        var sA = s0.linkChar(value);
+        var sR = lang.state();
+
+        s0.linkNot(value, sR);
+
+        return lang.automaton(s0, sR, sA);
     }
 
     @Override

@@ -1,11 +1,62 @@
 package gramat.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ListTool {
+
+    public static class Item<T> {
+        public T value;
+        public boolean first;
+        public boolean last;
+        public int index;
+    }
+
+    public static Iterable<Item<Character>> iterate(String value) {
+        return iterate(value.toCharArray());
+    }
+
+    public static Iterable<Item<Character>> iterate(char[] array) {
+        var index = new AtomicInteger(0);
+        return iterate(new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return index.get() < array.length;
+            }
+
+            @Override
+            public Character next() {
+                return array[index.getAndIncrement()];
+            }
+        });
+    }
+
+    public static <T> Iterable<Item<T>> iterate(Iterable<T> source) {
+        return iterate(source.iterator());
+    }
+
+    public static <T> Iterable<Item<T>> iterate(Iterator<T> iterator) {
+        return () -> {
+            var item = new Item<T>();
+            var index = new AtomicInteger(0);
+            return new Iterator<>() {
+                @Override
+                synchronized public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                synchronized public Item<T> next() {
+                    item.value = iterator.next();
+                    item.index = index.getAndIncrement();
+                    item.first = (item.index == 0);
+                    item.last = iterator.hasNext();
+                    return item;
+                }
+            };
+        };
+    }
 
     public static <T, U extends T> void collapse(Collection<T> items, Class<U> type, Consumer<T> adder, Consumer<List<U>> joiner) {
         var joins = new ArrayList<U>();

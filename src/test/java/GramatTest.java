@@ -10,9 +10,9 @@ public class GramatTest {
     public void parseGrammarTest() throws Exception {
         var parser = new Compiler();
 
-        parser.parseFile(Paths.get(GramatTest.class.getResource("/json/test.gmt").toURI()));
+        parser.parseFile(Paths.get(MathTest.class.getResource("/gramat.gm").toURI()));
 
-        parser.compileRule("Json");
+        parser.runTests();
     }
 
 }

@@ -1,8 +1,9 @@
 package gramat.automata.raw;
 
 import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.builder.Segment;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
@@ -20,19 +21,21 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var sF = builder.createState();
-        var segment = builder.createSegment(s0, sF);
-
-        sF.makeAccepted();
+    public NAutomaton build(NLanguage lang) {
+        var start = lang.state();
+        var accept = lang.state();
+        var reject = lang.state();
 
         for (var item : items) {
-            var sub = item.build(builder, s0);
+            var am = item.build(lang);
 
-            builder.replace(sub.end, sF);
+            start.linkEmpty(am.start);
+
+            am.accept.linkEmpty(accept);
+            am.reject.linkEmpty(reject);
         }
 
-        return segment;
+        return lang.automaton(start, reject, accept);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
                 });
 
         if (different.get()) {
-            return new RawParallelAutomaton(items).collapse();
+            return new RawParallelAutomaton(items);
         }
 
         return automaton;

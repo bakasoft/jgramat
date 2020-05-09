@@ -1,7 +1,10 @@
 package gramat.parsers;
 
+import gramat.automata.raw.RawWildAutomaton;
 import gramat.compiling.ParseContext;
+import gramat.expressions.Expression;
 import gramat.expressions.flat.BeginSource;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.expressions.flat.EndSource;
 import gramat.expressions.flat.Reference;
 import gramat.util.parsing.Location;
@@ -37,6 +40,16 @@ public class OtherParsers {
         }
 
         return new EndSource(source.locationOf(pos0));
+    }
+
+    public static Expression parseWild(ParseContext context, Source source) {
+        var pos0 = source.getPosition();
+
+        if (!source.pull(Mark.WILD_MARK)) {
+            return null;
+        }
+
+        return new CharAutomaton(source.locationOf(pos0), new RawWildAutomaton());
     }
 
     public static BeginSource parseBegin(ParseContext context, Source source) {

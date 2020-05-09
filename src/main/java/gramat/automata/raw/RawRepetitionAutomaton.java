@@ -1,8 +1,9 @@
 package gramat.automata.raw;
 
 import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.builder.Segment;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
 
 public class RawRepetitionAutomaton extends RawAutomaton {
 
@@ -18,17 +19,15 @@ public class RawRepetitionAutomaton extends RawAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var forwardSegment = automaton.build(builder, s0);
-        var sF = forwardSegment.end;
-        var backwardSegment = automaton.build(builder, sF);
+    public NAutomaton build(NLanguage lang) {
+        var state = lang.state();
+        var am = automaton.build(lang);
 
-        builder.replace(backwardSegment.end, s0);
+        state.linkEmpty(am.start);
 
-        var segment = builder.createSegment(s0, sF);
-        s0.makeAccepted();
-        sF.makeAccepted();
-        return segment;
+        am.accept.linkEmpty(state);
+
+        return lang.automaton(state, am.reject, state);
     }
 
 }

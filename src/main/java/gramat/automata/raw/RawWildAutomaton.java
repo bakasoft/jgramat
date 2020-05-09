@@ -1,12 +1,9 @@
 package gramat.automata.raw;
 
-import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.Segment;
-import gramat.automata.builder.StateReference;
 import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
 
-public class RawNopAutomaton extends RawAutomaton {
+public class RawWildAutomaton extends RawAutomaton {
 
     @Override
     public RawAutomaton collapse() {
@@ -17,6 +14,9 @@ public class RawNopAutomaton extends RawAutomaton {
     public NAutomaton build(NLanguage lang) {
         var state = lang.state();
 
+        state.linkWild(state);
+
         return lang.automaton(state, state, state);
     }
+
 }

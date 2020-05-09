@@ -186,6 +186,10 @@ public class Compiler extends LinkContext implements ParseContext {
         parse(source);
     }
 
+    public void parseString(String code) {
+        parse(new Source(code, null));
+    }
+
     private Path resolveFile(Path file) {
         if (file.isAbsolute()) {
             return file;
@@ -230,4 +234,9 @@ public class Compiler extends LinkContext implements ParseContext {
         System.err.println(message + " <- " + location);
     }
 
+    public void runTests() {
+        for (var test : tests) {
+            test.run(this);
+        }
+    }
 }

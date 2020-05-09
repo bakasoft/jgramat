@@ -1,8 +1,10 @@
 package gramat.automata.raw;
 
 import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.builder.Segment;
+import gramat.automata.builder.StateReference;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
 
 public class RawRangeAutomaton extends RawAutomaton {
 
@@ -20,13 +22,10 @@ public class RawRangeAutomaton extends RawAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var sF = builder.createState();
-
-        builder.createTransition(s0, begin, end, sF);
-
-        sF.makeAccepted();
-
-        return builder.createSegment(s0, sF);
+    public NAutomaton build(NLanguage lang) {
+        var s0 = lang.state();
+        var sA = s0.linkRange(begin, end);
+        // TODO implement not range
+        return lang.automaton(s0, s0, sA);
     }
 }

@@ -23,10 +23,10 @@ public class GrammarTest {
         this.expectedMatch = expectedMatch;
     }
 
-    public void run(LinkContext context) {
+    public void run(Compiler compiler) {
         System.out.println("Testing " + expressionName + " <- " + location);
 
-        Expression expression = context.getExpression(expressionName);
+        Expression expression = compiler.compileRule(expressionName);
 
         if (expression == null) {
             throw new ParseException("Expression not found: " + expressionName, location);
@@ -47,7 +47,9 @@ public class GrammarTest {
         // TODO check eval result
         var writer = new GramatWriter(System.out, "  ");
 
-        writer.writeValue(evalContext.getValue());
+        if (expression.hasValues()) {
+            writer.writeValue(evalContext.getValue());
+        }
     }
 
     public String getExpressionName() {

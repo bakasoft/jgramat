@@ -91,6 +91,9 @@ public class CoreParsers {
         e = OtherParsers.parseEnd(context, source);
         if (e != null) { return e; }
 
+        e = OtherParsers.parseWild(context, source);
+        if (e != null) { return e; }
+
         e = ValueParsers.parseValue(context, source);
         if (e != null) { return e; }
 

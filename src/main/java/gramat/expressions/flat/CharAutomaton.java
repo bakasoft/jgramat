@@ -1,6 +1,7 @@
 package gramat.expressions.flat;
 
 import gramat.automata.builder.AutomatonBuilder;
+import gramat.automata.nondet.NLanguage;
 import gramat.automata.raw.*;
 import gramat.automata.State;
 import gramat.compiling.Compiler;
@@ -15,7 +16,7 @@ public class CharAutomaton extends Expression {
 
     private final RawAutomaton automaton;
 
-    private State root;
+    private State _root;
 
     public CharAutomaton(Location location, String literal) {
         this(location, new RawLiteralAutomaton(literal));
@@ -34,10 +35,23 @@ public class CharAutomaton extends Expression {
         this.automaton = automaton;
     }
 
+    private State getRoot() {
+        if (_root == null) {
+            var collapsed = automaton.collapse();
+            var lang = new NLanguage();
+            var am = collapsed.build(lang);
+
+            am.makeDeterministic();
+
+            _root = am.compile();
+        }
+        return _root;
+    }
+
     @Override
     public boolean eval(EvalContext context) {
         var pos0 = context.source.getPosition();
-        var state = root;
+        var state = getRoot();
 
         while(true) {
             if (state.isFinal()) {
@@ -76,11 +90,6 @@ public class CharAutomaton extends Expression {
 
     @Override
     public Expression _custom_optimize(Compiler context) {
-        var collapsed = automaton.collapse();
-        var segment = collapsed.build();
-
-        root = segment.compile();
-
         return this;
     }
 
@@ -97,7 +106,7 @@ public class CharAutomaton extends Expression {
     @Override
     public void write(GrammarWriter writer) {
         if (writer.open(this, "char-automaton")) {
-            root.write(writer);
+            getRoot().write(writer);
             writer.close();
         }
     }

@@ -1,8 +1,10 @@
 package gramat.expressions.wrappers;
 
+import gramat.automata.raw.RawNegationAutomaton;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -46,8 +48,13 @@ public class Negation extends Expression {
     @Override
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
-            // TODO
             expression = expression.optimize(context);
+
+            if (expression instanceof CharAutomaton) {
+                var a = (CharAutomaton) expression;
+                return new CharAutomaton(location, new RawNegationAutomaton(a.getAutomaton())).optimize(context);
+            }
+
             return this;
         });
     }

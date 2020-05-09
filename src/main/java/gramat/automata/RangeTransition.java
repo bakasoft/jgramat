@@ -19,18 +19,8 @@ public class RangeTransition extends Transition {
     }
 
     @Override
-    public boolean contains(Transition tr) {
-        if (tr instanceof CharTransition) {
-            var ct = (CharTransition) tr;
-            return ct.value >= this.begin && ct.value <= this.end;
-        }
-        else if (tr instanceof RangeTransition) {
-            var rt = (RangeTransition) tr;
-            return rt.begin >= this.begin && rt.end <= this.end;
-        }
-        else {
-            throw new RuntimeException();
-        }
+    public boolean isWild() {
+        return false;
     }
 
     @Override

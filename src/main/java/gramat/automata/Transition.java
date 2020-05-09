@@ -14,6 +14,6 @@ abstract public class Transition {
 
     public abstract void write(GrammarWriter writer);
 
-    public abstract boolean contains(Transition tr);
+    public abstract boolean isWild();
 
 }

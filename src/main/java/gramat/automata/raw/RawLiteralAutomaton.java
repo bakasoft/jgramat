@@ -1,8 +1,10 @@
 package gramat.automata.raw;
 
-import gramat.automata.builder.AutomatonBuilder;
-import gramat.automata.builder.SegmentBuilder;
-import gramat.automata.builder.StateBuilder;
+import gramat.automata.nondet.NAutomaton;
+import gramat.automata.nondet.NLanguage;
+import gramat.automata.nondet.NState;
+
+import static gramat.util.ListTool.iterate;
 
 public class RawLiteralAutomaton extends RawStringAutomaton {
 
@@ -10,6 +12,10 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
 
     public RawLiteralAutomaton(String value) {
         this.value = value;
+
+        if (value.isEmpty()) {
+            throw new RuntimeException();
+        }
     }
 
     @Override
@@ -18,22 +24,24 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public SegmentBuilder build(AutomatonBuilder builder, StateBuilder s0) {
-        var chs = value.toCharArray();
-        var last = s0;
+    public NAutomaton build(NLanguage lang) {
+        var array = value.toCharArray();
+        NState start = lang.state();
+        NState lastAccept = start;
+        NState lastReject = null;
+        for (int i = 0; i < array.length; i++) {
+            var c = array[i];
+            if (lastReject == null) {
+                lastReject = lastAccept.linkNot(c);
+            }
+            else {
+                lastReject = lastReject.linkNot(c);
+                lastAccept.linkNot(c, lastReject);
+            }
 
-        for (var ch : chs) {
-            var source = last;
-            var target = builder.createState();
-
-            builder.createTransition(source, ch, target);
-
-            last = target;
+            lastAccept = lastAccept.linkChar(c);
         }
-
-        last.makeAccepted();
-
-        return builder.createSegment(s0, last);
+        return lang.automaton(start, lastReject, lastAccept);
     }
 
     @Override

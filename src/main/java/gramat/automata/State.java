@@ -1,7 +1,6 @@
 package gramat.automata;
 
 import gramat.output.GrammarWriter;
-import org.w3c.dom.ranges.Range;
 
 import java.util.*;
 
@@ -16,27 +15,50 @@ public class State {
     }
 
     public State move(char value) {
+        State fallback = null;
+
         for (var t : transitions) {
-            if (t.test(value)) {
+            if (t.isWild()) {
+                fallback = t.state;
+            }
+            else if (t.test(value)) {
                 return t.state;
             }
         }
 
-        return null;
+        return fallback;
     }
 
     public boolean isAccepted() {
         return accepted;
     }
 
-    public void addTransition(State target, char value) {
+    public void addTransitionNot(State target, char value) {
         var matching = findTransitionsFor(value);
 
-        if (matching.size() > 0) {
-            throw new RuntimeException("transition already exists: " + value);
-        }
+//        if (matching.size() > 0) {
+//            throw new RuntimeException("transition already exists: `" + value + "`");
+//        }
 
-        transitions.add(new CharTransition(target, value));
+        transitions.add(new CharTransition(target, value, true));
+    }
+
+    public void addTransition(State target, char value) {
+        //var matching = findTransitionsFor(value);
+
+//        if (matching.size() > 0) {
+//            throw new RuntimeException("transition already exists: `" + value + "`");
+//        }
+
+        transitions.add(new CharTransition(target, value, false));
+    }
+
+    public void addTransitionWild(State target) {
+//        if (matching.size() > 0) {
+//            throw new RuntimeException("transition already exists: `" + value + "`");
+//        }
+
+        transitions.add(new WildTransition(target));
     }
 
     public void addTransition(State target, char begin, char end) {
@@ -54,10 +76,8 @@ public class State {
 
         for (var tr : transitions) {
             if (tr instanceof CharTransition) {
-                var ct = (CharTransition) tr;
-
-                if (ct.value == value) {
-                    matching.add(ct);
+                if (tr.test(value)) {
+                    matching.add(tr);
                 }
             }
             else if (tr instanceof RangeTransition) {
@@ -66,6 +86,9 @@ public class State {
                 if (value >= rt.begin && value <= rt.end) {
                     matching.add(rt);
                 }
+            }
+            else {
+                throw new RuntimeException();
             }
         }
 
