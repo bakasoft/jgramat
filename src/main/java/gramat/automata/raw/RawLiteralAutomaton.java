@@ -27,21 +27,11 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     public NAutomaton build(NLanguage lang) {
         var array = value.toCharArray();
         NState start = lang.state();
-        NState lastAccept = start;
-        NState lastReject = null;
-        for (int i = 0; i < array.length; i++) {
-            var c = array[i];
-            if (lastReject == null) {
-                lastReject = lastAccept.linkNot(c);
-            }
-            else {
-                lastReject = lastReject.linkNot(c);
-                lastAccept.linkNot(c, lastReject);
-            }
-
-            lastAccept = lastAccept.linkChar(c);
+        NState last = start;
+        for (char c : array) {
+            last = last.linkChar(c);
         }
-        return lang.automaton(start, lastReject, lastAccept);
+        return lang.automaton(start, start, last);
     }
 
     @Override

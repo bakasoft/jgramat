@@ -20,11 +20,7 @@ public class RawCharAutomaton extends RawStringAutomaton {
     public NAutomaton build(NLanguage lang) {
         var s0 = lang.state();
         var sA = s0.linkChar(value);
-        var sR = lang.state();
-
-        s0.linkNot(value, sR);
-
-        return lang.automaton(s0, sR, sA);
+        return lang.automaton(s0, s0, sA);
     }
 
     @Override

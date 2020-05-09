@@ -29,7 +29,7 @@ Test-08 = ^ "'" {<"'">} "'" $
 @pass Test-08 `'abc'`
 @pass Test-08 `'abcd'`
 
-Test-09 = ^ "a" <"bcd"> "e" $
+Test-09 = ^ "a" * "e" $
 
 @fail Test-09 ``
 @fail Test-09 `a`

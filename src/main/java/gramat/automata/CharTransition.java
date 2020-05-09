@@ -4,18 +4,16 @@ import gramat.output.GrammarWriter;
 
 public class CharTransition extends Transition {
 
-    public final boolean complement;
     public final char value;
 
-    public CharTransition(State state, char value, boolean complement) {
+    public CharTransition(State state, char value) {
         super(state);
-        this.complement = complement;
         this.value = value;
     }
 
     @Override
     public boolean test(char c) {
-        return complement == (this.value != c);
+        return this.value == c;
     }
 
     @Override

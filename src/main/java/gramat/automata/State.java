@@ -33,41 +33,18 @@ public class State {
         return accepted;
     }
 
-    public void addTransitionNot(State target, char value) {
-        var matching = findTransitionsFor(value);
-
-//        if (matching.size() > 0) {
-//            throw new RuntimeException("transition already exists: `" + value + "`");
-//        }
-
-        transitions.add(new CharTransition(target, value, true));
-    }
-
     public void addTransition(State target, char value) {
-        //var matching = findTransitionsFor(value);
-
-//        if (matching.size() > 0) {
-//            throw new RuntimeException("transition already exists: `" + value + "`");
-//        }
-
-        transitions.add(new CharTransition(target, value, false));
+        // TODO validate transitions
+        transitions.add(new CharTransition(target, value));
     }
 
     public void addTransitionWild(State target) {
-//        if (matching.size() > 0) {
-//            throw new RuntimeException("transition already exists: `" + value + "`");
-//        }
-
+        // TODO validate transitions
         transitions.add(new WildTransition(target));
     }
 
     public void addTransition(State target, char begin, char end) {
-        var matching = findTransitionsFor(begin, end);
-
-        if (matching.size() > 0) {
-            throw new RuntimeException("transition already exists");
-        }
-
+        // TODO validate transitions
         transitions.add(new RangeTransition(target, begin, end));
     }
 

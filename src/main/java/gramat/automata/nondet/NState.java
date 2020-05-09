@@ -20,16 +20,6 @@ public class NState {
         language._transition(this, new NSymbolEmpty(), target);
     }
 
-    public void linkNot(char value, NState target) {
-        language._transition(this, new NSymbolNotChar(value), target);
-    }
-
-    public NState linkNot(char value) {
-        var target = language.state();
-        linkNot(value, target);
-        return target;
-    }
-
     public void linkWild(NState target) {
         language._transition(this, new NSymbolWild(), target);
     }

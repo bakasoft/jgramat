@@ -32,8 +32,7 @@ public class NAutomaton {
         print(lang.transitions, "without empty");
 
         do {
-            again = resolveCancelledTransitions();
-            again |= resolveAmbiguousTransitions();
+            again = resolveAmbiguousTransitions();
         } while (again);
 
         do {
@@ -67,29 +66,6 @@ public class NAutomaton {
             lang.replace(tr.target, keep.target);
             lang.transitions.remove(tr);
         }
-    }
-
-    private boolean resolveCancelledTransitions() {
-        var transitions = lang.transitions.toArray(NTransition[]::new);
-
-        for (var trNC : transitions) {
-            if (trNC.symbol instanceof NSymbolNotChar) {
-                var value = ((NSymbolNotChar)trNC.symbol).value;
-
-                for (var trC : transitions) {
-                    if (trC.symbol instanceof NSymbolChar &&  trC.source == trNC.source && trC.target == trNC.target) {
-                        if (((NSymbolChar)trC.symbol).value == value) {
-                            lang.transitions.remove(trC);
-                            lang.transitions.remove(trNC);
-                            //print(lang.transitions, "removed cancelled");
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     private boolean resolveAmbiguousTransitions() {
@@ -128,10 +104,7 @@ public class NAutomaton {
             NTransition keep = null;
 
             for (var tr : findTransitions(state)) {
-                if (tr.symbol instanceof NSymbolNotChar) {
-                    toMakeWild.add(tr);
-                }
-                else if (tr.symbol instanceof NSymbolWild) {
+                if (tr.symbol instanceof NSymbolWild) {
                     if (keep == null) {
                         keep = tr;
                     }
@@ -142,12 +115,6 @@ public class NAutomaton {
             }
 
             if (toMakeWild.size() > 0) {
-                if (keep == null) {
-                    var first = toMakeWild.get(0);
-
-                    keep = lang._transition(first.source, new NSymbolWild(), first.target);
-                }
-
                 join_transitions(toMakeWild, keep);
                 print(lang.transitions, "make wild");
                 hits++;
@@ -187,15 +154,11 @@ public class NAutomaton {
                 var cr = (NSymbolRange) t.symbol;
                 source.addTransition(target, cr.begin, cr.end);
             }
-            else if (t.symbol instanceof NSymbolNotChar) {
-                var nc = (NSymbolNotChar) t.symbol;
-                source.addTransitionNot(target, nc.value);
-            }
             else if (t.symbol instanceof NSymbolWild) {
                 source.addTransitionWild(target);
             }
             else if (t.symbol instanceof NSymbolEmpty) {
-                throw new RuntimeException();
+                throw new UnsupportedOperationException();
             }
             else {
                 throw new RuntimeException();
