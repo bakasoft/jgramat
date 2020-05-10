@@ -121,7 +121,7 @@ public class NLanguage {
 
         for (var t : transitions) {
             if (t.symbol instanceof NSymbolEmpty) {
-                replace(t.target, t.source);
+                replace(t.source, t.target);
                 toDelete = t;
                 break;
             }
@@ -205,7 +205,7 @@ public class NLanguage {
         var statesMap = new HashMap<NState, State>();
 
         for (var s : states) {
-            var st = new State(s == accept);
+            var st = new State(s.number == accept.number);
 
             statesMap.put(s, st);
         }

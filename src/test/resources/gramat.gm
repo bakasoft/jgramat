@@ -7,7 +7,6 @@ Test-05 = ^ ("abc"|"xyz"|"123") $
 @pass Test-05 `xyz`
 @pass Test-05 `123`
 
-
 Test-06 = ^ "/*" * "*/" $
 
 @pass Test-06 `/*a*a*/`
