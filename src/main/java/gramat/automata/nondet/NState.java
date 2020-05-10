@@ -1,9 +1,12 @@
 package gramat.automata.nondet;
 
+import java.util.Objects;
+
 public class NState {
 
     private final NLanguage language;
-    private final int number;
+
+    int number;
 
     private boolean wild;
 
@@ -61,5 +64,18 @@ public class NState {
     @Override
     public String toString() {
         return (wild ? "W" : "S") + number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+        NState nState = (NState) o;
+        return number == nState.number;
+    }
+
+    @Override
+    public int hashCode() {
+        return number;
     }
 }

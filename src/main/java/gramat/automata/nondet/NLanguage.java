@@ -26,6 +26,8 @@ public class NLanguage {
                 keep.makeWild();
             }
 
+            drop.number = keep.number;
+
             for (var t : transitions) {
                 if (t.source == drop) {
                     t.source = keep;
@@ -34,6 +36,7 @@ public class NLanguage {
                     t.target = keep;
                 }
             }
+
             states.remove(drop);
         }
     }
@@ -98,7 +101,7 @@ public class NLanguage {
                 if (next.size() >= 1) {
                     next.remove(next.size() - 1);
                 }
-                
+
                 wild.linkWild(wild);
                 wild.makeNormal();
 
