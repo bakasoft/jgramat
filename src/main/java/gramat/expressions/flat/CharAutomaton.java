@@ -38,11 +38,12 @@ public class CharAutomaton extends Expression {
         if (_root == null) {
             var collapsed = automaton.collapse();
             var lang = new NLanguage();
-            var am = collapsed.build(lang);
+            var start = lang.state();
+            var accept = collapsed.build(lang, start);
 
-            am.makeDeterministic();
+            lang.makeDeterministic();
 
-            _root = am.compile();
+            _root = lang.compile(start, accept);
         }
         return _root;
     }

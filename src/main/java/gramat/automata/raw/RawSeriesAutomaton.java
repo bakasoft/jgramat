@@ -1,7 +1,7 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
+import gramat.automata.nondet.NState;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
@@ -19,20 +19,12 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
     }
 
     @Override
-    public NAutomaton build(NLanguage lang) {
-        var start = lang.state();
-        var reject = lang.state();
+    public NState build(NLanguage lang, NState start) {
         var last = start;
         for (var item : items) {
-            var am = item.build(lang);
-
-            last.linkEmpty(am.start);
-
-            am.reject.linkEmpty(reject);
-
-            last = am.accept;
+            last = item.build(lang, last);
         }
-        return lang.automaton(start, reject, last);
+        return last;
     }
 
     @Override

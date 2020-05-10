@@ -16,4 +16,8 @@ public class NTransition {
     public String toString() {
         return source + " -> " + target + ": " + symbol;
     }
+
+    public boolean isChar() {
+        return symbol instanceof NSymbolChar || symbol instanceof NSymbolRange;
+    }
 }

@@ -1,6 +1,5 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
 import gramat.automata.nondet.NState;
 
@@ -24,14 +23,13 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public NAutomaton build(NLanguage lang) {
+    public NState build(NLanguage lang, NState start) {
         var array = value.toCharArray();
-        NState start = lang.state();
         NState last = start;
         for (char c : array) {
             last = last.linkChar(c);
         }
-        return lang.automaton(start, start, last);
+        return last;
     }
 
     @Override

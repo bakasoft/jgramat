@@ -5,9 +5,23 @@ public class NState {
     private final NLanguage language;
     private final int number;
 
+    private boolean wild;
+
     public NState(NLanguage language, int number) {
         this.language = language;
         this.number = number;
+    }
+
+    public boolean isWild() {
+        return wild;
+    }
+
+    public void makeWild() {
+        wild = true;
+    }
+
+    public void makeNormal() {
+        wild = false;
     }
 
     public NState linkEmpy(char value) {
@@ -46,6 +60,6 @@ public class NState {
 
     @Override
     public String toString() {
-        return "S" + number;
+        return (wild ? "W" : "S") + number;
     }
 }

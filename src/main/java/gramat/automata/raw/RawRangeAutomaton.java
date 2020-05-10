@@ -1,7 +1,7 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
+import gramat.automata.nondet.NState;
 
 public class RawRangeAutomaton extends RawAutomaton {
 
@@ -19,10 +19,7 @@ public class RawRangeAutomaton extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(NLanguage lang) {
-        var s0 = lang.state();
-        var sA = s0.linkRange(begin, end);
-        // TODO implement not range
-        return lang.automaton(s0, s0, sA);
+    public NState build(NLanguage lang, NState start) {
+        return start.linkRange(begin, end);
     }
 }

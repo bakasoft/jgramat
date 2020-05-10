@@ -1,7 +1,7 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NAutomaton;
 import gramat.automata.nondet.NLanguage;
+import gramat.automata.nondet.NState;
 
 public class RawRepetitionAutomaton extends RawAutomaton {
 
@@ -17,15 +17,12 @@ public class RawRepetitionAutomaton extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(NLanguage lang) {
-        var state = lang.state();
-        var am = automaton.build(lang);
+    public NState build(NLanguage lang, NState start) {
+        var end = automaton.build(lang, start);
 
-        state.linkEmpty(am.start);
+        end.linkEmpty(start);
 
-        am.accept.linkEmpty(state);
-
-        return lang.automaton(state, am.reject, state);
+        return start;
     }
 
 }
