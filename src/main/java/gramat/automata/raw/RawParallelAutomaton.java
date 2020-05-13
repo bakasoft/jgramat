@@ -1,7 +1,7 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NLanguage;
-import gramat.automata.nondet.NState;
+import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.Language;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
@@ -19,16 +19,18 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
     }
 
     @Override
-    public NState build(NLanguage lang, NState start) {
-        var accept = lang.state();
+    public NAutomaton build(Language lang) {
+        var initial = lang.state();
+        var accepted = lang.state();
 
         for (var item : items) {
-            var end = item.build(lang, start);
+            var am = item.build(lang);
 
-            end.linkEmpty(accept);
+            lang.transition(initial, am.initial, null);
+            lang.transition(am.accepts, accepted, null);
         }
 
-        return accept;
+        return lang.automaton(initial, accepted);
     }
 
     @Override

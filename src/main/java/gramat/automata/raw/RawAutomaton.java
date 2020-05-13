@@ -1,12 +1,12 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NLanguage;
-import gramat.automata.nondet.NState;
+import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.Language;
 
 abstract public class RawAutomaton {
 
     abstract public RawAutomaton collapse();
 
-    abstract public NState build(NLanguage lang, NState start);
+    abstract public NAutomaton build(Language lang);
 
 }

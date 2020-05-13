@@ -4,8 +4,8 @@ i-ws: {'\s \t' | comment}
 
 line-break: i-ws "\n" ws
 
-inline-comment: "//" {<"\n">} "\n"
-block-comment: "/*" {<"*/">} "*/"
+inline-comment: "//" * "\n"
+block-comment: "/*" * "*/"
 comment: inline-comment | block-comment
 
 alpha: 'a-z A-Z _ @ $'
@@ -25,7 +25,7 @@ EscapedChar:
     )
 
 
-@join NameDelimited: "`" { EscapedChar | @string(<"`">)} "`"
+@join NameDelimited: "`" { EscapedChar | @string(*)} "`"
 @string NameKeyword: alpha { alpha | digit }
 
 Name: NameKeyword | NameDelimited

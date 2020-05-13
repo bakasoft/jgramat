@@ -14,7 +14,7 @@
 
 @object Null = "null"
 
-@object String = @set(`value`: @join("\"" { EscapedChar | @string(<"\"">) } "\""))
-@object Char = @set(`value`: "\'" (EscapedChar | @string(<"\'">)) "\'")
+@object String = @set(`value`: @join("\"" { EscapedChar | * } "\""))
+@object Char = @set(`value`: "\'" (EscapedChar | *) "\'")
 
 LiteralValue = DecInteger | HexInteger | DecNumber | Boolean | Null | Char | String

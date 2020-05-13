@@ -1,8 +1,8 @@
 package gramat.expressions.flat;
 
-import gramat.automata.nondet.NLanguage;
+import gramat.automata.ndfa.DState;
+import gramat.automata.ndfa.Language;
 import gramat.automata.raw.*;
-import gramat.automata.State;
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
@@ -15,7 +15,7 @@ public class CharAutomaton extends Expression {
 
     private final RawAutomaton automaton;
 
-    private State _root;
+    private DState _root;
 
     public CharAutomaton(Location location, String literal) {
         this(location, new RawLiteralAutomaton(literal));
@@ -34,16 +34,13 @@ public class CharAutomaton extends Expression {
         this.automaton = automaton;
     }
 
-    private State getRoot() {
+    private DState getRoot() {
         if (_root == null) {
             var collapsed = automaton.collapse();
-            var lang = new NLanguage();
-            var start = lang.state();
-            var accept = collapsed.build(lang, start);
+            var lang = new Language();
+            var am = collapsed.build(lang);
 
-            lang.makeDeterministic();
-
-            _root = lang.compile(start, accept);
+            _root = am.compile();
         }
         return _root;
     }

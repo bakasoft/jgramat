@@ -1,7 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.nondet.NLanguage;
-import gramat.automata.nondet.NState;
+import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.Language;
+
 
 public class RawNopAutomaton extends RawAutomaton {
 
@@ -11,7 +12,8 @@ public class RawNopAutomaton extends RawAutomaton {
     }
 
     @Override
-    public NState build(NLanguage lang, NState start) {
-        return start;
+    public NAutomaton build(Language lang) {
+        var state = lang.state();
+        return lang.automaton(state, state);
     }
 }
