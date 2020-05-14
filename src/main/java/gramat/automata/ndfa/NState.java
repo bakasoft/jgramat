@@ -28,5 +28,9 @@ public class NState {
     public void write(Appendable output) throws IOException {
         output.append("S");
         output.append(String.valueOf(id));
+        for (var action : actions) {
+            output.append(" ");
+            output.append(action.toString());
+        }
     }
 }

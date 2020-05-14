@@ -1,5 +1,6 @@
 package gramat.expressions.flat;
 
+import gramat.automata.raw.RawSourceEnd;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
@@ -23,7 +24,7 @@ public class EndSource extends Expression {
 
     @Override
     public Expression _custom_optimize(Compiler context) {
-        return this;
+        return new CharAutomaton(location, new RawSourceEnd());
     }
 
     @Override

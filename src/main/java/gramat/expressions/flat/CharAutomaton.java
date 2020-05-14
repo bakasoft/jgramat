@@ -56,37 +56,44 @@ public class CharAutomaton extends Expression {
         var state = getRoot();
 
         while(true) {
-            if (state.isFinal()) {
-                if (state.isAccepted()) {
-                    return true;
-                }
-                else {
-                    context.source.setPosition(pos0);
-                    return false;
-                }
-            }
-            else {
-                var value = context.source.peek();
-                var actions = new ArrayList<Action>();
-                var newState = value != null ? state.move(value, actions) : null;
-
-                for (var action : actions) {
+            try {
+                for (var action : state.actions) {
                     performAction(context, action);
                 }
 
-                if (newState == null) {
+                if (state.isFinal()) {
                     if (state.isAccepted()) {
                         return true;
-                    }
-                    else {
+                    } else {
                         context.source.setPosition(pos0);
                         return false;
                     }
+                } else {
+                    var value = context.source.peek();
+                    var actions = new ArrayList<Action>();
+                    var newState = value != null ? state.move(value, actions) : null;
+
+                    for (var action : actions) {
+                        performAction(context, action);
+                    }
+
+                    if (newState == null) {
+                        if (state.isAccepted()) {
+                            return true;
+                        } else {
+                            context.source.setPosition(pos0);
+                            return false;
+                        }
+                    }
+
+                    context.source.moveNext();
+
+                    state = newState;
                 }
-
-                context.source.moveNext();
-
-                state = newState;
+            }
+            catch(Reject e) {
+                context.source.setPosition(pos0);
+                return false;
             }
         }
     }
@@ -147,9 +154,23 @@ public class CharAutomaton extends Expression {
         else if (action instanceof ObjectRollback) {
             context.rollback(null);
         }
+        else if (action instanceof BeginSourceCheck) {
+            if (context.source.getPosition() != 0) {
+                throw new Reject();
+            }
+        }
+        else if (action instanceof EndSourceCheck) {
+            if (context.source.alive()) {
+                throw new Reject();
+            }
+        }
         else {
             throw new RuntimeException("not implemented action: " + action);
         }
+    }
+
+    private static class Reject extends RuntimeException {
+
     }
 
     public RawAutomaton getAutomaton() {

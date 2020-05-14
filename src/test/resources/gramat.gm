@@ -1,3 +1,11 @@
+Test-04 = ^ ("0" | '1-9' { '0-9' }) $
+
+//@fail Test-04 `01`
+//@pass Test-04 `0`
+//@pass Test-04 `1`
+@pass Test-04 `12`
+@pass Test-04 `123`
+
 Test-02 = ^ @object("=" {" "} @set(`id`: @string('0-9' {'0-9'})) {" "} ";") $
 
 @pass Test-02 `= 1234;`
@@ -9,14 +17,6 @@ Test-03 = ^ "a" ["_"] "b" $
 @fail Test-03 `a_`
 @pass Test-03 `ab`
 @pass Test-03 `a_b`
-
-Test-04 = ^ ("0" | '1-9' { '0-9' }) $
-
-@fail Test-04 `01`
-@pass Test-04 `0`
-@pass Test-04 `1`
-@pass Test-04 `12`
-@pass Test-04 `123`
 
 Test-05 = ^ ("abc"|"xyz"|"123") $
 
