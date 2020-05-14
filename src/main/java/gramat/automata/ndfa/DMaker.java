@@ -1,5 +1,7 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.util.*;
 
 public class DMaker {
@@ -85,8 +87,8 @@ public class DMaker {
         return new NAutomaton(language, newInitial, newAccepts);
     }
 
-    private List<String> find_transition_actions(Set<NState> sources, Set<NState> targets, Symbol symbol) {
-        var actions = new ArrayList<String>();
+    private List<Action> find_transition_actions(Set<NState> sources, Set<NState> targets, Symbol symbol) {
+        var actions = new ArrayList<Action>();
         var transitions = find_transitions(sources, targets, symbol);
 
         for (var transition : transitions) {

@@ -1,5 +1,7 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.util.*;
 
 public class Language {
@@ -159,11 +161,11 @@ public class Language {
         transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of());
     }
 
-    public void transition(NState source, NState target, Object symbol, String action) {
+    public void transition(NState source, NState target, Object symbol, Action action) {
         transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of(action));
     }
 
-    public void transition(NState source, NState target, Object symbol, List<String> actions) {
+    public void transition(NState source, NState target, Object symbol, List<Action> actions) {
         transition(Set.of(Objects.requireNonNull(source)), target, symbol, actions);
     }
 
@@ -171,11 +173,11 @@ public class Language {
         transition(sources, target, symbol, List.of());
     }
 
-    public void transition(Set<NState> sources, NState target, Object symbol, String action) {
+    public void transition(Set<NState> sources, NState target, Object symbol, Action action) {
         transition(sources, target, symbol, List.of(action));
     }
 
-    public void transition(Set<NState> sources, NState target, Object symbol, List<String> actions) {
+    public void transition(Set<NState> sources, NState target, Object symbol, List<Action> actions) {
         var s = make_symbol(symbol);
 
         for (var source : sources) {

@@ -47,8 +47,14 @@ public class GrammarTest {
         // TODO check eval result
         var writer = new GramatWriter(System.out, "  ");
 
-        if (expression.hasValues()) {
-            writer.writeValue(evalContext.getValue());
+        try {
+            var output = evalContext.getValue();
+            System.out.print("OUTPUT: ");
+            writer.writeValue(output);
+            System.out.println();
+        }
+        catch(ParseException e) {
+            System.out.println("OUTPUT: Error/" + e.getMessage());
         }
     }
 

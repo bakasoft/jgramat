@@ -1,13 +1,14 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
 import gramat.output.GrammarWriter;
 
 public class DTransitionChar extends DTransition {
 
     final char symbol;
 
-    public DTransitionChar(DState target, char symbol) {
-        super(target);
+    public DTransitionChar(DState target, Action[] actions, char symbol) {
+        super(target, actions);
         this.symbol = symbol;
     }
 

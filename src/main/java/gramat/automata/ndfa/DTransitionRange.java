@@ -1,5 +1,6 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
 import gramat.output.GrammarWriter;
 
 public class DTransitionRange extends DTransition {
@@ -7,8 +8,8 @@ public class DTransitionRange extends DTransition {
     final char begin;
     final char end;
 
-    public DTransitionRange(DState target, char begin, char end) {
-        super(target);
+    public DTransitionRange(DState target, Action[] actions, char begin, char end) {
+        super(target, actions);
         this.begin = begin;
         this.end = end;
     }

@@ -1,5 +1,7 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,29 +50,30 @@ public class DCompiler {
 
     private void initialize(DState ds, NState ns) {
         var transitions = new ArrayList<DTransition>();
-        var wildState = (DState) null;
+        var wildTransition = (DTransition) null;
 
         for (var trn : ns.getTransitions()) {
             if (trn.symbol == null) {
                 throw new RuntimeException("Non-deterministic empty transition found: " + trn);
             }
 
+            var actions = trn.actions.toArray(Action[]::new);
             var target = get_or_create(trn.target);
 
             if (trn.symbol instanceof SymbolWild) {
-                if (wildState != null) {
+                if (wildTransition != null) {
                     throw new RuntimeException("Non-deterministic wild transition found: " + trn);
                 }
 
-                wildState = target;
+                wildTransition = new DTransitionWild(target, actions);
             }
             else if (trn.symbol instanceof SymbolChar) {
                 var sc = (SymbolChar)trn.symbol;
-                transitions.add(new DTransitionChar(target, sc.value));
+                transitions.add(new DTransitionChar(target, actions, sc.value));
             }
             else if (trn.symbol instanceof SymbolRange) {
                 var sr = (SymbolRange)trn.symbol;
-                transitions.add(new DTransitionRange(target, sr.begin, sr.end));
+                transitions.add(new DTransitionRange(target, actions, sr.begin, sr.end));
             }
             else {
                 throw new RuntimeException("Unsupported transition: " + trn);
@@ -79,7 +82,7 @@ public class DCompiler {
 
         ds.accepted = accepted.contains(ns);
         ds.transitions = transitions.toArray(DTransition[]::new);
-        ds.wildState = wildState;
+        ds.wildTransition = wildTransition;
 
         validate_transitions(ds.transitions);
     }

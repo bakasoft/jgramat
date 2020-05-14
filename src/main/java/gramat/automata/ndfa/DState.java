@@ -1,6 +1,10 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
 import gramat.output.GrammarWriter;
+
+import java.util.Collections;
+import java.util.List;
 
 public class DState {
 
@@ -8,15 +12,22 @@ public class DState {
 
     DTransition[] transitions;
 
-    DState wildState;
+    DTransition wildTransition;
 
-    public DState move(char symbol) {
+    public DState move(char symbol, List<Action> actions) {
         for (var trn : transitions) {
             if (trn.accepts(symbol)) {
+                Collections.addAll(actions, trn.actions);
                 return trn.target;
             }
         }
-        return wildState;
+
+        if (wildTransition != null) {
+            Collections.addAll(actions, wildTransition.actions);
+            return wildTransition.target;
+        }
+
+        return null;
     }
 
     public boolean isAccepted() {

@@ -1,5 +1,7 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,9 @@ public class NTransition {
     public final NState source;
     public final Symbol symbol;
     public final NState target;
-    public final List<String> actions;
+    public final List<Action> actions;
 
-    public NTransition(NState source, Symbol symbol, NState target, List<String> actions) {
+    public NTransition(NState source, Symbol symbol, NState target, List<Action> actions) {
         this.source = source;
         this.symbol = symbol;
         this.target = target;
@@ -32,7 +34,10 @@ public class NTransition {
 
         if (actions.size() > 0) {
             output.append("  //");
-            output.append(String.join(" + ", actions));
+            for (var action : actions) {
+                output.append(" ");
+                output.append(action.toString());
+            }
         }
     }
 }

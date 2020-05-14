@@ -1,14 +1,21 @@
 package gramat.expressions.flat;
 
+import gramat.automata.actions.Action;
+import gramat.automata.actions.BeginCapture;
+import gramat.automata.actions.CommitCapture;
+import gramat.automata.actions.RollbackCapture;
 import gramat.automata.ndfa.DState;
 import gramat.automata.ndfa.Language;
 import gramat.automata.raw.*;
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
+import gramat.runtime.EditSendSegment;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CharAutomaton extends Expression {
@@ -64,7 +71,12 @@ public class CharAutomaton extends Expression {
             }
             else {
                 var value = context.source.peek();
-                var newState = value != null ? state.move(value) : null;
+                var actions = new ArrayList<Action>();
+                var newState = value != null ? state.move(value, actions) : null;
+
+                for (var action : actions) {
+                    performAction(context, action);
+                }
 
                 if (newState == null) {
                     if (state.isAccepted()) {
@@ -80,6 +92,38 @@ public class CharAutomaton extends Expression {
 
                 state = newState;
             }
+        }
+    }
+
+    private final HashMap<Action, Integer> actionsPositions = new HashMap<>();
+
+    private void performAction(EvalContext context, Action action) {
+        System.out.println("ACTION " + action + " @" + context.source.getLocation());
+        if (action instanceof BeginCapture) {
+            int position = context.source.getPosition();
+
+            actionsPositions.put(action, position);
+        }
+        else if (action instanceof CommitCapture) {
+            var commit = (CommitCapture)action;
+            var pos0 = actionsPositions.remove(commit.beginAction);
+
+            if (pos0 == null) {
+                throw new RuntimeException("cannot commit without begin");
+            }
+
+            var posF = context.source.getPosition();
+
+            context.add(new EditSendSegment(context.source, pos0, pos0, posF, commit.parser));
+        }
+        else if (action instanceof RollbackCapture) {
+            var rollback = (RollbackCapture)action;
+            if (actionsPositions.remove(rollback.beginAction) == null) {
+                throw new RuntimeException("cannot rollback without begin");
+            }
+        }
+        else {
+            throw new RuntimeException("not implemented action: " + action);
         }
     }
 

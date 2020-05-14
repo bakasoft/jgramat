@@ -1,12 +1,14 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Utils {
 
-    public static void addAction(List<NTransition> transitions, String action) {
+    public static void addAction(List<NTransition> transitions, Action action) {
         for (var trn : transitions) {
             trn.actions.add(action);
         }

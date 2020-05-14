@@ -1,5 +1,6 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
 import gramat.output.GrammarWriter;
 
 abstract public class DTransition {
@@ -8,10 +9,13 @@ abstract public class DTransition {
 
     abstract public boolean intersects(DTransition transition);
 
-    final DState target;
+    public final DState target;
 
-    public DTransition(DState target) {
+    public final Action[] actions;
+
+    public DTransition(DState target, Action[] actions) {
         this.target = target;
+        this.actions = actions;
     }
 
     public abstract void write(GrammarWriter writer);
