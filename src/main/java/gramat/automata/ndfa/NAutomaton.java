@@ -94,4 +94,12 @@ public class NAutomaton implements Writable {
 
         return false;
     }
+
+    public Set<NState> getRejected() {
+        var states = new HashSet<>(getStates());
+
+        states.removeAll(accepted);
+
+        return states;
+    }
 }

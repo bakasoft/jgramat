@@ -7,11 +7,13 @@ public class NTransition {
     public final NState source;
     public final Symbol symbol;
     public final NState target;
+    public final String action;
 
-    public NTransition(NState source, Symbol symbol, NState target) {
+    public NTransition(NState source, Symbol symbol, NState target, String action) {
         this.source = source;
         this.symbol = symbol;
         this.target = target;
+        this.action = action;
     }
 
     public void write(Appendable output) throws IOException {
@@ -26,5 +28,9 @@ public class NTransition {
             symbol.write(output);
         }
 
+        if (action != null) {
+            output.append("  //");
+            output.append(action);
+        }
     }
 }

@@ -144,14 +144,24 @@ public class Language {
     }
 
     public void transition(NState source, NState target, Object symbol) {
-        transition(Set.of(source), target, symbol);
+        transition(Set.of(Objects.requireNonNull(source)), target, symbol, null);
+    }
+
+    public void transition(NState source, NState target, Object symbol, String action) {
+        transition(Set.of(Objects.requireNonNull(source)), target, symbol, action);
     }
 
     public void transition(Set<NState> sources, NState target, Object symbol) {
+        transition(sources, target, symbol, null);
+    }
+
+    public void transition(Set<NState> sources, NState target, Object symbol, String action) {
         var s = make_symbol(symbol);
 
         for (var source : sources) {
-            transitions.add(new NTransition(source, s, target));
+            var t = new NTransition(source, s, target, action);
+
+            transitions.add(t);
         }
     }
 }
