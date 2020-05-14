@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// TODO move to a post-build action
 public class DWildResolver {
 
     public static void resolve(NAutomaton automaton) {

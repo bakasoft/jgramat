@@ -11,7 +11,7 @@ public class Language {
     final Set<Symbol> symbols;
     final List<NTransition> transitions;
     final List<NAutomaton> automata;
-    final List<Runnable> postBuildActions;
+    final List<Runnable> postBuildActions;  // TODO move out of here
 
     private int next_id;
 
