@@ -27,7 +27,7 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
             var am = item.build(lang);
 
             lang.transition(initial, am.initial, null);
-            lang.transition(am.accepts, accepted, null);
+            lang.transition(am.accepted, accepted, null);
         }
 
         return lang.automaton(initial, accepted);

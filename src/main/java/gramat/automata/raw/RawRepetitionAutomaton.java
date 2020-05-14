@@ -37,7 +37,7 @@ public class RawRepetitionAutomaton extends RawAutomaton {
 
             lang.transition(state, am.initial, null);
 
-            lang.transition(am.accepts, state, null);
+            lang.transition(am.accepted, state, null);
 
             return lang.automaton(state, state);
         }

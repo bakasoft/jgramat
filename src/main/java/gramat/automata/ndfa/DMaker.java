@@ -17,7 +17,7 @@ public class DMaker {
     private DMaker(NAutomaton automaton) {
         this.language = automaton.language;
         this.initial = automaton.initial;
-        this.accepts = automaton.accepts;
+        this.accepts = automaton.accepted;
         this.hashStates = new HashMap<>();
     }
 

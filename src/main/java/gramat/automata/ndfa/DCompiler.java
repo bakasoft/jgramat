@@ -20,7 +20,7 @@ public class DCompiler {
     private DCompiler(NAutomaton automaton) {
         this.language = automaton.language;
         this.initial = automaton.initial;
-        this.accepted = automaton.accepts;
+        this.accepted = automaton.accepted;
         this.states = new HashMap<>();
     }
 

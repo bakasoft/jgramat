@@ -11,12 +11,12 @@ public class NAutomaton implements Writable {
 
     public final Language language;
     public final NState initial;
-    public final Set<NState> accepts;
+    public final Set<NState> accepted;
 
-    NAutomaton(Language language, NState initial, Set<NState> accepts) {
+    NAutomaton(Language language, NState initial, Set<NState> accepted) {
         this.language = language;
         this.initial = initial;
-        this.accepts = accepts;
+        this.accepted = accepted;
     }
 
     public DState compile() {
@@ -44,7 +44,7 @@ public class NAutomaton implements Writable {
         output.append("\n");
 
         output.append("  accepted:\n");
-        for (var accept : accepts) {
+        for (var accept : accepted) {
             output.append("  - ");
             accept.write(output);
             output.append("\n");
@@ -87,7 +87,7 @@ public class NAutomaton implements Writable {
 
     public boolean isAccepted(Set<NState> states) {
         for (var state : states) {
-            if (accepts.contains(state)) {
+            if (accepted.contains(state)) {
                 return true;
             }
         }

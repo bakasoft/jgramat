@@ -25,7 +25,7 @@ public class RawOptionalAutomaton extends RawAutomaton {
         var accepted = new HashSet<NState>();
 
         accepted.add(am.initial);
-        accepted.addAll(am.accepts);
+        accepted.addAll(am.accepted);
 
         return lang.automaton(am.initial, accepted);
     }

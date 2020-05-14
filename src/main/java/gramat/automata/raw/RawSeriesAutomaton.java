@@ -30,7 +30,7 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
             var next = lang.state();
 
-            lang.transition(am.accepts, next, null);
+            lang.transition(am.accepted, next, null);
 
             last = next;
         }
