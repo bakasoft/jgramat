@@ -9,6 +9,7 @@ public class Language {
     final Set<Symbol> symbols;
     final List<NTransition> transitions;
     final List<NAutomaton> automata;
+    final List<Runnable> postBuildActions;
 
     private int next_id;
 
@@ -18,7 +19,18 @@ public class Language {
         wilds = new HashSet<>();
         transitions = new ArrayList<>();
         automata = new ArrayList<>();
+        postBuildActions = new ArrayList<>();
         next_id = 0;
+    }
+
+    public void postBuild(Runnable action) {
+        postBuildActions.add(action);
+    }
+
+    public void applyPostBuild() {
+        for (var action : postBuildActions) {
+            action.run();
+        }
     }
 
     public void makeWild(NState state) {
@@ -144,22 +156,30 @@ public class Language {
     }
 
     public void transition(NState source, NState target, Object symbol) {
-        transition(Set.of(Objects.requireNonNull(source)), target, symbol, null);
+        transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of());
     }
 
     public void transition(NState source, NState target, Object symbol, String action) {
-        transition(Set.of(Objects.requireNonNull(source)), target, symbol, action);
+        transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of(action));
+    }
+
+    public void transition(NState source, NState target, Object symbol, List<String> actions) {
+        transition(Set.of(Objects.requireNonNull(source)), target, symbol, actions);
     }
 
     public void transition(Set<NState> sources, NState target, Object symbol) {
-        transition(sources, target, symbol, null);
+        transition(sources, target, symbol, List.of());
     }
 
     public void transition(Set<NState> sources, NState target, Object symbol, String action) {
+        transition(sources, target, symbol, List.of(action));
+    }
+
+    public void transition(Set<NState> sources, NState target, Object symbol, List<String> actions) {
         var s = make_symbol(symbol);
 
         for (var source : sources) {
-            var t = new NTransition(source, s, target, action);
+            var t = new NTransition(source, s, target, actions);
 
             transitions.add(t);
         }

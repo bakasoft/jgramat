@@ -49,7 +49,9 @@ public class DMaker {
 
                         var newTarget = state_of(targets);
 
-                        language.transition(newSource, newTarget, symbol);
+                        var actions = find_transition_actions(sources, targets, symbol);
+
+                        language.transition(newSource, newTarget, symbol, actions);
 
                         queue.add(targets);
                     }
@@ -81,6 +83,42 @@ public class DMaker {
         }
 
         return new NAutomaton(language, newInitial, newAccepts);
+    }
+
+    private List<String> find_transition_actions(Set<NState> sources, Set<NState> targets, Symbol symbol) {
+        var actions = new ArrayList<String>();
+        var transitions = find_transitions(sources, targets, symbol);
+
+        for (var transition : transitions) {
+            actions.addAll(transition.actions);
+        }
+
+        return actions;
+    }
+
+    private List<NTransition> find_transitions(Set<NState> sources, Set<NState> targets, Symbol symbol) {
+        var result = new ArrayList<NTransition>();
+        var queue = new LinkedList<>(sources);
+        var control = new HashSet<NState>();
+
+        while (queue.size() > 0) {
+            var source = queue.remove();
+
+            if (control.add(source)) {
+                for (var trn : source.getTransitions()) {
+                    if (trn.symbol == null) {
+                        result.add(trn);
+
+                        queue.add(trn.target);
+                    }
+                    else if (trn.symbol == symbol && targets.contains(trn.target)) {
+                        result.add(trn);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     private NState state_of(Set<NState> states) {

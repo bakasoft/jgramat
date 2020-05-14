@@ -20,13 +20,10 @@ public class NAutomaton implements Writable {
     }
 
     public DState compile() {
-        System.out.println("RAW -----------");
-        System.out.println(captureOutput());
-
         DWildResolver.resolve(this);
 
-        System.out.println("NO WILD -----------");
-        System.out.println(captureOutput());
+        System.out.println("NDFA -----------");
+        System.out.println(this.captureOutput());
 
         var dfa = DMaker.transform(this);
 

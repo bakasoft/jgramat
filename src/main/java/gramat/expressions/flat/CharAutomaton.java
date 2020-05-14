@@ -40,6 +40,8 @@ public class CharAutomaton extends Expression {
             var lang = new Language();
             var am = collapsed.build(lang);
 
+            lang.applyPostBuild();
+
             _root = am.compile();
         }
         return _root;

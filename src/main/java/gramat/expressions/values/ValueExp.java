@@ -1,9 +1,11 @@
 package gramat.expressions.values;
 
+import gramat.automata.raw.RawCapture;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendSegment;
 import gramat.runtime.EvalContext;
@@ -47,6 +49,12 @@ public class ValueExp extends DataExpr {
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
+
+            if (expression instanceof CharAutomaton) {
+                var cham = (CharAutomaton)expression;
+                return new CharAutomaton(location, new RawCapture(cham.getAutomaton(), parser));
+            }
+
             return this;
         });
     }
