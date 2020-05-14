@@ -129,6 +129,8 @@ public class DMaker {
         if (state == null) {
             state = language.state();
 
+            state.actions.addAll(Utils.collectStateActions(states));
+
             hashStates.put(hash, state);
         }
         return state;

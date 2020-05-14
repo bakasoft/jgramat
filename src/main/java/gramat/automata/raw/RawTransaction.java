@@ -53,6 +53,14 @@ abstract public class RawTransaction extends RawAutomaton {
             rollbackTrs = Utils.removeIf(rollbackTrs, t -> t.actions.contains(commitAction));
 
             Utils.addAction(rollbackTrs, rollbackAction);
+
+            if (beginAction != null && beginTrs.isEmpty()) {
+                Utils.addStateAction(initial, beginAction);
+            }
+
+            if (commitAction != null && commitTrs.isEmpty()) {
+                Utils.addStateAction(accepted, commitAction);
+            }
         });
 
         return am;

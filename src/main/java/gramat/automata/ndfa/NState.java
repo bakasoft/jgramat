@@ -1,6 +1,9 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.actions.Action;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,10 +11,12 @@ public class NState {
 
     public final Language language;
     public final int id;
+    public final List<Action> actions;
 
     NState(Language language, int id) {
         this.language = language;
         this.id = id;
+        this.actions = new ArrayList<>();
     }
 
     public List<NTransition> getTransitions() {

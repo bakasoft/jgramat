@@ -49,7 +49,7 @@ public class EvalContext {
     public void commit(Expression expression) {
         var pos = source.getPosition();
         if (pos > lastCommitPosition) {
-            lastCommitName = expression.getDescription();
+            lastCommitName = expression != null ? expression.getDescription() : null;
             lastCommitPosition = pos;
         }
 

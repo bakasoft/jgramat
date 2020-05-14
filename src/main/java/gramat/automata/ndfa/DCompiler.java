@@ -83,6 +83,7 @@ public class DCompiler {
         ds.accepted = accepted.contains(ns);
         ds.transitions = transitions.toArray(DTransition[]::new);
         ds.wildTransition = wildTransition;
+        ds.actions = ns.actions.toArray(Action[]::new);
 
         validate_transitions(ds.transitions);
     }

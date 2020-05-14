@@ -1,8 +1,10 @@
 package gramat.expressions.values;
 
+import gramat.automata.raw.RawObject;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EditCloseValue;
 import gramat.runtime.EditOpenWildObject;
@@ -33,6 +35,12 @@ public class ObjectExp extends DataExpr {
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             expression = expression.optimize(context);
+
+            if (expression instanceof CharAutomaton) {
+                var cham = (CharAutomaton)expression;
+                return new CharAutomaton(location, new RawObject(cham.getAutomaton(), typeHint));
+            }
+
             return this;
         });
     }

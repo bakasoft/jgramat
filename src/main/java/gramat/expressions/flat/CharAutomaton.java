@@ -7,9 +7,7 @@ import gramat.automata.raw.*;
 import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
-import gramat.runtime.EditSendSegment;
-import gramat.runtime.EditSet;
-import gramat.runtime.EvalContext;
+import gramat.runtime.*;
 import gramat.util.parsing.Location;
 
 import java.util.ArrayList;
@@ -101,6 +99,16 @@ public class CharAutomaton extends Expression {
             int position = context.source.getPosition();
 
             actionsPositions.put(action, position);
+
+            context.begin(null);
+        }
+        else if (action instanceof PositionRollback) {
+            var rollback = (PositionRollback)action;
+            if (actionsPositions.remove(rollback.beginAction) == null) {
+                throw new RuntimeException("cannot rollback without begin");
+            }
+
+            context.rollback(null);
         }
         else if (action instanceof CommitCapture) {
             var commit = (CommitCapture)action;
@@ -113,12 +121,8 @@ public class CharAutomaton extends Expression {
             var posF = context.source.getPosition();
 
             context.add(new EditSendSegment(context.source, pos0, pos0, posF, commit.parser));
-        }
-        else if (action instanceof PositionRollback) {
-            var rollback = (PositionRollback)action;
-            if (actionsPositions.remove(rollback.beginAction) == null) {
-                throw new RuntimeException("cannot rollback without begin");
-            }
+
+            context.commit(null);
         }
         else if (action instanceof CommitAttribute) {
             var commit = (CommitAttribute) action;
@@ -129,6 +133,19 @@ public class CharAutomaton extends Expression {
             }
 
             context.add(new EditSet(context.source, pos0, commit.name));
+
+            context.commit(null);
+        }
+        else if (action instanceof ObjectBegin) {
+            context.begin(null);
+            context.add(new EditOpenWildObject(context.source, context.source.getPosition(), null));
+        }
+        else if (action instanceof ObjectCommit) {
+            context.add(new EditCloseValue(context.source, context.source.getPosition()));
+            context.commit(null);
+        }
+        else if (action instanceof ObjectRollback) {
+            context.rollback(null);
         }
         else {
             throw new RuntimeException("not implemented action: " + action);

@@ -12,18 +12,22 @@ public class DState {
 
     DTransition[] transitions;
 
+    Action[] actions;
+
     DTransition wildTransition;
 
     public DState move(char symbol, List<Action> actions) {
         for (var trn : transitions) {
             if (trn.accepts(symbol)) {
                 Collections.addAll(actions, trn.actions);
+                Collections.addAll(actions, trn.target.actions);
                 return trn.target;
             }
         }
 
         if (wildTransition != null) {
             Collections.addAll(actions, wildTransition.actions);
+            Collections.addAll(actions, wildTransition.target.actions);
             return wildTransition.target;
         }
 
