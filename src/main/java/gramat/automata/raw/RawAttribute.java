@@ -1,24 +1,17 @@
 package gramat.automata.raw;
 
 import gramat.automata.actions.Action;
+import gramat.automata.actions.CommitAttribute;
 import gramat.automata.actions.PositionBegin;
-import gramat.automata.actions.CommitCapture;
 import gramat.automata.actions.PositionRollback;
 
-import gramat.compiling.ValueParser;
+public class RawAttribute extends RawTransaction {
 
-public class RawCapture extends RawTransaction {
+    private final String name;
 
-    private final ValueParser parser;
-
-    public RawCapture(RawAutomaton content, ValueParser parser) {
+    public RawAttribute(RawAutomaton content, String name) {
         super(content);
-        this.parser = parser;
-    }
-
-    @Override
-    public RawAutomaton collapse() {
-        return new RawCapture(content.collapse(), parser);
+        this.name = name;
     }
 
     @Override
@@ -28,7 +21,7 @@ public class RawCapture extends RawTransaction {
 
     @Override
     public Action createCommitAction(Action beginAction) {
-        return new CommitCapture(beginAction, parser);
+        return new CommitAttribute(beginAction, name);
     }
 
     @Override
@@ -36,4 +29,8 @@ public class RawCapture extends RawTransaction {
         return new PositionRollback(beginAction);
     }
 
+    @Override
+    public RawAutomaton collapse() {
+        return new RawAttribute(content.collapse(), name);
+    }
 }

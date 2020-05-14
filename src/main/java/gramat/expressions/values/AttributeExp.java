@@ -1,8 +1,10 @@
 package gramat.expressions.values;
 
+import gramat.automata.raw.RawAttribute;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
@@ -43,6 +45,13 @@ public class AttributeExp extends DataExpr {
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
             valueExpression = valueExpression.optimize(context);
+
+            if (valueExpression instanceof CharAutomaton) {
+                var am = (CharAutomaton) valueExpression;
+
+                return new CharAutomaton(location, new RawAttribute(am.getAutomaton(), name));
+            }
+
             return this;
         });
     }

@@ -1,9 +1,6 @@
 package gramat.expressions.flat;
 
-import gramat.automata.actions.Action;
-import gramat.automata.actions.BeginCapture;
-import gramat.automata.actions.CommitCapture;
-import gramat.automata.actions.RollbackCapture;
+import gramat.automata.actions.*;
 import gramat.automata.ndfa.DState;
 import gramat.automata.ndfa.Language;
 import gramat.automata.raw.*;
@@ -11,6 +8,7 @@ import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EditSendSegment;
+import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
 
@@ -99,7 +97,7 @@ public class CharAutomaton extends Expression {
 
     private void performAction(EvalContext context, Action action) {
         System.out.println("ACTION " + action + " @" + context.source.getLocation());
-        if (action instanceof BeginCapture) {
+        if (action instanceof PositionBegin) {
             int position = context.source.getPosition();
 
             actionsPositions.put(action, position);
@@ -116,11 +114,21 @@ public class CharAutomaton extends Expression {
 
             context.add(new EditSendSegment(context.source, pos0, pos0, posF, commit.parser));
         }
-        else if (action instanceof RollbackCapture) {
-            var rollback = (RollbackCapture)action;
+        else if (action instanceof PositionRollback) {
+            var rollback = (PositionRollback)action;
             if (actionsPositions.remove(rollback.beginAction) == null) {
                 throw new RuntimeException("cannot rollback without begin");
             }
+        }
+        else if (action instanceof CommitAttribute) {
+            var commit = (CommitAttribute) action;
+            var pos0 = actionsPositions.remove(commit.beginAction);
+
+            if (pos0 == null) {
+                throw new RuntimeException("cannot commit without begin");
+            }
+
+            context.add(new EditSet(context.source, pos0, commit.name));
         }
         else {
             throw new RuntimeException("not implemented action: " + action);

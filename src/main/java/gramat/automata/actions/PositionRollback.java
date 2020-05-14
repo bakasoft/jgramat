@@ -1,9 +1,9 @@
 package gramat.automata.actions;
 
-public class RollbackCapture extends Action {
+public class PositionRollback extends Action {
     public final Action beginAction;
 
-    public RollbackCapture(Action beginAction) {
+    public PositionRollback(Action beginAction) {
         this.beginAction = beginAction;
     }
 }
