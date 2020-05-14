@@ -1,8 +1,11 @@
 package gramat.expressions.wrappers;
 
+import gramat.automata.raw.RawOptionalAutomaton;
+import gramat.automata.raw.RawRepetitionAutomaton;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;
@@ -33,8 +36,14 @@ public class Optional extends Expression {
     @Override
     public Expression _custom_optimize(Compiler context) {
         return context.recursiveTransform(this, () -> {
-            // TODO
             expression = expression.optimize(context);
+
+            if (expression instanceof CharAutomaton) {
+                var amContent = ((CharAutomaton) expression).getAutomaton();
+
+                return new CharAutomaton(expression.getLocation(), new RawOptionalAutomaton(amContent)).optimize(context);
+            }
+
             return this;
         });
     }

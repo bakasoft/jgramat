@@ -79,10 +79,12 @@ public class Repetition extends Expression {
                 separator = separator.optimize(context);
             }
 
-            if (expression instanceof CharAutomaton && separator == null && minCount == null && maxCount == null) {
-                var automaton = ((CharAutomaton) expression).getAutomaton();
+            if (expression instanceof CharAutomaton && (separator == null || separator instanceof CharAutomaton)) {
+                var amContent = ((CharAutomaton) expression).getAutomaton();
+                var amSeparator = separator != null ? ((CharAutomaton)separator).getAutomaton() : null;
 
-                return new CharAutomaton(expression.getLocation(), new RawRepetitionAutomaton(automaton)).optimize(context);
+                return new CharAutomaton(expression.getLocation(), new RawRepetitionAutomaton(
+                        amContent, amSeparator, minCount, maxCount)).optimize(context);
             }
 
             return this;

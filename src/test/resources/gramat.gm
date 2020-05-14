@@ -1,22 +1,10 @@
-Test-08 = ^ "'" * "'" $
+Test-03 = ^ "a" ["_"] "b" $
 
-@fail Test-08 ``
-@fail Test-08 `'`
-@pass Test-08 `''`
-@fail Test-08 `'''`
-@pass Test-08 `'a'`
-@pass Test-08 `'ab'`
-@pass Test-08 `'abc'`
-@pass Test-08 `'abcd'`
-
-Test-06 = ^ "/*" ("\\*/"|*) "*/" $
-
-@fail Test-06 ``
-@pass Test-06 `/**/`
-@pass Test-06 `/*a*/`
-@pass Test-06 `/*aa*/`
-@pass Test-06 `/*a*a*/`
-@pass Test-06 `/*a\\/*a*/`
+@fail Test-03 ``
+@fail Test-03 `a`
+@fail Test-03 `a_`
+@pass Test-03 `ab`
+@pass Test-03 `a_b`
 
 Test-04 = ^ ("0" | '1-9' { '0-9' }) $
 
@@ -35,12 +23,32 @@ Test-05 = ^ ("abc"|"xyz"|"123") $
 @pass Test-05 `xyz`
 @pass Test-05 `123`
 
+Test-06 = ^ "/*" ("\\*/"|*) "*/" $
+
+@fail Test-06 ``
+@pass Test-06 `/**/`
+@pass Test-06 `/*a*/`
+@pass Test-06 `/*aa*/`
+@pass Test-06 `/*a*a*/`
+@pass Test-06 `/*a\\/*a*/`
+
 Test-07 = ^ {"ab"} "ac" $
 
 @pass Test-07 `ac`
 @pass Test-07 `abac`
 @pass Test-07 `ababac`
 @pass Test-07 `abababac`
+
+Test-08 = ^ "'" * "'" $
+
+@fail Test-08 ``
+@fail Test-08 `'`
+@pass Test-08 `''`
+@fail Test-08 `'''`
+@pass Test-08 `'a'`
+@pass Test-08 `'ab'`
+@pass Test-08 `'abc'`
+@pass Test-08 `'abcd'`
 
 Test-09 = ^ "a" * "e" $
 
@@ -68,3 +76,4 @@ Test-10 = ^ "a" {"b"} "c" $
 @pass Test-10 `abc`
 @pass Test-10 `abbc`
 @pass Test-10 `abbbc`
+
