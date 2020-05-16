@@ -7,4 +7,9 @@ public class SymbolWild extends Symbol {
     public void write(Appendable output) throws IOException {
         output.append("*");
     }
+
+    @Override
+    public String toString() {
+        return "*";
+    }
 }

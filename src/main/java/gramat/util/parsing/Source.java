@@ -11,7 +11,9 @@ import java.util.Objects;
 
 public class Source {
 
-    private final char[] content;
+    public static final int EOF = -1;
+
+    private final int[] content;
     private final Path file;
     private final int length;
 
@@ -24,7 +26,12 @@ public class Source {
     }
 
     public Source(String content, Path file) {
-        this.content = Objects.requireNonNull(content).toCharArray();
+        var chs = Objects.requireNonNull(content).toCharArray();
+
+        this.content = new int[chs.length];
+        for (int i = 0; i < chs.length; i++) {
+            this.content[i] = chs[i];
+        }
         this.length = content.length();
         this.file = file;
         this.position = 0;
@@ -34,20 +41,20 @@ public class Source {
         return position < length;
     }
 
-    public Character peek() {
+    public int peek() {
         if (position >= length) {
-            return null;
+            return EOF;
         }
 
         return content[position];
     }
 
-    public void moveNext() {
-        if (position >= length) {
-            throw error("EOF");
+    public boolean moveNext() {
+        if (position < length) {
+            position++;
+            return true;
         }
-
-        position++;
+        return false;
     }
 
     public boolean testAny(Iterable<String> tokens) {
@@ -70,7 +77,7 @@ public class Source {
         for (var expectedChar : token.toCharArray()) {
             var actualChar = peek();
 
-            if (actualChar == null || actualChar != expectedChar) {
+            if (actualChar != expectedChar) {
                 position = pos0;
                 return false;
             }
@@ -92,10 +99,10 @@ public class Source {
         return false;
     }
 
-    public boolean pull(char expectedChar) {
+    public boolean pull(int expectedChar) {
         var actualChar = peek();
 
-        if (actualChar != null && actualChar == expectedChar) {
+        if (actualChar == expectedChar) {
             moveNext();
             return true;
         }
@@ -113,7 +120,7 @@ public class Source {
         for (var expectedChar : token.toCharArray()) {
             var actualChar = peek();
 
-            if (actualChar == null || actualChar != expectedChar) {
+            if (actualChar != expectedChar) {
                 position = pos0;
                 return false;
             }
@@ -130,7 +137,7 @@ public class Source {
         for (int i = 0; i < length; i++) {
             var c = peek();
 
-            if (c == null) {
+            if (c == EOF) {
                 throw error("Unexpected EOF");
             }
 
@@ -142,7 +149,7 @@ public class Source {
         return output.toString();
     }
 
-    public void expect(char token) throws ParseException {
+    public void expect(int token) throws ParseException {
         if (!pull(token)) {
             throw error("Expected token: " + token);
         }
@@ -169,7 +176,7 @@ public class Source {
         int column = 0;
 
         for(int i = 0 ; i < length; i++){
-            char c = content[i];
+            int c = content[i];
 
             if (c == '\n') {
                 line += 1;
@@ -198,7 +205,7 @@ public class Source {
 
     public int getLength() { return length; }
 
-    public char getChar(int index) { return content[index]; }
+    public int getChar(int index) { return content[index]; }
 
     public void setPosition(int position) { this.position = position; }
 

@@ -8,4 +8,9 @@ public class CommitAttribute extends Action {
         this.beginAction = beginAction;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "Commit-Attribute:" + name;
+    }
 }

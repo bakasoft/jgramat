@@ -1,8 +1,17 @@
+Test-06 = ^ "/*" ("\\*/"|*) "*/" $
+
+@pass Test-06 `/**/`
+@fail Test-06 ``
+@pass Test-06 `/*a*/`
+@pass Test-06 `/*aa*/`
+@pass Test-06 `/*a*a*/`
+@pass Test-06 `/*a\\/*a*/`
+
 Test-04 = ^ ("0" | '1-9' { '0-9' }) $
 
-//@fail Test-04 `01`
-//@pass Test-04 `0`
-//@pass Test-04 `1`
+@fail Test-04 `01`
+@pass Test-04 `0`
+@pass Test-04 `1`
 @pass Test-04 `12`
 @pass Test-04 `123`
 
@@ -27,15 +36,6 @@ Test-05 = ^ ("abc"|"xyz"|"123") $
 @pass Test-05 `xyz`
 @pass Test-05 `123`
 
-Test-06 = ^ "/*" ("\\*/"|*) "*/" $
-
-@fail Test-06 ``
-@pass Test-06 `/**/`
-@pass Test-06 `/*a*/`
-@pass Test-06 `/*aa*/`
-@pass Test-06 `/*a*a*/`
-@pass Test-06 `/*a\\/*a*/`
-
 Test-07 = ^ {"ab"} "ac" $
 
 @pass Test-07 `ac`
@@ -48,7 +48,7 @@ Test-08 = ^ "'" * "'" $
 @fail Test-08 ``
 @fail Test-08 `'`
 @pass Test-08 `''`
-@fail Test-08 `'''`
+@pass Test-08 `'''`
 @pass Test-08 `'a'`
 @pass Test-08 `'ab'`
 @pass Test-08 `'abc'`

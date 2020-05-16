@@ -5,7 +5,7 @@ import gramat.output.GrammarWriter;
 
 abstract public class DTransition {
 
-    abstract public boolean accepts(char symbol);
+    abstract public boolean accepts(int symbol);
 
     abstract public boolean intersects(DTransition transition);
 

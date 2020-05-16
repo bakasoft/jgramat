@@ -24,9 +24,9 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     public NAutomaton build(Language lang) {
         var initial = lang.state();
         var last = initial;
-        for (char c : value.toCharArray()) {
+        for (var c : value.toCharArray()) {
             var next = lang.state();
-            lang.transition(last, next, c);
+            lang.transition(last, next, (int)c);
             last = next;
         }
         return lang.automaton(initial, last);

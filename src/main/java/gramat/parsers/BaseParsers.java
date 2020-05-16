@@ -11,7 +11,7 @@ public class BaseParsers {
         while (source.alive()) {
             var c = source.peek();
 
-            if (c == null) {
+            if (c == Source.EOF) {
                 return;
             }
             else if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
@@ -52,8 +52,8 @@ public class BaseParsers {
         while (source.alive()) {
             var c = source.peek();
 
-            if (c != null && isKeywrodChar(c, keyword.length() == 0)) {
-                keyword.append(c);
+            if (c != Source.EOF && isKeywrodChar(c, keyword.length() == 0)) {
+                keyword.append((char)c);
                 source.moveNext();
             }
             else {
@@ -74,8 +74,8 @@ public class BaseParsers {
         while (source.alive()) {
             var c = source.peek();
 
-            if (c != null && isDigitChar(c)) {
-                digits.append(c);
+            if (c != Source.EOF && isDigitChar(c)) {
+                digits.append((char)c);
                 source.moveNext();
             }
             else {
@@ -100,11 +100,11 @@ public class BaseParsers {
         while(source.alive()) {
             var c = readStringChar(source, delimiter);
 
-            if (c == null) {
+            if (c == Source.EOF) {
                 break;
             }
 
-            value.append(c);
+            value.append((char)c);
         }
 
         source.expect(delimiter);
@@ -112,11 +112,11 @@ public class BaseParsers {
         return value.toString();
     }
 
-    public static Character readStringChar(Source source, char delimiter) {
+    public static int readStringChar(Source source, char delimiter) {
         var c = source.peek();
 
-        if (c == null || c == delimiter) {
-            return null;
+        if (c == Source.EOF || c == delimiter) {
+            return Source.EOF;
         }
 
         source.moveNext();
@@ -124,7 +124,7 @@ public class BaseParsers {
         if (c == '\\') {
             var escaped = source.peek();
 
-            if (escaped == null) {
+            if (escaped == Source.EOF) {
                 throw source.error("Expected an escaped char");
             }
 
@@ -158,7 +158,7 @@ public class BaseParsers {
                 var hex = source.readText(4);
                 var cod = Integer.parseInt(hex, 16);
 
-                return (char)cod;
+                return cod;
             }
             else {
                 throw source.error("Invalid escaped char");
@@ -171,7 +171,7 @@ public class BaseParsers {
         return c;
     }
 
-    private static boolean isKeywrodChar(char c, boolean isFirstChar) {
+    private static boolean isKeywrodChar(int c, boolean isFirstChar) {
         return (!isFirstChar && c >= '0' && c <= '9')
                 || (c >= 'a' && c <= 'z')
                 || (c >= 'A' && c <= 'Z')
@@ -179,7 +179,7 @@ public class BaseParsers {
                 || c == '-';
     }
 
-    private static boolean isDigitChar(char c) {
+    private static boolean isDigitChar(int c) {
         return (c >= '0' && c <= '9');
     }
 

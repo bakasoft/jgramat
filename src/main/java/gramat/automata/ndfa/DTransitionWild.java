@@ -10,7 +10,7 @@ public class DTransitionWild extends DTransition {
     }
 
     @Override
-    public boolean accepts(char symbol) {
+    public boolean accepts(int symbol) {
         throw new RuntimeException();
     }
 

@@ -136,7 +136,7 @@ public class DMaker {
         return state;
     }
 
-    static Set<NState> compute_null_closure(Set<NState> states) {
+    public static Set<NState> compute_null_closure(Set<NState> states) {
         var result = new HashSet<NState>();
         var queue = new LinkedList<>(states);
 

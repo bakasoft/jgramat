@@ -11,4 +11,9 @@ public class CommitCapture extends Action {
         this.beginAction = beginAction;
         this.parser = parser;
     }
+
+    @Override
+    public String toString() {
+        return "Commit-Capture";
+    }
 }

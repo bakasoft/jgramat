@@ -6,4 +6,9 @@ public class PositionRollback extends Action {
     public PositionRollback(Action beginAction) {
         this.beginAction = beginAction;
     }
+
+    @Override
+    public String toString() {
+        return "Position-Rollback";
+    }
 }

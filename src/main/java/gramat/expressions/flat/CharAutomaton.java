@@ -9,6 +9,7 @@ import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
 import gramat.runtime.*;
 import gramat.util.parsing.Location;
+import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +25,11 @@ public class CharAutomaton extends Expression {
         this(location, new RawLiteralAutomaton(literal));
     }
 
-    public CharAutomaton(Location location, char literal) {
+    public CharAutomaton(Location location, int literal) {
         this(location, new RawCharAutomaton(literal));
     }
 
-    public CharAutomaton(Location location, char begin, char end) {
+    public CharAutomaton(Location location, int begin, int end) {
         this(location, new RawRangeAutomaton(begin, end));
     }
 
@@ -54,6 +55,9 @@ public class CharAutomaton extends Expression {
     public boolean eval(EvalContext context) {
         var pos0 = context.source.getPosition();
         var state = getRoot();
+        int lastValue = 0;
+
+        System.out.println(state.getAmCode());
 
         while(true) {
             try {
@@ -70,13 +74,20 @@ public class CharAutomaton extends Expression {
                     }
                 } else {
                     var value = context.source.peek();
-                    var actions = new ArrayList<Action>();
-                    var newState = value != null ? state.move(value, actions) : null;
 
-                    for (var action : actions) {
-                        performAction(context, action);
+                    DState newState;
+
+                    if (lastValue == Source.EOF && value == lastValue) {
+                        newState = null;
                     }
-
+                    else {
+                        var actions = new ArrayList<Action>();
+                        newState = state.move(value, actions);
+                        for (var action : actions) {
+                            performAction(context, action);
+                        }
+                    }
+                    
                     if (newState == null) {
                         if (state.isAccepted()) {
                             return true;
@@ -86,9 +97,11 @@ public class CharAutomaton extends Expression {
                         }
                     }
 
+                    // check for infinite loop
                     context.source.moveNext();
 
                     state = newState;
+                    lastValue = value;
                 }
             }
             catch(Reject e) {
@@ -156,11 +169,6 @@ public class CharAutomaton extends Expression {
         }
         else if (action instanceof BeginSourceCheck) {
             if (context.source.getPosition() != 0) {
-                throw new Reject();
-            }
-        }
-        else if (action instanceof EndSourceCheck) {
-            if (context.source.alive()) {
                 throw new Reject();
             }
         }

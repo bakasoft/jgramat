@@ -5,9 +5,9 @@ import gramat.automata.ndfa.Language;
 
 public class RawCharAutomaton extends RawStringAutomaton {
 
-    public final char value;
+    public final int value;
 
-    public RawCharAutomaton(char value) {
+    public RawCharAutomaton(int value) {
         this.value = value;
     }
 
@@ -28,6 +28,9 @@ public class RawCharAutomaton extends RawStringAutomaton {
 
     @Override
     public String getStringValue() {
-        return String.valueOf(value);
+        if (value > 0) {
+            return String.valueOf((char)value);
+        }
+        return "";
     }
 }

@@ -5,17 +5,17 @@ import gramat.output.GrammarWriter;
 
 public class DTransitionRange extends DTransition {
 
-    final char begin;
-    final char end;
+    public final int begin;
+    public final int end;
 
-    public DTransitionRange(DState target, Action[] actions, char begin, char end) {
+    public DTransitionRange(DState target, Action[] actions, int begin, int end) {
         super(target, actions);
         this.begin = begin;
         this.end = end;
     }
 
     @Override
-    public boolean accepts(char symbol) {
+    public boolean accepts(int symbol) {
         return symbol >= begin && symbol <= end;
     }
 

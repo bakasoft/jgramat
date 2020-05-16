@@ -1,11 +1,12 @@
 package gramat.automata.ndfa;
 
+import gramat.output.GrammarWriter;
 import gramat.output.Writable;
+import gramat.util.GramatWriter;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class NAutomaton implements Writable {
 
@@ -20,8 +21,6 @@ public class NAutomaton implements Writable {
     }
 
     public DState compile() {
-        DWildResolver.resolve(this);
-
         System.out.println("NDFA -----------");
         System.out.println(this.captureOutput());
 
@@ -35,28 +34,62 @@ public class NAutomaton implements Writable {
 
     @Override
     public void write(Appendable output) throws IOException {
-        output.append("{\n");
-        output.append("  initial: ");
-        initial.write(output);
-        output.append("\n");
+        var states = list_states(initial);
 
-        output.append("  accepted:\n");
-        for (var accept : accepted) {
-            output.append("  - ");
-            accept.write(output);
-            output.append("\n");
-        }
+        for (var state : states) {
+            var actions = new ArrayList<>(state.actions);
 
-        output.append("  transitions:\n");
-        for (var state : list_states(initial)) {
-            for (var trn : state.getTransitions()) {
-                output.append("  - ");
-                trn.write(output);
+            if (actions.isEmpty()) {
+                actions.add(null);
+            }
+
+            for (var action : actions) {
+                if (state == initial) {
+                    output.append("I ");
+                } else if (accepted.contains(state)) {
+                    output.append("A ");
+                } else {
+                    output.append("S ");
+                }
+                output.append(String.valueOf(state.id));
+
+                if (action != null) {
+                    output.append(" ! ");
+                    output.append(action.toString());
+                }
+
                 output.append("\n");
             }
         }
 
-        output.append("}\n");
+        for (var state : states) {
+            for (var trn : state.getTransitions()) {
+                var actions = new ArrayList<>(trn.actions);
+
+                if (actions.isEmpty()) {
+                    actions.add(null);
+                }
+
+                for (var action : actions) {
+                    output.append("T ");
+                    output.append(String.valueOf(trn.source.id));
+                    output.append(" -> ");
+                    output.append(String.valueOf(trn.target.id));
+
+                    if (trn.symbol != null) {
+                        output.append(" : ");
+                        output.append(GramatWriter.toDelimitedString(trn.symbol.toString(), '\"'));
+                    }
+
+                    if (action != null) {
+                        output.append(" ! ");
+                        output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
+                    }
+
+                    output.append("\n");
+                }
+            }
+        }
     }
 
     public Set<NState> getStates() {

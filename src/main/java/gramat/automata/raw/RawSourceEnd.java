@@ -1,9 +1,8 @@
 package gramat.automata.raw;
 
-import gramat.automata.actions.BeginSourceCheck;
-import gramat.automata.actions.EndSourceCheck;
 import gramat.automata.ndfa.Language;
 import gramat.automata.ndfa.NAutomaton;
+import gramat.util.parsing.Source;
 
 public class RawSourceEnd extends RawAutomaton {
     @Override
@@ -13,10 +12,11 @@ public class RawSourceEnd extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var state = lang.state();
+        var initial = lang.state();
+        var accepted = lang.state();
 
-        state.actions.add(new EndSourceCheck());
+        lang.transition(initial, accepted, Source.EOF);
 
-        return lang.automaton(state, state);
+        return lang.automaton(initial, accepted);
     }
 }

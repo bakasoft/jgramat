@@ -7,7 +7,7 @@ import java.util.*;
 public class Language {
 
     final Set<NState> states;
-    final Set<NState> wilds;
+    public final Set<NState> wilds; // TODO public? it shouldn't
     final Set<Symbol> symbols;
     final List<NTransition> transitions;
     final List<NAutomaton> automata;
@@ -51,7 +51,7 @@ public class Language {
         return new NAutomaton(this, initial, accepted);
     }
 
-    private Symbol search_symbol(char c) {
+    private Symbol search_symbol(int c) {
         for (var symbol : symbols) {
             if (symbol instanceof SymbolChar) {
                 var sc = (SymbolChar)symbol;
@@ -65,7 +65,7 @@ public class Language {
         return null;
     }
 
-    private Symbol search_symbol(char begin, char end) {
+    private Symbol search_symbol(int begin, int end) {
         if (begin == end) {
             return search_symbol(begin);
         }
@@ -97,8 +97,8 @@ public class Language {
         if (value == null) {
             return null;
         }
-        else if (value instanceof Character) {
-            var c = (char)value;
+        else if (value instanceof Integer) {
+            var c = (int)value;
             var symbol = search_symbol(c);
 
             if (symbol != null) {
@@ -143,7 +143,7 @@ public class Language {
             return wild;
         }
         else {
-            throw new RuntimeException("Unsupported symbol: " + value);
+            throw new RuntimeException("Unsupported symbol: " + value.getClass());
         }
     }
 

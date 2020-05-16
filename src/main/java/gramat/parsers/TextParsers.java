@@ -35,7 +35,7 @@ public class TextParsers {
         while (source.alive()) {
             var begin = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
-            if (begin == null) {
+            if (begin == Source.EOF) {
                 if (expectMore) {
                     throw source.error("expected more");
                 }
@@ -44,17 +44,17 @@ public class TextParsers {
 
             var sep = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
-            if (sep == null || sep == Mark.PREDICATE_ITEM_SEPARATOR) {
+            if (sep == Source.EOF || sep == Mark.PREDICATE_ITEM_SEPARATOR) {
                 var location = source.locationOf(source.getPosition() - 1);
 
                 items.add(new CharAutomaton(location, begin));
 
-                expectMore = (sep != null);
+                expectMore = (sep != Source.EOF);
             }
             else if (sep == Mark.PREDICATE_RANGE_SEPARATOR) {
                 var end = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
-                if (end == null) {
+                if (end == Source.EOF) {
                     throw source.error("expected end char");
                 }
 
@@ -64,7 +64,7 @@ public class TextParsers {
 
                 var sep2 = BaseParsers.readStringChar(source, Mark.PREDICATE_DELIMITER);
 
-                if (sep2 == null) {
+                if (sep2 == Source.EOF) {
                     break;
                 }
                 else if (sep2 == Mark.PREDICATE_ITEM_SEPARATOR) {

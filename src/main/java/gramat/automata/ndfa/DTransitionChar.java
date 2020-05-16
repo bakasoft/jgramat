@@ -5,15 +5,15 @@ import gramat.output.GrammarWriter;
 
 public class DTransitionChar extends DTransition {
 
-    final char symbol;
+    public final int symbol;
 
-    public DTransitionChar(DState target, Action[] actions, char symbol) {
+    public DTransitionChar(DState target, Action[] actions, int symbol) {
         super(target, actions);
         this.symbol = symbol;
     }
 
     @Override
-    public boolean accepts(char symbol) {
+    public boolean accepts(int symbol) {
         return this.symbol == symbol;
     }
 

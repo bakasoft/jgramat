@@ -6,10 +6,10 @@ import gramat.automata.ndfa.SymbolRange;
 
 public class RawRangeAutomaton extends RawAutomaton {
 
-    public final char begin;
-    public final char end;
+    public final int begin;
+    public final int end;
 
-    public RawRangeAutomaton(char begin, char end) {
+    public RawRangeAutomaton(int begin, int end) {
         this.begin = begin;
         this.end = end;
     }

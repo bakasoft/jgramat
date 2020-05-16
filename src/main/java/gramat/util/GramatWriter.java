@@ -143,6 +143,9 @@ public class GramatWriter {
             else if (c == '\b') {
                 write("\\b");
             }
+            else if (c == '\\') {
+                write("\\\\");
+            }
             else if (c == delimiter && delimiter != '\0') {
                 write('\\');
                 write(delimiter);
