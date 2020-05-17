@@ -1,3 +1,23 @@
+Test-00 = ^ {"ab"} {"cd" / "|"} {+"ef"} {+"gh" / "|"} $
+
+@fail Test-00 ``
+@fail Test-00 `ab`
+@fail Test-00 `cd`
+@fail Test-00 `ef`
+@fail Test-00 `gh`
+@fail Test-00 `cdef`
+@pass Test-00 `efgh`
+@pass Test-00 `cdefgh`
+@pass Test-00 `abcdefgh`
+@pass Test-00 `abefgh`
+@pass Test-00 `ababcdefgh|gh`
+@pass Test-00 `cd|cdefefgh|gh`
+@pass Test-00 `ababcd|cdefefgh|gh`
+
+Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
+
+@pass Test-01 `{abc:def,ghi:jkl}`
+
 Test-06 = ^ "/*" ("\\*/"|*) "*/" $
 
 @pass Test-06 `/**/`

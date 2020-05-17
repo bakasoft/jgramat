@@ -1,7 +1,12 @@
 package gramat.automata.raw;
 
+import gramat.automata.ndfa.DState;
 import gramat.automata.ndfa.NAutomaton;
 import gramat.automata.ndfa.Language;
+import gramat.automata.ndfa.NState;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class RawRepetitionAutomaton extends RawAutomaton {
@@ -30,19 +35,45 @@ public class RawRepetitionAutomaton extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        if (separator == null && minimum == null && maximum == null) {
-            var state = lang.state();
+        var min = (minimum != null ? minimum : 0);
+        var max = (maximum != null ? maximum : 0);
 
-            var am = content.build(lang);
+        if (min == 0 && max == 0 && separator == null) {  // unbounded loop without separator
+            var amMain = content.build(lang);
+            lang.transition(amMain.accepted, amMain.initial, null);
+            return lang.automaton(amMain.initial, amMain.initial);
+        }
+        else if (min == 0 && max == 0) { // unbounded loop WITH separator
+            var amMain = content.build(lang);
+            var initial = lang.state();
+            var accepted = lang.state();
 
-            lang.transition(state, am.initial, null);
+            lang.transition(initial, amMain.initial, null);
+            lang.transition(amMain.accepted, accepted, null);
 
-            lang.transition(am.accepted, state, null);
+            var amLoopSep = separator.build(lang);
+            var amLoopCon = content.build(lang);
 
-            return lang.automaton(state, state);
+            lang.transition(accepted, amLoopSep.initial, null);
+            lang.transition(amLoopSep.accepted, amLoopCon.initial, null);
+            lang.transition(amLoopCon.accepted, accepted, null);
+
+            return lang.automaton(initial, Set.of(initial, accepted));
+        }
+        else if (min == 1 && max == 0) {
+            var amMain = content.build(lang);
+            if (separator != null) {
+                var amSep = separator.build(lang);
+                lang.transition(amMain.accepted, amSep.initial, null);
+                lang.transition(amSep.accepted, amMain.initial, null);
+            }
+            else {
+                lang.transition(amMain.accepted, amMain.initial, null);
+            }
+            return lang.automaton(amMain.initial, amMain.accepted);
         }
         else {
-            throw new RuntimeException("not implemented");
+            throw new RuntimeException("not implemented: min=" + min + ", max=" + max + ", sep=" + (separator != null));
         }
     }
 

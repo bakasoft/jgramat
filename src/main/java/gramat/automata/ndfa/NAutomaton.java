@@ -21,13 +21,13 @@ public class NAutomaton implements Writable {
     }
 
     public DState compile() {
-        System.out.println("NDFA -----------");
-        System.out.println(this.captureOutput());
+//        System.out.println("NDFA -----------");
+//        System.out.println(this.captureOutput());
 
         var dfa = DMaker.transform(this);
 
-        System.out.println("DFA -----------");
-        System.out.println(dfa.captureOutput());
+//        System.out.println("DFA -----------");
+//        System.out.println(dfa.captureOutput());
 
         return DCompiler.transform(dfa);
     }

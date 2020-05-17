@@ -1,8 +1,10 @@
 package gramat.expressions.values;
 
+import gramat.automata.raw.RawDynAttribute;
 import gramat.compiling.Compiler;
 import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
+import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EditSet;
 import gramat.runtime.EvalContext;
@@ -52,6 +54,13 @@ public class DynAttributeExp extends DataExpr {
         return context.recursiveTransform(this, () -> {
             nameExpression = nameExpression.optimize(context);
             valueExpression = valueExpression.optimize(context);
+
+            if (nameExpression instanceof CharAutomaton && valueExpression instanceof CharAutomaton) {
+                var amName = ((CharAutomaton)nameExpression).getAutomaton();
+                var amValue = ((CharAutomaton)valueExpression).getAutomaton();
+                return new CharAutomaton(location, new RawDynAttribute(amName, amValue));
+            }
+
             return this;
         });
     }

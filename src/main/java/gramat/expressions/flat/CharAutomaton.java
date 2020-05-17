@@ -57,7 +57,9 @@ public class CharAutomaton extends Expression {
         var state = getRoot();
         int lastValue = 0;
 
+        System.out.println("---------->>");
         System.out.println(state.getAmCode());
+        System.out.println("----------");
 
         while(true) {
             try {

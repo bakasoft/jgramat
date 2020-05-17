@@ -178,12 +178,22 @@ public class Language {
     }
 
     public void transition(Set<NState> sources, NState target, Object symbol, List<Action> actions) {
+        transition(sources, Set.of(target), symbol, actions);
+    }
+
+    public void transition(Set<NState> sources, Set<NState> targets, Object symbol) {
+        transition(sources, targets, symbol, List.of());
+    }
+
+    public void transition(Set<NState> sources, Set<NState> targets, Object symbol, List<Action> actions) {
         var s = make_symbol(symbol);
 
         for (var source : sources) {
-            var t = new NTransition(source, s, target, actions);
+            for (var target : targets) {
+                var t = new NTransition(source, s, target, actions);
 
-            transitions.add(t);
+                transitions.add(t);
+            }
         }
     }
 }
