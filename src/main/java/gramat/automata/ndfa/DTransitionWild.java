@@ -5,8 +5,8 @@ import gramat.output.GrammarWriter;
 
 public class DTransitionWild extends DTransition {
 
-    public DTransitionWild(DState target, Action[] actions) {
-        super(target, actions);
+    public DTransitionWild(DState target) {
+        super(target);
     }
 
     @Override
@@ -16,7 +16,7 @@ public class DTransitionWild extends DTransition {
 
     @Override
     public boolean intersects(DTransition transition) {
-        throw new RuntimeException();
+        return false;
     }
 
     @Override

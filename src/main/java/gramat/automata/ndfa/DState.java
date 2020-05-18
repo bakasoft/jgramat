@@ -12,26 +12,26 @@ public class DState {
 
     boolean accepted;
 
-    DTransition[] transitions;
+    final List<DTransition> transitions;
 
-    public Action[] actions; // TODO remove public
-
-    DTransition wildTransition;
+    public DState() {
+        transitions = new ArrayList<>();
+    }
 
     public DState move(int symbol, List<Action> actions) {
+        DState wild = null;
+
         for (var trn : transitions) {
-            if (trn.accepts(symbol)) {
-                Collections.addAll(actions, trn.actions);
+            if (trn instanceof DTransitionWild) {
+                wild = trn.target;
+            }
+            else if (trn.accepts(symbol)) {
+                actions.addAll(trn.actions);
                 return trn.target;
             }
         }
 
-        if (wildTransition != null) {
-            Collections.addAll(actions, wildTransition.actions);
-            return wildTransition.target;
-        }
-
-        return null;
+        return wild;
     }
 
     public boolean isAccepted() {
@@ -39,7 +39,7 @@ public class DState {
     }
 
     public boolean isFinal() {
-        return transitions.length == 0;
+        return transitions.isEmpty();
     }
 
     public void write(GrammarWriter writer) {
@@ -83,14 +83,7 @@ public class DState {
                     output.append("\n");
                 }
 
-                if (state.actions.length == 0) {
-                    appendState(output, sourceID, state, null);
-                }
-                else {
-                    for (var action : state.actions) {
-                        appendState(output, sourceID, state, action);
-                    }
-                }
+                appendState(output, sourceID, state);
 
                 for (var transition : state.transitions) {
                     var targetID = idGetter.apply(transition.target);
@@ -99,14 +92,6 @@ public class DState {
 
                     queue.add(transition.target);
                 }
-
-                if (state.wildTransition != null) {
-                    var targetID = idGetter.apply(state.wildTransition.target);
-
-                    appendTransition(output, sourceID, targetID, state.wildTransition);
-
-                    queue.add(state.wildTransition.target);
-                }
             }
         } while (queue.size() > 0);
 
@@ -114,7 +99,7 @@ public class DState {
     }
 
     private void appendTransition(StringBuilder output, String sourceID, String targetID, DTransition transition) {
-        if (transition.actions.length == 0) {
+        if (transition.actions.isEmpty()) {
             appendTransition(output, sourceID, targetID, transition, null);
         }
         else {
@@ -167,7 +152,7 @@ public class DState {
         output.append("\n");
     }
 
-    private void appendState(StringBuilder output, String id, DState state, Action action) {
+    private void appendState(StringBuilder output, String id, DState state) {
         if (state.accepted) {
             output.append("A ");
         }
@@ -176,11 +161,6 @@ public class DState {
         }
 
         output.append(id);
-
-        if (action != null) {
-            output.append(" ! ");
-            output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
-        }
 
         output.append("\n");
     }

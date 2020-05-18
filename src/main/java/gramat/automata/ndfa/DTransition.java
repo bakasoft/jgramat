@@ -3,6 +3,9 @@ package gramat.automata.ndfa;
 import gramat.eval.Action;
 import gramat.output.GrammarWriter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 abstract public class DTransition {
 
     abstract public boolean accepts(int symbol);
@@ -11,11 +14,11 @@ abstract public class DTransition {
 
     public final DState target;
 
-    public final Action[] actions;
+    public final List<Action> actions;
 
-    public DTransition(DState target, Action[] actions) {
+    public DTransition(DState target) {
         this.target = target;
-        this.actions = actions;
+        this.actions = new ArrayList<>();
     }
 
     public abstract void write(GrammarWriter writer);

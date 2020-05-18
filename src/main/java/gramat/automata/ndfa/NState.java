@@ -11,12 +11,14 @@ public class NState {
 
     public final Language language;
     public final int id;
-    public final List<Action> actions;
+    public final List<Action> onEnter;
+    public final List<Action> onExit;
 
     NState(Language language, int id) {
         this.language = language;
         this.id = id;
-        this.actions = new ArrayList<>();
+        this.onEnter = new ArrayList<>();
+        this.onExit = new ArrayList<>();
     }
 
     public List<NTransition> getTransitions() {
@@ -28,9 +30,5 @@ public class NState {
     public void write(Appendable output) throws IOException {
         output.append("S");
         output.append(String.valueOf(id));
-        for (var action : actions) {
-            output.append(" ");
-            output.append(action.toString());
-        }
     }
 }

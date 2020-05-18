@@ -195,43 +195,23 @@ public class Language {
     }
 
     public void transition(NState source, NState target, Object symbol) {
-        transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of());
-    }
-
-    public void transition(NState source, NState target, Object symbol, Action action) {
-        transition(Set.of(Objects.requireNonNull(source)), target, symbol, List.of(action));
-    }
-
-    public void transition(NState source, NState target, Object symbol, List<Action> actions) {
-        transition(Set.of(Objects.requireNonNull(source)), target, symbol, actions);
+        transition(Set.of(Objects.requireNonNull(source)), Set.of(target), symbol);
     }
 
     public void transition(Set<NState> sources, NState target, Object symbol) {
-        transition(sources, target, symbol, List.of());
-    }
-
-    public void transition(Set<NState> sources, NState target, Object symbol, Action action) {
-        transition(sources, target, symbol, List.of(action));
-    }
-
-    public void transition(Set<NState> sources, NState target, Object symbol, List<Action> actions) {
-        transition(sources, Set.of(target), symbol, actions);
-    }
-
-    public void transition(Set<NState> sources, Set<NState> targets, Object symbol) {
-        transition(sources, targets, symbol, List.of());
+        transition(sources, Set.of(target), symbol);
     }
 
     public void transition(NState source, Set<NState> targets, Object symbol) {
-        transition(Set.of(source), targets, symbol, List.of());
+        transition(Set.of(source), targets, symbol);
     }
 
-    public void transition(Set<NState> sources, Set<NState> targets, Object symbol, List<Action> actions) {
+    public void transition(Set<NState> sources, Set<NState> targets, Object symbol) {
         var s = make_symbol(symbol);
 
         for (var source : sources) {
             for (var target : targets) {
-                var t = new NTransition(source, s, target, actions);
+                var t = new NTransition(source, s, target);
 
                 transitions.add(t);
             }

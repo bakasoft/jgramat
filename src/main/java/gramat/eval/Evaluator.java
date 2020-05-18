@@ -28,10 +28,6 @@ public class Evaluator {
 
         while(true) {
             try {
-                for (var action : state.actions) {
-                    action.run(this);
-                }
-
                 if (state.isFinal()) {
                     if (state.isAccepted()) {
                         return true;

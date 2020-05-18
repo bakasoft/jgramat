@@ -15,7 +15,7 @@ public class RawSourceBegin extends RawAutomaton {
         return lang.automaton((initialSet, acceptedSet) -> {
             var state = lang.state();
 
-            state.actions.add(new BeginSourceCheck());
+            state.onEnter.add(new BeginSourceCheck());
 
             initialSet.add(state);
             acceptedSet.add(state);

@@ -8,18 +8,6 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-    public static void addStateAction(Collection<NState> states, Action action) {
-        for (var state : states) {
-            state.actions.add(action);
-        }
-    }
-
-    public static void addAction(List<NTransition> transitions, Action action) {
-        for (var trn : transitions) {
-            trn.actions.add(action);
-        }
-    }
-
     public static <T> List<T> removeIf(List<T> items, Predicate<T> condition) {
         return items.stream().filter(i -> !condition.test(i)).collect(Collectors.toUnmodifiableList());
     }
@@ -103,13 +91,4 @@ public class Utils {
         return result;
     }
 
-    public static Collection<Action> collectStateActions(Set<NState> states) {
-        var actions = new ArrayList<Action>();
-
-        for (var state : states) {
-            actions.addAll(state.actions);
-        }
-
-        return actions;
-    }
 }

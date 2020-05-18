@@ -21,15 +21,9 @@ public class NAutomaton implements Writable {
     }
 
     public DState compile() {
-        System.out.println("NDFA -----------");
-        System.out.println(this.captureOutput());
-
-        var dfa = DMaker.transform(this);
-
-//        System.out.println("DFA -----------");
-//        System.out.println(dfa.captureOutput());
-
-        return DCompiler.transform(dfa);
+//        System.out.println("NDFA -----------");
+//        System.out.println(this.captureOutput());
+        return DMaker.transform(this);
     }
 
     @Override
@@ -43,55 +37,26 @@ public class NAutomaton implements Writable {
         }
 
         for (var state : states) {
-            var actions = new ArrayList<>(state.actions);
-
-            if (actions.isEmpty()) {
-                actions.add(null);
+            if (accepted.contains(state)) {
+                output.append("A ");
+            } else {
+                output.append("S ");
             }
-
-            for (var action : actions) {
-                if (accepted.contains(state)) {
-                    output.append("A ");
-                } else {
-                    output.append("S ");
-                }
-                output.append(String.valueOf(state.id));
-
-                if (action != null) {
-                    output.append(" ! ");
-                    output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
-                }
-
-                output.append("\n");
-            }
+            output.append(String.valueOf(state.id));
+            output.append("\n");
         }
 
         for (var state : states) {
             for (var trn : state.getTransitions()) {
-                var actions = new ArrayList<>(trn.actions);
-
-                if (actions.isEmpty()) {
-                    actions.add(null);
+                output.append("T ");
+                output.append(String.valueOf(trn.source.id));
+                output.append(" -> ");
+                output.append(String.valueOf(trn.target.id));
+                if (trn.symbol != null) {
+                    output.append(" : ");
+                    output.append(GramatWriter.toDelimitedString(trn.symbol.toString(), '\"'));
                 }
-
-                for (var action : actions) {
-                    output.append("T ");
-                    output.append(String.valueOf(trn.source.id));
-                    output.append(" -> ");
-                    output.append(String.valueOf(trn.target.id));
-
-                    if (trn.symbol != null) {
-                        output.append(" : ");
-                        output.append(GramatWriter.toDelimitedString(trn.symbol.toString(), '\"'));
-                    }
-
-                    if (action != null) {
-                        output.append(" ! ");
-                        output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
-                    }
-
-                    output.append("\n");
-                }
+                output.append("\n");
             }
         }
     }

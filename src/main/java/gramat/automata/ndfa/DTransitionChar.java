@@ -7,8 +7,8 @@ public class DTransitionChar extends DTransition {
 
     public final int symbol;
 
-    public DTransitionChar(DState target, Action[] actions, int symbol) {
-        super(target, actions);
+    public DTransitionChar(DState target, int symbol) {
+        super(target);
         this.symbol = symbol;
     }
 
@@ -28,6 +28,9 @@ public class DTransitionChar extends DTransition {
             var tr = (DTransitionRange)transition;
 
             return this.symbol >= tr.begin && this.symbol <= tr.end;
+        }
+        else if (transition instanceof DTransitionWild) {
+            return false;
         }
         else {
             throw new RuntimeException("Unsupported transition: " + transition);

@@ -11,13 +11,11 @@ public class NTransition {
     public final NState source;
     public final Symbol symbol;
     public final NState target;
-    public final List<Action> actions;
 
-    public NTransition(NState source, Symbol symbol, NState target, List<Action> actions) {
+    public NTransition(NState source, Symbol symbol, NState target) {
         this.source = source;
         this.symbol = symbol;
         this.target = target;
-        this.actions = new ArrayList<>(actions);
     }
 
     public void write(Appendable output) throws IOException {
@@ -30,14 +28,6 @@ public class NTransition {
         }
         else {
             symbol.write(output);
-        }
-
-        if (actions.size() > 0) {
-            output.append("  //");
-            for (var action : actions) {
-                output.append(" ");
-                output.append(action.toString());
-            }
         }
     }
 }

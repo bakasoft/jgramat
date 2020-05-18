@@ -8,8 +8,8 @@ public class DTransitionRange extends DTransition {
     public final int begin;
     public final int end;
 
-    public DTransitionRange(DState target, Action[] actions, int begin, int end) {
-        super(target, actions);
+    public DTransitionRange(DState target, int begin, int end) {
+        super(target);
         this.begin = begin;
         this.end = end;
     }
@@ -31,6 +31,9 @@ public class DTransitionRange extends DTransition {
 
             return this.begin >= tr.begin && this.begin <= tr.end
                     || this.end >= tr.begin && this.end <= tr.end;
+        }
+        else if (transition instanceof DTransitionWild) {
+            return false;
         }
         else {
             throw new RuntimeException("Unsupported transition: " + transition);

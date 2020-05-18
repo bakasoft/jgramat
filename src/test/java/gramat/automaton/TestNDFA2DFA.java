@@ -30,7 +30,7 @@ public class TestNDFA2DFA {
 
         var dAm = DMaker.transform(eAm);
 
-        dAm.write(System.out);
+        System.out.println(dAm.getAmCode());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class TestNDFA2DFA {
 
         var dAm = DMaker.transform(eAm);
 
-        dAm.write(System.out);
+        System.out.println(dAm.getAmCode());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class TestNDFA2DFA {
 
         var dAm = DMaker.transform(eAm);
 
-        dAm.write(System.out);
+        System.out.println(dAm.getAmCode());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TestNDFA2DFA {
 
         var dAm = DMaker.transform(eAm);
 
-        dAm.write(System.out);
+        System.out.println(dAm.getAmCode());
     }
 
 }
