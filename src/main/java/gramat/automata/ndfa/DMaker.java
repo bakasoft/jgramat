@@ -1,5 +1,6 @@
 package gramat.automata.ndfa;
 
+import gramat.compiling.ParseContext;
 import gramat.eval.Action;
 
 import java.util.*;
@@ -51,7 +52,7 @@ public class DMaker {
 
                         var newTarget = state_of(targets);
 
-                        make_transition(newSource, newTarget, symbol);
+                        make_transition(sources, targets, newSource, newTarget, symbol);
 
                         queue.add(targets);
                     }
@@ -81,10 +82,12 @@ public class DMaker {
             }
         }
 
+
+
         return newInitial;
     }
 
-    private void make_transition(DState source, DState target, Symbol symbol) {
+    private void make_transition(Set<NState> sources, Set<NState> targets, DState source, DState target, Symbol symbol) {
         DTransition trn;
 
         if (symbol instanceof SymbolWild) {
@@ -104,6 +107,8 @@ public class DMaker {
         source.transitions.add(trn);
 
         validate_transitions(source.transitions);
+        
+        trn.actions.addAll(collect_actions(sources, targets));
     }
 
     private void validate_transitions(List<DTransition> transitions) {
@@ -125,11 +130,6 @@ public class DMaker {
         var newState = hashStates.get(hash);
         if (newState == null) {
             newState = new DState();
-
-//            for (var oldState : oldStates) {
-//                newState.onEnter.addAll(oldState.onEnter);
-//                newState.onExit.addAll(oldState.onExit);
-//            }
 
             hashStates.put(hash, newState);
         }
@@ -199,5 +199,39 @@ public class DMaker {
         }
 
         return output.toString();
+    }
+
+    private List<Action> collect_actions(Set<NState> sources, Set<NState> targets) {
+        var result = new ArrayList<Action>();
+
+        for (var trn : find_all_transitions(sources, targets)) {
+            result.addAll(trn.actions);
+        }
+
+        return result;
+    }
+
+    private Set<NTransition> find_all_transitions(Set<NState> sources, Set<NState> targets) {
+        var result = new HashSet<NTransition>();
+        var queue = new LinkedList<>(sources);
+        var control = new HashSet<NState>();
+
+        while (queue.size() > 0) {
+            var source = queue.remove();
+
+            if (control.add(source)) {
+                for (var trn : source.getTransitions()) {
+                    if (targets.contains(trn.target)) {
+                        result.add(trn);
+                    }
+
+                    if (trn.symbol == null) {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }

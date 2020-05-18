@@ -194,19 +194,20 @@ public class Language {
         return state;
     }
 
-    public void transition(NState source, NState target, Object symbol) {
-        transition(Set.of(Objects.requireNonNull(source)), Set.of(target), symbol);
+    public Set<NTransition> transition(NState source, NState target, Object symbol) {
+        return transition(Set.of(Objects.requireNonNull(source)), Set.of(target), symbol);
     }
 
-    public void transition(Set<NState> sources, NState target, Object symbol) {
-        transition(sources, Set.of(target), symbol);
+    public Set<NTransition> transition(Set<NState> sources, NState target, Object symbol) {
+        return transition(sources, Set.of(target), symbol);
     }
 
-    public void transition(NState source, Set<NState> targets, Object symbol) {
-        transition(Set.of(source), targets, symbol);
+    public Set<NTransition> transition(NState source, Set<NState> targets, Object symbol) {
+        return transition(Set.of(source), targets, symbol);
     }
 
-    public void transition(Set<NState> sources, Set<NState> targets, Object symbol) {
+    public Set<NTransition> transition(Set<NState> sources, Set<NState> targets, Object symbol) {
+        var result = new HashSet<NTransition>();
         var s = make_symbol(symbol);
 
         for (var source : sources) {
@@ -214,8 +215,12 @@ public class Language {
                 var t = new NTransition(source, s, target);
 
                 transitions.add(t);
+
+                result.add(t);
             }
         }
+
+        return result;
     }
 
     private final Stack<Set<NState>> stateCapturings = new Stack<>();

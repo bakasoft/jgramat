@@ -14,17 +14,17 @@ public class TRX {
         var rejected = sub(states, accepted);
         var notInitial = sub(states, initial);
 
-        for (var state : initial) {
-            state.onExit.add(start);
+        for (var trn : findAllNotNullTransitions(initial, states)) {
+            trn.actions.add(start);
         }
 
-        for (var state : accepted) {
-            state.onExit.add(save);
+        for (var trn : findAllNotNullExitTransitions(accepted, states)) {
+            trn.actions.add(save);
         }
 
-//        for (var state : rejected) {
-//            state.onExit.add(cancel);
-//        }
+        for (var trn : findAllNotNullExitTransitions(rejected, states)) {
+            trn.actions.add(cancel);
+        }
     }
 
     private static Set<NState> sub(Set<NState> a, Set<NState> b) {

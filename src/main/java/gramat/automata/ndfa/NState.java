@@ -11,14 +11,10 @@ public class NState {
 
     public final Language language;
     public final int id;
-    public final List<Action> onEnter;
-    public final List<Action> onExit;
 
     NState(Language language, int id) {
         this.language = language;
         this.id = id;
-        this.onEnter = new ArrayList<>();
-        this.onExit = new ArrayList<>();
     }
 
     public List<NTransition> getTransitions() {
