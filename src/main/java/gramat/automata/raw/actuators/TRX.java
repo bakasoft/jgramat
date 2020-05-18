@@ -12,18 +12,34 @@ public class TRX {
         var accepted = am.accepted;
         var states = am.states;
         var rejected = sub(states, accepted);
-        var notInitial = sub(states, initial);
 
         for (var trn : findAllNotNullTransitions(initial, states)) {
-            trn.actions.add(start);
+            for (var s : initial) {
+                am.language.addActionPattern(s, trn.symbol, trn.target, start);
+            }
         }
 
         for (var trn : findAllNotNullExitTransitions(accepted, states)) {
-            trn.actions.add(save);
+            for (var s : accepted) {
+                am.language.addActionPattern(s, trn.symbol, trn.target, save);
+            }
         }
 
         for (var trn : findAllNotNullExitTransitions(rejected, states)) {
-            trn.actions.add(cancel);
+            for (var r : rejected) {
+                var actuallyRejected = true;
+
+                for (var s : Utils.compute_null_closure(Set.of(r))) {
+                    if (accepted.contains(s)) {
+                        actuallyRejected = false;
+                        break;
+                    }
+                }
+
+                if (actuallyRejected) {
+                    am.language.addActionPattern(r, trn.symbol, trn.target, cancel);
+                }
+            }
         }
     }
 
@@ -46,8 +62,19 @@ public class TRX {
                     if (trn.symbol == null) {
                         queue.add(trn.target);
                     }
-                    else if(targets.contains(trn.target)) {
-                        result.add(trn);
+                    else {
+                        boolean add = false;
+
+                        for (var target : Utils.compute_null_closure(Set.of(trn.target))) {
+                            if(targets.contains(target)) {
+                                add = true;
+                                break;
+                            }
+                        }
+
+                        if (add) {
+                            result.add(trn);
+                        }
                     }
                 }
             }
@@ -69,8 +96,19 @@ public class TRX {
                     if (trn.symbol == null) {
                         queue.add(trn.target);
                     }
-                    else if(!states.contains(trn.target)) {
-                        result.add(trn);
+                    else {
+                        boolean add = true;
+
+                        for (var target : Utils.compute_null_closure(Set.of(trn.target))) {
+                            if(states.contains(target)) {
+                                add = false;
+                                break;
+                            }
+                        }
+
+                        if (add) {
+                            result.add(trn);
+                        }
                     }
                 }
             }

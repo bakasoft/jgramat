@@ -13,6 +13,8 @@ public class Language {
     final List<NAutomaton> automata;
     final List<Runnable> postBuildActions;  // TODO move out of here
 
+    final List<NActionPattern> actionPatterns;
+
     private int next_id;
 
     public Language() {
@@ -22,7 +24,12 @@ public class Language {
         transitions = new ArrayList<>();
         automata = new ArrayList<>();
         postBuildActions = new ArrayList<>();
+        actionPatterns = new ArrayList<>();
         next_id = 0;
+    }
+
+    public void addActionPattern(NState source, Symbol symbol, NState target, Action action) {
+        actionPatterns.add(new NActionPattern(source, symbol, target, action));
     }
 
     public void postBuild(Runnable action) {

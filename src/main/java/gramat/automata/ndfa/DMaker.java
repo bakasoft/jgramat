@@ -1,9 +1,11 @@
 package gramat.automata.ndfa;
 
-import gramat.compiling.ParseContext;
 import gramat.eval.Action;
 
+import java.lang.reflect.Array;
 import java.util.*;
+
+import static gramat.automata.ndfa.Utils.compute_null_closure;
 
 public class DMaker {
 
@@ -108,7 +110,7 @@ public class DMaker {
 
         validate_transitions(source.transitions);
         
-        trn.actions.addAll(collect_actions(sources, targets));
+        trn.actions.addAll(compute_transition_actions(sources, symbol, targets));
     }
 
     private void validate_transitions(List<DTransition> transitions) {
@@ -134,27 +136,6 @@ public class DMaker {
             hashStates.put(hash, newState);
         }
         return newState;
-    }
-
-    public static Set<NState> compute_null_closure(Set<NState> states) {
-        var result = new HashSet<NState>();
-        var queue = new LinkedList<>(states);
-
-        do {
-            var current = queue.remove();
-
-            if (result.add(current)) {
-                var trs = current.getTransitions();
-
-                for (var trn : trs) {
-                    if (trn.symbol == null) {
-                        queue.add(trn.target);
-                    }
-                }
-            }
-        } while (queue.size() > 0);
-
-        return result;
     }
 
     private Set<NState> compute_targets(Set<NState> states, Symbol symbol) {
@@ -201,11 +182,15 @@ public class DMaker {
         return output.toString();
     }
 
-    private List<Action> collect_actions(Set<NState> sources, Set<NState> targets) {
+    private List<Action> compute_transition_actions(Set<NState> sources, Symbol symbol, Set<NState> targets) {
         var result = new ArrayList<Action>();
 
-        for (var trn : find_all_transitions(sources, targets)) {
-            result.addAll(trn.actions);
+        for (var actionPattern : language.actionPatterns) {
+            if (sources.contains(actionPattern.source)
+                    && actionPattern.symbol == symbol
+                    && targets.contains(actionPattern.target)) {
+                result.add(actionPattern.action);
+            }
         }
 
         return result;

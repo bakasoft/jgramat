@@ -8,6 +8,27 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
+    public static Set<NState> compute_null_closure(Set<NState> states) {
+        var result = new HashSet<NState>();
+        var queue = new LinkedList<>(states);
+
+        do {
+            var current = queue.remove();
+
+            if (result.add(current)) {
+                var trs = current.getTransitions();
+
+                for (var trn : trs) {
+                    if (trn.symbol == null) {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        } while (queue.size() > 0);
+
+        return result;
+    }
+
     public static <T> List<T> removeIf(List<T> items, Predicate<T> condition) {
         return items.stream().filter(i -> !condition.test(i)).collect(Collectors.toUnmodifiableList());
     }
