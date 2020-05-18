@@ -75,13 +75,8 @@ public class TRX {
                     if (trn.symbol == null) {
                         queue.add(trn.target);
                     }
-                    else {
-                        if (trn.symbol.toString().equals("\":\"")) {
-                            System.out.println("POLLO");
-                        }
-                        if(!states.contains(trn.target)) {
-                            result.add(trn);
-                        }
+                    else if(!states.contains(trn.target)) {
+                        result.add(trn);
                     }
                 }
             }
