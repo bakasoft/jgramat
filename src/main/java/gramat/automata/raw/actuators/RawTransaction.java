@@ -1,10 +1,11 @@
-package gramat.automata.raw;
+package gramat.automata.raw.actuators;
 
-import gramat.automata.actions.Action;
+import gramat.eval.Action;
 import gramat.automata.ndfa.Language;
 import gramat.automata.ndfa.NAutomaton;
 import gramat.automata.ndfa.NTransition;
 import gramat.automata.ndfa.Utils;
+import gramat.automata.raw.RawAutomaton;
 
 import java.util.List;
 import java.util.Set;

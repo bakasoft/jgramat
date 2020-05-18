@@ -1,6 +1,6 @@
 package gramat.automata.ndfa;
 
-import gramat.automata.actions.Action;
+import gramat.eval.Action;
 
 import java.io.IOException;
 import java.util.ArrayList;

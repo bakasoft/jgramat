@@ -1,8 +1,7 @@
 package gramat.expressions.values;
 
-import gramat.automata.raw.RawAttribute;
+import gramat.automata.raw.actuators.RawAttribute;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
 import gramat.expressions.flat.CharAutomaton;
 import gramat.output.GrammarWriter;

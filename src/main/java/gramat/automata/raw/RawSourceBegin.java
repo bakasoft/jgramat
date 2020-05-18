@@ -1,6 +1,6 @@
 package gramat.automata.raw;
 
-import gramat.automata.actions.BeginSourceCheck;
+import gramat.eval.BeginSourceCheck;
 import gramat.automata.ndfa.Language;
 import gramat.automata.ndfa.NAutomaton;
 

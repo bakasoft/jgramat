@@ -1,9 +1,10 @@
-package gramat.automata.raw;
+package gramat.automata.raw.actuators;
 
-import gramat.automata.actions.Action;
-import gramat.automata.actions.CommitAttribute;
-import gramat.automata.actions.PositionBegin;
-import gramat.automata.actions.PositionRollback;
+import gramat.automata.raw.RawAutomaton;
+import gramat.eval.Action;
+import gramat.eval.staticAttribute.StaticAttributeCancel;
+import gramat.eval.staticAttribute.StaticAttributeSave;
+import gramat.eval.staticAttribute.StaticAttributeStart;
 
 public class RawAttribute extends RawTransaction {
 
@@ -16,17 +17,17 @@ public class RawAttribute extends RawTransaction {
 
     @Override
     public Action createBeginAction() {
-        return new PositionBegin();
+        return new StaticAttributeStart();
     }
 
     @Override
     public Action createCommitAction(Action beginAction) {
-        return new CommitAttribute(beginAction, name);
+        return new StaticAttributeSave(beginAction, name);
     }
 
     @Override
     public Action createRollbackAction(Action beginAction) {
-        return new PositionRollback(beginAction);
+        return new StaticAttributeCancel(beginAction);
     }
 
     @Override

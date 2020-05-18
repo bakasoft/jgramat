@@ -2,6 +2,7 @@ package gramat.automata.raw;
 
 import gramat.automata.ndfa.NAutomaton;
 import gramat.automata.ndfa.Language;
+import gramat.automata.raw.units.RawNopAutomaton;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;

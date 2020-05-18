@@ -1,6 +1,6 @@
 package gramat.automata.ndfa;
 
-import gramat.automata.actions.Action;
+import gramat.eval.Action;
 
 import java.util.ArrayList;
 import java.util.HashMap;

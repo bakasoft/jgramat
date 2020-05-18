@@ -1,7 +1,9 @@
-package gramat.automata.raw;
+package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NAutomaton;
 import gramat.automata.ndfa.Language;
+import gramat.automata.raw.RawAutomaton;
+import gramat.automata.raw.RawStringAutomaton;
 
 public class RawLiteralAutomaton extends RawStringAutomaton {
 

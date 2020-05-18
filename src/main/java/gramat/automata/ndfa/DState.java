@@ -1,6 +1,6 @@
 package gramat.automata.ndfa;
 
-import gramat.automata.actions.Action;
+import gramat.eval.Action;
 import gramat.output.GrammarWriter;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Source;
@@ -161,7 +161,7 @@ public class DState {
 
         if (action != null) {
             output.append(" ! ");
-            output.append(action.toString());
+            output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
         }
 
         output.append("\n");

@@ -1,5 +1,7 @@
 package gramat.automata.raw;
 
+import gramat.automata.raw.units.RawNopAutomaton;
+
 import java.util.List;
 
 abstract public class RawCompositeAutomaton extends RawAutomaton {

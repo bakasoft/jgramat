@@ -1,6 +1,10 @@
-package gramat.automata.raw;
+package gramat.automata.raw.actuators;
 
-import gramat.automata.actions.*;
+import gramat.automata.raw.RawAutomaton;
+import gramat.eval.Action;
+import gramat.eval.object.ObjectCancel;
+import gramat.eval.object.ObjectSave;
+import gramat.eval.object.ObjectStart;
 
 public class RawObject extends RawTransaction {
 
@@ -13,17 +17,17 @@ public class RawObject extends RawTransaction {
 
     @Override
     public Action createBeginAction() {
-        return new ObjectBegin();
+        return new ObjectStart();
     }
 
     @Override
     public Action createCommitAction(Action beginAction) {
-        return new ObjectCommit();
+        return new ObjectSave();
     }
 
     @Override
     public Action createRollbackAction(Action beginAction) {
-        return new ObjectRollback();
+        return new ObjectCancel();
     }
 
     @Override

@@ -1,8 +1,9 @@
-package gramat.automata.raw;
+package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NAutomaton;
 import gramat.automata.ndfa.Language;
 import gramat.automata.ndfa.SymbolRange;
+import gramat.automata.raw.RawAutomaton;
 
 public class RawRangeAutomaton extends RawAutomaton {
 

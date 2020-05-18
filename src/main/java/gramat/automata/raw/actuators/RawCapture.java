@@ -1,11 +1,12 @@
-package gramat.automata.raw;
+package gramat.automata.raw.actuators;
 
-import gramat.automata.actions.Action;
-import gramat.automata.actions.PositionBegin;
-import gramat.automata.actions.CommitCapture;
-import gramat.automata.actions.PositionRollback;
+import gramat.eval.*;
 
+import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.ValueParser;
+import gramat.eval.value.ValueCancel;
+import gramat.eval.value.ValueSave;
+import gramat.eval.value.ValueStart;
 
 public class RawCapture extends RawTransaction {
 
@@ -23,17 +24,17 @@ public class RawCapture extends RawTransaction {
 
     @Override
     public Action createBeginAction() {
-        return new PositionBegin();
+        return new ValueStart(parser);
     }
 
     @Override
     public Action createCommitAction(Action beginAction) {
-        return new CommitCapture(beginAction, parser);
+        return new ValueSave(beginAction, parser);
     }
 
     @Override
-    public Action createRollbackAction(Action beginAction) {
-        return new PositionRollback(beginAction);
+    public ValueCancel createRollbackAction(Action beginAction) {
+        return new ValueCancel(beginAction, parser);
     }
 
 }

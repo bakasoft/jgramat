@@ -14,10 +14,6 @@ Test-00 = ^ {"ab"} {"cd" / "|"} {+"ef"} {+"gh" / "|"} $
 @pass Test-00 `cd|cdefefgh|gh`
 @pass Test-00 `ababcd|cdefefgh|gh`
 
-Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
-
-@pass Test-01 `{abc:def,ghi:jkl}`
-
 Test-06 = ^ "/*" ("\\*/"|*) "*/" $
 
 @pass Test-06 `/**/`
@@ -101,3 +97,6 @@ Test-10 = ^ "a" {"b"} "c" $
 @pass Test-10 `abbc`
 @pass Test-10 `abbbc`
 
+Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
+
+@pass Test-01 `{abc:def,ghi:jkl}`

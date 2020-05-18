@@ -9,4 +9,8 @@ public class StringParser implements ValueParser {
         return value;  // such parsing!
     }
 
+    @Override
+    public String toString() {
+        return "string";
+    }
 }

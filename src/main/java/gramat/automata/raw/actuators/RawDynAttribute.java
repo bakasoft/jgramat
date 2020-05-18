@@ -1,8 +1,8 @@
-package gramat.automata.raw;
+package gramat.automata.raw.actuators;
 
-import gramat.automata.actions.*;
 import gramat.automata.ndfa.Language;
 import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.raw.RawAutomaton;
 
 public class RawDynAttribute extends RawAutomaton {
 
