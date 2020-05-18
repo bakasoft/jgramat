@@ -28,6 +28,12 @@ public class Language {
         next_id = 0;
     }
 
+    public void addActionPattern(Set<NState> sources, Symbol symbol, NState target, Action action) {
+        for (var source : sources) {
+            addActionPattern(source, symbol, target, action);
+        }
+    }
+
     public void addActionPattern(NState source, Symbol symbol, NState target, Action action) {
         actionPatterns.add(new NActionPattern(source, symbol, target, action));
     }

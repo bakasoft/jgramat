@@ -14,15 +14,11 @@ public class TRX {
         var rejected = sub(states, accepted);
 
         for (var trn : findAllNotNullTransitions(initial, states)) {
-            for (var s : initial) {
-                am.language.addActionPattern(s, trn.symbol, trn.target, start);
-            }
+            am.language.addActionPattern(initial, trn.symbol, trn.target, start);
         }
 
         for (var trn : findAllNotNullExitTransitions(accepted, states)) {
-            for (var s : accepted) {
-                am.language.addActionPattern(s, trn.symbol, trn.target, save);
-            }
+            am.language.addActionPattern(accepted, trn.symbol, trn.target, save);
         }
 
         for (var trn : findAllNotNullExitTransitions(rejected, states)) {

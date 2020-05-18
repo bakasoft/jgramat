@@ -2,8 +2,13 @@ package gramat.eval.dynamicAttribute;
 
 import gramat.eval.Action;
 import gramat.eval.Evaluator;
+import gramat.eval.SubAction;
 
-public class DynamicAttributeSave extends Action {
+public class DynamicAttributeSave extends SubAction {
+    public DynamicAttributeSave(Action origin) {
+        super(origin);
+    }
+
     @Override
     public void run(Evaluator evaluator) {
 
@@ -11,6 +16,6 @@ public class DynamicAttributeSave extends Action {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Save Dyn-Attribute";
     }
 }

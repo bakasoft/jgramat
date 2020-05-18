@@ -11,6 +11,6 @@ public class DynamicAttributeStart extends Action {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Start Dyn-Attribute";
     }
 }
