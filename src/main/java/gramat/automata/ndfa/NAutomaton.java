@@ -1,28 +1,28 @@
 package gramat.automata.ndfa;
 
-import gramat.output.GrammarWriter;
 import gramat.output.Writable;
 import gramat.util.GramatWriter;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class NAutomaton implements Writable {
 
     public final Language language;
-    public final NState initial;
+    public final Set<NState> initial;
     public final Set<NState> accepted;
+    public final Set<NState> states;
 
-    NAutomaton(Language language, NState initial, Set<NState> accepted) {
+    NAutomaton(Language language, Set<NState> initial, Set<NState> accepted, Set<NState> states) {
         this.language = language;
         this.initial = initial;
         this.accepted = accepted;
+        this.states = states;
     }
 
     public DState compile() {
-//        System.out.println("NDFA -----------");
-//        System.out.println(this.captureOutput());
+        System.out.println("NDFA -----------");
+        System.out.println(this.captureOutput());
 
         var dfa = DMaker.transform(this);
 
@@ -36,6 +36,12 @@ public class NAutomaton implements Writable {
     public void write(Appendable output) throws IOException {
         var states = list_states(initial);
 
+        for (var state : initial) {
+            output.append("I ");
+            output.append(String.valueOf(state.id));
+            output.append("\n");
+        }
+
         for (var state : states) {
             var actions = new ArrayList<>(state.actions);
 
@@ -44,9 +50,7 @@ public class NAutomaton implements Writable {
             }
 
             for (var action : actions) {
-                if (state == initial) {
-                    output.append("I ");
-                } else if (accepted.contains(state)) {
+                if (accepted.contains(state)) {
                     output.append("A ");
                 } else {
                     output.append("S ");
@@ -55,7 +59,7 @@ public class NAutomaton implements Writable {
 
                 if (action != null) {
                     output.append(" ! ");
-                    output.append(action.toString());
+                    output.append(GramatWriter.toDelimitedString(action.toString(), '\"'));
                 }
 
                 output.append("\n");
@@ -92,17 +96,11 @@ public class NAutomaton implements Writable {
         }
     }
 
-    public Set<NState> getStates() {
-        return list_states(initial);
-    }
-
-    private static Set<NState> list_states(NState initial) {
-        var queue = new LinkedList<NState>();
+    private static Set<NState> list_states(Set<NState> initial) {
+        var queue = new LinkedList<>(initial);
         var result = new HashSet<NState>();
 
-        queue.add(initial);
-
-        do {
+        while(queue.size() > 0) {
             var current = queue.remove();
 
             if (result.add(current)) {
@@ -110,7 +108,7 @@ public class NAutomaton implements Writable {
                     queue.add(trn.target);
                 }
             }
-        } while(queue.size() > 0);
+        }
 
         return result;
     }
@@ -123,13 +121,5 @@ public class NAutomaton implements Writable {
         }
 
         return false;
-    }
-
-    public Set<NState> getRejected() {
-        var states = new HashSet<>(getStates());
-
-        states.removeAll(accepted);
-
-        return states;
     }
 }

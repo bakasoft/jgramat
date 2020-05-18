@@ -3,13 +3,14 @@ package gramat.eval.value;
 import gramat.compiling.ValueParser;
 import gramat.eval.Action;
 import gramat.eval.Evaluator;
+import gramat.eval.SubAction;
 
-public class ValueSave extends Action {
-    private final Action origin;
+public class ValueSave extends SubAction {
+
     private final ValueParser parser;
 
     public ValueSave(Action origin, ValueParser parser) {
-        this.origin = origin;
+        super(origin);
         this.parser = parser;
     }
 
@@ -19,7 +20,7 @@ public class ValueSave extends Action {
     }
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Save " + parser + " value";
     }
 }

@@ -14,7 +14,10 @@ public class RawNopAutomaton extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var state = lang.state();
-        return lang.automaton(state, state);
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var state = lang.state();
+            initialSet.add(state);
+            acceptedSet.add(state);
+        });
     }
 }

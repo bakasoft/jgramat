@@ -16,15 +16,18 @@ public class RawWildAutomaton extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var state = lang.state();
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var state = lang.state();
 
-        lang.makeWild(state);
+            lang.makeWild(state);
 
-        lang.postBuild(() -> {
-            resolve_wild_state(lang, state);
+            initialSet.add(state);
+            acceptedSet.add(state);
+
+            lang.postBuild(() -> {
+                resolve_wild_state(lang, state);
+            });
         });
-
-        return lang.automaton(state, state);
     }
 
     private void resolve_wild_state(Language language, NState wildState) {

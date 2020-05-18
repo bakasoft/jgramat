@@ -9,7 +9,7 @@ public class Language {
     final Set<NState> states;
     public final Set<NState> wilds; // TODO public? it shouldn't
     final Set<Symbol> symbols;
-    final List<NTransition> transitions;
+    public final List<NTransition> transitions;
     final List<NAutomaton> automata;
     final List<Runnable> postBuildActions;  // TODO move out of here
 
@@ -43,12 +43,45 @@ public class Language {
         return wilds.contains(state);
     }
 
-    public NAutomaton automaton(NState initial, NState... accepted) {
-        return automaton(initial, Set.of(accepted));
+    @FunctionalInterface
+    public interface AutomatonBuilder {
+
+        void build(StateSubset initialSet, StateSubset acceptedSet);
+
     }
 
-    public NAutomaton automaton(NState initial, Set<NState> accepted) {
-        return new NAutomaton(this, initial, accepted);
+    public class StateSubset {
+
+        final Set<NState> states = new HashSet<>();
+
+        public NState create() {
+            var state = state();
+
+            states.add(state);
+
+            return state;
+        }
+
+        public void add(Collection<NState> c) {
+            this.states.addAll(c);
+        }
+
+        public void add(NState state) {
+            this.states.add(state);
+        }
+    }
+
+    public NAutomaton automaton(AutomatonBuilder builder) {
+        pushStateCapturing();
+
+        var initialSet = new StateSubset();
+        var acceptedSet = new StateSubset();
+
+        builder.build(initialSet, acceptedSet);
+
+        var states = popStateCapturing();
+
+        return new NAutomaton(this, initialSet.states, acceptedSet.states, states);
     }
 
     private Symbol search_symbol(int c) {
@@ -154,6 +187,10 @@ public class Language {
 
         states.add(state);
 
+        if (stateCapturings.size() > 0) {
+            stateCapturings.peek().add(state);
+        }
+
         return state;
     }
 
@@ -185,6 +222,10 @@ public class Language {
         transition(sources, targets, symbol, List.of());
     }
 
+    public void transition(NState source, Set<NState> targets, Object symbol) {
+        transition(Set.of(source), targets, symbol, List.of());
+    }
+
     public void transition(Set<NState> sources, Set<NState> targets, Object symbol, List<Action> actions) {
         var s = make_symbol(symbol);
 
@@ -195,5 +236,25 @@ public class Language {
                 transitions.add(t);
             }
         }
+    }
+
+    private final Stack<Set<NState>> stateCapturings = new Stack<>();
+
+    public void pushStateCapturing() {
+        stateCapturings.push(new HashSet<>());
+    }
+
+    public Set<NState> popStateCapturing() {
+        if (stateCapturings.size() > 0) {
+            var capturing = stateCapturings.pop();
+
+            if (stateCapturings.size() > 0) {
+                stateCapturings.peek().addAll(capturing);
+            }
+
+            return capturing;
+        }
+
+        return states;
     }
 }

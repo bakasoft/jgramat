@@ -18,7 +18,7 @@ public class ValueStart extends Action {
     }
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Start " + parser + " value";
     }
 }

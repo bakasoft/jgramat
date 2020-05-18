@@ -6,7 +6,7 @@ import gramat.eval.Evaluator;
 public class ObjectCancel extends Action {
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Object-Rollback";
     }
 

@@ -3,7 +3,7 @@ package gramat.eval;
 public class BeginSourceCheck extends Action {
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Begin-Check";
     }
 

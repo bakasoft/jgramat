@@ -12,10 +12,13 @@ public class RawSourceBegin extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var state = lang.state();
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var state = lang.state();
 
-        state.actions.add(new BeginSourceCheck());
+            state.actions.add(new BeginSourceCheck());
 
-        return lang.automaton(state, state);
+            initialSet.add(state);
+            acceptedSet.add(state);
+        });
     }
 }

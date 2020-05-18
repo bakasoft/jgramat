@@ -7,7 +7,7 @@ public class ObjectStart extends Action {
 
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Object-Begin";
     }
 

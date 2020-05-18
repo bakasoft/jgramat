@@ -1,4 +1,16 @@
 package gramat.eval.dynamicAttribute;
 
-public class DynamicAttributeStart {
+import gramat.eval.Action;
+import gramat.eval.Evaluator;
+
+public class DynamicAttributeStart extends Action {
+    @Override
+    public void run(Evaluator evaluator) {
+
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
 }

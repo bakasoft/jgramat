@@ -8,4 +8,9 @@ public class StaticAttributeStart extends Action {
     public void run(Evaluator evaluator) {
 
     }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
 }

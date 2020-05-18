@@ -1,6 +1,6 @@
 package gramat.expressions.values;
 
-import gramat.automata.raw.actuators.RawCapture;
+import gramat.automata.raw.actuators.RawValue;
 import gramat.compiling.Compiler;
 import gramat.compiling.ValueParser;
 import gramat.expressions.Expression;
@@ -51,7 +51,7 @@ public class ValueExp extends DataExpr {
 
             if (expression instanceof CharAutomaton) {
                 var cham = (CharAutomaton)expression;
-                return new CharAutomaton(location, new RawCapture(cham.getAutomaton(), parser));
+                return new CharAutomaton(location, new RawValue(cham.getAutomaton(), parser));
             }
 
             return this;

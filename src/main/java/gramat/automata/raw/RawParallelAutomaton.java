@@ -21,17 +21,17 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var initial = lang.state();
-        var accepted = lang.state();
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var initial = initialSet.create();
+            var accepted = acceptedSet.create();
 
-        for (var item : items) {
-            var am = item.build(lang);
+            for (var item : items) {
+                var amItem = item.build(lang);
 
-            lang.transition(initial, am.initial, null);
-            lang.transition(am.accepted, accepted, null);
-        }
-
-        return lang.automaton(initial, accepted);
+                lang.transition(initial, amItem.initial, null);
+                lang.transition(amItem.accepted, accepted, null);
+            }
+        });
     }
 
     @Override

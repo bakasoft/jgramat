@@ -21,7 +21,10 @@ public class DCompiler {
 
     private DCompiler(NAutomaton automaton) {
         this.language = automaton.language;
-        this.initial = automaton.initial;
+        if (automaton.initial.size() != 1) {
+            throw new RuntimeException("too much initial states");
+        }
+        this.initial = automaton.initial.stream().findFirst().orElseThrow();
         this.accepted = automaton.accepted;
         this.states = new HashMap<>();
     }

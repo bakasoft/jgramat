@@ -39,38 +39,51 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         var max = (maximum != null ? maximum : 0);
 
         if (min == 0 && max == 0 && separator == null) {  // unbounded loop without separator
-            var amMain = content.build(lang);
-            lang.transition(amMain.accepted, amMain.initial, null);
-            return lang.automaton(amMain.initial, amMain.initial);
+            return lang.automaton((initialSet, acceptedSet) -> {
+                var root = lang.state();
+                initialSet.add(root);
+                acceptedSet.add(root);
+
+                var amMain = content.build(lang);
+
+                lang.transition(root, amMain.initial, null);
+                lang.transition(amMain.accepted, root, null);
+            });
         }
         else if (min == 0 && max == 0) { // unbounded loop WITH separator
-            var amMain = content.build(lang);
-            var initial = lang.state();
-            var accepted = lang.state();
+            return lang.automaton((initialSet, acceptedSet) -> {
+                var amMain = content.build(lang);
+                var initial = initialSet.create();
+                var accepted = acceptedSet.create();
 
-            lang.transition(initial, amMain.initial, null);
-            lang.transition(amMain.accepted, accepted, null);
+                acceptedSet.add(initial);
 
-            var amLoopSep = separator.build(lang);
-            var amLoopCon = content.build(lang);
+                lang.transition(initial, amMain.initial, null);
+                lang.transition(amMain.accepted, accepted, null);
 
-            lang.transition(accepted, amLoopSep.initial, null);
-            lang.transition(amLoopSep.accepted, amLoopCon.initial, null);
-            lang.transition(amLoopCon.accepted, accepted, null);
+                var amLoopSep = separator.build(lang);
+                var amLoopCon = content.build(lang);
 
-            return lang.automaton(initial, Set.of(initial, accepted));
+                lang.transition(accepted, amLoopSep.initial, null);
+                lang.transition(amLoopSep.accepted, amLoopCon.initial, null);
+                lang.transition(amLoopCon.accepted, accepted, null);
+            });
         }
         else if (min == 1 && max == 0) {
-            var amMain = content.build(lang);
-            if (separator != null) {
-                var amSep = separator.build(lang);
-                lang.transition(amMain.accepted, amSep.initial, null);
-                lang.transition(amSep.accepted, amMain.initial, null);
-            }
-            else {
-                lang.transition(amMain.accepted, amMain.initial, null);
-            }
-            return lang.automaton(amMain.initial, amMain.accepted);
+            return lang.automaton((initialSet, acceptedSet) -> {
+                var amMain = content.build(lang);
+                if (separator != null) {
+                    var amSep = separator.build(lang);
+                    lang.transition(amMain.accepted, amSep.initial, null);
+                    lang.transition(amSep.accepted, amMain.initial, null);
+                }
+                else {
+                    lang.transition(amMain.accepted, amMain.initial, null);
+                }
+
+                initialSet.add(amMain.initial);
+                acceptedSet.add(amMain.accepted);
+            });
         }
         else {
             throw new RuntimeException("not implemented: min=" + min + ", max=" + max + ", sep=" + (separator != null));

@@ -11,7 +11,7 @@ public class DMaker {
     }
 
     private final Language language;
-    private final NState initial;
+    private final Set<NState> initial;
     private final Set<NState> accepts;
 
     private final Map<String, NState> hashStates;
@@ -28,7 +28,7 @@ public class DMaker {
         var closures = new HashMap<String, Set<NState>>();
         var newStates = new HashMap<String, NState>();
 
-        var initialClosure = compute_null_closure(Set.of(initial));
+        var initialClosure = compute_null_closure(initial);
 
         queue.add(initialClosure);
 
@@ -84,7 +84,7 @@ public class DMaker {
             }
         }
 
-        return new NAutomaton(language, newInitial, newAccepts);
+        return new NAutomaton(language, Set.of(newInitial), newAccepts, new HashSet<>(newStates.values()));
     }
 
     private List<Action> find_transition_actions(Set<NState> sources, Set<NState> targets, Symbol symbol) {

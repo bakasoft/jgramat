@@ -24,14 +24,15 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var initial = lang.state();
-        var last = initial;
-        for (var c : value.toCharArray()) {
-            var next = lang.state();
-            lang.transition(last, next, (int)c);
-            last = next;
-        }
-        return lang.automaton(initial, last);
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var last = initialSet.create();
+            for (var c : value.toCharArray()) {
+                var next = lang.state();
+                lang.transition(last, next, (int)c);
+                last = next;
+            }
+            acceptedSet.add(last);
+        });
     }
 
     @Override

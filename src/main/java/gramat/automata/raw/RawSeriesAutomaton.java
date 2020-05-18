@@ -22,22 +22,23 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var initial = lang.state();
-        var last = initial;
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var last = initialSet.create();
 
-        for (var item : items) {
-            var am = item.build(lang);
+            for (var item : items) {
+                var am = item.build(lang);
 
-            lang.transition(last, am.initial, null);
+                lang.transition(last, am.initial, null);
 
-            var next = lang.state();
+                var next = lang.state();
 
-            lang.transition(am.accepted, next, null);
+                lang.transition(am.accepted, next, null);
 
-            last = next;
-        }
+                last = next;
+            }
 
-        return lang.automaton(initial, last);
+            acceptedSet.add(last);
+        });
     }
 
     @Override

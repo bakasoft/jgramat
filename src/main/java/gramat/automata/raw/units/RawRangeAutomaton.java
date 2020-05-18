@@ -22,11 +22,11 @@ public class RawRangeAutomaton extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var initial = lang.state();
-        var accepted = lang.state();
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var initial = initialSet.create();
+            var accepted = acceptedSet.create();
 
-        lang.transition(initial, accepted, new SymbolRange(begin, end));
-
-        return lang.automaton(initial, accepted);
+            lang.transition(initial, accepted, new SymbolRange(begin, end));
+        });
     }
 }

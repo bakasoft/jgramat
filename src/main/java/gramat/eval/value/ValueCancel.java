@@ -3,14 +3,14 @@ package gramat.eval.value;
 import gramat.compiling.ValueParser;
 import gramat.eval.Action;
 import gramat.eval.Evaluator;
+import gramat.eval.SubAction;
 
-public class ValueCancel extends Action {
+public class ValueCancel extends SubAction {
 
-    private final Action origin;
     private final ValueParser parser;
 
     public ValueCancel(Action origin, ValueParser parser) {
-        this.origin = origin;
+        super(origin);
         this.parser = parser;
     }
 
@@ -20,7 +20,7 @@ public class ValueCancel extends Action {
     }
 
     @Override
-    public String toString() {
+    public String getDescription() {
         return "Cancel `" + parser + "` value";
     }
 }

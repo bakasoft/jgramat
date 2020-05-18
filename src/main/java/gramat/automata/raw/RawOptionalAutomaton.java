@@ -22,11 +22,9 @@ public class RawOptionalAutomaton extends RawAutomaton {
     @Override
     public NAutomaton build(Language lang) {
         var am = content.build(lang);
-        var accepted = new HashSet<NState>();
 
-        accepted.add(am.initial);
-        accepted.addAll(am.accepted);
+        am.accepted.addAll(am.initial);
 
-        return lang.automaton(am.initial, accepted);
+        return am;
     }
 }

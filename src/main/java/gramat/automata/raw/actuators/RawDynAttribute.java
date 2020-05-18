@@ -21,11 +21,14 @@ public class RawDynAttribute extends RawAutomaton {
 
     @Override
     public NAutomaton build(Language lang) {
-        var amName = name.build(lang);
-        var amContent = content.build(lang);
+        return lang.automaton((initialSet, acceptedSet) -> {
+            var amName = name.build(lang);
+            var amContent = content.build(lang);
 
-        lang.transition(amName.accepted, amContent.initial, null);
+            lang.transition(amName.accepted, amContent.initial, null);
 
-        return lang.automaton(amName.initial, amContent.accepted);
+            initialSet.add(amName.initial);
+            acceptedSet.add(amContent.accepted);
+        });
     }
 }
