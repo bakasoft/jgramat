@@ -2,38 +2,39 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.*;
 import gramat.eval.Action;
+import gramat.util.SetOps;
 
 import java.util.*;
 
 public class TRX {
 
-    public static void setupActions(NMachine am, Action start, Action save, Action cancel) {
-        var initial = new HashSet<>(am.initial);
-        var accepted = new HashSet<>(am.accepted);
-        var states = new HashSet<>(am.states);
+    public static void setupActions(NMachine machine, Action start, Action save, Action cancel) {
+        var initial = new HashSet<>(machine.initial);
+        var accepted = new HashSet<>(machine.accepted);
+        var states = new HashSet<>(machine.states);
         var rejected = sub(states, accepted);
 
-        for (var trn : findAllNotNullTransitions(initial, states)) {
-            am.language.addActionPattern(initial, trn.symbol, trn.target, start);
+        for (var i : initial) {
+            var nullClosure = Utils.compute_null_closure(Set.of(i));
+            for (var trn : findAllNotNullTransitions(nullClosure, states)) {
+                machine.language.addActionPattern(i, trn.symbol, trn.target, start);
+            }
         }
 
-        for (var trn : findAllNotNullExitTransitions(accepted, states)) {
-            am.language.addActionPattern(accepted, trn.symbol, trn.target, save);
+
+        for (var a : accepted) {
+            var nullClosure = Utils.compute_null_closure(Set.of(a));
+            for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
+                machine.language.addActionPattern(a, trn.symbol, trn.target, save);
+            }
         }
 
-        for (var trn : findAllNotNullExitTransitions(rejected, states)) {
-            for (var r : rejected) {
-                var actuallyRejected = true;
 
-                for (var s : Utils.compute_null_closure(Set.of(r))) {
-                    if (accepted.contains(s)) {
-                        actuallyRejected = false;
-                        break;
-                    }
-                }
-
-                if (actuallyRejected) {
-                    am.language.addActionPattern(r, trn.symbol, trn.target, cancel);
+        for (var r : rejected) {
+            var nullClosure = Utils.compute_null_closure(Set.of(r));
+            if (!SetOps.intersects(nullClosure, accepted)) {
+                for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
+                    machine.language.addActionPattern(r, trn.symbol, trn.target, cancel);
                 }
             }
         }

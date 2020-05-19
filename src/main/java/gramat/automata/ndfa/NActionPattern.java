@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class NActionPattern {
 
-    public final Symbol symbol;
     public final NState source;
     public final NState target;
+    public final Symbol symbol;
     public final Action action;
 
     public NActionPattern(NState source, Symbol symbol, NState target, Action action) {
