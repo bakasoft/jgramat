@@ -1,6 +1,7 @@
 package gramat.automata.ndfa;
 
 import gramat.eval.Action;
+import gramat.expressions.flat.BeginSource;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,14 +43,13 @@ public class NLanguage implements NContainer {
         return machine;
     }
 
-    public void addActionPattern(Set<NState> sources, Symbol symbol, NState target, Action action) {
-        for (var source : sources) {
-            addActionPattern(source, symbol, target, action);
+    public void addActionPattern(NState source, Symbol symbol, NState target, Action action, boolean begin) {
+        if (begin) {
+            actionPatterns.add(0, new NActionPattern(source, symbol, target, action));
         }
-    }
-
-    public void addActionPattern(NState source, Symbol symbol, NState target, Action action) {
-        actionPatterns.add(new NActionPattern(source, symbol, target, action));
+        else {
+            actionPatterns.add(new NActionPattern(source, symbol, target, action));
+        }
     }
 
     public void makeWild(NState state) {

@@ -15,17 +15,15 @@ public class TRX {
         var rejected = sub(states, accepted);
 
         for (var i : initial) {
-            var nullClosure = Utils.compute_null_closure(Set.of(i));
-            for (var trn : findAllNotNullTransitions(nullClosure, states)) {
-                machine.language.addActionPattern(i, trn.symbol, trn.target, start);
+            for (var trn : findAllNotNullTransitions(Set.of(i), states)) {
+                machine.language.addActionPattern(i, trn.symbol, trn.target, start, true);
             }
         }
 
 
         for (var a : accepted) {
-            var nullClosure = Utils.compute_null_closure(Set.of(a));
-            for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
-                machine.language.addActionPattern(a, trn.symbol, trn.target, save);
+            for (var trn : findAllNotNullExitTransitions(Set.of(a), states)) {
+                machine.language.addActionPattern(a, trn.symbol, trn.target, save, false);
             }
         }
 
@@ -34,7 +32,7 @@ public class TRX {
             var nullClosure = Utils.compute_null_closure(Set.of(r));
             if (!SetOps.intersects(nullClosure, accepted)) {
                 for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
-                    machine.language.addActionPattern(r, trn.symbol, trn.target, cancel);
+                    machine.language.addActionPattern(r, trn.symbol, trn.target, cancel, false);
                 }
             }
         }
