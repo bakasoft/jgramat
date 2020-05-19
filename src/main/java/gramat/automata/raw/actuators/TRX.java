@@ -7,10 +7,10 @@ import java.util.*;
 
 public class TRX {
 
-    public static void setupActions(NAutomaton am, Action start, Action save, Action cancel) {
-        var initial = am.initial;
-        var accepted = am.accepted;
-        var states = am.states;
+    public static void setupActions(NMachine am, Action start, Action save, Action cancel) {
+        var initial = new HashSet<>(am.initial);
+        var accepted = new HashSet<>(am.accepted);
+        var states = new HashSet<>(am.states);
         var rejected = sub(states, accepted);
 
         for (var trn : findAllNotNullTransitions(initial, states)) {
@@ -39,7 +39,7 @@ public class TRX {
         }
     }
 
-    private static Set<NState> sub(Set<NState> a, Set<NState> b) {
+    private static Set<NState> sub(Collection<NState> a, Collection<NState> b) {
         var result = new HashSet<>(a);
         result.removeAll(b);
         return result;

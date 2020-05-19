@@ -1,10 +1,6 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.Language;
-import gramat.automata.ndfa.NAutomaton;
-import gramat.automata.ndfa.NState;
-
-import java.util.HashSet;
+import gramat.automata.ndfa.NContext;
 
 public class RawOptionalAutomaton extends RawAutomaton {
 
@@ -20,11 +16,10 @@ public class RawOptionalAutomaton extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(Language lang) {
-        var am = content.build(lang);
+    public void build(NContext context) {
+        content.build(context);
 
-        am.accepted.addAll(am.initial);
-
-        return am;
+        // make initial states accepted as well
+        context.accepted(context.getInitialStates());
     }
 }

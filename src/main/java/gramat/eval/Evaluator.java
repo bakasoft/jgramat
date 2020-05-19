@@ -1,6 +1,6 @@
 package gramat.eval;
 
-import gramat.automata.ndfa.DState;
+import gramat.automata.dfa.DState;
 import gramat.runtime.*;
 import gramat.util.parsing.Source;
 

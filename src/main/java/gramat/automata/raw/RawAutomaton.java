@@ -1,12 +1,9 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.NAutomaton;
-import gramat.automata.ndfa.Language;
+import gramat.automata.ndfa.NMachineBuilder;
 
-abstract public class RawAutomaton {
+abstract public class RawAutomaton implements NMachineBuilder {
 
     abstract public RawAutomaton collapse();
-
-    abstract public NAutomaton build(Language lang);
 
 }

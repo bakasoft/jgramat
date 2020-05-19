@@ -1,7 +1,6 @@
 package gramat.automata.raw.units;
 
-import gramat.automata.ndfa.NAutomaton;
-import gramat.automata.ndfa.Language;
+import gramat.automata.ndfa.NContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
 
@@ -19,13 +18,11 @@ public class RawCharAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public NAutomaton build(Language lang) {
-        return lang.automaton((initialSet, acceptedSet) -> {
-            var initial = initialSet.create();
-            var accepted = acceptedSet.create();
+    public void build(NContext context) {
+        var initial = context.initial();
+        var accepted = context.accepted();
 
-            lang.transition(initial, accepted, value);
-        });
+        context.transitionChar(initial, accepted, value);
     }
 
     @Override

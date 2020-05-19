@@ -1,24 +1,33 @@
 package gramat.automata.ndfa;
 
-import gramat.output.Writable;
+import gramat.automata.dfa.DMaker;
+import gramat.automata.dfa.DState;
 import gramat.util.GramatWriter;
 
 import java.io.IOException;
 import java.util.*;
 
-public class NAutomaton implements Writable {
+public class NMachine {
 
-    public final Language language;
-    public final Set<NState> initial;
-    public final Set<NState> accepted;
-    public final Set<NState> states;
+    public final NLanguage language;
+    public final List<NState> states;
+    public final List<NTransition> transitions;
+    public final List<NState> initial;
+    public final List<NState> accepted;
 
-    NAutomaton(Language language, Set<NState> initial, Set<NState> accepted, Set<NState> states) {
+    public NMachine(
+            NLanguage language,
+            List<NState> states,
+            List<NTransition> transitions,
+            List<NState> initial,
+            List<NState> accepted) {
         this.language = language;
-        this.initial = initial;
-        this.accepted = accepted;
-        this.states = states;
+        this.states = Collections.unmodifiableList(states);
+        this.transitions = Collections.unmodifiableList(transitions);
+        this.initial = Collections.unmodifiableList(initial);
+        this.accepted = Collections.unmodifiableList(accepted);
     }
+
 
     public DState compile() {
 //        System.out.println("NDFA -----------");
@@ -26,7 +35,6 @@ public class NAutomaton implements Writable {
         return DMaker.transform(this);
     }
 
-    @Override
     public void write(Appendable output) throws IOException {
         var states = list_states(initial);
 
@@ -61,7 +69,7 @@ public class NAutomaton implements Writable {
         }
     }
 
-    private static Set<NState> list_states(Set<NState> initial) {
+    private static Set<NState> list_states(Collection<NState> initial) {
         var queue = new LinkedList<>(initial);
         var result = new HashSet<NState>();
 
@@ -76,15 +84,5 @@ public class NAutomaton implements Writable {
         }
 
         return result;
-    }
-
-    public boolean isAccepted(Set<NState> states) {
-        for (var state : states) {
-            if (accepted.contains(state)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

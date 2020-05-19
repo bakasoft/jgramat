@@ -1,22 +1,19 @@
-package gramat.automata.ndfa;
+package gramat.automata.dfa;
 
-import gramat.eval.Action;
 import gramat.output.GrammarWriter;
 
-public class DTransitionRange extends DTransition {
+public class DTransitionChar extends DTransition {
 
-    public final int begin;
-    public final int end;
+    public final int symbol;
 
-    public DTransitionRange(DState target, int begin, int end) {
+    public DTransitionChar(DState target, int symbol) {
         super(target);
-        this.begin = begin;
-        this.end = end;
+        this.symbol = symbol;
     }
 
     @Override
     public boolean accepts(int symbol) {
-        return symbol >= begin && symbol <= end;
+        return this.symbol == symbol;
     }
 
     @Override
@@ -24,13 +21,12 @@ public class DTransitionRange extends DTransition {
         if (transition instanceof DTransitionChar) {
             var tc = (DTransitionChar)transition;
 
-            return tc.symbol >= begin && tc.symbol <= end;
+            return tc.symbol == this.symbol;
         }
         else if (transition instanceof DTransitionRange) {
             var tr = (DTransitionRange)transition;
 
-            return this.begin >= tr.begin && this.begin <= tr.end
-                    || this.end >= tr.begin && this.end <= tr.end;
+            return this.symbol >= tr.begin && this.symbol <= tr.end;
         }
         else if (transition instanceof DTransitionWild) {
             return false;
@@ -42,11 +38,11 @@ public class DTransitionRange extends DTransition {
 
     @Override
     public void write(GrammarWriter writer) {
-        if (writer.open(this, "range-transition")) {
-            writer.attribute("begin", begin);
-            writer.attribute("end", end);
+        if (writer.open(this, "char-transition")) {
+            writer.attribute("value", symbol);
             target.write(writer);
             writer.close();
         }
     }
+
 }

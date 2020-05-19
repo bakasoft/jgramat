@@ -1,28 +1,28 @@
-package gramat.automata.ndfa;
+package gramat.automata.dfa;
 
+import gramat.automata.ndfa.*;
 import gramat.eval.Action;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static gramat.automata.ndfa.Utils.compute_null_closure;
 
 public class DMaker {
 
-    public static DState transform(NAutomaton automaton) {
-        return new DMaker(automaton).run();
+    public static DState transform(NMachine machine) {
+        return new DMaker(machine).run();
     }
 
-    private final Language language;
+    private final NLanguage language;
     private final Set<NState> initial;
     private final Set<NState> accepts;
 
     private final Map<String, DState> hashStates;
 
-    private DMaker(NAutomaton automaton) {
-        this.language = automaton.language;
-        this.initial = automaton.initial;
-        this.accepts = automaton.accepted;
+    private DMaker(NMachine machine) {
+        this.language = machine.language;
+        this.initial = new HashSet<>(machine.initial);
+        this.accepts = new HashSet<>(machine.accepted);
         this.hashStates = new HashMap<>();
     }
 

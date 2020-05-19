@@ -1,7 +1,5 @@
 package gramat.automata.ndfa;
 
-import gramat.eval.Action;
-
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,7 +31,7 @@ public class Utils {
         return items.stream().filter(i -> !condition.test(i)).collect(Collectors.toUnmodifiableList());
     }
 
-    public static List<NTransition> findExitTransitions(Language lang, Set<NState> sources) {
+    public static List<NTransition> findExitTransitions(NLanguage lang, Set<NState> sources) {
         var result = new ArrayList<NTransition>();
 
         for (var trn : lang.transitions) {
@@ -45,7 +43,7 @@ public class Utils {
         return result;
     }
 
-    public static List<NTransition> findAllTransitionsBySource(Language language, Set<NState> sources) {
+    public static List<NTransition> findAllTransitionsBySource(NLanguage language, Set<NState> sources) {
         var result = new ArrayList<NTransition>();
         var queue = new LinkedList<>(sources);
         var control = new HashSet<NState>();
@@ -67,7 +65,7 @@ public class Utils {
         return result;
     }
 
-    public static List<NTransition> findAllTransitionsByTarget(Language language, Set<NState> targets) {
+    public static List<NTransition> findAllTransitionsByTarget(NLanguage language, Set<NState> targets) {
         var result = new ArrayList<NTransition>();
         var queue = new LinkedList<NState>();
         var nullStates = new HashSet<NState>();

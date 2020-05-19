@@ -1,12 +1,7 @@
 package gramat.automata.raw.actuators;
 
-import gramat.automata.ndfa.Language;
-import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.NContext;
 import gramat.automata.raw.RawAutomaton;
-import gramat.eval.Action;
-import gramat.eval.object.ObjectCancel;
-import gramat.eval.object.ObjectSave;
-import gramat.eval.object.ObjectStart;
 import gramat.eval.staticAttribute.StaticAttributeCancel;
 import gramat.eval.staticAttribute.StaticAttributeSave;
 import gramat.eval.staticAttribute.StaticAttributeStart;
@@ -27,12 +22,13 @@ public class RawAttribute extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(Language lang) {
-        var am = content.build(lang);
+    public void build(NContext context) {
+        content.build(context);
+
         var start = new StaticAttributeStart();
         var save = new StaticAttributeSave(start, name);
         var cancel = new StaticAttributeCancel(start);
-        lang.postBuild(() -> TRX.setupActions(am, start, save, cancel));
-        return am;
+        var machine = context.machine();
+        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
     }
 }

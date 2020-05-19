@@ -1,6 +1,5 @@
-package gramat.automata.ndfa;
+package gramat.automata.dfa;
 
-import gramat.eval.Action;
 import gramat.output.GrammarWriter;
 
 public class DTransitionWild extends DTransition {

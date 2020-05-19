@@ -1,8 +1,6 @@
 package gramat.automata.raw;
 
-import gramat.eval.BeginSourceCheck;
-import gramat.automata.ndfa.Language;
-import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.NContext;
 
 public class RawSourceBegin extends RawAutomaton {
     @Override
@@ -11,12 +9,7 @@ public class RawSourceBegin extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(Language lang) {
-        return lang.automaton((initialSet, acceptedSet) -> {
-            var state = lang.state();
-
-            initialSet.add(state);
-            acceptedSet.add(state);
-        });
+    public void build(NContext context) {
+        context.initialAccepted();
     }
 }

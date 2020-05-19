@@ -1,7 +1,6 @@
 package gramat.automata.raw.actuators;
 
-import gramat.automata.ndfa.Language;
-import gramat.automata.ndfa.NAutomaton;
+import gramat.automata.ndfa.NContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.dynamicAttribute.DynamicAttributeCancel;
 import gramat.eval.dynamicAttribute.DynamicAttributeSave;
@@ -10,34 +9,32 @@ import gramat.eval.dynamicAttribute.DynamicAttributeStart;
 public class RawDynAttribute extends RawAutomaton {
 
     private final RawAutomaton name;
-    private final RawAutomaton content;
+    private final RawAutomaton value;
 
-    public RawDynAttribute(RawAutomaton name, RawAutomaton content) {
+    public RawDynAttribute(RawAutomaton name, RawAutomaton value) {
         this.name = name;
-        this.content = content;
+        this.value = value;
     }
 
     @Override
     public RawAutomaton collapse() {
-        return new RawDynAttribute(name.collapse(), content.collapse());
+        return new RawDynAttribute(name.collapse(), value.collapse());
     }
 
     @Override
-    public NAutomaton build(Language lang) {
-        var am = lang.automaton((initialSet, acceptedSet) -> {
-            var amName = name.build(lang);
-            var amContent = content.build(lang);
+    public void build(NContext context) {
+        var nMachine = context.subMachine(name);
+        var vMachine = context.subMachine(value);
 
-            lang.transition(amName.accepted, amContent.initial, null);
+        context.transitionNull(nMachine.accepted, vMachine.initial);
 
-            initialSet.add(amName.initial);
-            acceptedSet.add(amContent.accepted);
-        });
+        context.initial(nMachine.initial);
+        context.accepted(vMachine.accepted);
 
         var start = new DynamicAttributeStart();
         var save = new DynamicAttributeSave(start);
         var cancel = new DynamicAttributeCancel(start);
-        lang.postBuild(() -> TRX.setupActions(am, start, save, cancel));
-        return am;
+        var machine = context.machine();
+        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
     }
 }

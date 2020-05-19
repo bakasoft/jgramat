@@ -1,10 +1,8 @@
 package gramat.expressions.flat;
 
-import gramat.automata.raw.RawSourceEnd;
+import gramat.automata.raw.units.RawSourceEnd;
 import gramat.compiling.Compiler;
-import gramat.compiling.LinkContext;
 import gramat.expressions.Expression;
-import gramat.expressions.wrappers.DebugExp;
 import gramat.output.GrammarWriter;
 import gramat.runtime.EvalContext;
 import gramat.util.parsing.Location;

@@ -1,12 +1,6 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.DState;
-import gramat.automata.ndfa.NAutomaton;
-import gramat.automata.ndfa.Language;
-import gramat.automata.ndfa.NState;
-
-import java.util.HashSet;
-import java.util.Set;
+import gramat.automata.ndfa.NContext;
 
 
 public class RawRepetitionAutomaton extends RawAutomaton {
@@ -34,60 +28,84 @@ public class RawRepetitionAutomaton extends RawAutomaton {
     }
 
     @Override
-    public NAutomaton build(Language lang) {
+    public void build(NContext context) {
         var min = (minimum != null ? minimum : 0);
         var max = (maximum != null ? maximum : 0);
 
-        if (min == 0 && max == 0 && separator == null) {  // unbounded loop without separator
-            return lang.automaton((initialSet, acceptedSet) -> {
-                var root = lang.state();
-                initialSet.add(root);
-                acceptedSet.add(root);
-
-                var amMain = content.build(lang);
-
-                lang.transition(root, amMain.initial, null);
-                lang.transition(amMain.accepted, root, null);
-            });
+        if (min < 0 || max < 0) {
+            throw new RuntimeException("invalid values");
         }
-        else if (min == 0 && max == 0) { // unbounded loop WITH separator
-            return lang.automaton((initialSet, acceptedSet) -> {
-                var amMain = content.build(lang);
-                var initial = initialSet.create();
-                var accepted = acceptedSet.create();
 
-                acceptedSet.add(initial);
-
-                lang.transition(initial, amMain.initial, null);
-                lang.transition(amMain.accepted, accepted, null);
-
-                var amLoopSep = separator.build(lang);
-                var amLoopCon = content.build(lang);
-
-                lang.transition(accepted, amLoopSep.initial, null);
-                lang.transition(amLoopSep.accepted, amLoopCon.initial, null);
-                lang.transition(amLoopCon.accepted, accepted, null);
-            });
+        if (min == 0 && max == 0 && separator == null) {
+            zero_or_more_no_separator(context);
+        }
+        else if (min == 0 && max == 0) {
+            zero_or_more_with_separator(context);
         }
         else if (min == 1 && max == 0) {
-            return lang.automaton((initialSet, acceptedSet) -> {
-                var amMain = content.build(lang);
-                if (separator != null) {
-                    var amSep = separator.build(lang);
-                    lang.transition(amMain.accepted, amSep.initial, null);
-                    lang.transition(amSep.accepted, amMain.initial, null);
-                }
-                else {
-                    lang.transition(amMain.accepted, amMain.initial, null);
-                }
-
-                initialSet.add(amMain.initial);
-                acceptedSet.add(amMain.accepted);
-            });
+            one_or_more(context);
+        }
+        else if (min > 1 && max == 0) {
+            at_least_n_times(context, min);
+        }
+        else if (min == max) {
+            exact_n_times(context, min);
         }
         else {
-            throw new RuntimeException("not implemented: min=" + min + ", max=" + max + ", sep=" + (separator != null));
+            at_least_but_no_more_times(context, min, max);
         }
     }
 
+    private void zero_or_more_no_separator(NContext context) {
+        var root = context.initialAccepted();
+
+        var machine = context.subMachine(content);
+
+        context.transitionNull(root, machine.initial);
+        context.transitionNull(machine.accepted, root);
+    }
+
+    private void zero_or_more_with_separator(NContext context) {
+        var initial = context.initialAccepted();
+        var accepted = context.accepted();
+        var cMachineMain = context.subMachine(content);
+
+        context.transitionNull(initial, cMachineMain.initial);
+        context.transitionNull(cMachineMain.accepted, accepted);
+
+        var cMachineArc = context.subMachine(content);
+        var sMachineArc = context.subMachine(separator);
+
+        context.transitionNull(accepted, sMachineArc.initial);
+        context.transitionNull(sMachineArc.accepted, cMachineArc.initial);
+        context.transitionNull(cMachineArc.accepted, accepted);
+    }
+
+    private void one_or_more(NContext context) {
+        var cMachine = context.subMachine(content);
+
+        if (separator != null) {
+            var sMachine = context.subMachine(separator);
+            context.transitionNull(cMachine.accepted, sMachine.initial);
+            context.transitionNull(sMachine.accepted, cMachine.initial);
+        }
+        else {
+            context.transitionNull(cMachine.accepted, cMachine.initial);
+        }
+
+        context.initial(cMachine.initial);
+        context.accepted(cMachine.accepted);
+    }
+
+    private void at_least_n_times(NContext context, int count) {
+        throw new UnsupportedOperationException();  // TODO
+    }
+
+    private void exact_n_times(NContext context, int count) {
+        throw new UnsupportedOperationException();  // TODO
+    }
+
+    private void at_least_but_no_more_times(NContext context, int min, int max) {
+        throw new UnsupportedOperationException();  // TODO
+    }
 }
