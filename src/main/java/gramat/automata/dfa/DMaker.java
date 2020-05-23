@@ -106,11 +106,15 @@ public class DMaker {
             throw new RuntimeException();
         }
 
-        source.transitions.add(trn);
+        for (var action : compute_transition_actions(sources, symbol, targets)) {
+            if (!trn.actions.contains(action)) {
+                trn.actions.add(action);
+            }
+        }
 
         validate_transitions(source.transitions);
-        
-        trn.actions.addAll(compute_transition_actions(sources, symbol, targets));
+
+        source.transitions.add(trn);
     }
 
     private void validate_transitions(List<DTransition> transitions) {
