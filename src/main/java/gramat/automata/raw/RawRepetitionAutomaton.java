@@ -1,6 +1,7 @@
 package gramat.automata.raw;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 
 
 public class RawRepetitionAutomaton extends RawAutomaton {
@@ -28,7 +29,7 @@ public class RawRepetitionAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
         var min = (minimum != null ? minimum : 0);
         var max = (maximum != null ? maximum : 0);
 
@@ -36,76 +37,75 @@ public class RawRepetitionAutomaton extends RawAutomaton {
             throw new RuntimeException("invalid values");
         }
 
-        if (min == 0 && max == 0 && separator == null) {
-            zero_or_more_no_separator(context);
-        }
-        else if (min == 0 && max == 0) {
-            zero_or_more_with_separator(context);
+        if (min == 0 && max == 0) {
+            if (separator == null) {
+                zero_or_more_no_separator(context, initial, accepted);
+            }
+            else {
+                zero_or_more_with_separator(context, initial, accepted);
+            }
         }
         else if (min == 1 && max == 0) {
-            one_or_more(context);
+            if (separator == null) {
+                one_or_more_no_separator(context, initial, accepted);
+            }
+            else {
+                one_or_more_with_separator(context, initial, accepted);
+            }
         }
         else if (min > 1 && max == 0) {
-            at_least_n_times(context, min);
+            at_least_n_times(context, initial, accepted, min);
         }
         else if (min == max) {
-            exact_n_times(context, min);
+            exact_n_times(context, initial, accepted, min);
         }
         else {
-            at_least_but_no_more_times(context, min, max);
+            at_least_but_no_more_times(context, initial, accepted, min, max);
         }
     }
 
-    private void zero_or_more_no_separator(NContext context) {
-        var root = context.initialAccepted();
+    private void zero_or_more_no_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        content.build(context, initial, initial);
 
-        var machine = context.subMachine(content);
-
-        context.transitionNull(root, machine.initial);
-        context.transitionNull(machine.accepted, root);
+        accepted.add(initial);
     }
 
-    private void zero_or_more_with_separator(NContext context) {
-        var initial = context.initialAccepted();
-        var accepted = context.accepted();
-        var cMachineMain = context.subMachine(content);
+    private void zero_or_more_with_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        content.build(context, initial, accepted);
 
-        context.transitionNull(initial, cMachineMain.initial);
-        context.transitionNull(cMachineMain.accepted, accepted);
+        var aux = new NStateSet();
 
-        var cMachineArc = context.subMachine(content);
-        var sMachineArc = context.subMachine(separator);
+        separator.build(context, accepted, aux);
 
-        context.transitionNull(accepted, sMachineArc.initial);
-        context.transitionNull(sMachineArc.accepted, cMachineArc.initial);
-        context.transitionNull(cMachineArc.accepted, accepted);
+        content.build(context, aux, accepted);
+
+        accepted.add(initial);
     }
 
-    private void one_or_more(NContext context) {
-        var cMachine = context.subMachine(content);
-
-        if (separator != null) {
-            var sMachine = context.subMachine(separator);
-            context.transitionNull(cMachine.accepted, sMachine.initial);
-            context.transitionNull(sMachine.accepted, cMachine.initial);
-        }
-        else {
-            context.transitionNull(cMachine.accepted, cMachine.initial);
-        }
-
-        context.initial(cMachine.initial);
-        context.accepted(cMachine.accepted);
+    private void one_or_more_no_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        content.build(context, initial, accepted);
+        content.build(context, accepted, accepted);
     }
 
-    private void at_least_n_times(NContext context, int count) {
+    private void one_or_more_with_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        content.build(context, initial, accepted);
+
+        var aux = new NStateSet();
+
+        separator.build(context, accepted, aux);
+
+        content.build(context, aux, accepted);
+    }
+
+    private NStateSet at_least_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
         throw new UnsupportedOperationException();  // TODO
     }
 
-    private void exact_n_times(NContext context, int count) {
+    private NStateSet exact_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
         throw new UnsupportedOperationException();  // TODO
     }
 
-    private void at_least_but_no_more_times(NContext context, int min, int max) {
+    private NStateSet at_least_but_no_more_times(NContext context, NStateSet initial, NStateSet accepted, int min, int max) {
         throw new UnsupportedOperationException();  // TODO
     }
 }

@@ -1,6 +1,7 @@
 package gramat.automata.raw;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.units.RawLiteralAutomaton;
 import gramat.automata.raw.units.RawNopAutomaton;
 import gramat.util.ListTool;
@@ -20,22 +21,26 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        var last = context.initial();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var last = initial;
 
-        for (var item : items) {
-            var machine = context.subMachine(item);
+        for (var i = 0; i < items.size(); i++) {
+            var item = items.get(i);
+            var isLast = (i == items.size() - 1);
 
-            context.transitionNull(last, machine.initial);
+            NStateSet next;
 
-            var next = context.state();
+            if (isLast) {
+                next = accepted;
+            }
+            else {
+                next = new NStateSet();
+            }
 
-            context.transitionNull(machine.accepted, next);
+            item.build(context, last, next);
 
             last = next;
         }
-
-        context.accepted(last);
     }
 
     @Override

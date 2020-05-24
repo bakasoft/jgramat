@@ -31,10 +31,10 @@ public class NLanguage implements NContainer {
     public NMachine machine(NMachineBuilder builder) {
         var postBuildHooks = new ArrayList<Runnable>();
         var context = new NContext(this, this, postBuildHooks);
+        var initial = context.state();
+        var accepted = new NStateSet();
 
-        builder.build(context);
-
-        var machine = context.machine();
+        var machine = context.machine(builder, NStateSet.of(initial), accepted);
 
         for (var hook : postBuildHooks) {
             hook.run();
@@ -129,10 +129,7 @@ public class NLanguage implements NContainer {
     }
 
     private Symbol make_symbol(Object value) {
-        if (value == null) {
-            return null;
-        }
-        else if (value instanceof Integer) {
+        if (value instanceof Integer) {
             var c = (int)value;
             var symbol = search_symbol(c);
 

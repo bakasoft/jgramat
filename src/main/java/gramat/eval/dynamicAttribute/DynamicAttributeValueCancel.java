@@ -4,8 +4,8 @@ import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
-public class DynamicAttributeSave extends SubAction {
-    public DynamicAttributeSave(Action origin) {
+public class DynamicAttributeValueCancel extends SubAction {
+    public DynamicAttributeValueCancel(Action origin) {
         super(origin);
     }
 
@@ -16,6 +16,6 @@ public class DynamicAttributeSave extends SubAction {
 
     @Override
     public String getDescription() {
-        return "Save Dyn-Attribute";
+        return "Cancel Value Dyn-Attribute";
     }
 }

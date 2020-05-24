@@ -1,6 +1,7 @@
 package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.ValueParser;
 import gramat.eval.value.ValueCancel;
@@ -23,13 +24,11 @@ public class RawValue extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        content.build(context);
-
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var machine = context.machine(content, initial, accepted);
         var start = new ValueStart(parser);
         var save = new ValueSave(start, parser);
         var cancel = new ValueCancel(start, parser);
-        var machine = context.machine();
         context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
     }
 

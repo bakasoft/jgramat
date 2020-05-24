@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 
 public class RawRangeAutomaton extends RawAutomaton {
@@ -19,9 +20,8 @@ public class RawRangeAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        var initial = context.initial();
-        var accepted = context.accepted();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        accepted.notEmpty(context);
 
         context.transitionRange(initial, accepted, begin, end);
     }

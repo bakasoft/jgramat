@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.util.parsing.Source;
 
@@ -11,9 +12,8 @@ public class RawSourceEnd extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        var initial = context.initial();
-        var accepted = context.accepted();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        accepted.notEmpty(context);
 
         context.transitionChar(initial, accepted, Source.EOF);
     }

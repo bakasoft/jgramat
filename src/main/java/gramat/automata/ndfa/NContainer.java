@@ -1,15 +1,19 @@
 package gramat.automata.ndfa;
 
-import java.util.Collection;
-import java.util.List;
-
 public interface NContainer {
 
     NState state();
 
     NTransition transition(NState source, NState targets, Symbol symbol);
 
-    default void transition(Collection<NState> sources, Collection<NState> targets, Symbol symbol) {
+    default void transition(NStateSet sources, NStateSet targets, Symbol symbol) {
+        if (sources.isEmpty()) {
+            throw new RuntimeException("Missing source states");
+        }
+        else if (targets.isEmpty()) {
+            throw new RuntimeException("Missing target states");
+        }
+
         for (var source : sources) {
             for (var target : targets) {
                 transition(source, target, symbol);
@@ -17,31 +21,23 @@ public interface NContainer {
         }
     }
 
-    default void transitionNull(NState source, NState target) {
-        transition(List.of(source), List.of(target), null);
+    default void transitionChar(NStateSet sources, NState target, int value) {
+        transition(sources, NStateSet.of(target), new SymbolChar(value));
     }
 
-    default void transitionNull(List<NState> sources, NState target) {
-        transition(sources, List.of(target), null);
+    default void transitionChar(NStateSet sources, NStateSet targets, int value) {
+        transition(sources, targets, new SymbolChar(value));
     }
 
-    default void transitionNull(NState source, List<NState> targets) {
-        transition(List.of(source), targets, null);
+    default void transitionRange(NStateSet sources, NStateSet targets, int begin, int end) {
+        transition(sources, targets, new SymbolRange(begin, end));
     }
 
-    default void transitionNull(List<NState> sources, List<NState> targets) {
-        transition(sources, targets, null);
+    default void transitionWild(NState source, NStateSet targets) {
+        transitionWild(NStateSet.of(source), targets);
     }
 
-    default void transitionChar(NState source, NState target, int value) {
-        transition(List.of(source), List.of(target), new SymbolChar(value));
-    }
-
-    default void transitionRange(NState source, NState target, int begin, int end) {
-        transition(List.of(source), List.of(target), new SymbolRange(begin, end));
-    }
-
-    default void transitionWild(NState source, NState target) {
-        transition(List.of(source), List.of(target), new SymbolWild());
+    default void transitionWild(NStateSet sources, NStateSet targets) {
+        transition(sources, targets, new SymbolWild());
     }
 }

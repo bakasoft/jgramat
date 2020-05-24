@@ -1,6 +1,7 @@
 package gramat.automata.raw;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 
 public class RawOptionalAutomaton extends RawAutomaton {
 
@@ -16,10 +17,10 @@ public class RawOptionalAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        content.build(context);
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        content.build(context, initial, accepted);
 
         // make initial states accepted as well
-        context.accepted(context.getInitialStates());
+        accepted.add(initial);
     }
 }

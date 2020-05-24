@@ -1,6 +1,7 @@
 package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.object.ObjectCancel;
 import gramat.eval.object.ObjectSave;
@@ -22,10 +23,8 @@ public class RawObject extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        content.build(context);
-
-        var machine = context.machine();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var machine = context.machine(content, initial, accepted);
         var start = new ObjectStart();
         var save = new ObjectSave();
         var cancel = new ObjectCancel();

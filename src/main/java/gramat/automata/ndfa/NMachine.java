@@ -10,22 +10,22 @@ import java.util.*;
 public class NMachine {
 
     public final NLanguage language;
-    public final List<NState> states;
-    public final List<NTransition> transitions;
-    public final List<NState> initial;
-    public final List<NState> accepted;
+    public final NState[] states;
+    public final NTransition[] transitions;
+    public final NState[] initial;
+    public final NState[] accepted;
 
     public NMachine(
             NLanguage language,
-            List<NState> states,
-            List<NTransition> transitions,
-            List<NState> initial,
-            List<NState> accepted) {
+            NState[] states,
+            NTransition[] transitions,
+            NState[] initial,
+            NState[] accepted) {
         this.language = language;
-        this.states = Collections.unmodifiableList(states);
-        this.transitions = Collections.unmodifiableList(transitions);
-        this.initial = Collections.unmodifiableList(initial);
-        this.accepted = Collections.unmodifiableList(accepted);
+        this.states = states;
+        this.transitions = transitions;
+        this.initial = initial;
+        this.accepted = accepted;
     }
 
 
@@ -45,7 +45,7 @@ public class NMachine {
         }
 
         for (var state : states) {
-            if (accepted.contains(state)) {
+            if (Set.of(accepted).contains(state)) {
                 output.append("A ");
             } else {
                 output.append("S ");
@@ -60,17 +60,15 @@ public class NMachine {
                 output.append(String.valueOf(trn.source.id));
                 output.append(" -> ");
                 output.append(String.valueOf(trn.target.id));
-                if (trn.symbol != null) {
-                    output.append(" : ");
-                    output.append(GramatWriter.toDelimitedString(trn.symbol.toString(), '\"'));
-                }
+                output.append(" : ");
+                output.append(GramatWriter.toDelimitedString(trn.symbol.toString(), '\"'));
                 output.append("\n");
             }
         }
     }
 
-    private static Set<NState> list_states(Collection<NState> initial) {
-        var queue = new LinkedList<>(initial);
+    private static Set<NState> list_states(NState[] initial) {
+        var queue = new LinkedList<>(List.of(initial));
         var result = new HashSet<NState>();
 
         while(queue.size() > 0) {

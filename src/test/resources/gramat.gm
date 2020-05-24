@@ -64,7 +64,7 @@ Test-08 = ^ "'" * "'" $
 @fail Test-08 ``
 @fail Test-08 `'`
 @pass Test-08 `''`
-@pass Test-08 `'''`
+@fail Test-08 `'''`
 @pass Test-08 `'a'`
 @pass Test-08 `'ab'`
 @pass Test-08 `'abc'`

@@ -2,8 +2,13 @@ package gramat.eval.dynamicAttribute;
 
 import gramat.eval.Action;
 import gramat.eval.Evaluator;
+import gramat.eval.SubAction;
 
-public class DynamicAttributeStart extends Action {
+public class DynamicAttributeNameCancel extends SubAction {
+    public DynamicAttributeNameCancel(Action origin) {
+        super(origin);
+    }
+
     @Override
     public void run(Evaluator evaluator) {
 
@@ -11,6 +16,6 @@ public class DynamicAttributeStart extends Action {
 
     @Override
     public String getDescription() {
-        return "Start Dyn-Attribute";
+        return "Cancel Name Dyn-Attribute";
     }
 }

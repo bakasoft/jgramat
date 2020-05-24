@@ -6,14 +6,11 @@ import java.util.List;
 
 public class NContext implements NContainer {
 
-    private final NLanguage language;
+    public final NLanguage language;
     private final NContainer parent;
 
     private final List<NState> states;
     private final List<NTransition> transitions;
-
-    private final List<NState> initialStates;
-    private final List<NState> acceptedStates;
 
     private final List<Runnable> postBuildHooks;
 
@@ -23,8 +20,6 @@ public class NContext implements NContainer {
         this.postBuildHooks = postBuildHooks;
         this.states = new ArrayList<>();
         this.transitions = new ArrayList<>();
-        this.initialStates = new ArrayList<>();
-        this.acceptedStates = new ArrayList<>();
     }
 
     @Override
@@ -49,76 +44,31 @@ public class NContext implements NContainer {
         postBuildHooks.add(hook);
     }
 
-    public NMachine subMachine(NMachineBuilder builder) {
+    public NMachine machine(NMachineBuilder builder, NStateSet initial, NStateSet accepted) {
         var context = new NContext(language, this, postBuildHooks);
 
-        builder.build(context);
+        builder.build(context, initial, accepted);
 
-        return context.machine();
-    }
-
-    public NState initial() {
-        var state = state();
-
-        initialStates.add(state);
-
-        return state;
-    }
-
-    public NState accepted() {
-        var state = state();
-
-        acceptedStates.add(state);
-
-        return state;
-    }
-
-    public NState initialAccepted() {
-        var state = state();
-
-        initialStates.add(state);
-        acceptedStates.add(state);
-
-        return state;
-    }
-
-    public NMachine machine() {
-        if (initialStates.isEmpty()) {
+        if (initial.isEmpty()) {
             throw new RuntimeException("Missing initial states");
         }
 
-        if (acceptedStates.isEmpty()) {
+        if (accepted.isEmpty()) {
             throw new RuntimeException("Missing accepted states");
         }
 
-        return new NMachine(language, states, transitions, initialStates, acceptedStates);
+        var totalStates = new NStateSet();
+
+        totalStates.add(initial);
+        totalStates.add(states);
+        totalStates.add(accepted);
+
+        return new NMachine(
+                language,
+                totalStates.toArray(),
+                transitions.toArray(NTransition[]::new),
+                initial.toArray(),
+                accepted.toArray());
     }
 
-    public void accepted(Collection<NState> states) {
-        for (var state : states) {
-            accepted(state);
-        }
-    }
-
-    public void accepted(NState state) {
-        if (!acceptedStates.contains(state)) {
-            acceptedStates.add(state);
-        }
-    }
-
-    public void initial(Collection<NState> states) {
-        for (var state : states) {
-            initial(state);
-        }
-    }
-
-    public void initial(NState state) {
-        if (!initialStates.contains(state)) {
-            initialStates.add(state);
-        }
-    }
-
-    public List<NState> getInitialStates() {
-        return initialStates;
-    }
 }

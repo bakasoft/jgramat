@@ -1,10 +1,9 @@
 package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
-import gramat.eval.dynamicAttribute.DynamicAttributeCancel;
-import gramat.eval.dynamicAttribute.DynamicAttributeSave;
-import gramat.eval.dynamicAttribute.DynamicAttributeStart;
+import gramat.eval.dynamicAttribute.*;
 
 public class RawDynAttribute extends RawAutomaton {
 
@@ -22,19 +21,18 @@ public class RawDynAttribute extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        var nMachine = context.subMachine(name);
-        var vMachine = context.subMachine(value);
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var nMachine = context.machine(name, initial, new NStateSet());
+        var vMachine = context.machine(value, NStateSet.of(nMachine.accepted), accepted);
 
-        context.transitionNull(nMachine.accepted, vMachine.initial);
+        var nStart = new DynamicAttributeNameStart();
+        var nSave = new DynamicAttributeNameSave(nStart);
+        var nCancel = new DynamicAttributeNameCancel(nStart);
+        context.postBuildHook(() -> TRX.setupActions(nMachine, nStart, nSave, nCancel));
 
-        context.initial(nMachine.initial);
-        context.accepted(vMachine.accepted);
-
-        var start = new DynamicAttributeStart();
-        var save = new DynamicAttributeSave(start);
-        var cancel = new DynamicAttributeCancel(start);
-        var machine = context.machine();
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        var vStart = new DynamicAttributeValueStart();
+        var vSave = new DynamicAttributeValueSave(nStart);
+        var vCancel = new DynamicAttributeValueCancel(nStart);
+        context.postBuildHook(() -> TRX.setupActions(vMachine, vStart, vSave, vCancel));
     }
 }

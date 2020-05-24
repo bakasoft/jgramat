@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
 
@@ -22,14 +23,28 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public void build(NContext context) {
-        var last = context.initial();
-        for (var c : value.toCharArray()) {
-            var next = context.state();
-            context.transitionChar(last, next, c);
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var last = initial;
+        var symbols = value.toCharArray();
+
+        accepted.notEmpty(context);
+
+        for (var i = 0; i < symbols.length; i++) {
+            boolean isLast = (i == symbols.length - 1);
+
+            NStateSet next;
+
+            if (isLast) {
+                next = accepted;
+            }
+            else {
+                next = NStateSet.of(context.state());
+            }
+
+            context.transitionChar(last, next, symbols[i]);
+
             last = next;
         }
-        context.accepted(last);
     }
 
     @Override

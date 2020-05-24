@@ -9,9 +9,9 @@ import java.util.*;
 public class TRX {
 
     public static void setupActions(NMachine machine, Action start, Action save, Action cancel) {
-        var initial = new HashSet<>(machine.initial);
-        var accepted = new HashSet<>(machine.accepted);
-        var states = new HashSet<>(machine.states);
+        var initial = new HashSet<>(List.of(machine.initial));
+        var accepted = new HashSet<>(List.of(machine.accepted));
+        var states = new HashSet<>(List.of(machine.states));
         var rejected = sub(states, accepted);
 
         for (var i : initial) {
@@ -29,7 +29,7 @@ public class TRX {
 
 
         for (var r : rejected) {
-            var nullClosure = Utils.compute_null_closure(Set.of(r));
+            var nullClosure = Set.of(r);
             if (!SetOps.intersects(nullClosure, accepted)) {
                 for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
                     machine.language.addActionPattern(r, trn.symbol, trn.target, cancel, false);
@@ -38,7 +38,7 @@ public class TRX {
         }
     }
 
-    private static Set<NState> sub(Collection<NState> a, Collection<NState> b) {
+    private static Set<NState> sub(Set<NState> a, Set<NState> b) {
         var result = new HashSet<>(a);
         result.removeAll(b);
         return result;
@@ -54,22 +54,17 @@ public class TRX {
 
             if (control.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.symbol == null) {
-                        queue.add(trn.target);
+                    boolean add = false;
+
+                    for (var target : Set.of(trn.target)) {
+                        if(targets.contains(target)) {
+                            add = true;
+                            break;
+                        }
                     }
-                    else {
-                        boolean add = false;
 
-                        for (var target : Utils.compute_null_closure(Set.of(trn.target))) {
-                            if(targets.contains(target)) {
-                                add = true;
-                                break;
-                            }
-                        }
-
-                        if (add) {
-                            result.add(trn);
-                        }
+                    if (add) {
+                        result.add(trn);
                     }
                 }
             }
@@ -88,22 +83,17 @@ public class TRX {
 
             if (control.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.symbol == null) {
-                        queue.add(trn.target);
+                    boolean add = true;
+
+                    for (var target : Set.of(trn.target)) {
+                        if(states.contains(target)) {
+                            add = false;
+                            break;
+                        }
                     }
-                    else {
-                        boolean add = true;
 
-                        for (var target : Utils.compute_null_closure(Set.of(trn.target))) {
-                            if(states.contains(target)) {
-                                add = false;
-                                break;
-                            }
-                        }
-
-                        if (add) {
-                            result.add(trn);
-                        }
+                    if (add) {
+                        result.add(trn);
                     }
                 }
             }
