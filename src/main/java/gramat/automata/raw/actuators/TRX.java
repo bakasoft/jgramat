@@ -37,9 +37,11 @@ public class TRX {
 
         // from the rejected states, find transitions, going to outer states, not defined by the machine
         for (var source : rejected) {
-            for (var trn : source.getTransitions()) {
-                if (!transitions.contains(trn) && !total.contains(trn.target)) {
-                    trn.actions.add(cancel);
+            if (!initial.contains(source)) {
+                for (var trn : source.getTransitions()) {
+                    if (!transitions.contains(trn) && !total.contains(trn.target)) {
+                        trn.actions.add(cancel);
+                    }
                 }
             }
         }
