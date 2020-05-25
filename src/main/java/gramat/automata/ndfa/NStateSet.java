@@ -23,8 +23,8 @@ public class NStateSet implements Iterable<NState> {
     }
 
     public void add(NState state) {
-        if (!states.contains(state)) {
-            states.add(state);
+        if (!this.states.contains(state)) {
+            this.states.add(state);
         }
     }
 
@@ -34,9 +34,11 @@ public class NStateSet implements Iterable<NState> {
         }
     }
 
-    public void add(NStateSet states) {
-        for (var state : states.states) {
-            add(state);
+    public void add(NStateSet... sets) {
+        for (var set : sets) {
+            for (var state : set.states) {
+                add(state);
+            }
         }
     }
 
@@ -49,6 +51,10 @@ public class NStateSet implements Iterable<NState> {
         return states.isEmpty();
     }
 
+    public boolean isNotEmpty() {
+        return states.size() > 0;
+    }
+
     public NState[] toArray() {
         return states.toArray(NState[]::new);
     }
@@ -57,5 +63,39 @@ public class NStateSet implements Iterable<NState> {
         if (states.isEmpty()) {
             states.add(context.state());
         }
+    }
+
+    public boolean contains(NState source) {
+        return states.contains(source);
+    }
+
+    public void remove(NStateSet states) {
+        for (var state : states) {
+            this.states.remove(state);
+        }
+    }
+
+    public String getHash() {
+        var ids = new int[states.size()];
+        var i = 0;
+
+        for (var state : states) {
+            ids[i] = state.id;
+            i++;
+        }
+
+        Arrays.sort(ids);
+
+        var output = new StringBuilder();
+
+        for (i = 0; i < ids.length; i++) {
+            if (i > 0) {
+                output.append('|');
+            }
+
+            output.append(ids[i]);
+        }
+
+        return output.toString();
     }
 }

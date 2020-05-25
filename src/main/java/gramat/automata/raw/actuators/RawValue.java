@@ -24,8 +24,13 @@ public class RawValue extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var machine = context.machine(content, initial, accepted);
+    public void build(NContext context, NStateSet q1, NStateSet accepted) {
+        var q2 = new NStateSet();
+
+        var machine = context.machine(content, q1, q2);
+
+        accepted.add(q2);
+
         var start = new ValueStart(parser);
         var save = new ValueSave(start, parser);
         var cancel = new ValueCancel(start, parser);

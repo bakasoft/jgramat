@@ -14,18 +14,21 @@ public class NMachine {
     public final NTransition[] transitions;
     public final NState[] initial;
     public final NState[] accepted;
+    public final NState[] rejected;
 
     public NMachine(
             NLanguage language,
             NState[] states,
             NTransition[] transitions,
             NState[] initial,
-            NState[] accepted) {
+            NState[] accepted,
+            NState[] rejected) {
         this.language = language;
         this.states = states;
         this.transitions = transitions;
         this.initial = initial;
         this.accepted = accepted;
+        this.rejected = rejected;
     }
 
 

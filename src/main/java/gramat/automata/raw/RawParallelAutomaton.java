@@ -23,7 +23,11 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         for (var item : items) {
-            item.build(context, initial, accepted);
+            var itemAccepted = new NStateSet();
+
+            item.build(context, initial, itemAccepted);
+
+            accepted.add(itemAccepted);
         }
     }
 

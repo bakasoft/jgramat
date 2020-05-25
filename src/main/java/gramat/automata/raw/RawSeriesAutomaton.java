@@ -22,25 +22,20 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        // -> q1 -> q2 : c[1]
+        //    q2 -> q3 : c[I]
+        //    q3 => q4 : c[N]
         var last = initial;
 
-        for (var i = 0; i < items.size(); i++) {
-            var item = items.get(i);
-            var isLast = (i == items.size() - 1);
-
-            NStateSet next;
-
-            if (isLast) {
-                next = accepted;
-            }
-            else {
-                next = new NStateSet();
-            }
+        for (var item : items) {
+            var next = new NStateSet();
 
             item.build(context, last, next);
 
             last = next;
         }
+
+        accepted.add(last);
     }
 
     @Override

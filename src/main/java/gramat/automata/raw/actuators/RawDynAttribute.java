@@ -21,9 +21,15 @@ public class RawDynAttribute extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var nMachine = context.machine(name, initial, new NStateSet());
-        var vMachine = context.machine(value, NStateSet.of(nMachine.accepted), accepted);
+    public void build(NContext context, NStateSet q1, NStateSet accepted) {
+        var q2 = new NStateSet();
+        var q3 = new NStateSet();
+
+        var nMachine = context.machine(name, q1, q2);
+
+        var vMachine = context.machine(value, q2, q3);
+
+        accepted.add(q3);
 
         var nStart = new DynamicAttributeNameStart();
         var nSave = new DynamicAttributeNameSave(nStart);

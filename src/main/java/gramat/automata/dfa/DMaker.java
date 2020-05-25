@@ -1,7 +1,6 @@
 package gramat.automata.dfa;
 
 import gramat.automata.ndfa.*;
-import gramat.eval.Action;
 
 import java.util.*;
 
@@ -12,30 +11,28 @@ public class DMaker {
     }
 
     private final NLanguage language;
-    private final Set<NState> initial;
-    private final Set<NState> accepts;
+    private final NStateSet initial;
+    private final NStateSet accepted;
 
-    private final Map<String, DState> hashStates;
+    private final LinkedHashMap<String, DState> hashStates;
 
     private DMaker(NMachine machine) {
         this.language = machine.language;
-        this.initial = new HashSet<>(List.of(machine.initial));
-        this.accepts = new HashSet<>(List.of(machine.accepted));
-        this.hashStates = new HashMap<>();
+        this.initial = NStateSet.of(machine.initial);
+        this.accepted = NStateSet.of(machine.accepted);
+        this.hashStates = new LinkedHashMap<>();
     }
 
     private DState run() {
-        var queue = new LinkedList<Set<NState>>();
-        var closures = new HashMap<String, Set<NState>>();
-        var newStates = new HashMap<String, DState>();
+        var queue = new LinkedList<NStateSet>();
+        var closures = new LinkedHashMap<String, NStateSet>();
+        var newStates = new LinkedHashMap<String, DState>();
 
-        var initialClosure = initial;
-
-        queue.add(initialClosure);
+        queue.add(initial);
 
         do {
             var sources = queue.remove();
-            var sourcesHash = compute_hash(sources);
+            var sourcesHash = sources.getHash();
 
             if (!closures.containsKey(sourcesHash)) {
                 closures.put(sourcesHash, sources);
@@ -45,12 +42,18 @@ public class DMaker {
                 newStates.put(sourcesHash, newSource);
 
                 for (var symbol : language.symbols) {
-                    var targets = compute_targets(sources, symbol);
+                    var transitions = findTransitions(sources, symbol);
 
-                    if (targets.size() > 0) {
+                    if (transitions.size() > 0) {
+                        var targets = new NStateSet();
+
+                        for (var trn : transitions) {
+                            targets.add(trn.target);
+                        }
+
                         var newTarget = state_of(targets);
 
-                        make_transition(sources, targets, newSource, newTarget, symbol);
+                        make_transition(sources, targets, transitions, newSource, newTarget, symbol);
 
                         queue.add(targets);
                     }
@@ -58,7 +61,7 @@ public class DMaker {
             }
         } while(queue.size() > 0);
 
-        var initialHash = compute_hash(initialClosure);
+        var initialHash = initial.getHash();
 
         var newInitial = newStates.get(initialHash);
 
@@ -66,51 +69,51 @@ public class DMaker {
             var newState = newEntry.getValue();
             var oldClosure = closures.get(newEntry.getKey());
 
-            boolean accepted = false;
+            boolean isAccepted = false;
 
-            for (var oldAccept : accepts) {
+            for (var oldAccept : this.accepted) {
                 if (oldClosure.contains(oldAccept)) {
-                    accepted = true;
+                    isAccepted = true;
                     break;
                 }
             }
 
-            if (accepted) {
+            if (isAccepted) {
                 newState.accepted = true;
             }
         }
 
-
-
         return newInitial;
     }
 
-    private void make_transition(Set<NState> sources, Set<NState> targets, DState source, DState target, Symbol symbol) {
-        DTransition trn;
+    private void make_transition(NStateSet sources, NStateSet targets, List<NTransition> transitions, DState source, DState target, Symbol symbol) {
+        DTransition dTransition;
 
         if (symbol instanceof SymbolWild) {
-            trn = new DTransitionWild(target);
+            dTransition = new DTransitionWild(target);
         }
         else if (symbol instanceof SymbolChar) {
-            trn = new DTransitionChar(target, ((SymbolChar)symbol).value);
+            dTransition = new DTransitionChar(target, ((SymbolChar)symbol).value);
         }
         else if (symbol instanceof SymbolRange) {
             var sr = (SymbolRange)symbol;
-            trn = new DTransitionRange(target, sr.begin, sr.end);
+            dTransition = new DTransitionRange(target, sr.begin, sr.end);
         }
         else {
             throw new RuntimeException();
         }
 
-        for (var action : compute_transition_actions(sources, symbol, targets)) {
-            if (!trn.actions.contains(action)) {
-                trn.actions.add(action);
+        for (var trn : transitions) {
+            for (var action : trn.actions) {
+                if (!dTransition.actions.contains(action)) {
+                    dTransition.actions.add(action);
+                }
             }
         }
 
         validate_transitions(source.transitions);
 
-        source.transitions.add(trn);
+        source.transitions.add(dTransition);
     }
 
     private void validate_transitions(List<DTransition> transitions) {
@@ -127,8 +130,8 @@ public class DMaker {
         }
     }
 
-    private DState state_of(Set<NState> oldStates) {
-        var hash = compute_hash(oldStates);
+    private DState state_of(NStateSet oldStates) {
+        var hash = oldStates.getHash();
         var newState = hashStates.get(hash);
         if (newState == null) {
             newState = new DState();
@@ -138,62 +141,18 @@ public class DMaker {
         return newState;
     }
 
-    private Set<NState> compute_targets(Set<NState> states, Symbol symbol) {
-        var targets = new HashSet<NState>();
+    private List<NTransition> findTransitions(NStateSet states, Symbol symbol) {
+        var transitions = new ArrayList<NTransition>();
 
-        for (var current : states) {
-            var closure = Set.of(current);
-
-            for (var state : closure) {
-                var trs = state.getTransitions();
-
-                for (var trn : trs) {
-                    if (trn.symbol == symbol) {
-                        targets.add(trn.target);
-                    }
+        for (var state : states) {
+            for (var trn : state.getTransitions()) {
+                if (trn.symbol == symbol) {
+                    transitions.add(trn);
                 }
             }
         }
 
-        return targets;
-    }
-
-    private static String compute_hash(Set<NState> states) {
-        var ids = new int[states.size()];
-        var i = 0;
-
-        for (var state : states) {
-            ids[i] = state.id;
-            i++;
-        }
-
-        Arrays.sort(ids);
-
-        var output = new StringBuilder();
-
-        for (i = 0; i < ids.length; i++) {
-            if (i > 0) {
-                output.append('|');
-            }
-
-            output.append(ids[i]);
-        }
-
-        return output.toString();
-    }
-
-    private List<Action> compute_transition_actions(Set<NState> sources, Symbol symbol, Set<NState> targets) {
-        var result = new ArrayList<Action>();
-
-        for (var actionPattern : language.actionPatterns) {
-            if (sources.contains(actionPattern.source)
-                    && actionPattern.symbol == symbol
-                    && targets.contains(actionPattern.target)) {
-                result.add(actionPattern.action);
-            }
-        }
-
-        return result;
+        return transitions;
     }
 
 }

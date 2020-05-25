@@ -2,104 +2,47 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.*;
 import gramat.eval.Action;
-import gramat.util.SetOps;
 
 import java.util.*;
 
 public class TRX {
 
     public static void setupActions(NMachine machine, Action start, Action save, Action cancel) {
-        var initial = new HashSet<>(List.of(machine.initial));
-        var accepted = new HashSet<>(List.of(machine.accepted));
-        var states = new HashSet<>(List.of(machine.states));
-        var rejected = sub(states, accepted);
+        var initial = NStateSet.of(machine.initial);
+        var accepted = NStateSet.of(machine.accepted);
+        var rejected = NStateSet.of(machine.rejected);
+        var inner = NStateSet.of(machine.states);
+        var transitions = Set.of(machine.transitions);
 
-        for (var i : initial) {
-            for (var trn : findAllNotNullTransitions(Set.of(i), states)) {
-                machine.language.addActionPattern(i, trn.symbol, trn.target, start, true);
+        var total = new NStateSet();
+        total.add(initial);
+        total.add(inner);
+        total.add(accepted);
+
+        // find machine transitions from initial states
+        for (var trn : transitions) {
+            if (initial.contains(trn.source) && inner.contains(trn.target)) {
+                trn.actions.add(start);
             }
         }
 
-
-        for (var a : accepted) {
-            for (var trn : findAllNotNullExitTransitions(Set.of(a), states)) {
-                machine.language.addActionPattern(a, trn.symbol, trn.target, save, false);
-            }
-        }
-
-
-        for (var r : rejected) {
-            var nullClosure = Set.of(r);
-            if (!SetOps.intersects(nullClosure, accepted)) {
-                for (var trn : findAllNotNullExitTransitions(nullClosure, states)) {
-                    machine.language.addActionPattern(r, trn.symbol, trn.target, cancel, false);
-                }
-            }
-        }
-    }
-
-    private static Set<NState> sub(Set<NState> a, Set<NState> b) {
-        var result = new HashSet<>(a);
-        result.removeAll(b);
-        return result;
-    }
-
-    private static List<NTransition> findAllNotNullTransitions(Set<NState> sources, Set<NState> targets) {
-        var queue = new LinkedList<>(sources);
-        var control = new HashSet<NState>();
-        var result = new ArrayList<NTransition>();
-
-        while (queue.size() > 0) {
-            var source = queue.remove();
-
-            if (control.add(source)) {
-                for (var trn : source.getTransitions()) {
-                    boolean add = false;
-
-                    for (var target : Set.of(trn.target)) {
-                        if(targets.contains(target)) {
-                            add = true;
-                            break;
-                        }
-                    }
-
-                    if (add) {
-                        result.add(trn);
-                    }
+        // from the accepted states, find transitions not defined by the machine
+        for (var source : accepted) {
+            for (var trn : source.getTransitions()) {
+                if (!transitions.contains(trn)) {
+                    trn.actions.add(save);
                 }
             }
         }
 
-        return result;
-    }
-
-    private static List<NTransition> findAllNotNullExitTransitions(Set<NState> sources, Set<NState> states) {
-        var queue = new LinkedList<>(sources);
-        var control = new HashSet<NState>();
-        var result = new ArrayList<NTransition>();
-
-        while (queue.size() > 0) {
-            var source = queue.remove();
-
-            if (control.add(source)) {
-                for (var trn : source.getTransitions()) {
-                    boolean add = true;
-
-                    for (var target : Set.of(trn.target)) {
-                        if(states.contains(target)) {
-                            add = false;
-                            break;
-                        }
-                    }
-
-                    if (add) {
-                        result.add(trn);
-                    }
+        // from the rejected states, find transitions, going to outer states, not defined by the machine
+        for (var source : rejected) {
+            for (var trn : source.getTransitions()) {
+                if (!transitions.contains(trn) && !total.contains(trn.target)) {
+                    trn.actions.add(cancel);
                 }
             }
         }
-
-        return result;
     }
 
 }

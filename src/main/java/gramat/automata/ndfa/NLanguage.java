@@ -13,18 +13,15 @@ public class NLanguage implements NContainer {
 
     private final List<NState> states;
     public final List<NTransition> transitions;  // TODO make private
-    public final List<NActionPattern> actionPatterns;  // TODO make private
     public final Set<Symbol> symbols;  // TODO make private
-    private final Set<NState> wilds;
+
 
     private int nextStateID;
 
     public NLanguage() {
         states = new ArrayList<>();
         transitions = new ArrayList<>();
-        actionPatterns = new ArrayList<>();
         symbols = new HashSet<>();
-        wilds = new HashSet<>();
         nextStateID = 1;
     }
 
@@ -41,23 +38,6 @@ public class NLanguage implements NContainer {
         }
 
         return machine;
-    }
-
-    public void addActionPattern(NState source, Symbol symbol, NState target, Action action, boolean begin) {
-        if (begin) {
-            actionPatterns.add(0, new NActionPattern(source, symbol, target, action));
-        }
-        else {
-            actionPatterns.add(new NActionPattern(source, symbol, target, action));
-        }
-    }
-
-    public void makeWild(NState state) {
-        wilds.add(state);
-    }
-
-    public boolean isWild(NState state) {
-        return wilds.contains(state);
     }
 
     @Override

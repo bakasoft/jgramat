@@ -9,7 +9,7 @@ public class NContext implements NContainer {
     public final NLanguage language;
     private final NContainer parent;
 
-    private final List<NState> states;
+    private final NStateSet states;
     private final List<NTransition> transitions;
 
     private final List<Runnable> postBuildHooks;
@@ -18,7 +18,7 @@ public class NContext implements NContainer {
         this.language = language;
         this.parent = parent;
         this.postBuildHooks = postBuildHooks;
-        this.states = new ArrayList<>();
+        this.states = new NStateSet();
         this.transitions = new ArrayList<>();
     }
 
@@ -63,12 +63,18 @@ public class NContext implements NContainer {
         totalStates.add(states);
         totalStates.add(accepted);
 
+        var rejected = new NStateSet();
+
+        rejected.add(totalStates);
+        rejected.remove(accepted);
+
         return new NMachine(
                 language,
-                totalStates.toArray(),
+                states.toArray(),
                 transitions.toArray(NTransition[]::new),
                 initial.toArray(),
-                accepted.toArray());
+                accepted.toArray(),
+                rejected.toArray());
     }
 
 }
