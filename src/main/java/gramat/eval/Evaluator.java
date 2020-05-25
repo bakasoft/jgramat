@@ -6,15 +6,37 @@ import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Evaluator {
 
-    private final Source source;
+    public final Source source;
 
-    private final HashMap<Action, Integer> actionsPositions = new HashMap<>();
+    private final Stack<Assembler> assemblerStack;
 
     public Evaluator(EvalContext context) {
         this.source = context.source;
+        this.assemblerStack = new Stack<>();
+    }
+
+    public void pushAssembler() {
+        assemblerStack.add(new Assembler());
+    }
+
+    public Assembler peekAssembler() {
+        if (assemblerStack.isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        return assemblerStack.peek();
+    }
+
+    public Assembler popAssembler() {
+        if (assemblerStack.isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        return assemblerStack.pop();
     }
 
     public boolean eval(DState root) {

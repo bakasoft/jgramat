@@ -13,6 +13,6 @@ public class ObjectStart extends Action {
 
     @Override
     public void run(Evaluator evaluator) {
-
+        evaluator.pushAssembler();
     }
 }

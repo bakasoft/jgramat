@@ -6,7 +6,7 @@ import gramat.eval.Evaluator;
 public class DynamicAttributeNameStart extends Action {
     @Override
     public void run(Evaluator evaluator) {
-
+        evaluator.pushAssembler();
     }
 
     @Override

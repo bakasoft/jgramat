@@ -53,7 +53,13 @@ public class CharAutomaton extends Expression {
         var evaluator = new Evaluator(context);
         var root = getRoot();
 
-        return evaluator.eval(root);
+        evaluator.pushAssembler();
+
+        var result = evaluator.eval(root);
+
+        evaluator.popAssembler(); // TODO should this be the result? (nope, but you are close)
+
+        return result;
     }
 
     public RawAutomaton getAutomaton() {

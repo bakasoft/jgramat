@@ -33,8 +33,8 @@ public class RawDynAttribute extends RawAutomaton {
         context.postBuildHook(() -> TRX.setupActions(nMachine, nStart, nSave, nCancel));
 
         var vStart = new DynamicAttributeValueStart();
-        var vSave = new DynamicAttributeValueSave(nStart);
-        var vCancel = new DynamicAttributeValueCancel(nStart);
+        var vSave = new DynamicAttributeValueSave(vStart, nSave);
+        var vCancel = new DynamicAttributeValueCancel(vStart);
         context.postBuildHook(() -> TRX.setupActions(vMachine, vStart, vSave, vCancel));
     }
 }

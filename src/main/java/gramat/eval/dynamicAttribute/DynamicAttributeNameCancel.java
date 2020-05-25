@@ -11,7 +11,7 @@ public class DynamicAttributeNameCancel extends SubAction {
 
     @Override
     public void run(Evaluator evaluator) {
-
+        evaluator.popAssembler();
     }
 
     @Override

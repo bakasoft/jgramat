@@ -5,13 +5,27 @@ import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
 public class DynamicAttributeValueSave extends SubAction {
-    public DynamicAttributeValueSave(Action origin) {
+
+    private final DynamicAttributeNameSave savedName;
+
+    public DynamicAttributeValueSave(Action origin, DynamicAttributeNameSave savedName) {
         super(origin);
+        this.savedName = savedName;
     }
 
     @Override
     public void run(Evaluator evaluator) {
+        if (savedName.name == null) {
+            throw new RuntimeException();
+        }
 
+        var assembler = evaluator.popAssembler();
+
+        var value = assembler.popValue();
+
+        assembler.expectEmpty();
+
+        evaluator.peekAssembler().setAttribute(savedName.name, value);
     }
 
     @Override

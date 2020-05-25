@@ -1,10 +1,10 @@
 package gramat.eval;
 
-abstract public class SubAction extends Action {
+abstract public class SubAction<T extends Action> extends Action {
 
-    public final Action origin;
+    public final T origin;
 
-    public SubAction(Action origin) {
+    public SubAction(T origin) {
         this.origin = origin;
     }
 

@@ -12,6 +12,6 @@ public class ObjectCancel extends Action {
 
     @Override
     public void run(Evaluator evaluator) {
-
+        evaluator.popAssembler();
     }
 }
