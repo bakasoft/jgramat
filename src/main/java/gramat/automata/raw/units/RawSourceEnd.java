@@ -15,6 +15,6 @@ public class RawSourceEnd extends RawAutomaton {
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         accepted.notEmpty(context);
 
-        context.transitionChar(initial, accepted, Source.EOF);
+        context.language.transitionChar(initial, accepted, Source.EOF);
     }
 }

@@ -18,7 +18,17 @@ public class NStateSet implements Iterable<NState> {
 
     public static NStateSet of(NState[] states) {
         var result = new NStateSet();
-        Collections.addAll(result.states, states);
+        for (NState state : states) {
+            result.add(state);
+        }
+        return result;
+    }
+
+    public static NStateSet of(Collection<NState> states) {
+        var result = new NStateSet();
+        for (NState state : states) {
+            result.add(state);
+        }
         return result;
     }
 
@@ -30,6 +40,12 @@ public class NStateSet implements Iterable<NState> {
 
     public void add(List<NState> states) {
         for (var state : states) {
+            add(state);
+        }
+    }
+
+    public void add(NState... items) {
+        for (var state : items) {
             add(state);
         }
     }
@@ -61,7 +77,7 @@ public class NStateSet implements Iterable<NState> {
 
     public void notEmpty(NContext context) {
         if (states.isEmpty()) {
-            states.add(context.state());
+            states.add(context.language.state());
         }
     }
 

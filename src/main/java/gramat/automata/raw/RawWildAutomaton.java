@@ -14,7 +14,7 @@ public class RawWildAutomaton extends RawAutomaton {
 
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        context.transitionWild(initial, initial);
+        context.language.transitionWild(initial, initial);
 
         accepted.add(initial);
 

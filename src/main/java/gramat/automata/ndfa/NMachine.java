@@ -31,13 +31,6 @@ public class NMachine {
         this.rejected = rejected;
     }
 
-
-    public DState compile() {
-//        System.out.println("NDFA -----------");
-//        System.out.println(this.captureOutput());
-        return DMaker.transform(this);
-    }
-
     public void write(Appendable output) throws IOException {
         var states = list_states(initial);
 

@@ -1,66 +1,48 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.dfa.DMaker;
+import gramat.automata.dfa.DState;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class NContext implements NContainer {
+public class NContext {
 
     public final NLanguage language;
-    private final NContainer parent;
-
-    private final NStateSet states;
-    private final List<NTransition> transitions;
 
     private final List<Runnable> postBuildHooks;
 
-    public NContext(NLanguage language, NContainer parent, List<Runnable> postBuildHooks) {
+    public NContext(NLanguage language) {
         this.language = language;
-        this.parent = parent;
-        this.postBuildHooks = postBuildHooks;
-        this.states = new NStateSet();
-        this.transitions = new ArrayList<>();
-    }
-
-    @Override
-    public NState state() {
-        var state = parent.state();
-
-        states.add(state);
-
-        return state;
-    }
-
-    @Override
-    public NTransition transition(NState source, NState target, Symbol symbol) {
-        var transition = parent.transition(source, target, symbol);
-
-        transitions.add(transition);
-
-        return transition;
+        this.postBuildHooks = new ArrayList<>();
     }
 
     public void postBuildHook(Runnable hook) {
         postBuildHooks.add(hook);
     }
 
-    public NMachine machine(NMachineBuilder builder, NStateSet initial, NStateSet accepted) {
-        var context = new NContext(language, this, postBuildHooks);
-
-        builder.build(context, initial, accepted);
-
+    public NMachine machine(NMachineBuilder builder, NStateSet initial) {
         if (initial.isEmpty()) {
             throw new RuntimeException("Missing initial states");
         }
+
+        language.openGroup();
+
+        var accepted = new NStateSet();
+
+        builder.build(this, initial, accepted);
 
         if (accepted.isEmpty()) {
             throw new RuntimeException("Missing accepted states");
         }
 
+        var group = language.closeGroup();
+
         var totalStates = new NStateSet();
 
         totalStates.add(initial);
-        totalStates.add(states);
+        totalStates.add(group.states);
         totalStates.add(accepted);
 
         var rejected = new NStateSet();
@@ -70,11 +52,27 @@ public class NContext implements NContainer {
 
         return new NMachine(
                 language,
-                states.toArray(),
-                transitions.toArray(NTransition[]::new),
+                NStateSet.of(group.states).toArray(),
+                group.transitions.toArray(NTransition[]::new),
                 initial.toArray(),
                 accepted.toArray(),
                 rejected.toArray());
+    }
+
+    public static DState compile(NMachineBuilder builder) {
+        var language = new NLanguage();
+        var context = new NContext(language);
+        var initial = language.state();
+
+        var machine = context.machine(builder, NStateSet.of(initial));
+
+        for (var hook : context.postBuildHooks) {
+            hook.run();
+        }
+
+//        System.out.println("NDFA -----------");
+//        System.out.println(this.captureOutput());
+        return DMaker.transform(language, NStateSet.of(initial), NStateSet.of(machine.accepted));
     }
 
 }

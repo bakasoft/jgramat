@@ -23,12 +23,10 @@ public class RawObject extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet q1, NStateSet accepted) {
-        var q2 = new NStateSet();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        var machine = context.machine(content, initial);
 
-        var machine = context.machine(content, q1, q2);
-
-        accepted.add(q2);
+        accepted.add(machine.accepted);
 
         var start = new ObjectStart();
         var save = new ObjectSave();

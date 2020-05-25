@@ -3,18 +3,16 @@ package gramat.automata.ndfa;
 import gramat.eval.Action;
 import gramat.expressions.flat.BeginSource;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class NLanguage implements NContainer {
+public class NLanguage {
 
     private final List<NState> states;
     public final List<NTransition> transitions;  // TODO make private
     public final Set<Symbol> symbols;  // TODO make private
 
+    private final Stack<NGroup> groupStack;
 
     private int nextStateID;
 
@@ -22,25 +20,18 @@ public class NLanguage implements NContainer {
         states = new ArrayList<>();
         transitions = new ArrayList<>();
         symbols = new HashSet<>();
+        groupStack = new Stack<>();
         nextStateID = 1;
     }
 
-    public NMachine machine(NMachineBuilder builder) {
-        var postBuildHooks = new ArrayList<Runnable>();
-        var context = new NContext(this, this, postBuildHooks);
-        var initial = context.state();
-        var accepted = new NStateSet();
-
-        var machine = context.machine(builder, NStateSet.of(initial), accepted);
-
-        for (var hook : postBuildHooks) {
-            hook.run();
-        }
-
-        return machine;
+    public void openGroup() {
+        groupStack.push(new NGroup());
     }
 
-    @Override
+    public NGroup closeGroup() {
+        return groupStack.pop();
+    }
+
     public NState state() {
         var state = new NState(this, nextStateID);
 
@@ -48,16 +39,21 @@ public class NLanguage implements NContainer {
 
         states.add(state);
 
+        for (var group : groupStack) {
+            group.states.add(state);
+        }
+
         return state;
     }
 
-    @Override
-    public NTransition transition(NState source, NState target, Symbol symbol) {
+    public void transition(NState source, NState target, Symbol symbol) {
         var transition = new NTransition(source, target, make_symbol(symbol));
 
         transitions.add(transition);
 
-        return transition;
+        for (var group : groupStack) {
+            group.transitions.add(transition);
+        }
     }
 
     public List<NTransition> findTransitionsBySource(NState source) {
@@ -157,5 +153,40 @@ public class NLanguage implements NContainer {
         else {
             throw new RuntimeException("Unsupported symbol: " + value.getClass());
         }
+    }
+
+    public void transition(NStateSet sources, NStateSet targets, Symbol symbol) {
+        if (sources.isEmpty()) {
+            throw new RuntimeException("Missing source states");
+        }
+        else if (targets.isEmpty()) {
+            throw new RuntimeException("Missing target states");
+        }
+
+        for (var source : sources) {
+            for (var target : targets) {
+                transition(source, target, symbol);
+            }
+        }
+    }
+
+    public void transitionChar(NStateSet sources, NState target, int value) {
+        transition(sources, NStateSet.of(target), new SymbolChar(value));
+    }
+
+    public void transitionChar(NStateSet sources, NStateSet targets, int value) {
+        transition(sources, targets, new SymbolChar(value));
+    }
+
+    public void transitionRange(NStateSet sources, NStateSet targets, int begin, int end) {
+        transition(sources, targets, new SymbolRange(begin, end));
+    }
+
+    public void transitionWild(NState source, NStateSet targets) {
+        transitionWild(NStateSet.of(source), targets);
+    }
+
+    public void transitionWild(NStateSet sources, NStateSet targets) {
+        transition(sources, targets, new SymbolWild());
     }
 }

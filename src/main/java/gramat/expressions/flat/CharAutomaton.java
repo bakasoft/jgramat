@@ -1,5 +1,6 @@
 package gramat.expressions.flat;
 
+import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NLanguage;
 import gramat.automata.dfa.DState;
 import gramat.automata.raw.*;
@@ -41,10 +42,8 @@ public class CharAutomaton extends Expression {
     private DState getRoot() {
         if (_root == null) {
             var collapsed = automaton.collapse();
-            var lang = new NLanguage();
-            var machine = lang.machine(collapsed);
 
-            _root = machine.compile();
+            _root = NContext.compile(collapsed);
         }
         return _root;
     }

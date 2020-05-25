@@ -38,10 +38,10 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
                 next = accepted;
             }
             else {
-                next = NStateSet.of(context.state());
+                next = NStateSet.of(context.language.state());
             }
 
-            context.transitionChar(last, next, symbols[i]);
+            context.language.transitionChar(last, next, symbols[i]);
 
             last = next;
         }

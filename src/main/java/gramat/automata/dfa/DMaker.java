@@ -6,8 +6,8 @@ import java.util.*;
 
 public class DMaker {
 
-    public static DState transform(NMachine machine) {
-        return new DMaker(machine).run();
+    public static DState transform(NLanguage language, NStateSet initial, NStateSet accepted) {
+        return new DMaker(language, initial, accepted).run();
     }
 
     private final NLanguage language;
@@ -16,10 +16,10 @@ public class DMaker {
 
     private final LinkedHashMap<String, DState> hashStates;
 
-    private DMaker(NMachine machine) {
-        this.language = machine.language;
-        this.initial = NStateSet.of(machine.initial);
-        this.accepted = NStateSet.of(machine.accepted);
+    private DMaker(NLanguage language, NStateSet initial, NStateSet accepted) {
+        this.language = language;
+        this.initial = initial;
+        this.accepted = accepted;
         this.hashStates = new LinkedHashMap<>();
     }
 

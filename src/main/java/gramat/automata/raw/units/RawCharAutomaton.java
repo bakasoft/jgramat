@@ -22,7 +22,7 @@ public class RawCharAutomaton extends RawStringAutomaton {
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         accepted.notEmpty(context);
 
-        context.transitionChar(initial, accepted, value);
+        context.language.transitionChar(initial, accepted, value);
     }
 
     @Override
