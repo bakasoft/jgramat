@@ -48,7 +48,7 @@ public class AttributeExp extends DataExpr {
             if (valueExpression instanceof CharAutomaton) {
                 var am = (CharAutomaton) valueExpression;
 
-                return new CharAutomaton(location, new RawAttribute(am.getAutomaton(), name));
+                return new CharAutomaton(location, new RawAttribute(name, am.getAutomaton()));
             }
 
             return this;

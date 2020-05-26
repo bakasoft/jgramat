@@ -1,6 +1,7 @@
 package gramat.automata.dfa;
 
 import gramat.output.GrammarWriter;
+import gramat.util.GramatWriter;
 
 public class DTransitionRange extends DTransition {
 
@@ -47,5 +48,12 @@ public class DTransitionRange extends DTransition {
             target.write(writer);
             writer.close();
         }
+    }
+
+    @Override
+    public String getSymbol() {
+        var beginStr = GramatWriter.toDelimitedString(Character.toString(begin), '\'');
+        var endStr = GramatWriter.toDelimitedString(Character.toString(end), '\'');
+        return "[" + beginStr + "," + endStr + "]";
     }
 }

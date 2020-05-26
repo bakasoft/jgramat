@@ -1,6 +1,8 @@
 package gramat.automata.dfa;
 
 import gramat.output.GrammarWriter;
+import gramat.util.GramatWriter;
+import gramat.util.parsing.Source;
 
 public class DTransitionChar extends DTransition {
 
@@ -43,6 +45,14 @@ public class DTransitionChar extends DTransition {
             target.write(writer);
             writer.close();
         }
+    }
+
+    @Override
+    public String getSymbol() {
+        if (symbol == Source.EOF) {
+            return "EOF";
+        }
+        return GramatWriter.toDelimitedString(Character.toString(symbol), '\'');
     }
 
 }

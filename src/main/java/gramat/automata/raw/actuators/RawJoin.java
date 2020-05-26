@@ -3,33 +3,29 @@ package gramat.automata.raw.actuators;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
-import gramat.compiling.ValueParser;
-import gramat.eval.value.ValueCancel;
-import gramat.eval.value.ValueSave;
-import gramat.eval.value.ValueStart;
+import gramat.eval.join.JoinCancel;
+import gramat.eval.join.JoinSave;
+import gramat.eval.join.JoinStart;
 
-public class RawValue extends RawAutomaton {
+public class RawJoin extends RawAutomaton {
 
     private final RawAutomaton content;
-    private final ValueParser parser;
 
-    public RawValue(RawAutomaton content, ValueParser parser) {
+    public RawJoin(RawAutomaton content) {
         this.content = content;
-        this.parser = parser;
     }
 
     @Override
     public RawAutomaton collapse() {
-        return new RawValue(content.collapse(), parser);
+        return new RawJoin(content.collapse());
     }
 
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         var machine = context.machine(content, initial, accepted);
-        var start = new ValueStart(parser);
-        var save = new ValueSave(start, parser);
-        var cancel = new ValueCancel(start, parser);
+        var start = new JoinStart();
+        var save = new JoinSave();
+        var cancel = new JoinCancel();
         context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
     }
-
 }

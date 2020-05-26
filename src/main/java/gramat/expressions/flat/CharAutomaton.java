@@ -59,7 +59,7 @@ public class CharAutomaton extends Expression {
 
         evaluator.popAssembler(); // TODO should this be the result? (nope, but you are close)
 
-        return result;
+        return result.isAccepted();
     }
 
     public RawAutomaton getAutomaton() {

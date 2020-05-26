@@ -39,8 +39,7 @@ public class Evaluator {
         return assemblerStack.pop();
     }
 
-    public boolean eval(DState root) {
-        var pos0 = source.getPosition();
+    public DState eval(DState root) {
         var state = root;
         int lastValue = 0;
 
@@ -49,53 +48,35 @@ public class Evaluator {
         System.out.println("----------");
 
         while(true) {
-            try {
-                if (state.isFinal()) {
-                    if (state.isAccepted()) {
-                        return true;
-                    } else {
-                        source.setPosition(pos0);
-                        return false;
-                    }
-                } else {
-                    var value = source.peek();
+            if (state.isFinal()) {
+                return state;
+            } else {
+                var value = source.peek();
 
-                    DState newState;
+                DState newState;
 
-                    if (lastValue == Source.EOF && value == lastValue) {
-                        newState = null;
-                    }
-                    else {
-                        var actions = new ArrayList<Action>();
-                        newState = state.move(value, actions);
-                        for (var action : actions) {
-                            action.run(this);
-                        }
-                    }
-
-                    if (newState == null) {
-                        if (state.isAccepted()) {
-                            return true;
-                        } else {
-                            source.setPosition(pos0);
-                            return false;
-                        }
-                    }
-
-                    // check for infinite loop
-                    source.moveNext();
-
-                    state = newState;
-                    lastValue = value;
+                if (lastValue == Source.EOF && value == lastValue) {
+                    newState = null;
                 }
-            }
-            catch(Reject e) {
-                source.setPosition(pos0);
-                return false;
+                else {
+                    var actions = new ArrayList<Action>();
+                    newState = state.move(value, actions);
+                    for (var action : actions) {
+                        action.run(this);
+                    }
+                }
+
+                if (newState == null) {
+                    return state;
+                }
+
+                // check for infinite loop
+                source.moveNext();
+
+                state = newState;
+                lastValue = value;
             }
         }
     }
-
-    private static class Reject extends RuntimeException {}
 
 }

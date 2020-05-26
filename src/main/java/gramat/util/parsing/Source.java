@@ -19,6 +19,10 @@ public class Source {
 
     private int position;
 
+    public static Source of(String input) {
+        return new Source(input, null);
+    }
+
     public static Source fromFile(Path file) {
         var content = FileTool.loadString(file);
 

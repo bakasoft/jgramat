@@ -140,9 +140,9 @@ public class Compiler extends LinkContext implements ParseContext {
         var input = parseInput(source);
 
         var location = source.locationOf(pos0);
-        var test = new GrammarTest(location, exprName, input, expectedMatch);
+        //var test = new GrammarTest(location, exprName, input, expectedMatch);
 
-        tests.add(test);
+        //tests.add(test);
 
         return true;
     }

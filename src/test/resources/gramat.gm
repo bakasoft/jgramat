@@ -1,3 +1,19 @@
+Test-11 = ^ "{" { {+"a"} ":" {+"b"} / "," } "}" $
+
+@pass Test-11 `{aaa:bbb,aaa:bbb,aaa:bbb,aaa:bbb}`
+@pass Test-11 `{aa:bb,aa:bb,aa:bb,aa:bb}`
+@pass Test-11 `{a:b,a:b,a:b,a:b}`
+@pass Test-11 `{aaa:bbb,aaa:bbb,aaa:bbb}`
+@pass Test-11 `{aa:bb,aa:bb,aa:bb}`
+@pass Test-11 `{a:b,a:b,a:b}`
+@pass Test-11 `{aaa:bbb,aaa:bbb}`
+@pass Test-11 `{aa:bb,aa:bb}`
+@pass Test-11 `{a:b,a:b}`
+@pass Test-11 `{aaa:bbb}`
+@pass Test-11 `{aa:bb}`
+@pass Test-11 `{a:b}`
+@pass Test-11 `{}`
+
 Test-00 = ^ {"ab"} {"cd" / "|"} {+"ef"} {+"gh" / "|"} $
 
 @fail Test-00 ``
@@ -33,7 +49,7 @@ Test-04 = ^ ("0" | '1-9' { '0-9' }) $
 
 Test-02 = ^ @object("=" {" "} @set(`id`: @string('0-9' {'0-9'})) {" "} ";") $
 
-@pass Test-02 `= 1234;`
+@match Test-02 `= 1234;` {id: `1234`}
 
 Test-03 = ^ "a" ["_"] "b" $
 
@@ -99,4 +115,4 @@ Test-10 = ^ "a" {"b"} "c" $
 
 Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
 
-@pass Test-01 `{abc:def,ghi:jkl}`
+@match Test-01 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}

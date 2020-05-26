@@ -22,14 +22,12 @@ public class NContext {
         postBuildHooks.add(hook);
     }
 
-    public NMachine machine(NMachineBuilder builder, NStateSet initial) {
+    public NMachine machine(NMachineBuilder builder, NStateSet initial, NStateSet accepted) {
         if (initial.isEmpty()) {
             throw new RuntimeException("Missing initial states");
         }
 
         language.openGroup();
-
-        var accepted = new NStateSet();
 
         builder.build(this, initial, accepted);
 
@@ -62,9 +60,9 @@ public class NContext {
     public static DState compile(NMachineBuilder builder) {
         var language = new NLanguage();
         var context = new NContext(language);
-        var initial = language.state();
-
-        var machine = context.machine(builder, NStateSet.of(initial));
+        var initial = NStateSet.of(language.state());
+        var accepted = new NStateSet();
+        var machine = context.machine(builder, initial, accepted);
 
         for (var hook : context.postBuildHooks) {
             hook.run();
@@ -72,7 +70,7 @@ public class NContext {
 
 //        System.out.println("NDFA -----------");
 //        System.out.println(this.captureOutput());
-        return DMaker.transform(language, NStateSet.of(initial), NStateSet.of(machine.accepted));
+        return DMaker.transform(language, initial, accepted);
     }
 
 }

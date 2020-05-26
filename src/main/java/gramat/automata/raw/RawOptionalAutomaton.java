@@ -17,12 +17,10 @@ public class RawOptionalAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet q1, NStateSet accepted) {
-        // => q1 => q2 : c
-        var q2 = new NStateSet();
+    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+        // => ini => acc : c
+        content.build(context, initial, accepted);
 
-        content.build(context, q1, q2);
-
-        accepted.add(q1, q2);
+        accepted.add(initial);
     }
 }

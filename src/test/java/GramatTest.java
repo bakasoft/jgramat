@@ -1,4 +1,6 @@
 import gramat.compiling.Compiler;
+import gramat.parsing.Options;
+import gramat.parsing.Parser;
 import org.junit.Test;
 
 import java.net.URISyntaxException;
@@ -8,9 +10,9 @@ public class GramatTest {
 
     @Test
     public void parseGrammarTest() throws Exception {
-        var parser = new Compiler();
+        var parser = new Parser();
 
-        parser.parseFile(Paths.get(MathTest.class.getResource("/gramat.gm").toURI()));
+        parser.parse(Paths.get(MathTest.class.getResource("/gramat.gm").toURI()));
 
         parser.runTests();
     }

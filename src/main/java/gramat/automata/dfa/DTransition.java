@@ -22,4 +22,6 @@ abstract public class DTransition {
     }
 
     public abstract void write(GrammarWriter writer);
+
+    abstract public String getSymbol();
 }

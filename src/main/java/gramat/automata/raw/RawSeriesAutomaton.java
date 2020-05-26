@@ -27,15 +27,15 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
         //    q3 => q4 : c[N]
         var last = initial;
 
-        for (var item : items) {
-            var next = new NStateSet();
+        for (var i = 0; i < items.size(); i++) {
+            var item = items.get(i);
+            var isLast = (i == items.size() - 1);
+            var next = isLast ? accepted : new NStateSet();
 
             item.build(context, last, next);
 
             last = next;
         }
-
-        accepted.add(last);
     }
 
     @Override

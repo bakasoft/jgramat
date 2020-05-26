@@ -1,6 +1,7 @@
 package gramat.compiling;
 
 import gramat.expressions.Expression;
+import gramat.parsing.test.TestValue;
 import gramat.runtime.EvalContext;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
@@ -11,16 +12,18 @@ import java.util.HashMap;
 
 public class GrammarTest {
 
-    private final Location location;
-    private final String expressionName;
-    private final Source source;
-    private final boolean expectedMatch;
+    public final Location location;
+    public final String expressionName;
+    public final String input;
+    public final boolean expectedMatch;
+    public final TestValue expectedValue;
 
-    public GrammarTest(Location location, String expressionName, Source source, boolean expectedMatch) {
-        this.location = location;
+    public GrammarTest(String expressionName, String input, boolean expectedMatch, TestValue expectedValue) {
+        this.location = null;
         this.expressionName = expressionName;
-        this.source = source;
+        this.input = input;
         this.expectedMatch = expectedMatch;
+        this.expectedValue = expectedValue;
     }
 
     public void run(Compiler compiler) {
@@ -32,13 +35,12 @@ public class GrammarTest {
             throw new ParseException("Expression not found: " + expressionName, location);
         }
 
-        EvalContext evalContext = new EvalContext(source, new HashMap<>());
+        EvalContext evalContext = new EvalContext(Source.of(input), new HashMap<>());
 
         boolean matches = expression.eval(evalContext);
 
         if (expectedMatch && !matches) {
-            var errLoc = source.locationOf(evalContext.lastCommitPosition);
-            throw new ParseException(expressionName + " did not match: " + evalContext.lastCommitName, errLoc);
+            throw new RuntimeException(expressionName + " did not match: " + evalContext.lastCommitName);
         }
         else if (!expectedMatch && matches) {
             throw new ParseException("Expected to fail: " + expressionName, location);
@@ -60,10 +62,6 @@ public class GrammarTest {
 
     public String getExpressionName() {
         return expressionName;
-    }
-
-    public Source getSource() {
-        return source;
     }
 
     public boolean getExpectedMatch() {

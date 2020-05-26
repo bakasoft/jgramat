@@ -23,4 +23,9 @@ public class DTransitionWild extends DTransition {
         throw new RuntimeException();
     }
 
+    @Override
+    public String getSymbol() {
+        return "*";
+    }
+
 }

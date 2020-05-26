@@ -53,6 +53,18 @@ public class Assembler {
         }
     }
 
+    public boolean isEmpty() {
+        if (valueStack.size() > 0) {
+            return false;
+        }
+
+        if (attributeMap.size() > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     public void setAttribute(String name, Object value) {
         if (attributeMap.containsKey(name)) {
             throw new RuntimeException("attribute already defined: " + name);

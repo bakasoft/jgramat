@@ -70,43 +70,35 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         accepted.add(initial);
     }
 
-    private void zero_or_more_with_separator(NContext context, NStateSet q1, NStateSet accepted) {
-        // => q1 => q2 : c
-        //    q2 -> q3 : s
-        //    q3 -> q2 : c
-        var q2 = new NStateSet();
-        var q3 = new NStateSet();
+    private void zero_or_more_with_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        // => ini => acc : c
+        //    acc -> aux : s
+        //    aux -> acc : c
+        var aux = new NStateSet();
 
-        content.build(context, q1, q2);
-        separator.build(context, q2, q3);
-        content.build(context, q3, q2);
+        content.build(context, initial, accepted);
+        separator.build(context, accepted, aux);
+        content.build(context, aux, accepted);
 
-        accepted.add(q1, q2);
+        accepted.add(initial);
     }
 
-    private void one_or_more_no_separator(NContext context, NStateSet q1, NStateSet accepted) {
-        // -> q1 => q2 : c
-        //    q2 -> q2 : c
-        var q2 = new NStateSet();
-
-        content.build(context, q1, q2);
-        content.build(context, q2, q2);
-
-        accepted.add(q2);
+    private void one_or_more_no_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        // -> ini => acc : c
+        //    acc -> acc : c
+        content.build(context, initial, accepted);
+        content.build(context, accepted, accepted);
     }
 
-    private void one_or_more_with_separator(NContext context, NStateSet q1, NStateSet accepted) {
-        // -> q1 => q2 : c
-        //    q2 -> q3 : s
-        //    q3 -> q2 : c
-        var q2 = new NStateSet();
-        var q3 = new NStateSet();
+    private void one_or_more_with_separator(NContext context, NStateSet initial, NStateSet accepted) {
+        // -> ini => acc : c
+        //    acc -> aux : s
+        //    aux -> acc : c
+        var aux = new NStateSet();
 
-        content.build(context, q1, q2);
-        separator.build(context, q2, q3);
-        content.build(context, q3, q2);
-
-        accepted.add(q2);
+        content.build(context, initial, accepted);
+        separator.build(context, accepted, aux);
+        content.build(context, aux, accepted);
     }
 
     private NStateSet at_least_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
