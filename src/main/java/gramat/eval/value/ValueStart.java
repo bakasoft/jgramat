@@ -16,6 +16,8 @@ public class ValueStart extends Action {
 
     @Override
     public void run(Evaluator evaluator) {
+        evaluator.debugger.log(toString());
+        evaluator.debugger.indent(+1);
         if (position != null) {
             System.out.println("WARNING: re-starting @ " + this);
         }
@@ -25,6 +27,6 @@ public class ValueStart extends Action {
 
     @Override
     public String getDescription() {
-        return "Start " + parser + " value";
+        return "BEGIN VALUE";
     }
 }

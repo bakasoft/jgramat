@@ -16,4 +16,8 @@ public class NState {
         return language.findTransitionsBySource(this);
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }

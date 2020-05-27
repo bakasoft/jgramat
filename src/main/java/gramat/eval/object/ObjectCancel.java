@@ -2,16 +2,26 @@ package gramat.eval.object;
 
 import gramat.eval.Action;
 import gramat.eval.Evaluator;
+import gramat.eval.SubAction;
 
-public class ObjectCancel extends Action {
+public class ObjectCancel extends SubAction<ObjectStart> {
+
+    public ObjectCancel(ObjectStart origin) {
+        super(origin);
+    }
 
     @Override
     public String getDescription() {
-        return "Object-Rollback";
+        return "ROLLBACK OBJECT";
     }
 
     @Override
     public void run(Evaluator evaluator) {
-        evaluator.popAssembler();
+        if (origin.active) {
+            evaluator.debugger.log(toString());
+            evaluator.debugger.indent(-1);
+            evaluator.popAssembler();
+            origin.active = false;
+        }
     }
 }

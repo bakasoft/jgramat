@@ -2,6 +2,8 @@ package gramat.eval;
 
 import gramat.automata.dfa.DState;
 import gramat.runtime.*;
+import gramat.util.Debugger;
+import gramat.util.GramatWriter;
 import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
@@ -14,13 +16,31 @@ public class Evaluator {
 
     private final Stack<Assembler> assemblerStack;
 
+    public final Debugger debugger;
+
     public Evaluator(EvalContext context) {
         this.source = context.source;
         this.assemblerStack = new Stack<>();
+        this.debugger = new Debugger();
+        this.debugger.suffix(() -> {
+            var ch = source.peek();
+            String symbol;
+
+            if (ch == Source.EOF) {
+                symbol = "$";
+            }
+            else {
+                symbol = Character.toString(ch);
+            }
+
+            return "@" + source.getPosition() + "=" + GramatWriter.toDelimitedString(symbol, '"');
+        });
+
+        pushAssembler();
     }
 
     public void pushAssembler() {
-        assemblerStack.add(new Assembler());
+        assemblerStack.add(new Assembler(debugger));
     }
 
     public Assembler peekAssembler() {

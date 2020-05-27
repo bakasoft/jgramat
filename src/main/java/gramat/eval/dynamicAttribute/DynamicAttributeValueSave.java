@@ -4,32 +4,39 @@ import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
-public class DynamicAttributeValueSave extends SubAction {
+public class DynamicAttributeValueSave extends SubAction<DynamicAttributeValueStart> {
 
     private final DynamicAttributeNameSave savedName;
 
-    public DynamicAttributeValueSave(Action origin, DynamicAttributeNameSave savedName) {
+    public DynamicAttributeValueSave(DynamicAttributeValueStart origin, DynamicAttributeNameSave savedName) {
         super(origin);
         this.savedName = savedName;
     }
 
     @Override
     public void run(Evaluator evaluator) {
-        if (savedName.name == null) {
-            throw new RuntimeException();
+        if (origin.active) {
+            evaluator.debugger.log(toString());
+            evaluator.debugger.indent(-1);
+
+            if (savedName.name != null) {
+                var assembler = evaluator.popAssembler();
+
+                var value = assembler.popValue();
+
+                assembler.expectEmpty();
+
+                evaluator.peekAssembler().setAttribute(savedName.name, value);
+            } else {
+                System.out.println("Missing name");
+            }
+
+            origin.active = false;
         }
-
-        var assembler = evaluator.popAssembler();
-
-        var value = assembler.popValue();
-
-        assembler.expectEmpty();
-
-        evaluator.peekAssembler().setAttribute(savedName.name, value);
     }
 
     @Override
     public String getDescription() {
-        return "Save Value Dyn-Attribute";
+        return "COMMIT SET/VALUE";
     }
 }

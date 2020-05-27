@@ -68,8 +68,8 @@ public class NContext {
             hook.run();
         }
 
-//        System.out.println("NDFA -----------");
-//        System.out.println(this.captureOutput());
+        System.out.println("NDFA -----------");
+        System.out.println(machine.getAmCode());
         return DMaker.transform(language, initial, accepted);
     }
 

@@ -1,3 +1,7 @@
+Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
+
+@match Test-01 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}
+
 Test-11 = ^ "{" { {+"a"} ":" {+"b"} / "," } "}" $
 
 @pass Test-11 `{aaa:bbb,aaa:bbb,aaa:bbb,aaa:bbb}`
@@ -112,7 +116,3 @@ Test-10 = ^ "a" {"b"} "c" $
 @pass Test-10 `abc`
 @pass Test-10 `abbc`
 @pass Test-10 `abbbc`
-
-Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
-
-@match Test-01 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}

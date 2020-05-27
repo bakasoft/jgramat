@@ -4,8 +4,8 @@ import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
-public class DynamicAttributeNameSave extends SubAction {
-    public DynamicAttributeNameSave(Action origin) {
+public class DynamicAttributeNameSave extends SubAction<DynamicAttributeNameStart> {
+    public DynamicAttributeNameSave(DynamicAttributeNameStart origin) {
         super(origin);
     }
 
@@ -13,15 +13,21 @@ public class DynamicAttributeNameSave extends SubAction {
 
     @Override
     public void run(Evaluator evaluator) {
-        var assembler = evaluator.popAssembler();
+        if (origin.active) {
+            evaluator.debugger.log(toString());
+            evaluator.debugger.indent(-1);
+            var assembler = evaluator.popAssembler();
 
-        name = assembler.popString();
+            name = assembler.popString();
 
-        assembler.expectEmpty();
+            assembler.expectEmpty();
+
+            origin.active = false;
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Save Name Dyn-Attribute";
+        return "COMMIT SET/NAME";
     }
 }

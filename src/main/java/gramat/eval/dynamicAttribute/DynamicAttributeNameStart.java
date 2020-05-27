@@ -4,13 +4,21 @@ import gramat.eval.Action;
 import gramat.eval.Evaluator;
 
 public class DynamicAttributeNameStart extends Action {
+
+    public boolean active;
+
     @Override
     public void run(Evaluator evaluator) {
-        evaluator.pushAssembler();
+        if (!active) {
+            evaluator.debugger.log(toString());
+            evaluator.debugger.indent(+1);
+            evaluator.pushAssembler();
+            active = true;
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Start Name Dyn-Attribute";
+        return "BEGIN SET/NAME";
     }
 }

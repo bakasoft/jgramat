@@ -19,9 +19,24 @@ public class TRX {
         total.add(inner);
         total.add(accepted);
 
+        System.out.println("TRX -------->>>>");
+
+        for  (var state : initial) {
+            System.out.println("INI " + state);
+        }
+
+        for  (var state : accepted) {
+            System.out.println("ACC " + state);
+        }
+
+        for (var trn : transitions) {
+            System.out.println("TRN " + trn);
+        }
+
         // find machine transitions from initial states
         for (var trn : transitions) {
-            if (initial.contains(trn.source) && inner.contains(trn.target)) {
+            if (initial.contains(trn.source)) {
+                System.out.println("ADD " + trn + " ! " + start);
                 trn.actions.add(start);
             }
         }
@@ -30,6 +45,7 @@ public class TRX {
         for (var source : accepted) {
             for (var trn : source.getTransitions()) {
                 if (!transitions.contains(trn)) {
+                    System.out.println("ADD " + trn + " ! " + save);
                     trn.actions.add(save);
                 }
             }
@@ -40,11 +56,14 @@ public class TRX {
             if (!initial.contains(source)) {
                 for (var trn : source.getTransitions()) {
                     if (!transitions.contains(trn) && !total.contains(trn.target)) {
+                        System.out.println("ADD " + trn + " ! " + cancel);
                         trn.actions.add(cancel);
                     }
                 }
             }
         }
+
+        System.out.println("<<<<-------- TRX");
     }
 
 }

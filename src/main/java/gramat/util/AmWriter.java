@@ -1,15 +1,48 @@
 package gramat.util;
 
 import gramat.automata.dfa.*;
+import gramat.automata.ndfa.NMachine;
 import gramat.eval.Action;
 import gramat.util.parsing.Source;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.Function;
 
 public class AmWriter {
+
+    public static String getAmCode(NMachine machine) {
+        var output = new StringBuilder();
+
+        for (var initial : machine.initial) {
+            writeInitial(output, String.valueOf(initial.id));
+        }
+
+        for (var transition : machine.transitions) {
+            var source = String.valueOf(transition.source.id);
+            var target = String.valueOf(transition.target.id);
+            var symbol = transition.symbol.toString();
+            List<Action> actions;
+
+            if (transition.actions.isEmpty()) {
+                actions = new ArrayList<>();
+                actions.add(null);
+            }
+            else {
+                actions = transition.actions;
+            }
+
+            for (var action : actions) {
+                var actionStr = (action != null ? action.getDescription() : null);
+                writeTransition(output, source, target, symbol, actionStr);
+            }
+        }
+
+        for (var initial : machine.accepted) {
+            writeAccepted(output, String.valueOf(initial.id));
+        }
+
+        return output.toString();
+    }
 
     public static String getAmCode(DState root) {
         var output = new StringBuilder();

@@ -2,6 +2,7 @@ package gramat.automata.ndfa;
 
 import gramat.automata.dfa.DMaker;
 import gramat.automata.dfa.DState;
+import gramat.util.AmWriter;
 import gramat.util.GramatWriter;
 
 import java.io.IOException;
@@ -78,5 +79,9 @@ public class NMachine {
         }
 
         return result;
+    }
+
+    public String getAmCode() {
+        return AmWriter.getAmCode(this);
     }
 }

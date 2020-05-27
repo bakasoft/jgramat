@@ -25,10 +25,12 @@ public class NLanguage {
     }
 
     public void openGroup() {
+        System.out.println("OPEN GROUP");
         groupStack.push(new NGroup());
     }
 
     public NGroup closeGroup() {
+        System.out.println("CLOSE GROUP");
         return groupStack.pop();
     }
 
@@ -47,13 +49,33 @@ public class NLanguage {
     }
 
     public void transition(NState source, NState target, Symbol symbol) {
-        var transition = new NTransition(source, target, make_symbol(symbol));
+        symbol = make_symbol(symbol);
 
-        transitions.add(transition);
+        // avoid duplicate transitions
+        var transition = findTransition(source, target, symbol);
+
+        if (transition == null) {
+            transition = new NTransition(source, target, symbol);
+
+            transitions.add(transition);
+        }
+
+        System.out.println("NEW " + transition);
 
         for (var group : groupStack) {
-            group.transitions.add(transition);
+            if (!group.transitions.contains(transition)) {
+                group.transitions.add(transition);
+            }
         }
+    }
+
+    private NTransition findTransition(NState source, NState target, Symbol symbol) {
+        for (var trn : transitions) {
+            if (trn.source == source && trn.target == target && trn.symbol == symbol) {
+                return trn;
+            }
+        }
+        return null;
     }
 
     public List<NTransition> findTransitionsBySource(NState source) {

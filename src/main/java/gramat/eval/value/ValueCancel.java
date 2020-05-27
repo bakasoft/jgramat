@@ -16,6 +16,8 @@ public class ValueCancel extends SubAction<ValueStart> {
 
     @Override
     public void run(Evaluator evaluator) {
+        evaluator.debugger.log(toString());
+        evaluator.debugger.indent(-1);
         if (origin.position == null) {
             System.out.println("WARNING: canceling before start @ " + this);
         }
@@ -25,6 +27,6 @@ public class ValueCancel extends SubAction<ValueStart> {
 
     @Override
     public String getDescription() {
-        return "Cancel `" + parser + "` value";
+        return "ROLLBACK VALUE";
     }
 }

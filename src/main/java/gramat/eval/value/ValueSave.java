@@ -15,19 +15,24 @@ public class ValueSave extends SubAction<ValueStart> {
 
     @Override
     public void run(Evaluator evaluator) {
-        if (origin.position == null) {
-            throw new RuntimeException("Missing start point");
+        evaluator.debugger.log(toString());
+        evaluator.debugger.indent(-1);
+        if (origin.position != null) {
+            int position0 = origin.position;
+            int positionF = evaluator.source.getPosition();
+            String value = evaluator.source.extract(position0, positionF);
+
+            evaluator.peekAssembler().pushValue(value, parser);
+
+            origin.position = null;
         }
-
-        int position0 = origin.position;
-        int positionF = evaluator.source.getPosition();
-        String value = evaluator.source.extract(position0, positionF);
-
-        evaluator.peekAssembler().pushValue(value, parser);
+        else {
+            System.out.println("Missing start point");
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Save " + parser + " value";
+        return "COMMIT VALUE";
     }
 }

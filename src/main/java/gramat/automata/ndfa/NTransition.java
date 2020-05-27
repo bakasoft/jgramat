@@ -20,4 +20,8 @@ public class NTransition {
         this.actions = new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        return source.id + " -> " + target.id + ": " + symbol + " #" + Integer.toHexString(hashCode());
+    }
 }

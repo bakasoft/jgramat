@@ -4,18 +4,24 @@ import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
-public class DynamicAttributeValueCancel extends SubAction {
-    public DynamicAttributeValueCancel(Action origin) {
+public class DynamicAttributeValueCancel extends SubAction<DynamicAttributeValueStart> {
+    public DynamicAttributeValueCancel(DynamicAttributeValueStart origin) {
         super(origin);
     }
 
     @Override
     public void run(Evaluator evaluator) {
-        evaluator.popAssembler();
+        if (origin.active) {
+            evaluator.debugger.log(toString());
+            evaluator.debugger.indent(-1);
+            evaluator.popAssembler();
+
+            origin.active = false;
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Cancel Value Dyn-Attribute";
+        return "ROLLBACK SET/VALUE";
     }
 }
