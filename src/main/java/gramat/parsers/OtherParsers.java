@@ -1,6 +1,6 @@
 package gramat.parsers;
 
-import gramat.automata.raw.RawWildAutomaton;
+import gramat.automata.raw.units.RawWildAutomaton;
 import gramat.compiling.ParseContext;
 import gramat.expressions.Expression;
 import gramat.expressions.flat.BeginSource;
@@ -24,7 +24,7 @@ public class OtherParsers {
 
         BaseParsers.skipBlanks(source);
 
-        if (source.pull(Mark.HARD_ASSIGNMENT_MARK) || source.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
+        if (source.pull(Mark.HARD_ASSIGNMENT_MARK)) {
             source.setPosition(pos0);
             return null;
         }

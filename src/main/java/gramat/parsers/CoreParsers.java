@@ -42,9 +42,6 @@ public class CoreParsers {
         if (source.pull(Mark.HARD_ASSIGNMENT_MARK)) {
             soft = false;
         }
-        else if (source.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
-            soft = true;
-        }
         else {
             source.setPosition(pos0);
             return false;

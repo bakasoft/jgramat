@@ -1,6 +1,8 @@
-package gramat.automata.raw;
+package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.*;
+import gramat.automata.raw.CollapseContext;
+import gramat.automata.raw.RawAutomaton;
 
 import java.util.HashSet;
 import java.util.LinkedList;

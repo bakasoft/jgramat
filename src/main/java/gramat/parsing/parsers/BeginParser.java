@@ -1,10 +1,8 @@
 package gramat.parsing.parsers;
 
 import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.RawSourceBegin;
-import gramat.automata.raw.units.RawSourceEnd;
+import gramat.automata.raw.units.RawSourceBegin;
 import gramat.parsers.Mark;
-import gramat.parsing.Parser;
 import gramat.parsing.Reader;
 
 public class BeginParser {

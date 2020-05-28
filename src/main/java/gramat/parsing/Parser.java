@@ -3,12 +3,14 @@ package gramat.parsing;
 import gramat.GramatException;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NStateSet;
+import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.GrammarTest;
 import gramat.compiling.ValueParser;
 import gramat.eval.RejectedError;
 import gramat.expressions.Expression;
 import gramat.parsing.parsers.ExpressionParser;
+import gramat.parsing.parsers.ImportParser;
 import gramat.parsing.parsers.RuleParser;
 import gramat.parsing.parsers.TestParser;
 import gramat.runtime.EvalContext;
@@ -71,7 +73,8 @@ public class Parser {
             reader.skipBlanks();
 
             boolean active = RuleParser.parse(this, reader)
-                    || TestParser.parse(this, reader);
+                    || TestParser.parse(this, reader)
+                    || ImportParser.parse(this, reader);
 
             if (!active) {
                 break;

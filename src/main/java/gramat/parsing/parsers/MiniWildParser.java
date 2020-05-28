@@ -1,18 +1,17 @@
 package gramat.parsing.parsers;
 
 import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.units.RawWildAutomaton;
-import gramat.parsers.Mark;
+import gramat.automata.raw.units.RawMiniWild;
 import gramat.parsing.Reader;
 
-public class WildParser {
+public class MiniWildParser {
 
     public static RawAutomaton parse(Reader reader) {
-        if (!reader.pull(Mark.WILD_MARK)) {
+        if (!reader.pull('~')) {
             return null;
         }
 
-        return new RawWildAutomaton();
+        return new RawMiniWild();
     }
 
 }

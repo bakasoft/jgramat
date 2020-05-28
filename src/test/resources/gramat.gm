@@ -116,3 +116,7 @@ Test-10 = ^ "a" {"b"} "c" $
 @pass Test-10 `abc`
 @pass Test-10 `abbc`
 @pass Test-10 `abbbc`
+
+Test-12 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
+
+@match Test-12 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}

@@ -101,15 +101,28 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         content.build(context, aux, accepted);
     }
 
-    private NStateSet at_least_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
+    private void at_least_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
         throw new UnsupportedOperationException();  // TODO
     }
 
-    private NStateSet exact_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
-        throw new UnsupportedOperationException();  // TODO
+    private void exact_n_times(NContext context, NStateSet initial, NStateSet accepted, int count) {
+        var last = initial;
+
+        for (int i = 0; i < count; i++) {
+            var isLast = (i == count - 1);
+            var next = isLast ? accepted : new NStateSet();
+
+            if (separator != null) {
+                throw new UnsupportedOperationException();  // TODO
+            }
+
+            content.build(context, last, next);
+
+            last = next;
+        }
     }
 
-    private NStateSet at_least_but_no_more_times(NContext context, NStateSet initial, NStateSet accepted, int min, int max) {
+    private void at_least_but_no_more_times(NContext context, NStateSet initial, NStateSet accepted, int min, int max) {
         throw new UnsupportedOperationException();  // TODO
     }
 }

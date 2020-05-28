@@ -36,9 +36,6 @@ public class RuleParser {
             if (reader.pull(Mark.HARD_ASSIGNMENT_MARK)) {
                 soft = false;
             }
-            else if (reader.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
-                soft = true;
-            }
             else {
                 return false;
             }

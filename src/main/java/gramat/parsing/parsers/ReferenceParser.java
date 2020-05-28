@@ -18,7 +18,7 @@ public class ReferenceParser {
 
             reader.skipBlanks();
 
-            if (reader.pull(Mark.HARD_ASSIGNMENT_MARK) || reader.pull(Mark.SOFT_ASSIGNMENT_MARK)) {
+            if (reader.pull(Mark.HARD_ASSIGNMENT_MARK)) {
                 return null;
             }
 

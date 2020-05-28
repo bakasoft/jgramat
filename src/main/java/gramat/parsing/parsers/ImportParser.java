@@ -6,6 +6,7 @@ import gramat.parsing.Parser;
 import gramat.parsing.Reader;
 import gramat.util.parsing.Source;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ImportParser {
@@ -30,7 +31,7 @@ public class ImportParser {
                 throw reader.error("Expected file path string.");
             }
 
-            var file = Paths.get(path);
+            var file = parser.resolveFile(Path.of(path));
 
             parser.parse(file);
 

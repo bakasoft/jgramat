@@ -29,6 +29,9 @@ public class ExpressionParser {
         e = WildParser.parse(reader);
         if (e != null) { return e; }
 
+        e = MiniWildParser.parse(reader);
+        if (e != null) { return e; }
+
         e = ReferenceParser.parse(parser, reader);
         if (e != null) { return e; }
 
