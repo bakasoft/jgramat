@@ -6,6 +6,8 @@ import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
 
+import java.util.List;
+
 public class RawLiteralAutomaton extends RawStringAutomaton {
 
     private final String value;
@@ -16,6 +18,11 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
         if (value.isEmpty()) {
             throw new RuntimeException();
         }
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of();
     }
 
     @Override

@@ -85,4 +85,17 @@ public class ListTool {
         flush.run();
     }
 
+    public static <T> List<T> removeNulls(T item1, T item2) {
+        if (item1 != null && item2 != null) {
+           return List.of(item1, item2);
+        }
+        else if (item1 != null) {
+            return List.of(item1);
+        }
+        else if (item2 != null) {
+            return List.of(item2);
+        }
+        return List.of();
+    }
+
 }

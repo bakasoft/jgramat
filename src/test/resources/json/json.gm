@@ -1,4 +1,4 @@
-Json = ws (Object | Array | String | Number | Boolean | Null) ws
+Json = ^ ws (Object | Array | String | Number | Boolean | Null) ws $
 
 @object Object  = '{' ws { @set(String: ws ':' ws Json) ws / ',' ws } '}'
 

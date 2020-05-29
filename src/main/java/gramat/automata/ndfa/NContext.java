@@ -5,6 +5,7 @@ import gramat.automata.dfa.DState;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class NContext {
@@ -57,20 +58,24 @@ public class NContext {
                 rejected.toArray());
     }
 
-    public static DState compile(NMachineBuilder builder) {
-        var language = new NLanguage();
+    public static NAutomaton compileAutomaton(NLanguage language, String name, NMachineBuilder builder) {
+        var automaton = language.createAutomaton(name);
         var context = new NContext(language);
-        var initial = NStateSet.of(language.state());
-        var accepted = new NStateSet();
-        var machine = context.machine(builder, initial, accepted);
+        var machine = context.machine(builder, NStateSet.of(automaton.initial), automaton.accepted);
 
         for (var hook : context.postBuildHooks) {
             hook.run();
         }
 
-        System.out.println("NDFA -----------");
-        System.out.println(machine.getAmCode());
-        return DMaker.transform(language, initial, accepted);
+//        System.out.println("NDFA -----------");
+//        System.out.println(machine.getAmCode());
+        return automaton;
+    }
+
+    public static DState compile(String name, NMachineBuilder builder) {
+        var language = new NLanguage();
+        var automaton = compileAutomaton(language, name, builder);
+        return DMaker.transform(language, name, NStateSet.of(automaton.initial), automaton.accepted, new HashMap<>());
     }
 
 }

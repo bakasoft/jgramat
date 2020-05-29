@@ -15,24 +15,11 @@ public class DState {
 
     public final List<DTransition> transitions;
 
+    public final List<DState> options;
+
     public DState() {
         transitions = new ArrayList<>();
-    }
-
-    public DState move(int symbol, List<Action> actions) {
-        DState wild = null;
-
-        for (var trn : transitions) {
-            if (trn instanceof DTransitionWild) {
-                wild = trn.target;
-            }
-            else if (trn.accepts(symbol)) {
-                actions.addAll(trn.actions);
-                return trn.target;
-            }
-        }
-
-        return wild;
+        options = new ArrayList<>();
     }
 
     public boolean isAccepted() {

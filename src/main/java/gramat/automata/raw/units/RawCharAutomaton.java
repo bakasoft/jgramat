@@ -6,12 +6,19 @@ import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
 
+import java.util.List;
+
 public class RawCharAutomaton extends RawStringAutomaton {
 
     public final int value;
 
     public RawCharAutomaton(int value) {
         this.value = value;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of();
     }
 
     @Override

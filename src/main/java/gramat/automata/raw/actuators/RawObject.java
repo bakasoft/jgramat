@@ -8,6 +8,8 @@ import gramat.eval.object.ObjectCancel;
 import gramat.eval.object.ObjectSave;
 import gramat.eval.object.ObjectStart;
 
+import java.util.List;
+
 public class RawObject extends RawAutomaton {
 
     private final Object typeHint;
@@ -16,6 +18,11 @@ public class RawObject extends RawAutomaton {
     public RawObject(RawAutomaton content, Object typeHint) {
         this.content = content;
         this.typeHint = typeHint;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(content);
     }
 
     @Override

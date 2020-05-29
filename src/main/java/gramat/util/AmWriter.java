@@ -21,7 +21,7 @@ public class AmWriter {
             var source = String.valueOf(transition.source.id);
             var target = String.valueOf(transition.target.id);
             var symbol = transition.symbol.toString();
-            List<Action> actions;
+            List<Action> actions;  // TODO render before actions
 
             if (transition.actions.isEmpty()) {
                 actions = new ArrayList<>();
@@ -33,7 +33,7 @@ public class AmWriter {
 
             for (var action : actions) {
                 var actionStr = (action != null ? action.getDescription() : null);
-                writeTransition(output, source, target, symbol, actionStr);
+                writeTransition(output, source, target, symbol, null, actionStr);
             }
         }
 
@@ -80,6 +80,18 @@ public class AmWriter {
                 for (var transition : state.transitions) {
                     var targetID = idGetter.apply(transition.target);
 
+                    for (var option : state.options) {
+                        var optionID = statesIds.get(option);
+
+                        if (optionID == null) {
+                            optionID = idGetter.apply(option);
+
+//                            queue.add(option);
+                        }
+
+                        writeTransition(output, sourceID, targetID, null, "EVAL " + optionID, null);
+                    }
+
                     writeTransition(output, sourceID, targetID, transition);
 
                     queue.add(transition.target);
@@ -111,13 +123,14 @@ public class AmWriter {
                 symbol = "$";
             }
             else {
-                symbol = String.valueOf((char)tc.symbol);
+                symbol = GramatWriter.toDelimitedString(String.valueOf((char)tc.symbol), '\"');
             }
         }
         else if (transition instanceof DTransitionRange) {
             var tr = (DTransitionRange)transition;
-
-            symbol = "[" + ((char)tr.begin) + "-" + ((char)tr.end) + "]";
+            var beginStr = GramatWriter.toDelimitedString(String.valueOf(((char)tr.begin)), '\0');
+            var endStr = GramatWriter.toDelimitedString(String.valueOf(((char)tr.end)), '\0');
+            symbol = "[" + beginStr + "-" + endStr + "]";
         }
         else if (transition instanceof DTransitionWild) {
             symbol = "*";
@@ -126,20 +139,27 @@ public class AmWriter {
             throw new RuntimeException("unsupported transition");
         }
 
-        writeTransition(output, sourceID, targetID, symbol, action != null ? action.toString() : null);
+        writeTransition(output, sourceID, targetID, symbol, null, action != null ? action.toString() : null);
     }
 
-    private static void writeTransition(StringBuilder output, String sourceID, String targetID, String symbol, String action) {
+    private static void writeTransition(StringBuilder output, String sourceID, String targetID, String symbol, String beforeAction, String afterAction) {
         output.append(sourceID);
         output.append(" -> ");
         output.append(targetID);
 
-        output.append(" : ");
-        writeValue(output, symbol);
+        if (symbol != null) {
+            output.append(" : ");
+            writeValue(output, symbol);
+        }
 
-        if (action != null) {
-            output.append(" ! ");
-            writeValue(output, action);
+        if (beforeAction != null) {
+            output.append(" !< ");
+            writeValue(output, beforeAction);
+        }
+
+        if (afterAction != null) {
+            output.append(" !> ");
+            writeValue(output, afterAction);
         }
 
         output.append("\n");
@@ -152,9 +172,8 @@ public class AmWriter {
     }
 
     private static void writeAccepted(StringBuilder output, String stateID) {
-        output.append("=> ");
         output.append(stateID);
-        output.append("\n");
+        output.append(" <=\n");
     }
 
     private static void writeValue(StringBuilder output, String text) {

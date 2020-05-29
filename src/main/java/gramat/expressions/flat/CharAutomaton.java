@@ -43,7 +43,7 @@ public class CharAutomaton extends Expression {
         if (_root == null) {
             var collapsed = automaton.collapse();
 
-            _root = NContext.compile(collapsed);
+            _root = NContext.compile("deprecated", collapsed);
         }
         return _root;
     }

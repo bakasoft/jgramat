@@ -1,6 +1,7 @@
 package gramat.eval;
 
 import gramat.automata.dfa.DState;
+import gramat.automata.dfa.DTransitionWild;
 import gramat.runtime.*;
 import gramat.util.Debugger;
 import gramat.util.GramatWriter;
@@ -8,6 +9,7 @@ import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
 public class Evaluator {
@@ -80,7 +82,7 @@ public class Evaluator {
                 }
                 else {
                     var actions = new ArrayList<Action>();
-                    newState = state.move(value, actions);
+                    newState = move(state, value, actions);
                     for (var action : actions) {
                         action.run(this);
                     }
@@ -97,6 +99,38 @@ public class Evaluator {
                 lastValue = value;
             }
         }
+    }
+
+    private DState move(DState state, int symbol, List<Action> actions) {
+        if (state.options.size() > 0) {
+            DState result = null;
+
+            for (var option : state.options) {
+                result = eval(option);
+
+                if (result.isAccepted()) {
+                    break;
+                }
+            }
+
+            if (!result.isAccepted()) {
+                return null;
+            }
+        }
+
+        DState wild = null;
+
+        for (var trn : state.transitions) {
+            if (trn instanceof DTransitionWild) {
+                wild = trn.target;
+            }
+            else if (trn.accepts(symbol)) {
+                actions.addAll(trn.actions);
+                return trn.target;
+            }
+        }
+
+        return wild;
     }
 
 }

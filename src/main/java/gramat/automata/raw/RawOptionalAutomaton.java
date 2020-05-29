@@ -3,12 +3,19 @@ package gramat.automata.raw;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NStateSet;
 
+import java.util.List;
+
 public class RawOptionalAutomaton extends RawAutomaton {
 
     private final RawAutomaton content;
 
     public RawOptionalAutomaton(RawAutomaton content) {
         this.content = content;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(content);
     }
 
     @Override

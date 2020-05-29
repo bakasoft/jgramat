@@ -6,27 +6,35 @@ import java.util.*;
 
 public class DMaker {
 
-    public static DState transform(NLanguage language, NStateSet initial, NStateSet accepted) {
-        return new DMaker(language, initial, accepted).run();
+    public static DState transform(NLanguage language, String name, NStateSet initial, NStateSet accepted, Map<String, DState> optionsMap) {
+        return new DMaker(language, name, initial, accepted, optionsMap).run();
     }
 
     private final NLanguage language;
+    private final String name;
     private final NStateSet initial;
     private final NStateSet accepted;
+    private final Map<String, DState> optionsMap;
 
     private final LinkedHashMap<String, DState> hashStates;
 
-    private DMaker(NLanguage language, NStateSet initial, NStateSet accepted) {
+    private DMaker(NLanguage language, String name, NStateSet initial, NStateSet accepted, Map<String, DState> optionsMap) {
         this.language = language;
+        this.name = name;
         this.initial = initial;
         this.accepted = accepted;
         this.hashStates = new LinkedHashMap<>();
+        this.optionsMap = optionsMap;
     }
 
     private DState run() {
         var queue = new LinkedList<NStateSet>();
         var closures = new LinkedHashMap<String, NStateSet>();
         var newStates = new LinkedHashMap<String, DState>();
+
+        var initialHash = initial.getHash();
+
+        DState newInitial = null;
 
         queue.add(initial);
 
@@ -38,6 +46,12 @@ public class DMaker {
                 closures.put(sourcesHash, sources);
 
                 var newSource = state_of(sources);
+
+                if (sourcesHash.equals(initialHash) && newInitial == null) {
+                    newInitial = newSource;
+
+                    optionsMap.put(name, newInitial);
+                }
 
                 newStates.put(sourcesHash, newSource);
 
@@ -60,10 +74,6 @@ public class DMaker {
                 }
             }
         } while(queue.size() > 0);
-
-        var initialHash = initial.getHash();
-
-        var newInitial = newStates.get(initialHash);
 
         for (var newEntry : newStates.entrySet()) {
             var newState = newEntry.getValue();
@@ -137,6 +147,25 @@ public class DMaker {
             newState = new DState();
 
             hashStates.put(hash, newState);
+
+            // fill options
+            for (var state : oldStates) {
+                if (state.automata.size() > 0) {
+                    for (var automaton : state.automata) {
+                        DState amState = optionsMap.get(automaton.name);
+
+                        if (amState == null) {
+                            amState = DMaker.transform(
+                                    language, automaton.name,
+                                    NStateSet.of(automaton.initial), automaton.accepted,
+                                    optionsMap);
+                            optionsMap.put(automaton.name, amState);
+                        }
+
+                        newState.options.add(amState);
+                    }
+                }
+            }
         }
         return newState;
     }

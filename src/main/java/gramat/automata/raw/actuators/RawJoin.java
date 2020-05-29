@@ -8,12 +8,19 @@ import gramat.eval.join.JoinCancel;
 import gramat.eval.join.JoinSave;
 import gramat.eval.join.JoinStart;
 
+import java.util.List;
+
 public class RawJoin extends RawAutomaton {
 
     private final RawAutomaton content;
 
     public RawJoin(RawAutomaton content) {
         this.content = content;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(content);
     }
 
     @Override

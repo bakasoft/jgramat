@@ -7,6 +7,7 @@ import gramat.automata.raw.units.RawNopAutomaton;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,6 +19,11 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
 
     public RawParallelAutomaton(List<RawAutomaton> items) {
         super(items);
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return Collections.unmodifiableList(items);
     }
 
     @Override

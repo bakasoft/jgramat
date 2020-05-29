@@ -9,6 +9,8 @@ import gramat.eval.value.ValueCancel;
 import gramat.eval.value.ValueSave;
 import gramat.eval.value.ValueStart;
 
+import java.util.List;
+
 public class RawValue extends RawAutomaton {
 
     private final RawAutomaton content;
@@ -17,6 +19,11 @@ public class RawValue extends RawAutomaton {
     public RawValue(RawAutomaton content, ValueParser parser) {
         this.content = content;
         this.parser = parser;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(content);
     }
 
     @Override

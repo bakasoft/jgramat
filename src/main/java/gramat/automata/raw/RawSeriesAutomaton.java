@@ -7,6 +7,7 @@ import gramat.automata.raw.units.RawNopAutomaton;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -18,6 +19,11 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
 
     public RawSeriesAutomaton() {
         super(new ArrayList<>());
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return Collections.unmodifiableList(items);
     }
 
     @Override

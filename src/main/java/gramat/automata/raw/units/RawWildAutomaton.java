@@ -6,8 +6,14 @@ import gramat.automata.raw.RawAutomaton;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RawWildAutomaton extends RawAutomaton {
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of();
+    }
 
     @Override
     public RawAutomaton collapse() {

@@ -5,6 +5,8 @@ import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 
+import java.util.List;
+
 public class RawAutomataPromise extends RawAutomaton {
 
     private final Parser parser;
@@ -17,22 +19,42 @@ public class RawAutomataPromise extends RawAutomaton {
         this.name = name;
     }
 
+    public RawAutomaton getExpression() {
+        if (cache == null) {
+            cache = parser.findExpression(name).collapse();
+        }
+        return cache;
+    }
+
     @Override
     public RawAutomaton collapse() {
         return this;
     }
 
     @Override
+    public List<RawAutomaton> getChildren() {
+        return getExpression().getChildren();
+    }
+
+    @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var expression = cache;
+        var expression = getExpression();
 
-        if (expression == null) {
-            expression = parser.findExpression(name);
+        if (isRecursive()) {
+            var am = context.language.getAutomaton(name);
 
-            cache = expression.collapse();
-            expression = cache;
+            if (am == null) {
+                am = NContext.compileAutomaton(context.language, name, expression);
+            }
+
+            for (var state : initial) {
+                state.automata.add(am);
+            }
+
+            accepted.add(initial);
         }
-
-        expression.build(context, initial, accepted);
+        else {
+            expression.build(context, initial, accepted);
+        }
     }
 }

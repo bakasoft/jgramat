@@ -11,6 +11,7 @@ public class NLanguage {
     private final List<NState> states;
     public final List<NTransition> transitions;  // TODO make private
     public final Set<Symbol> symbols;  // TODO make private
+    private final Map<String, NAutomaton> amMap;
 
     private final Stack<NGroup> groupStack;
 
@@ -21,6 +22,7 @@ public class NLanguage {
         transitions = new ArrayList<>();
         symbols = new HashSet<>();
         groupStack = new Stack<>();
+        amMap = new HashMap<>();
         nextStateID = 1;
     }
 
@@ -210,5 +212,23 @@ public class NLanguage {
 
     public void transitionWild(NStateSet sources, NStateSet targets) {
         transition(sources, targets, new SymbolWild());
+    }
+
+    public NAutomaton getAutomaton(String name) {
+        return amMap.get(name);
+    }
+
+    public NAutomaton createAutomaton(String name) {
+        var initial = state();
+        var accepted = new NStateSet();
+        var automaton = new NAutomaton(name, initial, accepted);
+
+        if (amMap.containsKey(name)) {
+            throw new RuntimeException();
+        }
+
+        amMap.put(name, automaton);
+
+        return automaton;
     }
 }

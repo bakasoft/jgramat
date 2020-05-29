@@ -8,6 +8,8 @@ import gramat.eval.staticAttribute.StaticAttributeCancel;
 import gramat.eval.staticAttribute.StaticAttributeSave;
 import gramat.eval.staticAttribute.StaticAttributeStart;
 
+import java.util.List;
+
 public class RawAttribute extends RawAutomaton {
 
     private final RawAutomaton content;
@@ -16,6 +18,11 @@ public class RawAttribute extends RawAutomaton {
     public RawAttribute(String name, RawAutomaton content) {
         this.content = content;
         this.name = name;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(content);
     }
 
     @Override

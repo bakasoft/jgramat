@@ -51,8 +51,7 @@ public class Parser {
         }
 
         var collapsed = automaton.collapse();
-        var root = NContext.compile(collapsed);
-
+        var root = NContext.compile(name, collapsed);
         return new CompiledExpression(root);
     }
 

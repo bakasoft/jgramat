@@ -3,6 +3,11 @@ package gramat.automata.raw;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NStateSet;
 
+import java.util.Collections;
+import java.util.List;
+
+import static gramat.util.ListTool.removeNulls;
+
 
 public class RawRepetitionAutomaton extends RawAutomaton {
 
@@ -16,6 +21,11 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         this.separator = separator;
         this.minimum = minimum;
         this.maximum = maximum;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return removeNulls(content, separator);
     }
 
     @Override

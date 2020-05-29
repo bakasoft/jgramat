@@ -2,9 +2,10 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NStateSet;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.dynamicAttribute.*;
+
+import java.util.List;
 
 public class RawDynAttribute extends RawAutomaton {
 
@@ -14,6 +15,11 @@ public class RawDynAttribute extends RawAutomaton {
     public RawDynAttribute(RawAutomaton name, RawAutomaton value) {
         this.name = name;
         this.value = value;
+    }
+
+    @Override
+    public List<RawAutomaton> getChildren() {
+        return List.of(name, value);
     }
 
     @Override
