@@ -86,6 +86,12 @@ public class NLanguage {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    public List<NTransition> findTransitionsByTarget(NState target) {
+        return transitions.stream()
+                .filter(t -> t.target == target)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     private Symbol search_symbol(int c) {
         for (var symbol : symbols) {
             if (symbol instanceof SymbolChar) {

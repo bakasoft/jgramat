@@ -41,17 +41,29 @@ public class RawAutomataPromise extends RawAutomaton {
         var expression = getExpression();
 
         if (isRecursive()) {
-            var am = context.language.getAutomaton(name);
+            var lang = context.language;
+            var am = lang.getAutomaton(name);
 
             if (am == null) {
-                am = NContext.compileAutomaton(context.language, name, expression);
+                am = NContext.compileAutomaton(lang, name, expression);
             }
 
-            for (var state : initial) {
-                state.automata.add(am);
-            }
+            var automaton = am;
 
-            accepted.add(initial);
+            context.postBuildHook(() -> {
+                for (var trn : automaton.initial.getTransitions()) {
+                    lang.transition(initial, NStateSet.of(trn.target), trn.symbol); // TODO copy actions
+                }
+
+                for (var automaton_accepted : automaton.accepted) {
+                    for (var trn : lang.findTransitionsByTarget(automaton_accepted)) {
+                        lang.transition(NStateSet.of(trn.source), initial, trn.symbol);
+                    }
+                }
+
+                // TODO
+                System.out.println("POLLO CONNECT");
+            });
         }
         else {
             expression.build(context, initial, accepted);

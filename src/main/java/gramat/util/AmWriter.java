@@ -86,7 +86,7 @@ public class AmWriter {
                         if (optionID == null) {
                             optionID = idGetter.apply(option);
 
-//                            queue.add(option);
+                            queue.add(option);
                         }
 
                         writeTransition(output, sourceID, targetID, null, "EVAL " + optionID, null);
