@@ -16,6 +16,6 @@ public class StaticAttributeCancel extends SubAction {
 
     @Override
     public String getDescription() {
-        return null;
+        return "ROLLBACK-ATTR";
     }
 }

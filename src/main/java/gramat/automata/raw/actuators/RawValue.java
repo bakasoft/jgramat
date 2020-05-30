@@ -38,7 +38,7 @@ public class RawValue extends RawAutomaton {
         var start = new ValueStart(parser);
         var save = new ValueSave(start, parser);
         var cancel = new ValueCancel(start, parser);
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        context.machineHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 

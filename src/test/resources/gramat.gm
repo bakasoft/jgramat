@@ -1,18 +1,17 @@
+Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
+
+@match Test-01 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}
+
+Test-02 = ^ @object("=" {" "} @set(`id`: @string('0-9' {'0-9'})) {" "} ";") $
+
+@match Test-02 `= 1234;` {id: `1234`}
+
 Test-07 = ^ {"ab"} "ac" $
 
 @pass Test-07 `ac`
 @pass Test-07 `abac`
 @pass Test-07 `ababac`
 @pass Test-07 `abababac`
-
-//Test-01 = ^ @object("{" { @set(@string({+'a-z'}): ":" @string({+'a-z'})) / "," } "}") $
-
-//@match Test-01 `{abc:def,ghi:jkl,mno:pqr}` {abc:def, ghi:jkl, mno: pqr}
-
-// Test-02 = ^ @object("=" {" "} @set(`id`: @string('0-9' {'0-9'})) {" "} ";") $
-
-// @match Test-02 `= 1234;` {id: `1234`}
-
 
 Test-11 = ^ "{" { {+"a"} ":" {+"b"} / "," } "}" $
 

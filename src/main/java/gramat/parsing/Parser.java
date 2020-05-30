@@ -141,7 +141,7 @@ public class Parser {
 
             if (error == null) {
                 if (test.expectedMatch) {
-                    System.out.print("MATCHED: ");
+                    System.out.print("OUTPUT: ");
                     new GramatWriter(System.out, "  ").writeValue(output);
                     System.out.println();
 

@@ -45,13 +45,13 @@ public class RawAutomataPromise extends RawAutomaton {
             var initial = context.language.state();
             var accepted = context.language.state();
             var lang = context.language;
-            var am = lang.getAutomaton(name);
+            var machine = context.getMachine(name);
 
-            if (am == null) {
-                am = NContext.compileAutomaton(lang, name, expression);
+            if (machine == null) {
+                machine = context.createMachine(name, expression);
             }
 
-            var automaton = am;
+            var automaton = machine;
 
             context.postBuildHook(() -> {
                 for (var trn : automaton.initial.getTransitions()) {

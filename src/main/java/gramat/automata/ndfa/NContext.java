@@ -1,11 +1,10 @@
 package gramat.automata.ndfa;
 
+import gramat.automata.dfa.DMachine;
 import gramat.automata.dfa.DMaker;
 import gramat.automata.dfa.DState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class NContext {
 
@@ -13,13 +12,23 @@ public class NContext {
 
     private final List<Runnable> postBuildHooks;
 
+    private final Map<String, NMachine> amMap;
+
+    private final List<MachineHookItem> machineHooks;
+
     public NContext(NLanguage language) {
         this.language = language;
         this.postBuildHooks = new ArrayList<>();
+        this.amMap = new HashMap<>();
+        this.machineHooks = new ArrayList<>();
     }
 
     public void postBuildHook(Runnable hook) {
         postBuildHooks.add(hook);
+    }
+
+    public void machineHook(NMachine machine, MachineHook hook) {
+        machineHooks.add(new MachineHookItem(machine, hook));
     }
 
     public NMachine machine(NMachineBuilder builder) {
@@ -32,12 +41,26 @@ public class NContext {
         return segment.toMachine(group);
     }
 
-    public static NAutomaton compileAutomaton(NLanguage language, String name, NMachineBuilder builder) {
-        var automaton = language.createAutomaton(name);
-        var context = new NContext(language);
-        var machine = context.machine(builder);
+    public NMachine getMachine(String name) {
+        return amMap.get(name);
+    }
 
-        machine.wrap(automaton.initial, automaton.accepted);
+    public NMachine createMachine(String name, NMachineBuilder builder) {
+        if (amMap.containsKey(name)) {
+            throw new RuntimeException();
+        }
+
+        var machine = machine(builder);
+
+        amMap.put(name, machine);
+
+        return machine;
+    }
+
+    public static DState compile(String name, NMachineBuilder builder) {
+        var language = new NLanguage();
+        var context = new NContext(language);
+        var machine = context.createMachine(name, builder);
 
         for (var hook : context.postBuildHooks) {
             hook.run();
@@ -45,16 +68,34 @@ public class NContext {
 
         System.out.println("NDFA -----------");
         System.out.println(machine.getAmCode());
-        return automaton;
-    }
+        var maker = new DMaker(language, name, machine.initial, machine.accepted, new HashMap<>());
+        var result = maker.run();
 
-    public static DState compile(String name, NMachineBuilder builder) {
-        var language = new NLanguage();
-        var automaton = compileAutomaton(language, name, builder);
-        return DMaker.transform(language, name, automaton.initial, automaton.accepted, new HashMap<>());
+        for (var item : context.machineHooks) {
+            var dMachineItem = maker.computeMachine(item.machine);
+
+            item.hook.run(dMachineItem);
+        }
+
+        return result;
     }
 
     public NSegment segment(NState initial, NState accepted) {
         return new NSegment(language, initial, accepted);
+    }
+
+    private static class MachineHookItem {
+        public final NMachine machine;
+        public final MachineHook hook;
+        public MachineHookItem(NMachine machine, MachineHook hook) {
+            this.machine = machine;
+            this.hook = hook;
+        }
+    }
+
+    public interface MachineHook {
+
+        void run(DMachine machine);
+
     }
 }

@@ -12,5 +12,4 @@ public class NMachine extends NSegment {
         this.states = Collections.unmodifiableList(group.states);
         this.transitions = Collections.unmodifiableList(group.transitions);
     }
-
 }

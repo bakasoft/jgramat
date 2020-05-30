@@ -37,7 +37,7 @@ public class RawAttribute extends RawAutomaton {
         var start = new StaticAttributeStart();
         var save = new StaticAttributeSave(start, name);
         var cancel = new StaticAttributeCancel(start);
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        context.machineHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

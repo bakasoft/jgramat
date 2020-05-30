@@ -24,6 +24,6 @@ public class StaticAttributeSave extends Action {
 
     @Override
     public String getDescription() {
-        return null;
+        return "COMMIT-ATTR:" + name;
     }
 }

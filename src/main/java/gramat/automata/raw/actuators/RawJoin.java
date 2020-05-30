@@ -35,7 +35,7 @@ public class RawJoin extends RawAutomaton {
         var start = new JoinStart();
         var save = new JoinSave();
         var cancel = new JoinCancel();
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        context.machineHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

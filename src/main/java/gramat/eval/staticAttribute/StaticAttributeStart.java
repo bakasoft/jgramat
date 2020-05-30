@@ -11,6 +11,6 @@ public class StaticAttributeStart extends Action {
 
     @Override
     public String getDescription() {
-        return null;
+        return "BEGIN-ATTR";
     }
 }

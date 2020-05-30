@@ -37,7 +37,7 @@ public class RawObject extends RawAutomaton {
         var start = new ObjectStart();
         var save = new ObjectSave(start);
         var cancel = new ObjectCancel(start);
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        context.machineHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

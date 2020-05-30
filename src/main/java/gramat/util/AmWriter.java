@@ -12,6 +12,55 @@ import java.util.function.Function;
 
 public class AmWriter {
 
+    public static String getAmCode(DMachine machine) {
+        var control = new HashSet<DState>();
+        var output = new StringBuilder();
+        var statesIds = new HashMap<DState, String>();
+        var idGetter = (Function<DState, String>) (state) -> {
+            var id = statesIds.get(state);
+
+            if (id == null) {
+                id = String.valueOf(statesIds.size() + 1);
+
+                statesIds.put(state, id);
+            }
+
+            return id;
+        };
+
+        var queue = new LinkedList<>(machine.initial);
+
+        while(queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                var id = idGetter.apply(state);
+
+                if (machine.initial.contains(state)) {
+                    writeInitial(output, id);
+                }
+
+                if (machine.accepted.contains(state)) {
+                    writeAccepted(output, id);
+                }
+
+                for (var transition : state.transitions) {
+                    if (machine.transitions.contains(transition)) {
+                        var targetID = idGetter.apply(transition.target);
+                        var symbol = transition.getSymbol();
+                        writeTransition(output, id, targetID, symbol, null, null);
+                    }
+
+                    if (machine.states.contains(transition.target)) {
+                        queue.add(transition.target);
+                    }
+                }
+            }
+        }
+
+        return output.toString();
+    }
+
     public static String getAmCode(NSegment segment) {
         var output = new StringBuilder();
 
@@ -175,6 +224,11 @@ public class AmWriter {
             writeValue(output, afterAction);
         }
 
+        output.append("\n");
+    }
+
+    private static void writeState(StringBuilder output, String stateID) {
+        output.append(stateID);
         output.append("\n");
     }
 

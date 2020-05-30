@@ -40,7 +40,7 @@ public class RawList extends RawAutomaton {
         var start = new ListStart();
         var save = new ListSave();
         var cancel = new ListCancel();
-        context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        context.machineHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

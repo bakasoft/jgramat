@@ -11,7 +11,6 @@ public class NLanguage {
     private final List<NState> states;
     public final List<NTransition> transitions;  // TODO make private
     public final SymbolSet symbols;
-    private final Map<String, NAutomaton> amMap;
 
     private final Stack<NGroup> groupStack;
 
@@ -22,7 +21,6 @@ public class NLanguage {
         transitions = new ArrayList<>();
         symbols = new SymbolSet();
         groupStack = new Stack<>();
-        amMap = new HashMap<>();
         nextStateID = 1;
     }
 
@@ -111,24 +109,6 @@ public class NLanguage {
         return transitions.stream()
                 .filter(t -> t.target == target)
                 .collect(Collectors.toUnmodifiableList());
-    }
-
-    public NAutomaton getAutomaton(String name) {
-        return amMap.get(name);
-    }
-
-    public NAutomaton createAutomaton(String name) {
-        var initial = state();
-        var accepted = state();
-        var automaton = new NAutomaton(this, name, initial, accepted);
-
-        if (amMap.containsKey(name)) {
-            throw new RuntimeException();
-        }
-
-        amMap.put(name, automaton);
-
-        return automaton;
     }
 
     public NStateSet computeNullClosure(NState state) {
