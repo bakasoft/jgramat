@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
@@ -20,7 +21,11 @@ public class RawSourceBegin extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        accepted.add(initial);
+    public NSegment build(NContext context) {
+        var state = context.language.state();
+
+        // TODO
+
+        return context.segment(state, state);
     }
 }

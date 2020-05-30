@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
@@ -31,29 +32,20 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var last = initial;
-        var symbols = value.toCharArray();
+    public NSegment build(NContext context) {
+        var initial = context.language.state();
+        var accepted = initial;
 
-        accepted.notEmpty(context);
+        for (var c : value.toCharArray()) {
+            var state = context.language.state();
+            var symbol = context.language.symbols.getChar(c);
 
-        for (var i = 0; i < symbols.length; i++) {
-            boolean isLast = (i == symbols.length - 1);
+            context.language.transition(accepted, state, symbol);
 
-            NStateSet next;
-
-            if (isLast) {
-                next = accepted;
-            }
-            else {
-                next = NStateSet.of(context.language.state());
-            }
-
-            var symbol = context.language.symbols.getChar(symbols[i]);
-            context.language.transition(last, next, symbol);
-
-            last = next;
+            accepted = state;
         }
+
+        return context.segment(initial, accepted);
     }
 
     @Override

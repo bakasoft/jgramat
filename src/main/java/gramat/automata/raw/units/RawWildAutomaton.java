@@ -21,24 +21,24 @@ public class RawWildAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+    public NSegment build(NContext context) {
+        var state = context.language.state();
         var wild = context.language.symbols.getWild();
-        context.language.transition(initial, initial, wild);
 
-        accepted.add(initial);
+        context.language.transition(state, state, wild);
 
-        context.postBuildHook(() -> resolve_wild_state(context.language, initial));
+        context.postBuildHook(() -> resolve_wild_state(context.language, state));
+
+        return context.segment(state, state);
     }
 
-    private void resolve_wild_state(NLanguage language, NStateSet roots) {
+    private void resolve_wild_state(NLanguage language, NState root) {
         var wild = language.symbols.getWild();
         var queue = new LinkedList<NState>();
         var control = new HashSet<NState>();
 
-        for (var root : roots) {
-            for (var trn : root.getTransitions()) {
-                queue.add(trn.target);
-            }
+        for (var trn : root.getTransitions()) {
+            queue.add(trn.target);
         }
 
         while(queue.size() > 0) {
@@ -46,9 +46,9 @@ public class RawWildAutomaton extends RawAutomaton {
 
             if (control.add(state)) {
                 var transitions = state.getTransitions();
-                var hasWilds = transitions.stream().anyMatch(s -> s.symbol.isWild());
+                var hasWilds = transitions.stream().anyMatch(s -> s.symbol != null && s.symbol.isWild());
                 if (!hasWilds && transitions.size() > 0) {
-                    language.transition(state, roots, wild);
+                    language.transition(state, root, wild);
 
                     for (var trn : transitions) {
                         queue.add(trn.target);

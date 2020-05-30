@@ -4,7 +4,7 @@ import java.util.*;
 
 public class NStateSet implements Iterable<NState> {
 
-    private final Collection<NState> states;
+    private final ArrayList<NState> states;
 
     public NStateSet() {
         states = new ArrayList<>();
@@ -32,10 +32,11 @@ public class NStateSet implements Iterable<NState> {
         return result;
     }
 
-    public void add(NState state) {
+    public boolean add(NState state) {
         if (!this.states.contains(state)) {
-            this.states.add(state);
+            return this.states.add(state);
         }
+        return false;
     }
 
     public void add(List<NState> states) {
@@ -71,8 +72,8 @@ public class NStateSet implements Iterable<NState> {
         return states.size() > 0;
     }
 
-    public NState[] toArray() {
-        return states.toArray(NState[]::new);
+    public List<NState> toList() {
+        return Collections.unmodifiableList(states);
     }
 
     public void notEmpty(NContext context) {
@@ -113,5 +114,15 @@ public class NStateSet implements Iterable<NState> {
         }
 
         return output.toString();
+    }
+
+    public NStateSet getNullClosure() {
+        var closure = new NStateSet();
+
+        for (var state : states) {
+            closure.add(state.getNullClosure());
+        }
+
+        return closure;
     }
 }

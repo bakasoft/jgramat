@@ -21,16 +21,18 @@ public class RawMiniWild extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+    public NSegment build(NContext context) {
+        var state = context.language.state();
         var wild = context.language.symbols.getWild();
-        context.language.transition(initial, initial, wild);
 
-        accepted.add(initial);
+        context.language.transition(state, state, wild);
 
-        context.postBuildHook(() -> resolve_mini_wild_state(context.language, initial));
+        context.postBuildHook(() -> resolve_mini_wild_state(context.language, state));
+
+        return context.segment(state, state);
     }
 
-    private void resolve_mini_wild_state(NLanguage language, NStateSet roots) {
+    private void resolve_mini_wild_state(NLanguage language, NState root) {
         // TODO
     }
 

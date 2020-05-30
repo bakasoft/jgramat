@@ -2,6 +2,8 @@ package gramat.util;
 
 import gramat.automata.dfa.*;
 import gramat.automata.ndfa.NMachine;
+import gramat.automata.ndfa.NSegment;
+import gramat.automata.ndfa.NState;
 import gramat.eval.Action;
 import gramat.util.parsing.Source;
 
@@ -10,35 +12,46 @@ import java.util.function.Function;
 
 public class AmWriter {
 
-    public static String getAmCode(NMachine machine) {
+    public static String getAmCode(NSegment segment) {
         var output = new StringBuilder();
 
-        for (var initial : machine.initial) {
-            writeInitial(output, String.valueOf(initial.id));
-        }
+        writeInitial(output, String.valueOf(segment.initial.id));
 
-        for (var transition : machine.transitions) {
-            var source = String.valueOf(transition.source.id);
-            var target = String.valueOf(transition.target.id);
-            var symbol = transition.symbol.toString();
-            List<Action> actions;  // TODO render before actions
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
 
-            if (transition.actions.isEmpty()) {
-                actions = new ArrayList<>();
-                actions.add(null);
+        queue.add(segment.initial);
+
+        while (queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                if (state == segment.accepted) {
+                    writeAccepted(output, String.valueOf(segment.accepted.id));
+                }
+
+                for (var transition : state.getTransitions()) {
+                    var source = String.valueOf(transition.source.id);
+                    var target = String.valueOf(transition.target.id);
+                    var symbol = transition.symbol;
+                    List<Action> actions;  // TODO render before actions
+
+                    if (transition.actions.isEmpty()) {
+                        actions = new ArrayList<>();
+                        actions.add(null);
+                    } else {
+                        actions = transition.actions;
+                    }
+
+                    for (var action : actions) {
+                        var actionStr = (action != null ? action.getDescription() : null);
+                        var symbolStr = (symbol != null ? symbol.toString() : null);
+                        writeTransition(output, source, target, symbolStr, null, actionStr);
+                    }
+
+                    queue.add(transition.target);
+                }
             }
-            else {
-                actions = transition.actions;
-            }
-
-            for (var action : actions) {
-                var actionStr = (action != null ? action.getDescription() : null);
-                writeTransition(output, source, target, symbol, null, actionStr);
-            }
-        }
-
-        for (var initial : machine.accepted) {
-            writeAccepted(output, String.valueOf(initial.id));
         }
 
         return output.toString();
@@ -136,7 +149,7 @@ public class AmWriter {
             symbol = "*";
         }
         else {
-            throw new RuntimeException("unsupported transition");
+            symbol = null;
         }
 
         writeTransition(output, sourceID, targetID, symbol, null, action != null ? action.toString() : null);

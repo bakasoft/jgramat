@@ -6,19 +6,19 @@ import java.util.*;
 
 public class DMaker {
 
-    public static DState transform(NLanguage language, String name, NStateSet initial, NStateSet accepted, Map<String, DState> optionsMap) {
+    public static DState transform(NLanguage language, String name, NState initial, NState accepted, Map<String, DState> optionsMap) {
         return new DMaker(language, name, initial, accepted, optionsMap).run();
     }
 
     private final NLanguage language;
     private final String name;
-    private final NStateSet initial;
-    private final NStateSet accepted;
+    private final NState initial;
+    private final NState accepted;
     private final Map<String, DState> optionsMap;
 
     private final LinkedHashMap<String, DState> hashStates;
 
-    private DMaker(NLanguage language, String name, NStateSet initial, NStateSet accepted, Map<String, DState> optionsMap) {
+    private DMaker(NLanguage language, String name, NState initial, NState accepted, Map<String, DState> optionsMap) {
         this.language = language;
         this.name = name;
         this.initial = initial;
@@ -32,11 +32,12 @@ public class DMaker {
         var closures = new LinkedHashMap<String, NStateSet>();
         var newStates = new LinkedHashMap<String, DState>();
 
-        var initialHash = initial.getHash();
+        var initialClosure = initial.getNullClosure();
+        var initialHash = initialClosure.getHash();
 
         DState newInitial = null;
 
-        queue.add(initial);
+        queue.add(initialClosure);
 
         do {
             var sources = queue.remove();
@@ -62,14 +63,16 @@ public class DMaker {
                         var targets = new NStateSet();
 
                         for (var trn : transitions) {
-                            targets.add(trn.target);
+                            for (var target : trn.target.getNullClosure()) {
+                                targets.add(target);
+                            }
                         }
 
                         var newTarget = state_of(targets);
 
                         make_transition(sources, targets, transitions, newSource, newTarget, symbol);
 
-                        queue.add(targets);
+                        queue.add(targets.getNullClosure());
                     }
                 }
             }
@@ -79,16 +82,7 @@ public class DMaker {
             var newState = newEntry.getValue();
             var oldClosure = closures.get(newEntry.getKey());
 
-            boolean isAccepted = false;
-
-            for (var oldAccept : this.accepted) {
-                if (oldClosure.contains(oldAccept)) {
-                    isAccepted = true;
-                    break;
-                }
-            }
-
-            if (isAccepted) {
+            if (oldClosure.contains(accepted)) {
                 newState.accepted = true;
             }
         }
@@ -156,7 +150,7 @@ public class DMaker {
                         if (amState == null) {
                             amState = DMaker.transform(
                                     language, automaton.name,
-                                    NStateSet.of(automaton.initial), automaton.accepted,
+                                    automaton.initial, automaton.accepted,
                                     optionsMap);
                             optionsMap.put(automaton.name, amState);
                         }
@@ -171,11 +165,24 @@ public class DMaker {
 
     private List<NTransition> findTransitions(NStateSet states, Symbol symbol) {
         var transitions = new ArrayList<NTransition>();
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
 
         for (var state : states) {
-            for (var trn : state.getTransitions()) {
-                if (trn.symbol == symbol) {
-                    transitions.add(trn);
+            queue.add(state);
+        }
+
+        while (queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                for (var trn : state.getTransitions()) {
+                    if (trn.symbol == symbol) {
+                        transitions.add(trn);
+                    }
+                    else if (trn.symbol == null) {
+                        queue.add(trn.target);
+                    }
                 }
             }
         }

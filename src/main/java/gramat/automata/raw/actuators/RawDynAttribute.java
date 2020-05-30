@@ -1,6 +1,7 @@
 package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.dynamicAttribute.*;
@@ -28,10 +29,11 @@ public class RawDynAttribute extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var aux = new NStateSet();
-        var nMachine = context.machine(name, initial, aux);
-        var vMachine = context.machine(value, aux, accepted);
+    public NSegment build(NContext context) {
+        var nMachine = context.machine(name);
+        var vMachine = context.machine(value);
+
+        context.language.transition(nMachine.accepted, vMachine.initial, null);
 
         var nStart = new DynamicAttributeNameStart();
         var nSave = new DynamicAttributeNameSave(nStart);
@@ -42,5 +44,7 @@ public class RawDynAttribute extends RawAutomaton {
         var vSave = new DynamicAttributeValueSave(vStart, nSave);
         var vCancel = new DynamicAttributeValueCancel(vStart);
         context.postBuildHook(() -> TRX.setupActions(vMachine, vStart, vSave, vCancel));
+
+        return context.segment(nMachine.initial, vMachine.accepted);
     }
 }

@@ -1,5 +1,7 @@
 package gramat.automata.ndfa;
 
+import gramat.util.AmWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,10 @@ public class NState {
         this.automata = new ArrayList<>();
     }
 
+    public NStateSet getNullClosure() {
+        return language.computeNullClosure(this);
+    }
+
     public List<NTransition> getTransitions() {
         return language.findTransitionsBySource(this);
     }
@@ -24,4 +30,5 @@ public class NState {
     public String toString() {
         return String.valueOf(id);
     }
+
 }

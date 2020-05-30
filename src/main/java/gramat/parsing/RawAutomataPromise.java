@@ -1,6 +1,7 @@
 package gramat.parsing;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
@@ -37,10 +38,12 @@ public class RawAutomataPromise extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
+    public NSegment build(NContext context) {
         var expression = getExpression();
 
         if (isRecursive()) {
+            var initial = context.language.state();
+            var accepted = context.language.state();
             var lang = context.language;
             var am = lang.getAutomaton(name);
 
@@ -55,18 +58,17 @@ public class RawAutomataPromise extends RawAutomaton {
                     lang.transition(initial, NStateSet.of(trn.target), trn.symbol); // TODO copy actions
                 }
 
-                for (var automaton_accepted : automaton.accepted) {
-                    for (var trn : lang.findTransitionsByTarget(automaton_accepted)) {
-                        lang.transition(NStateSet.of(trn.source), initial, trn.symbol);
-                    }
+                for (var trn : lang.findTransitionsByTarget(automaton.accepted)) {
+                    lang.transition(NStateSet.of(trn.source), initial, trn.symbol);
                 }
 
                 // TODO
                 System.out.println("POLLO CONNECT");
             });
+
+            return context.segment(initial, accepted);
         }
-        else {
-            expression.build(context, initial, accepted);
-        }
+
+        return expression.build(context);
     }
 }

@@ -1,15 +1,12 @@
 package gramat.automata.ndfa;
 
-public class NAutomaton {
+public class NAutomaton extends NSegment {
 
     public final String name;
-    public final NState initial;
-    public final NStateSet accepted;
 
-    public NAutomaton(String name, NState initial, NStateSet accepted) {
+    public NAutomaton(NLanguage language, String name, NState initial, NState accepted) {
+        super(language, initial, accepted);
         this.name = name;
-        this.initial = initial;
-        this.accepted = accepted;
     }
 
 }

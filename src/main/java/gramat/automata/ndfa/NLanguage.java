@@ -119,8 +119,8 @@ public class NLanguage {
 
     public NAutomaton createAutomaton(String name) {
         var initial = state();
-        var accepted = new NStateSet();
-        var automaton = new NAutomaton(name, initial, accepted);
+        var accepted = state();
+        var automaton = new NAutomaton(this, name, initial, accepted);
 
         if (amMap.containsKey(name)) {
             throw new RuntimeException();
@@ -129,5 +129,26 @@ public class NLanguage {
         amMap.put(name, automaton);
 
         return automaton;
+    }
+
+    public NStateSet computeNullClosure(NState state) {
+        var closure = new NStateSet();
+        var queue = new LinkedList<NState>();
+
+        queue.add(state);
+
+        do {
+            var source = queue.remove();
+
+            if (closure.add(source)) {
+                for (var trn : transitions) {
+                    if (trn.source == source && trn.symbol == null) {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        } while (queue.size() > 0);
+
+        return closure;
     }
 }

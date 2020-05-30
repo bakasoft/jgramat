@@ -1,6 +1,7 @@
 package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
@@ -32,12 +33,13 @@ public class RawValue extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        var machine = context.machine(content, initial, accepted);
+    public NSegment build(NContext context) {
+        var machine = context.machine(content);
         var start = new ValueStart(parser);
         var save = new ValueSave(start, parser);
         var cancel = new ValueCancel(start, parser);
         context.postBuildHook(() -> TRX.setupActions(machine, start, save, cancel));
+        return machine;
     }
 
 }

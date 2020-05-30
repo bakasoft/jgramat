@@ -1,6 +1,7 @@
 package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
+import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
@@ -28,11 +29,13 @@ public class RawRangeAutomaton extends RawAutomaton {
     }
 
     @Override
-    public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        accepted.notEmpty(context);
-
+    public NSegment build(NContext context) {
+        var initial = context.language.state();
+        var accepted = context.language.state();
         var range = context.language.symbols.getRange(begin, end);
 
         context.language.transition(initial, accepted, range);
+
+        return context.segment(initial, accepted);
     }
 }

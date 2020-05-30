@@ -16,12 +16,13 @@ public class NTransition {
     NTransition(NState source, NState target, Symbol symbol) {
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        this.symbol = Objects.requireNonNull(symbol);
+        this.symbol = symbol;
         this.actions = new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return source.id + " -> " + target.id + ": " + symbol + " #" + Integer.toHexString(hashCode());
+        var symbolPart = (symbol != null ? " : " + symbol : "");
+        return source.id + " -> " + target.id + symbolPart + " #" + Integer.toHexString(hashCode());
     }
 }
