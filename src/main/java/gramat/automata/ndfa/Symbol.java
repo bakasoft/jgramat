@@ -1,9 +1,16 @@
 package gramat.automata.ndfa;
 
-import java.io.IOException;
+public interface Symbol {
 
-abstract public class Symbol {
+    boolean isWild();
 
-    abstract public void write(Appendable output) throws IOException;
+    boolean isChar();
 
+    boolean isRange();
+
+    int getChar();
+
+    int getBegin();
+
+    int getEnd();
 }

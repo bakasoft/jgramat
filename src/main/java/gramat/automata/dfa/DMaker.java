@@ -99,15 +99,14 @@ public class DMaker {
     private void make_transition(NStateSet sources, NStateSet targets, List<NTransition> transitions, DState source, DState target, Symbol symbol) {
         DTransition dTransition;
 
-        if (symbol instanceof SymbolWild) {
+        if (symbol.isWild()) {
             dTransition = new DTransitionWild(target);
         }
-        else if (symbol instanceof SymbolChar) {
-            dTransition = new DTransitionChar(target, ((SymbolChar)symbol).value);
+        else if (symbol.isChar()) {
+            dTransition = new DTransitionChar(target, symbol.getChar());
         }
-        else if (symbol instanceof SymbolRange) {
-            var sr = (SymbolRange)symbol;
-            dTransition = new DTransitionRange(target, sr.begin, sr.end);
+        else if (symbol.isRange()) {
+            dTransition = new DTransitionRange(target, symbol.getBegin(), symbol.getEnd());
         }
         else {
             throw new RuntimeException();

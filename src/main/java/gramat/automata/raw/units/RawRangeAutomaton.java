@@ -31,6 +31,8 @@ public class RawRangeAutomaton extends RawAutomaton {
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         accepted.notEmpty(context);
 
-        context.language.transitionRange(initial, accepted, begin, end);
+        var range = context.language.symbols.getRange(begin, end);
+
+        context.language.transition(initial, accepted, range);
     }
 }

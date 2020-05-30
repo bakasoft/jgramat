@@ -30,7 +30,8 @@ public class RawCharAutomaton extends RawStringAutomaton {
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
         accepted.notEmpty(context);
 
-        context.language.transitionChar(initial, accepted, value);
+        var symbol = context.language.symbols.getChar(value);
+        context.language.transition(initial, accepted, symbol);
     }
 
     @Override

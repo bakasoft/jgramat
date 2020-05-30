@@ -22,7 +22,8 @@ public class RawMiniWild extends RawAutomaton {
 
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        context.language.transitionWild(initial, initial);
+        var wild = context.language.symbols.getWild();
+        context.language.transition(initial, initial, wild);
 
         accepted.add(initial);
 

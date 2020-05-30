@@ -49,7 +49,8 @@ public class RawLiteralAutomaton extends RawStringAutomaton {
                 next = NStateSet.of(context.language.state());
             }
 
-            context.language.transitionChar(last, next, symbols[i]);
+            var symbol = context.language.symbols.getChar(symbols[i]);
+            context.language.transition(last, next, symbol);
 
             last = next;
         }

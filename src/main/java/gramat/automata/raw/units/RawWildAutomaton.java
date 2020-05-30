@@ -22,7 +22,8 @@ public class RawWildAutomaton extends RawAutomaton {
 
     @Override
     public void build(NContext context, NStateSet initial, NStateSet accepted) {
-        context.language.transitionWild(initial, initial);
+        var wild = context.language.symbols.getWild();
+        context.language.transition(initial, initial, wild);
 
         accepted.add(initial);
 
@@ -30,6 +31,7 @@ public class RawWildAutomaton extends RawAutomaton {
     }
 
     private void resolve_wild_state(NLanguage language, NStateSet roots) {
+        var wild = language.symbols.getWild();
         var queue = new LinkedList<NState>();
         var control = new HashSet<NState>();
 
@@ -44,9 +46,9 @@ public class RawWildAutomaton extends RawAutomaton {
 
             if (control.add(state)) {
                 var transitions = state.getTransitions();
-                var hasWilds = transitions.stream().anyMatch(t -> t.symbol instanceof SymbolWild);
+                var hasWilds = transitions.stream().anyMatch(s -> s.symbol.isWild());
                 if (!hasWilds && transitions.size() > 0) {
-                    language.transitionWild(state, roots);
+                    language.transition(state, roots, wild);
 
                     for (var trn : transitions) {
                         queue.add(trn.target);
