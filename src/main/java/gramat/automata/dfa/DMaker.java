@@ -1,6 +1,7 @@
 package gramat.automata.dfa;
 
 import gramat.automata.ndfa.*;
+import gramat.eval.Action;
 
 import java.util.*;
 
@@ -88,7 +89,115 @@ public class DMaker {
             }
         }
 
+        apply_actions();
+
         return newInitial;
+    }
+
+    private void apply_actions() {
+        for (var nTransition : language.transitions) {
+            if (nTransition.actions.size() > 0) {
+                var sourceClosure = nTransition.source.getInverseNullClosure();
+                var dSources = findContainingStates(sourceClosure);
+                for (var trn : findNotNullTransitions(nTransition)) {
+                    for (var dSource : dSources) {
+                        System.out.println("~~~~~~~~~~~~~~~");
+                        for (var a : nTransition.actions) { System.out.println("ACTION " + a); }
+                        System.out.println("SOURCE " + dSource.id);
+                        for (var dTransition : dSource.transitions) {
+                            System.out.println("SYMBOL " + dTransition.getSymbol());
+                            if (trn.symbol == null || transition_matches(dTransition, trn.symbol)) {
+                                var targetClosure = trn.target.getNullClosure();
+                                var dTargets = findContainingStates(targetClosure);
+                                for (var dTarget : dTargets) {
+                                    System.out.println("TARGET " + dTarget.id);
+                                    if (dTransition.target == dTarget) {
+                                        dTransition.addActions(nTransition.actions);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private List<NTransition> findNotNullTransitions(NTransition transition) {
+        if (transition.symbol != null) {
+            return List.of(transition);
+        }
+
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+        var result = new ArrayList<NTransition>();
+
+        queue.add(transition.source);
+
+        while (queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                for (var trn : state.getTransitions()) {
+                    if (trn.symbol != null) {
+                        result.add(trn);
+                    }
+                    else {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private boolean transition_matches(DTransition dTransition, Symbol symbol) {
+        if (dTransition instanceof DTransitionChar) {
+            return ((DTransitionChar)dTransition).symbol == symbol.getChar();
+        }
+        else if (dTransition instanceof DTransitionRange) {
+            var dtr = (DTransitionRange)dTransition;
+            return dtr.begin == symbol.getBegin() && dtr.end == symbol.getEnd();
+        }
+        else if (dTransition instanceof DTransitionWild) {
+            return symbol.isWild();
+        }
+        return false;
+    }
+
+    private Set<DState> findIntersectedStates(NStateSet states) {
+        var result = new HashSet<DState>();
+
+        for(var entry : closures.entrySet()) {
+            var hash = entry.getKey();
+            var closure = entry.getValue();
+
+            if (closure.containsAny(states)) {
+                var dstate = newStates.get(hash);
+
+                result.add(Objects.requireNonNull(dstate));
+            }
+        }
+
+        return result;
+    }
+
+    private Set<DState> findContainingStates(NStateSet states) {
+        var result = new HashSet<DState>();
+
+        for(var entry : closures.entrySet()) {
+            var hash = entry.getKey();
+            var closure = entry.getValue();
+
+            if (closure.containsAll(states)) {
+                var dstate = newStates.get(hash);
+
+                result.add(Objects.requireNonNull(dstate));
+            }
+        }
+
+        return result;
     }
 
     private void make_transition(NStateSet sources, NStateSet targets, List<NTransition> nTransitions, DState source, DState target, Symbol symbol) {
@@ -105,16 +214,6 @@ public class DMaker {
         }
         else {
             throw new RuntimeException();
-        }
-
-        for (var nTransition : nTransitions) {
-            for (var action : nTransition.actions) {
-                if (!dTransition.actions.contains(action)) {
-                    dTransition.actions.add(action);
-                }
-            }
-
-            tranmap.put(nTransition, dTransition);
         }
 
         validate_transitions(source.transitions);
@@ -140,7 +239,7 @@ public class DMaker {
         var hash = nStates.getHash();
         var dState = hashStates.get(hash);
         if (dState == null) {
-            dState = new DState();
+            dState = new DState(hash);
 
             hashStates.put(hash, dState);
         }

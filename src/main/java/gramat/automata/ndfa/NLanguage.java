@@ -131,4 +131,31 @@ public class NLanguage {
 
         return closure;
     }
+
+    public NStateSet computeInverseNullClosure(NState state) {
+        var result = new NStateSet();
+        var queue = new LinkedList<NState>();
+        var control = new HashSet<NState>();
+
+        queue.add(state);
+
+        result.add(state);
+
+        do {
+            var target = queue.remove();
+
+            if (control.add(target)) {
+                for (var trn : transitions) {
+                    if (trn.target == target && trn.symbol == null) {
+                        result.add(trn.source);
+
+                        queue.add(trn.source);
+                    }
+                }
+            }
+        }
+        while(queue.size() > 0);
+
+        return result;
+    }
 }

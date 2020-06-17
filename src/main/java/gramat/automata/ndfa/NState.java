@@ -3,6 +3,8 @@ package gramat.automata.ndfa;
 import gramat.util.AmWriter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class NState {
@@ -20,6 +22,10 @@ public class NState {
 
     public NStateSet getNullClosure() {
         return language.computeNullClosure(this);
+    }
+
+    public NStateSet getInverseNullClosure() {
+        return language.computeInverseNullClosure(this);
     }
 
     public List<NTransition> getTransitions() {

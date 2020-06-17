@@ -1,8 +1,6 @@
 package gramat.parsing;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
+import gramat.automata.ndfa.*;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 
@@ -44,31 +42,32 @@ public class RawAutomataPromise extends RawAutomaton {
         if (isRecursive()) {
             var initial = context.language.state();
             var accepted = context.language.state();
-            var lang = context.language;
             var machine = context.getMachine(name);
 
             if (machine == null) {
                 machine = context.createMachine(name, expression);
             }
 
-            var automaton = machine;
-
-            context.postBuildHook(() -> {
-                for (var trn : automaton.initial.getTransitions()) {
-                    lang.transition(initial, NStateSet.of(trn.target), trn.symbol); // TODO copy actions
-                }
-
-                for (var trn : lang.findTransitionsByTarget(automaton.accepted)) {
-                    lang.transition(NStateSet.of(trn.source), initial, trn.symbol);
-                }
-
-                // TODO
-                System.out.println("POLLO CONNECT");
-            });
+            context.recursiveHook(machine, initial, accepted, RawAutomataPromise::hook);
 
             return context.segment(initial, accepted);
         }
 
         return expression.build(context);
+    }
+
+    private static void hook(NMachine machine, NState initial, NState accepted) {
+        var lang = machine.language;
+
+        for (var trn : machine.initial.getTransitions()) {
+            lang.transition(initial, NStateSet.of(trn.target), trn.symbol); // TODO copy actions
+        }
+
+        for (var trn : lang.findTransitionsByTarget(machine.accepted)) {
+            lang.transition(NStateSet.of(trn.source), initial, trn.symbol);
+        }
+
+        // TODO
+        System.out.println("POLLO CONNECT");
     }
 }

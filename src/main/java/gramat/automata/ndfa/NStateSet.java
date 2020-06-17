@@ -86,6 +86,24 @@ public class NStateSet implements Iterable<NState> {
         return states.contains(source);
     }
 
+    public boolean containsAll(NStateSet set) {
+        for (var state : set) {
+            if (!states.contains(state)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean containsAny(NStateSet set) {
+        for (var state : set) {
+            if (states.contains(state)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void remove(NStateSet states) {
         for (var state : states) {
             this.states.remove(state);
@@ -107,7 +125,7 @@ public class NStateSet implements Iterable<NState> {
 
         for (i = 0; i < ids.length; i++) {
             if (i > 0) {
-                output.append('|');
+                output.append('-');
             }
 
             output.append(ids[i]);

@@ -2,8 +2,6 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.join.JoinCancel;
 import gramat.eval.join.JoinSave;
@@ -35,7 +33,7 @@ public class RawJoin extends RawAutomaton {
         var start = new JoinStart();
         var save = new JoinSave();
         var cancel = new JoinCancel();
-        context.machineHook(machine, TRX.setupActions(start, save, cancel));
+        context.actionHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

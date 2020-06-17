@@ -27,12 +27,13 @@ public class RawWildAutomaton extends RawAutomaton {
 
         context.language.transition(state, state, wild);
 
-        context.postBuildHook(() -> resolve_wild_state(context.language, state));
+        context.linkHook(state, RawWildAutomaton::resolve_wild_state);
 
         return context.segment(state, state);
     }
 
-    private void resolve_wild_state(NLanguage language, NState root) {
+    private static void resolve_wild_state(NState root) {
+        var language = root.language;
         var wild = language.symbols.getWild();
         var queue = new LinkedList<NState>();
         var control = new HashSet<NState>();

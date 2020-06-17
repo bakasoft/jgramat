@@ -2,7 +2,6 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.dynamicAttribute.*;
 
@@ -38,12 +37,12 @@ public class RawDynAttribute extends RawAutomaton {
         var nStart = new DynamicAttributeNameStart();
         var nSave = new DynamicAttributeNameSave(nStart);
         var nCancel = new DynamicAttributeNameCancel(nStart);
-        context.machineHook(nMachine, TRX.setupActions(nStart, nSave, nCancel));
+        context.actionHook(nMachine, TRX.setupActions(nStart, nSave, nCancel));
 
         var vStart = new DynamicAttributeValueStart();
         var vSave = new DynamicAttributeValueSave(vStart, nSave);
         var vCancel = new DynamicAttributeValueCancel(vStart);
-        context.machineHook(vMachine, TRX.setupActions(vStart, vSave, vCancel));
+        context.actionHook(vMachine, TRX.setupActions(vStart, vSave, vCancel));
 
         return context.segment(nMachine.initial, vMachine.accepted);
     }

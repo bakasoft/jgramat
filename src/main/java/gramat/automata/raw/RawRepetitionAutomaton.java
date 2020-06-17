@@ -114,13 +114,15 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         var initial = context.language.state();
         var accepted = context.language.state();
 
-        var con = content.build(context);
+        var required = content.build(context);
 
-        context.language.transition(initial, con.initial, null);
-        context.language.transition(con.accepted, accepted, null);
+        context.language.transition(initial, required.initial, null);
+        context.language.transition(required.accepted, accepted, null);
 
-        context.language.transition(accepted, con.initial, null);
-        context.language.transition(con.accepted, accepted, null);
+        var optional = content.build(context);
+
+        context.language.transition(accepted, optional.initial, null);
+        context.language.transition(optional.accepted, accepted, null);
 
         return context.segment(initial, accepted);
     }
@@ -129,18 +131,20 @@ public class RawRepetitionAutomaton extends RawAutomaton {
         var initial = context.language.state();
         var accepted = context.language.state();
 
-        var con = content.build(context);
-        var sep = separator.build(context);
+        var required = content.build(context);
+        var separator = this.separator.build(context);
+        var optional = content.build(context);
 
         // one time
         var aux = context.language.state();
-        context.language.transition(initial, con.initial, null);
-        context.language.transition(con.accepted, aux, null);
+        context.language.transition(initial, required.initial, null);
+        context.language.transition(required.accepted, aux, null);
         context.language.transition(aux, accepted, null);
 
         // more times with separator
-        context.language.transition(aux, sep.initial, null);
-        context.language.transition(sep.accepted, con.initial, null);
+        context.language.transition(aux, separator.initial, null);
+        context.language.transition(separator.accepted, optional.initial, null);
+        context.language.transition(optional.accepted, aux, null);
 
         return context.segment(initial, accepted);
     }

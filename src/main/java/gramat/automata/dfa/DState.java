@@ -17,7 +17,10 @@ public class DState {
 
     public final List<DState> options;
 
-    public DState() {
+    public final String id;
+
+    public DState(String id) {
+        this.id = id;
         transitions = new ArrayList<>();
         options = new ArrayList<>();
     }

@@ -27,12 +27,12 @@ public class RawMiniWild extends RawAutomaton {
 
         context.language.transition(state, state, wild);
 
-        context.postBuildHook(() -> resolve_mini_wild_state(context.language, state));
+        context.linkHook(state, RawMiniWild::resolve_mini_wild_state);
 
         return context.segment(state, state);
     }
 
-    private void resolve_mini_wild_state(NLanguage language, NState root) {
+    private static void resolve_mini_wild_state(NState root) {
         // TODO
     }
 

@@ -2,15 +2,10 @@ package gramat.automata.raw.actuators;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.eval.list.ListCancel;
 import gramat.eval.list.ListSave;
 import gramat.eval.list.ListStart;
-import gramat.eval.object.ObjectCancel;
-import gramat.eval.object.ObjectSave;
-import gramat.eval.object.ObjectStart;
 
 import java.util.List;
 
@@ -40,7 +35,7 @@ public class RawList extends RawAutomaton {
         var start = new ListStart();
         var save = new ListSave();
         var cancel = new ListCancel();
-        context.machineHook(machine, TRX.setupActions(start, save, cancel));
+        context.actionHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
     }
 }

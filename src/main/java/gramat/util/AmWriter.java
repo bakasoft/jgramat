@@ -93,7 +93,7 @@ public class AmWriter {
                     }
 
                     for (var action : actions) {
-                        var actionStr = (action != null ? action.getDescription() : null);
+                        var actionStr = (action != null ? action.toString() : null);
                         var symbolStr = (symbol != null ? symbol.toString() : null);
                         writeTransition(output, source, target, symbolStr, null, actionStr);
                     }
@@ -110,18 +110,6 @@ public class AmWriter {
         var output = new StringBuilder();
         var control = new HashSet<DState>();
         var queue = new LinkedList<DState>();
-        var statesIds = new HashMap<DState, String>();
-        var idGetter = (Function<DState, String>) (state) -> {
-            var id = statesIds.get(state);
-
-            if (id == null) {
-                id = String.valueOf(statesIds.size() + 1);
-
-                statesIds.put(state, id);
-            }
-
-            return id;
-        };
 
         queue.add(root);
 
@@ -129,7 +117,7 @@ public class AmWriter {
             var state = queue.remove();
 
             if (control.add(state)) {
-                var sourceID = idGetter.apply(state);
+                var sourceID = state.id;
 
                 if (state == root) {
                     writeInitial(output, sourceID);
@@ -140,19 +128,7 @@ public class AmWriter {
                 }
 
                 for (var transition : state.transitions) {
-                    var targetID = idGetter.apply(transition.target);
-
-                    for (var option : state.options) {
-                        var optionID = statesIds.get(option);
-
-                        if (optionID == null) {
-                            optionID = idGetter.apply(option);
-
-                            queue.add(option);
-                        }
-
-                        writeTransition(output, sourceID, targetID, null, "EVAL " + optionID, null);
-                    }
+                    var targetID = transition.target.id;
 
                     writeTransition(output, sourceID, targetID, transition);
 
