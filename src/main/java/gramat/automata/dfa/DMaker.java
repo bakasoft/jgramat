@@ -95,46 +95,61 @@ public class DMaker {
     }
 
     private void apply_actions() {
+        // Evaluate all transitions
         for (var nTransition : language.transitions) {
+            // If the transition has actions
             if (nTransition.actions.size() > 0) {
-                var sourceClosure = nTransition.source.getInverseNullClosure();
-                var dSources = findContainingStates(sourceClosure);
-                for (var trn : findNotNullTransitions(nTransition)) {
-                    for (var dSource : dSources) {
-                        System.out.println("~~~~~~~~~~~~~~~");
-                        for (var a : nTransition.actions) { System.out.println("ACTION " + a); }
-                        System.out.println("SOURCE " + dSource.id);
-                        for (var dTransition : dSource.transitions) {
-                            System.out.println("SYMBOL " + dTransition.getSymbol());
-                            if (trn.symbol == null || transition_matches(dTransition, trn.symbol)) {
-                                var targetClosure = trn.target.getNullClosure();
-                                var dTargets = findContainingStates(targetClosure);
-                                for (var dTarget : dTargets) {
-                                    System.out.println("TARGET " + dTarget.id);
-                                    if (dTransition.target == dTarget) {
-                                        dTransition.addActions(nTransition.actions);
-                                    }
-                                }
-                            }
-                        }
+                // If is a null-transition
+                if (nTransition.symbol == null) {
+                    // Find all not-null-transitions from the target
+                    for (var trn : findNotNullTransitionsFrom(nTransition.target)) {
+                        // Find matching D-States and apply the actions
+                        apply_actions(trn.source, trn.target, trn.symbol, nTransition.actions);
                     }
+                }
+                // If the transition has a symbol
+                else {
+                    // Find matching D-States and apply the actions
+                    apply_actions(nTransition.source, nTransition.target, nTransition.symbol, nTransition.actions);
                 }
             }
         }
     }
 
-    private List<NTransition> findNotNullTransitions(NTransition transition) {
-        if (transition.symbol != null) {
-            return List.of(transition);
+    private void apply_actions(NState source, NState target, Symbol symbol, List<Action> actions) {
+        System.out.println("APPLY " + source.id + " -> " + target.id + ":" + symbol + "!" + actions);
+        // Find corresponding D-States
+        var dSource = findContainingStates(source);
+        var dTarget = findContainingStates(target);
+        // Find matching D-transitions to apply the same action
+        for (var dTrn : findDTransitions(dSource, symbol, dTarget)) {
+            dTrn.addActions(actions);
+        }
+        // TODO What happens if nothing matched?
+    }
+
+    private List<DTransition> findDTransitions(Set<DState> sources, Symbol symbol, Set<DState> targets) {
+        var result = new ArrayList<DTransition>();
+
+        for (var source : sources) {
+            for (var t : source.transitions) {
+                if (transition_matches(t, symbol) && targets.contains(t.target)) {
+                    result.add(t);
+                }
+            }
         }
 
+        return result;
+    }
+
+    private List<NTransition> findNotNullTransitionsFrom(NState source) {
+        var result = new ArrayList<NTransition>();
         var control = new HashSet<NState>();
         var queue = new LinkedList<NState>();
-        var result = new ArrayList<NTransition>();
 
-        queue.add(transition.source);
+        queue.add(source);
 
-        while (queue.size() > 0) {
+        do {
             var state = queue.remove();
 
             if (control.add(state)) {
@@ -147,7 +162,7 @@ public class DMaker {
                     }
                 }
             }
-        }
+        } while (queue.size() > 0);
 
         return result;
     }
@@ -183,14 +198,14 @@ public class DMaker {
         return result;
     }
 
-    private Set<DState> findContainingStates(NStateSet states) {
+    private Set<DState> findContainingStates(NState state) {
         var result = new HashSet<DState>();
 
         for(var entry : closures.entrySet()) {
             var hash = entry.getKey();
             var closure = entry.getValue();
 
-            if (closure.containsAll(states)) {
+            if (closure.contains(state)) {
                 var dstate = newStates.get(hash);
 
                 result.add(Objects.requireNonNull(dstate));

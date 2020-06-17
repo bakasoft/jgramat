@@ -112,12 +112,14 @@ public class NLanguage {
     }
 
     public NStateSet computeNullClosure(NState state) {
+        return computeNullClosure(NStateSet.of(state));
+    }
+
+    public NStateSet computeNullClosure(NStateSet states) {
         var closure = new NStateSet();
-        var queue = new LinkedList<NState>();
+        var queue = new LinkedList<>(states.toList());
 
-        queue.add(state);
-
-        do {
+        while (queue.size() > 0) {
             var source = queue.remove();
 
             if (closure.add(source)) {
@@ -127,7 +129,7 @@ public class NLanguage {
                     }
                 }
             }
-        } while (queue.size() > 0);
+        }
 
         return closure;
     }
