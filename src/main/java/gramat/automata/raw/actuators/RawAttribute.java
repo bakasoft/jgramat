@@ -3,6 +3,8 @@ package gramat.automata.raw.actuators;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.eval.staticAttribute.StaticAttributeCancel;
 import gramat.eval.staticAttribute.StaticAttributeSave;
 import gramat.eval.staticAttribute.StaticAttributeStart;
@@ -35,7 +37,17 @@ public class RawAttribute extends RawAutomaton {
         var start = new StaticAttributeStart();
         var save = new StaticAttributeSave(start, name);
         var cancel = new StaticAttributeCancel(start);
-        context.actionHook(machine, TRX.setupActions(start, save, cancel));
+//        context.actionHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var machine = builder.machine(content, initial);
+        var start = new StaticAttributeStart();
+        var save = new StaticAttributeSave(start, name);
+        var cancel = new StaticAttributeCancel(start);
+        builder.assembler.actionHook(machine, TRX.setupActions(start, save, cancel));
+        return machine.accepted;
     }
 }

@@ -1,7 +1,9 @@
 package gramat.automata.dfa;
 
 import gramat.automata.ndfa.*;
-import gramat.eval.Action;
+import gramat.automata.ndfa.Symbol;
+import gramat.epsilon.Action;
+import gramat.eval.TRXAction;
 
 import java.util.*;
 

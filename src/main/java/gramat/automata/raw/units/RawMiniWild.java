@@ -3,6 +3,8 @@ package gramat.automata.raw.units;
 import gramat.automata.ndfa.*;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,12 +29,21 @@ public class RawMiniWild extends RawAutomaton {
 
         context.language.transition(state, state, wild);
 
-        context.linkHook(state, RawMiniWild::resolve_mini_wild_state);
+//        context.linkHook(state, RawMiniWild::resolve_mini_wild_state);
 
         return context.segment(state, state);
     }
 
-    private static void resolve_mini_wild_state(NState root) {
+    @Override
+    public State build(Builder builder, State initial) {
+        builder.newWildTransition(initial, initial);
+
+        builder.assembler.linkHook(initial, RawMiniWild::resolve_mini_wild_state);
+
+        return initial;
+    }
+
+    private static void resolve_mini_wild_state(State root) {
         // TODO
     }
 

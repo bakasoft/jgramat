@@ -1,9 +1,9 @@
 package gramat.eval.object;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class ObjectStart extends Action {
+public class ObjectStart extends TRXAction {
 
     public boolean active = true;
 

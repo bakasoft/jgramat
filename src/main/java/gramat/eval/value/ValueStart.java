@@ -1,10 +1,10 @@
 package gramat.eval.value;
 
 import gramat.compiling.ValueParser;
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class ValueStart extends Action {
+public class ValueStart extends TRXAction {
 
     private final ValueParser parser;
 

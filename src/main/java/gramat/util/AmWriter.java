@@ -4,13 +4,54 @@ import gramat.automata.dfa.*;
 import gramat.automata.ndfa.NMachine;
 import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NState;
-import gramat.eval.Action;
+import gramat.epsilon.Action;
+import gramat.epsilon.Machine;
+import gramat.epsilon.State;
+
 import gramat.util.parsing.Source;
 
 import java.util.*;
 import java.util.function.Function;
 
 public class AmWriter {
+
+    public static String getAmCode(Machine machine) {
+        var control = new HashSet<State>();
+        var output = new StringBuilder();
+        var queue = new LinkedList<State>();
+
+        queue.add(machine.initial);
+
+        while(queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                var id = String.valueOf(state.id);
+
+                if (machine.initial == state) {
+                    writeInitial(output, id);
+                }
+
+                if (machine.accepted == state) {
+                    writeAccepted(output, id);
+                }
+
+                for (var transition : state.transitions) {
+                    if (machine.transitions.contains(transition)) {
+                        var targetID = String.valueOf(transition.target.id);
+                        var symbol = transition.symbol;
+//                        writeTransition(output, id, targetID, symbol, null, null);
+                    }
+
+                    if (machine.states.contains(transition.target)) {
+                        queue.add(transition.target);
+                    }
+                }
+            }
+        }
+
+        return output.toString();
+    }
 
     public static String getAmCode(DMachine machine) {
         var control = new HashSet<DState>();

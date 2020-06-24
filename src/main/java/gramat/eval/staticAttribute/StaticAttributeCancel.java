@@ -1,11 +1,11 @@
 package gramat.eval.staticAttribute;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
 public class StaticAttributeCancel extends SubAction {
-    public StaticAttributeCancel(Action origin) {
+    public StaticAttributeCancel(TRXAction origin) {
         super(origin);
     }
 

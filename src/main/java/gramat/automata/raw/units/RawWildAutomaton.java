@@ -3,6 +3,8 @@ package gramat.automata.raw.units;
 import gramat.automata.ndfa.*;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,18 +29,27 @@ public class RawWildAutomaton extends RawAutomaton {
 
         context.language.transition(state, state, wild);
 
-        context.linkHook(state, RawWildAutomaton::resolve_wild_state);
+//        context.linkHook(state, RawWildAutomaton::resolve_wild_state);
 
         return context.segment(state, state);
     }
 
-    private static void resolve_wild_state(NState root) {
+    @Override
+    public State build(Builder builder, State initial) {
+        builder.newWildTransition(initial, initial);
+
+        builder.assembler.linkHook(initial, RawWildAutomaton::resolve_wild_state);
+
+        return initial;
+    }
+
+    private static void resolve_wild_state(State root) {
         var language = root.language;
         var wild = language.symbols.getWild();
-        var queue = new LinkedList<NState>();
-        var control = new HashSet<NState>();
+        var queue = new LinkedList<State>();
+        var control = new HashSet<State>();
 
-        for (var trn : root.getTransitions()) {
+        for (var trn : root.transitions) {
             queue.add(trn.target);
         }
 
@@ -46,10 +57,10 @@ public class RawWildAutomaton extends RawAutomaton {
             var state = queue.remove();
 
             if (control.add(state)) {
-                var transitions = state.getTransitions();
-                var hasWilds = transitions.stream().anyMatch(s -> s.symbol != null && s.symbol.isWild());
+                var transitions = state.transitions;
+                var hasWilds = transitions.stream().anyMatch(s -> s.symbol.isWild());
                 if (!hasWilds && transitions.size() > 0) {
-                    language.transition(state, root, wild);
+                    language.newTransition(state, root, wild);
 
                     for (var trn : transitions) {
                         queue.add(trn.target);

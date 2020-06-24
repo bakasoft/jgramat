@@ -2,9 +2,9 @@ package gramat.automata.raw;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NState;
-import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.units.RawNopAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
@@ -40,6 +40,19 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
         }
 
         return context.segment(initial, accepted);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var accepted = builder.newState();
+
+        for (var item : items) {
+            var last = item.build(builder, initial);
+
+            builder.newNullTransition(last, accepted);
+        }
+
+        return accepted;
     }
 
     @Override

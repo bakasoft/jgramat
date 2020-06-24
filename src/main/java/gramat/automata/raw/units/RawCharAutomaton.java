@@ -2,10 +2,10 @@ package gramat.automata.raw.units;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 
 import java.util.List;
 
@@ -36,6 +36,15 @@ public class RawCharAutomaton extends RawStringAutomaton {
         context.language.transition(initial, accepted, symbol);
 
         return context.segment(initial, accepted);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var accepted = builder.newState();
+
+        builder.newCharTransition(initial, accepted, (char)value);
+
+        return accepted;
     }
 
     @Override

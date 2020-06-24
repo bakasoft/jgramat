@@ -3,6 +3,8 @@ package gramat.parsing;
 import gramat.automata.ndfa.*;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 
 import java.util.List;
 
@@ -42,18 +44,35 @@ public class RawAutomataPromise extends RawAutomaton {
         if (isRecursive()) {
             var initial = context.language.state();
             var accepted = context.language.state();
-            var machine = context.getMachine(name);
-
-            if (machine == null) {
-                machine = context.createMachine(name, expression);
-            }
-
-            context.recursiveHook(machine, initial, accepted, RawAutomataPromise::hook);
+//            var machine = context.getMachine(name);
+//
+//            if (machine == null) {
+//                machine = context.createMachine(name, expression);
+//            }
+//
+//            context.recursiveHook(machine, initial, accepted, RawAutomataPromise::hook);
 
             return context.segment(initial, accepted);
         }
 
         return expression.build(context);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var expression = getExpression();
+
+        if (isRecursive()) {
+            var machine = builder.assembler.reuseMachine(name, this, builder, initial);
+
+            // TODO fix recursion
+            // context.recursiveHook(machine, initial, accepted, RawAutomataPromise::hook);
+
+            return machine.accepted;
+        }
+        else {
+            return expression.build(builder, initial);
+        }
     }
 
     private static void hook(NMachine machine, NState initial, NState accepted) {

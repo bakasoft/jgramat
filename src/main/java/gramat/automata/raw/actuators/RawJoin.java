@@ -3,6 +3,8 @@ package gramat.automata.raw.actuators;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.eval.join.JoinCancel;
 import gramat.eval.join.JoinSave;
 import gramat.eval.join.JoinStart;
@@ -33,7 +35,17 @@ public class RawJoin extends RawAutomaton {
         var start = new JoinStart();
         var save = new JoinSave();
         var cancel = new JoinCancel();
-        context.actionHook(machine, TRX.setupActions(start, save, cancel));
+//        context.actionHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var machine = builder.machine(content, initial);
+        var start = new JoinStart();
+        var save = new JoinSave();
+        var cancel = new JoinCancel();
+        builder.assembler.actionHook(machine, TRX.setupActions(start, save, cancel));
+        return machine.accepted;
     }
 }

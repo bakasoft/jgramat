@@ -1,13 +1,9 @@
 package gramat.automata.dfa;
 
-import gramat.eval.Action;
 import gramat.output.GrammarWriter;
 import gramat.util.AmWriter;
-import gramat.util.GramatWriter;
-import gramat.util.parsing.Source;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class DState {
 

@@ -2,13 +2,13 @@ package gramat.eval;
 
 import gramat.automata.dfa.DState;
 import gramat.automata.dfa.DTransitionWild;
+import gramat.epsilon.Action;
 import gramat.runtime.*;
 import gramat.util.Debugger;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Source;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -84,7 +84,7 @@ public class Evaluator {
                     var actions = new ArrayList<Action>();
                     newState = move(state, value, actions);
                     for (var action : actions) {
-                        action.run(this);
+//                        action.run(this);
                     }
                 }
 

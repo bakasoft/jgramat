@@ -3,6 +3,8 @@ package gramat.automata.raw.actuators;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.eval.dynamicAttribute.*;
 
 import java.util.List;
@@ -37,13 +39,31 @@ public class RawDynAttribute extends RawAutomaton {
         var nStart = new DynamicAttributeNameStart();
         var nSave = new DynamicAttributeNameSave(nStart);
         var nCancel = new DynamicAttributeNameCancel(nStart);
-        context.actionHook(nMachine, TRX.setupActions(nStart, nSave, nCancel));
+//        context.actionHook(nMachine, TRX.setupActions(nStart, nSave, nCancel));
 
         var vStart = new DynamicAttributeValueStart();
         var vSave = new DynamicAttributeValueSave(vStart, nSave);
         var vCancel = new DynamicAttributeValueCancel(vStart);
-        context.actionHook(vMachine, TRX.setupActions(vStart, vSave, vCancel));
+//        context.actionHook(vMachine, TRX.setupActions(vStart, vSave, vCancel));
 
         return context.segment(nMachine.initial, vMachine.accepted);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var nMachine = builder.machine(name, initial);
+        var vMachine = builder.machine(value, nMachine.accepted);
+
+        var nStart = new DynamicAttributeNameStart();
+        var nSave = new DynamicAttributeNameSave(nStart);
+        var nCancel = new DynamicAttributeNameCancel(nStart);
+        builder.assembler.actionHook(nMachine, TRX.setupActions(nStart, nSave, nCancel));
+
+        var vStart = new DynamicAttributeValueStart();
+        var vSave = new DynamicAttributeValueSave(vStart, nSave);
+        var vCancel = new DynamicAttributeValueCancel(vStart);
+        builder.assembler.actionHook(vMachine, TRX.setupActions(vStart, vSave, vCancel));
+
+        return vMachine.accepted;
     }
 }

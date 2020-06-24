@@ -2,7 +2,8 @@ package gramat.automata.raw;
 
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
-import gramat.automata.ndfa.NStateSet;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 
 import java.util.List;
 
@@ -36,4 +37,14 @@ public class RawOptionalAutomaton extends RawAutomaton {
 
         return context.segment(initial, accepted);
     }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var accepted = content.build(builder, initial);
+
+        builder.newNullTransition(initial, accepted);
+
+        return accepted;
+    }
+
 }

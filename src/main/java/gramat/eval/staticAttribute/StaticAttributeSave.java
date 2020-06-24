@@ -1,13 +1,13 @@
 package gramat.eval.staticAttribute;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class StaticAttributeSave extends Action {
+public class StaticAttributeSave extends TRXAction {
 
     private final String name;
 
-    public StaticAttributeSave(Action beginAction, String name) {
+    public StaticAttributeSave(TRXAction beginAction, String name) {
         this.name = name;
     }
 

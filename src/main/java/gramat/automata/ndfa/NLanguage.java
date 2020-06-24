@@ -1,8 +1,5 @@
 package gramat.automata.ndfa;
 
-import gramat.eval.Action;
-import gramat.expressions.flat.BeginSource;
-
 import java.util.*;
 import java.util.stream.Collectors;
 

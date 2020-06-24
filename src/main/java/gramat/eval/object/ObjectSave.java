@@ -1,10 +1,7 @@
 package gramat.eval.object;
 
-import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
-
-import java.util.LinkedHashMap;
 
 public class ObjectSave extends SubAction<ObjectStart> {
 

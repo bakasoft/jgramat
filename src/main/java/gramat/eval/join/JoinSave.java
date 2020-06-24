@@ -1,9 +1,9 @@
 package gramat.eval.join;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class JoinSave extends Action {
+public class JoinSave extends TRXAction {
     @Override
     public void run(Evaluator evaluator) {
 

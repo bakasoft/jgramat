@@ -1,9 +1,9 @@
 package gramat.eval.dynamicAttribute;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class DynamicAttributeNameStart extends Action {
+public class DynamicAttributeNameStart extends TRXAction {
 
     public boolean active;
 

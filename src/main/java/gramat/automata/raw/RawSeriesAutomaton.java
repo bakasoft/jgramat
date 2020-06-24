@@ -5,6 +5,8 @@ import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.units.RawLiteralAutomaton;
 import gramat.automata.raw.units.RawNopAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.util.ListTool;
 
 import java.util.ArrayList;
@@ -41,6 +43,17 @@ public class RawSeriesAutomaton extends RawCompositeAutomaton {
         }
 
         return context.segment(initial, accepted);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var last = initial;
+
+        for (var item : items) {
+            last = item.build(builder, last);
+        }
+
+        return last;
     }
 
     @Override

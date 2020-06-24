@@ -1,6 +1,6 @@
 package gramat.eval;
 
-public class BeginSourceCheck extends Action {
+public class BeginSourceCheck extends TRXAction {
 
     @Override
     public String getDescription() {

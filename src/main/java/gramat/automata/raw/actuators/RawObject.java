@@ -3,6 +3,8 @@ package gramat.automata.raw.actuators;
 import gramat.automata.ndfa.NContext;
 import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.State;
 import gramat.eval.object.ObjectCancel;
 import gramat.eval.object.ObjectSave;
 import gramat.eval.object.ObjectStart;
@@ -35,7 +37,17 @@ public class RawObject extends RawAutomaton {
         var start = new ObjectStart();
         var save = new ObjectSave(start);
         var cancel = new ObjectCancel(start);
-        context.actionHook(machine, TRX.setupActions(start, save, cancel));
+//        context.actionHook(machine, TRX.setupActions(start, save, cancel));
         return machine;
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var machine = builder.machine(content, initial);
+        var start = new ObjectStart();
+        var save = new ObjectSave(start);
+        var cancel = new ObjectCancel(start);
+        builder.assembler.actionHook(machine, TRX.setupActions(start, save, cancel));
+        return machine.accepted;
     }
 }

@@ -1,9 +1,9 @@
 package gramat.eval.list;
 
-import gramat.eval.Action;
+import gramat.eval.TRXAction;
 import gramat.eval.Evaluator;
 
-public class ListCancel extends Action {
+public class ListCancel extends TRXAction {
     @Override
     public void run(Evaluator evaluator) {
 

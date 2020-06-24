@@ -1,6 +1,7 @@
 package gramat.automata.dfa;
 
-import gramat.eval.Action;
+import gramat.epsilon.Action;
+import gramat.eval.TRXAction;
 import gramat.output.GrammarWriter;
 
 import java.util.ArrayList;

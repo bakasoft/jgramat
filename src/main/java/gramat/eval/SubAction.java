@@ -1,6 +1,6 @@
 package gramat.eval;
 
-abstract public class SubAction<T extends Action> extends Action {
+abstract public class SubAction<T extends TRXAction> extends TRXAction {
 
     public final T origin;
 

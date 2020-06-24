@@ -5,6 +5,9 @@ import gramat.automata.ndfa.NSegment;
 import gramat.automata.ndfa.NStateSet;
 import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
+import gramat.epsilon.Builder;
+import gramat.epsilon.Input;
+import gramat.epsilon.State;
 
 import java.util.List;
 
@@ -27,5 +30,14 @@ public class RawSourceBegin extends RawAutomaton {
         // TODO
 
         return context.segment(state, state);
+    }
+
+    @Override
+    public State build(Builder builder, State initial) {
+        var accepted = builder.newState();
+
+        builder.newCharTransition(initial, accepted, Input.STX);
+
+        return accepted;
     }
 }

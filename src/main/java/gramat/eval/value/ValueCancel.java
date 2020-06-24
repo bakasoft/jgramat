@@ -1,7 +1,6 @@
 package gramat.eval.value;
 
 import gramat.compiling.ValueParser;
-import gramat.eval.Action;
 import gramat.eval.Evaluator;
 import gramat.eval.SubAction;
 
