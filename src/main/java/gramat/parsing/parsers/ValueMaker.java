@@ -1,76 +1,77 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.actuators.*;
-import gramat.builtin.IdentityParser;
-import gramat.builtin.NullParser;
-import gramat.builtin.TrueParser;
+import gramat.common.TextException;
+import gramat.engine.parsers.IdentityParser;
+import gramat.engine.parsers.NullParser;
+import gramat.engine.parsers.TrueParser;
+import gramat.expressions.Expression;
+import gramat.expressions.capturing.*;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class ValueMaker {
 
-    public static RawAutomaton make(Parser parser, Reader reader, String keyword, String nameLit, RawAutomaton nameExp, RawAutomaton valueExp) {
+    public static Expression make(Grammar grammar, Reader reader, String keyword, String nameLit, Expression nameExp, Expression valueExp) {
         switch (keyword) {
             case Mark.SET_KEYWORD:
                 if (nameLit != null) {
-                    return new RawAttribute(nameLit, valueExp);
+                    return new CAttribute(nameLit, valueExp);
                 }
                 else if (nameExp == null) {
-                    throw reader.error("Expected name");
+                    throw new TextException("Expected name", reader.getLocation());
                 }
 
-                return new RawDynAttribute(nameExp, valueExp);
+                return new CAttributeDynamic(nameExp, valueExp);
             case Mark.OBJECT_KEYWORD:
                 if (nameExp != null && nameLit == null) {
-                    throw reader.error("not implemented dynamic types");
+                    throw new TextException("not implemented dynamic types", reader.getLocation());
                 }
 
-                var type = parser.options.getType(nameLit);
+                var type = grammar.options.getType(nameLit);
 
-                return new RawObject(valueExp, type);
+                return new CObject(valueExp, type);
             case Mark.LIST_KEYWORD:
                 if (nameExp != null && nameLit == null) {
-                    throw reader.error("not implemented dynamic types");
+                    throw new TextException("not implemented dynamic types", reader.getLocation());
                 }
 
-                return new RawList(valueExp, parser.options.getType(nameLit));
+                return new CList(valueExp, grammar.options.getType(nameLit));
             case Mark.JOIN_KEYWORD:
                 if (nameExp != null) {
-                    throw reader.error("Unexpected name");
+                    throw new TextException("Unexpected name", reader.getLocation());
                 }
-                return new RawJoin(valueExp);
+                return new CJoin(valueExp);
             case Mark.NULL_KEYWORD:
                 if (nameExp != null) {
-                    throw reader.error("Unexpected name");
+                    throw new TextException("Unexpected name", reader.getLocation());
                 }
-                return new RawValue(valueExp, new NullParser());
+                return new CValue(valueExp, new NullParser());
             case Mark.TRUE_KEYWORD:
                 if (nameExp != null) {
-                    throw reader.error("Unexpected name");
+                    throw new TextException("Unexpected name", reader.getLocation());
                 }
-                return new RawValue(valueExp, new TrueParser());
+                return new CValue(valueExp, new TrueParser());
             case Mark.MAP_KEYWORD:
                 if (nameLit == null) {
-                    throw reader.error("expected replacement.");
+                    throw new TextException("expected replacement.", reader.getLocation());
                 }
                 else if (nameExp != null) {
-                    throw reader.error("dynamic mappings are not implemented.");
+                    throw new TextException("dynamic mappings are not implemented.", reader.getLocation());
                 }
-                return new RawValue(valueExp, new IdentityParser(nameLit));
+                return new CValue(valueExp, new IdentityParser(nameLit));
             default:
                 if (nameExp != null) {
-                    throw reader.error("Unexpected parser name: " + nameLit);
+                    throw new TextException("Unexpected parser name: " + nameLit, reader.getLocation());
                 }
 
-                var valueParser = parser.options.getParser(keyword);
+                var valueParser = grammar.options.getParser(keyword);
 
                 if (valueParser == null) {
-                    throw reader.error("Unsupported parser: " + keyword);
+                    throw new TextException("Unsupported parser: " + keyword, reader.getLocation());
                 }
 
-                return new RawValue(valueExp, valueParser);
+                return new CValue(valueExp, valueParser);
         }
     }
 

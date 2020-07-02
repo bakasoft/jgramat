@@ -1,12 +1,13 @@
 package gramat.parsing.parsers;
 
+import gramat.common.TextException;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class RuleParser {
 
-    public static boolean parse(Parser parser, Reader reader) {
+    public static boolean parse(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             String keyword;
 
@@ -14,7 +15,7 @@ public class RuleParser {
                 keyword = reader.readKeyword();
 
                 if (keyword == null) {
-                    throw reader.error("Expected keyword");
+                    throw new TextException("Expected keyword", reader.getLocation());
                 }
 
                 reader.skipBlanks();
@@ -42,17 +43,17 @@ public class RuleParser {
 
             reader.skipBlanks();
 
-            var expression = ExpressionParser.parse(parser, reader);
+            var expression = ExpressionParser.parse(grammar, reader);
 
             if (expression == null) {
-                throw reader.error("Expected an expression");
+                throw new TextException("Expected an expression", reader.getLocation());
             }
 
             if (keyword != null) {
-                expression = ValueMaker.make(parser, reader, keyword, name, null, expression);
+                expression = ValueMaker.make(grammar, reader, keyword, name, null, expression);
             }
 
-            parser.define(name, expression);
+            grammar.define(name, expression);
 
             return true;
         });

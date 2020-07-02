@@ -1,32 +1,29 @@
 package gramat.parsing;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.util.BooleanSupplier;
-import gramat.util.FileTool;
-import gramat.util.parsing.Coordinates;
-import gramat.util.parsing.Source;
-import javafx.geometry.HPos;
+import gramat.common.TextException;
+import gramat.common.TextSource;
+import gramat.tools.FileTool;
 
-import javax.management.RuntimeErrorException;
 import java.nio.file.Path;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-public class Reader {
+public class Reader extends TextSource {
 
-    private final char[] content;
-
-    private final int length;
-    private int position;
-
-    protected Reader(char[] content) {
-        this.content = content;
-        this.length = content.length;
+    public Reader(Path file) {
+        super(file);
     }
 
-    public static Reader of(Path file) {
-        var content = FileTool.loadString(file);
+    public Reader(String content) {
+        super(content);
+    }
 
-        return new Reader(content.toCharArray());
+    public Reader(String content, String source) {
+        super(content, source);
+    }
+
+    public Reader(char[] content, String source) {
+        super(content, source);
     }
 
     public boolean isAlive() {
@@ -46,7 +43,7 @@ public class Reader {
 
     public boolean transaction(BooleanSupplier supplier) {
         var pos0 = position;
-        var result = supplier.get();
+        var result = supplier.getAsBoolean();
 
         if (!result) {
             position = pos0;
@@ -178,7 +175,7 @@ public class Reader {
         }
 
         if (position >= length || content[position] != delimiter) {
-            throw error("Expected delimiter");
+            throw new TextException("Expected delimiter", getLocation());
         }
 
         position++;
@@ -201,7 +198,7 @@ public class Reader {
 
         if (c == '\\') {
             if (position >= length) {
-                throw error("Expected escaped char");
+                throw new TextException("Expected escaped char", getLocation());
             }
 
             var escaped = content[position];
@@ -238,11 +235,11 @@ public class Reader {
                 return (char) cod;
             }
             else {
-                throw error("Invalid escaped char");
+                throw new TextException("Invalid escaped char", getLocation());
             }
         }
         else if (Character.isISOControl(c)) {
-            throw error("Invalid string char");
+            throw new TextException("Invalid string char", getLocation());
         }
 
         return c;
@@ -264,7 +261,7 @@ public class Reader {
         }
 
         if (text.length() != count) {
-            throw error("expected to read text");
+            throw new TextException("expected to read text", getLocation());
         }
 
         return text.toString();
@@ -282,29 +279,4 @@ public class Reader {
         return (c >= '0' && c <= '9');
     }
 
-    public RuntimeException error(String message) {
-        return new RuntimeException(message + " " + coordinatesOf(position));
-    }
-
-    public Coordinates coordinatesOf(int position) {
-        int line = 0;
-        int column = 0;
-
-        for(int i = 0 ; i < length; i++){
-            int c = content[i];
-
-            if (c == '\n') {
-                line += 1;
-                column = 0;
-            } else {
-                column += 1;
-            }
-
-            if (i >= position) {
-                break;
-            }
-        }
-
-        return new Coordinates(line + 1, column);
-    }
 }

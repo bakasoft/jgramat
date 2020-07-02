@@ -6,12 +6,7 @@ public class GramatException extends RuntimeException {
         super(message);
     }
 
-    public GramatException(Exception cause) {
-        super(cause);
+    public GramatException(Exception e) {
+        super(e);
     }
-
-    public GramatException(Exception cause, String message) {
-        super(message, cause);
-    }
-
 }

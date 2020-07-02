@@ -1,13 +1,14 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Expression;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class ValueParser {
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
+    public static Expression parse(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             if (!reader.pull(Mark.VALUE_MARK)) {
                 return null;
@@ -16,7 +17,7 @@ public class ValueParser {
             String keyword = reader.readKeyword();
 
             if (keyword == null) {
-                throw reader.error("Expected keyword");
+                throw new TextException("Expected keyword", reader.getLocation());
             }
 
             reader.skipBlanks();
@@ -28,8 +29,8 @@ public class ValueParser {
             reader.skipBlanks();
 
             var nameLit = reader.readString(Mark.TOKEN_DELIMITER);
-            RawAutomaton nameExp;
-            RawAutomaton valueExp;
+            Expression nameExp;
+            Expression valueExp;
 
             if (nameLit != null) {
                 nameExp = null;
@@ -39,10 +40,10 @@ public class ValueParser {
                 if (reader.pull(Mark.NAME_SEPARATOR)) {
                     reader.skipBlanks();
 
-                    valueExp = ExpressionParser.parse(parser, reader);
+                    valueExp = ExpressionParser.parse(grammar, reader);
 
                     if (valueExp == null) {
-                        throw reader.error("Expected expression");
+                        throw new TextException("Expected expression", reader.getLocation());
                     }
                 }
                 else {
@@ -50,10 +51,10 @@ public class ValueParser {
                 }
             }
             else {
-                var expression = ExpressionParser.parse(parser, reader);
+                var expression = ExpressionParser.parse(grammar, reader);
 
                 if (expression == null) {
-                    throw reader.error("Expected expression.");
+                    throw new TextException("Expected expression.", reader.getLocation());
                 }
 
                 reader.skipBlanks();
@@ -62,10 +63,10 @@ public class ValueParser {
                     reader.skipBlanks();
 
                     nameExp = expression;
-                    valueExp = ExpressionParser.parse(parser, reader);
+                    valueExp = ExpressionParser.parse(grammar, reader);
 
                     if (valueExp == null) {
-                        throw reader.error("Expected expression");
+                        throw new TextException("Expected expression", reader.getLocation());
                     }
                 } else {
                     nameExp = null;
@@ -74,10 +75,10 @@ public class ValueParser {
             }
 
             if (!reader.pull(Mark.GROUP_END)) {
-                throw reader.error("Expected " + Mark.GROUP_END);
+                throw new TextException("Expected " + Mark.GROUP_END, reader.getLocation());
             }
 
-            return ValueMaker.make(parser, reader, keyword, nameLit, nameExp, valueExp);
+            return ValueMaker.make(grammar, reader, keyword, nameLit, nameExp, valueExp);
         });
     }
 

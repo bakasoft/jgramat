@@ -1,33 +1,34 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.RawOptionalAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Expression;
+import gramat.expressions.Optional;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class OptionalParser {
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
+    public static Expression parse(Grammar grammar, Reader reader) {
         if (!reader.pull(Mark.OPTIONAL_BEGIN)) {
             return null;
         }
 
         reader.skipBlanks();
 
-        var expression = ExpressionParser.parse(parser, reader);
+        var expression = ExpressionParser.parse(grammar, reader);
 
         if (expression == null) {
-            throw reader.error("expected expression");
+            throw new TextException("expected expression", reader.getLocation());
         }
 
         reader.skipBlanks();
 
         if (!reader.pull(Mark.OPTIONAL_END)) {
-            throw reader.error("expected optional end");
+            throw new TextException("expected optional end", reader.getLocation());
         }
 
-        return new RawOptionalAutomaton(expression);
+        return new Optional(expression);
     }
 
 }

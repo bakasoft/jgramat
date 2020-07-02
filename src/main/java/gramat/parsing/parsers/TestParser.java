@@ -1,8 +1,8 @@
 package gramat.parsing.parsers;
 
-import gramat.compiling.GrammarTest;
+import gramat.common.TextException;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 import gramat.parsing.test.TestValue;
 
@@ -12,19 +12,19 @@ import java.nio.file.Path;
 
 public class TestParser {
 
-    private static String parseInput(Parser parser, Reader reader) {
+    private static String parseInput(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             if (reader.pull('@')) {
                 var keyword = reader.readKeyword();
 
                 if (!"load".equals(keyword)) {
-                    throw reader.error("not supported keyword: " + keyword);
+                    throw new TextException("not supported keyword: " + keyword, reader.getLocation());
                 }
 
                 reader.skipBlanks();
 
                 if (!reader.pull(Mark.GROUP_BEGIN)) {
-                    throw reader.error("expected group begin");
+                    throw new TextException("expected group begin", reader.getLocation());
                 }
 
                 reader.skipBlanks();;
@@ -32,22 +32,22 @@ public class TestParser {
                 var path = reader.readString(Mark.TOKEN_DELIMITER);
 
                 if (path == null) {
-                    throw reader.error("Expected file path");
+                    throw new TextException("Expected file path", reader.getLocation());
                 }
 
-                var file = parser.resolveFile(Path.of(path));
+                var file = grammar.resolveFile(Path.of(path));
                 String input;
 
                 try {
                     input = Files.readString(file);
                 } catch (IOException e) {
-                    throw reader.error(e.toString());
+                    throw new TextException(e.toString(), reader.getLocation());
                 }
 
                 reader.skipBlanks();
 
                 if (!reader.pull(Mark.GROUP_END)) {
-                    throw reader.error("expected group end");
+                    throw new TextException("expected group end", reader.getLocation());
                 }
 
                 return input;
@@ -57,7 +57,7 @@ public class TestParser {
         });
     }
 
-    public static boolean parse(Parser parser, Reader reader) {
+    public static boolean parse(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             TestValue expectedValue = null;
             boolean expectedMatch;
@@ -87,7 +87,7 @@ public class TestParser {
 
             reader.skipBlanks();
 
-            var input = parseInput(parser, reader);
+            var input = parseInput(grammar, reader);
 
             if ("match".equals(keyword)) {
                 reader.skipBlanks();
@@ -95,9 +95,7 @@ public class TestParser {
                 expectedValue = TestValueParser.parse(reader);
             }
 
-            var test = new GrammarTest(exprName, input, expectedMatch, expectedValue);
-
-            parser.addTest(test);
+            grammar.runTest(exprName, input, expectedMatch, expectedValue);
 
             return true;
         });

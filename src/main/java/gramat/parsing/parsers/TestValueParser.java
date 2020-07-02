@@ -1,5 +1,6 @@
 package gramat.parsing.parsers;
 
+import gramat.common.TextException;
 import gramat.parsing.Reader;
 import gramat.parsing.test.TestList;
 import gramat.parsing.test.TestMap;
@@ -22,13 +23,13 @@ public class TestValueParser {
                 var key = parseString(reader);
 
                 if (key == null) {
-                    throw reader.error("expected key");
+                    throw new TextException("expected key", reader.getLocation());
                 }
 
                 reader.skipBlanks();
 
                 if (!reader.pull(':')) {
-                    throw reader.error("expected :");
+                    throw new TextException("expected :", reader.getLocation());
                 }
 
                 reader.skipBlanks();
@@ -36,7 +37,7 @@ public class TestValueParser {
                 var value = parse(reader);
 
                 if (value == null) {
-                    throw reader.error("expected value");
+                    throw new TextException("expected value", reader.getLocation());
                 }
 
                 map.set(key.getValue(), value);
@@ -46,7 +47,7 @@ public class TestValueParser {
             while (reader.pull(','));
 
             if (!reader.pull('}')) {
-                throw reader.error("expected ]");
+                throw new TextException("expected ]", reader.getLocation());
             }
 
             return map;
@@ -64,7 +65,7 @@ public class TestValueParser {
                 var item = parse(reader);
 
                 if (item == null) {
-                    throw reader.error("expected value");
+                    throw new TextException("expected value", reader.getLocation());
                 }
 
                 list.add(item);
@@ -74,7 +75,7 @@ public class TestValueParser {
             while (reader.pull(','));
 
             if (!reader.pull(']')) {
-                throw reader.error("expected ]");
+                throw new TextException("expected ]", reader.getLocation());
             }
 
             return list;

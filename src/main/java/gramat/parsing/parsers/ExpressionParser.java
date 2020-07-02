@@ -1,18 +1,19 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.RawParallelAutomaton;
-import gramat.automata.raw.RawSeriesAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Alternation;
+import gramat.expressions.Expression;
+import gramat.expressions.Sequence;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 import java.util.ArrayList;
 
 public class ExpressionParser {
 
-    private static RawAutomaton parseItem(Parser parser, Reader reader) {
-        RawAutomaton e;
+    private static Expression parseItem(Grammar grammar, Reader reader) {
+        Expression e;
 
         e = PredicateParser.parse(reader);
         if (e != null) { return e; }
@@ -32,31 +33,31 @@ public class ExpressionParser {
         e = MiniWildParser.parse(reader);
         if (e != null) { return e; }
 
-        e = ReferenceParser.parse(parser, reader);
+        e = ReferenceParser.parse(grammar, reader);
         if (e != null) { return e; }
 
-        e = ValueParser.parse(parser, reader);
+        e = ValueParser.parse(grammar, reader);
         if (e != null) { return e; }
 
 //        e = NegationParser.parse(parser);
 //        if (e != null) { return e; }
 
-        e = OptionalParser.parse(parser, reader);
+        e = OptionalParser.parse(grammar, reader);
         if (e != null) { return e; }
 
-        e = RepetitionParser.parse(parser, reader);
+        e = RepetitionParser.parse(grammar, reader);
         if (e != null) { return e; }
 
-        return GroupParser.parse(parser, reader);
+        return GroupParser.parse(grammar, reader);
     }
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
-        var altSeq = new ArrayList<ArrayList<RawAutomaton>>();
+    public static Expression parse(Grammar grammar, Reader reader) {
+        var altSeq = new ArrayList<ArrayList<Expression>>();
 
         altSeq.add(new ArrayList<>());
 
         while (reader.isAlive()) {
-            var item = parseItem(parser, reader);
+            var item = parseItem(grammar, reader);
 
             if (item == null) {
                 break;
@@ -70,7 +71,7 @@ public class ExpressionParser {
                 reader.skipBlanks();
 
                 if (altSeq.get(altSeq.size()-1).size() == 0) {
-                    throw reader.error("Expected expression.");
+                    throw new TextException("Expected expression.", reader.getLocation());
                 }
 
                 altSeq.add(new ArrayList<>());
@@ -78,33 +79,33 @@ public class ExpressionParser {
         }
 
         if (altSeq.isEmpty()) {
-            throw reader.error("Expected expression.");
+            throw new TextException("Expected expression.", reader.getLocation());
         }
 
-        var options = new ArrayList<RawAutomaton>();
+        var options = new ArrayList<Expression>();
 
         for (var seq : altSeq) {
             if (seq.isEmpty()) {
-                throw reader.error("Expected expression.");
+                throw new TextException("Expected expression.", reader.getLocation());
             }
             else if (seq.size() == 1) {
                 options.add(seq.get(0));
             }
             else{
-                var s = new RawSeriesAutomaton(seq);
+                var s = new Sequence(seq);
 
                 options.add(s);
             }
         }
 
         if (options.isEmpty()) {
-            throw reader.error("Expected expression.");
+            throw new TextException("Expected expression.", reader.getLocation());
         }
         else if (options.size() == 1) {
             return options.get(0);
         }
 
-        return new RawParallelAutomaton(options);
+        return new Alternation(options);
     }
 
 }

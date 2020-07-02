@@ -1,29 +1,30 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Expression;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class GroupParser {
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
+    public static Expression parse(Grammar grammar, Reader reader) {
         if (!reader.pull(Mark.GROUP_BEGIN)) {
             return null;
         }
 
         reader.skipBlanks();
 
-        var expression = ExpressionParser.parse(parser, reader);
+        var expression = ExpressionParser.parse(grammar, reader);
 
         if (expression == null) {
-            throw reader.error("expected expression");
+            throw new TextException("expected expression", reader.getLocation());
         }
 
         reader.skipBlanks();
 
         if (!reader.pull(Mark.GROUP_END)) {
-            throw reader.error("expected group end");
+            throw new TextException("expected group end", reader.getLocation());
         }
 
         return expression;

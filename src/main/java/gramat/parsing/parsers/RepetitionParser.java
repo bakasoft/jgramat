@@ -1,14 +1,15 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.RawRepetitionAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Expression;
+import gramat.expressions.Repetition;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 public class RepetitionParser {
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
+    public static Expression parse(Grammar grammar, Reader reader) {
         if (!reader.pull(Mark.REPETITION_BEGIN)) {
             return null;
         }
@@ -36,7 +37,7 @@ public class RepetitionParser {
                     max = reader.readInteger();
 
                     if (max == null) {
-                        throw reader.error("expected max");
+                        throw new TextException("expected max", reader.getLocation());
                     }
 
                     reader.skipBlanks();
@@ -54,23 +55,23 @@ public class RepetitionParser {
             }
         }
 
-        var content = ExpressionParser.parse(parser, reader);
+        var content = ExpressionParser.parse(grammar, reader);
 
         if (content == null) {
-            throw reader.error("expected expression");
+            throw new TextException("expected expression", reader.getLocation());
         }
 
         reader.skipBlanks();
 
-        RawAutomaton separator;
+        Expression separator;
 
         if (reader.pull(Mark.REPETITION_SEPARATOR_MARK)) {
             reader.skipBlanks();
 
-            separator = ExpressionParser.parse(parser, reader);
+            separator = ExpressionParser.parse(grammar, reader);
 
             if (separator == null) {
-                throw reader.error("expected expression");
+                throw new TextException("expected expression", reader.getLocation());
             }
 
             reader.skipBlanks();
@@ -80,10 +81,10 @@ public class RepetitionParser {
         }
 
         if (!reader.pull(Mark.REPETITION_END)) {
-            throw reader.error("expected }");
+            throw new TextException("expected }", reader.getLocation());
         }
 
-        return new RawRepetitionAutomaton(content, separator, min, max);
+        return new Repetition(content, separator, min, max);
     }
 
 }

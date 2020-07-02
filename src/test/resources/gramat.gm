@@ -1,4 +1,5 @@
-Test-12 = ^ @object("{" { @set(@string({+'a-z'}): ":" (@string({+'a-z'})|Test-12)) / "," } "}") $
+Test-Object = @object("{" { @set(@string({+'a-z'}): ":" (@string({+'a-z'})|Test-Object)) / "," } "}")
+Test-12 = ^ Test-Object $
 
 @match Test-12 `{abc:{},ghi:jkl,mno:pqr}` {abc:{}, ghi:jkl, mno: pqr}
 

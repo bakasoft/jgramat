@@ -1,17 +1,17 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.units.RawMiniWild;
+import gramat.expressions.Expression;
+import gramat.expressions.Wildcard;
 import gramat.parsing.Reader;
 
 public class MiniWildParser {
 
-    public static RawAutomaton parse(Reader reader) {
+    public static Expression parse(Reader reader) {
         if (!reader.pull('~')) {
             return null;
         }
 
-        return new RawMiniWild();
+        return new Wildcard();  // TODO implement "mini-wild"
     }
 
 }

@@ -1,14 +1,14 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
+import gramat.expressions.Expression;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
-import gramat.parsing.RawAutomataPromise;
+import gramat.Grammar;
+import gramat.expressions.Reference;
 import gramat.parsing.Reader;
 
 public class ReferenceParser {
 
-    public static RawAutomaton parse(Parser parser, Reader reader) {
+    public static Expression parse(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             var name = reader.readKeyword();
 
@@ -22,7 +22,7 @@ public class ReferenceParser {
                 return null;
             }
 
-            return new RawAutomataPromise(parser, name);
+            return new Reference(grammar, name);
         });
     }
 

@@ -1,14 +1,15 @@
 package gramat.parsing.parsers;
 
+import gramat.common.TextException;
 import gramat.parsing.Mark;
-import gramat.parsing.Parser;
+import gramat.Grammar;
 import gramat.parsing.Reader;
 
 import java.nio.file.Path;
 
 public class ImportParser {
 
-    public static boolean parse(Parser parser, Reader reader) {
+    public static boolean parse(Grammar grammar, Reader reader) {
         return reader.transaction(() -> {
             if (!reader.pull('@')) {
                 return false;
@@ -25,12 +26,12 @@ public class ImportParser {
             String path = reader.readString(Mark.TOKEN_DELIMITER);
 
             if (path == null) {
-                throw reader.error("Expected file path string.");
+                throw new TextException("Expected file path string.", reader.getLocation());
             }
 
-            var file = parser.resolveFile(Path.of(path));
+            var file = grammar.resolveFile(Path.of(path));
 
-            parser.parse(file);
+            grammar.parse(file);
 
             return true;
         });

@@ -1,21 +1,29 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.units.RawLiteralAutomaton;
-import gramat.expressions.flat.CharAutomaton;
+import gramat.GramatException;
+import gramat.expressions.Expression;
+import gramat.expressions.LiteralChar;
+import gramat.expressions.LiteralString;
 import gramat.parsing.Mark;
 import gramat.parsing.Reader;
 
 public class LiteralParser {
 
-    public static RawAutomaton parse(Reader reader) {
+    public static Expression parse(Reader reader) {
         var value = reader.readString(Mark.LITERAL_DELIMITER);
 
         if (value == null) {
             return null;
         }
 
-        return new RawLiteralAutomaton(value);
+        if (value.isEmpty()) {
+            throw new GramatException("cannot be empty");
+        }
+        else if (value.length() == 1) {
+            return new LiteralChar(value.charAt(0));
+        }
+
+        return new LiteralString(value);
     }
 
 }

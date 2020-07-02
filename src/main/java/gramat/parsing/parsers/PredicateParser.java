@@ -1,9 +1,10 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.RawParallelAutomaton;
-import gramat.automata.raw.units.RawCharAutomaton;
-import gramat.automata.raw.units.RawRangeAutomaton;
+import gramat.common.TextException;
+import gramat.expressions.Alternation;
+import gramat.expressions.Expression;
+import gramat.expressions.LiteralChar;
+import gramat.expressions.LiteralRange;
 import gramat.parsing.Mark;
 import gramat.parsing.Reader;
 
@@ -11,12 +12,12 @@ import java.util.ArrayList;
 
 public class PredicateParser {
 
-    public static RawAutomaton parse(Reader reader) {
+    public static Expression parse(Reader reader) {
         if (!reader.pull(Mark.PREDICATE_DELIMITER)) {
             return null;
         }
 
-        var items = new ArrayList<RawAutomaton>();
+        var items = new ArrayList<Expression>();
 
         boolean expectMore = false;
 
@@ -25,7 +26,7 @@ public class PredicateParser {
 
             if (begin == null) {
                 if (expectMore) {
-                    throw reader.error("expected more");
+                    throw new TextException("expected more", reader.getLocation());
                 }
                 break;
             }
@@ -33,7 +34,7 @@ public class PredicateParser {
             var sep = reader.readStringChar(Mark.PREDICATE_DELIMITER);
 
             if (sep == null || sep == Mark.PREDICATE_ITEM_SEPARATOR) {
-                items.add(new RawCharAutomaton(begin));
+                items.add(new LiteralChar(begin));
 
                 expectMore = (sep != null);
             }
@@ -41,10 +42,10 @@ public class PredicateParser {
                 var end = reader.readStringChar(Mark.PREDICATE_DELIMITER);
 
                 if (end == null) {
-                    throw reader.error("expected end char");
+                    throw new TextException("expected end char", reader.getLocation());
                 }
 
-                items.add(new RawRangeAutomaton(begin, end));
+                items.add(new LiteralRange(begin, end));
 
                 var sep2 = reader.readStringChar(Mark.PREDICATE_DELIMITER);
 
@@ -55,16 +56,16 @@ public class PredicateParser {
                     expectMore = true;
                 }
                 else {
-                    throw reader.error("Invalid separator: " + sep);
+                    throw new TextException("Invalid separator: " + sep, reader.getLocation());
                 }
             }
             else {
-                throw reader.error("Invalid separator: " + sep);
+                throw new TextException("Invalid separator: " + sep, reader.getLocation());
             }
         }
 
         if (!reader.pull(Mark.PREDICATE_DELIMITER)) {
-            throw reader.error("expected predicate delimiter");
+            throw new TextException("expected predicate delimiter", reader.getLocation());
         }
 
 
@@ -72,7 +73,7 @@ public class PredicateParser {
             return items.get(0);
         }
 
-        return new RawParallelAutomaton(items);
+        return new Alternation(items);
     }
 
 }

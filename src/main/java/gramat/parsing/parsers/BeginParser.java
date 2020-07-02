@@ -1,18 +1,20 @@
 package gramat.parsing.parsers;
 
-import gramat.automata.raw.RawAutomaton;
-import gramat.automata.raw.units.RawSourceBegin;
+import gramat.engine.Input;
+import gramat.expressions.Expression;
+
+import gramat.expressions.LiteralChar;
 import gramat.parsing.Mark;
 import gramat.parsing.Reader;
 
 public class BeginParser {
 
-    public static RawAutomaton parse(Reader reader) {
+    public static Expression parse(Reader reader) {
         if (!reader.pull(Mark.BEGIN_SOURCE_MARK)) {
             return null;
         }
 
-        return new RawSourceBegin();
+        return new LiteralChar(Input.STX);
     }
 
 }
