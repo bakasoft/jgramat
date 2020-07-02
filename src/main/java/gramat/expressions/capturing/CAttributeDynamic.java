@@ -24,19 +24,21 @@ public class CAttributeDynamic extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var nameMachine = name.machine(builder, initial);
+        var nameAccepted = name.build(builder, initial);
         var nameBegin = new AttributeNameBegin();
         var nameCommit = new AttributeNameCommit(nameBegin);
         var nameRollback = new AttributeNameRollback(nameBegin);
-        builder.maker.addActionHook(TRX.setupActions(nameMachine, nameBegin, nameCommit, nameRollback));
 
-        var valueMachine = value.machine(builder, nameMachine.accepted);
+        TRX.applyActions(builder.maker, initial, nameAccepted, nameBegin, nameCommit, nameRollback);
+
+        var valueAccepted = value.build(builder, nameAccepted);
         var valueBegin = new AttributeValueBegin();
         var valueCommit = new AttributeValueCommit(valueBegin, nameCommit);
         var valueRollback = new AttributeValueRollback(valueBegin);
-        builder.maker.addActionHook(TRX.setupActions(valueMachine, valueBegin, valueCommit, valueRollback));
 
-        return valueMachine.accepted;
+        TRX.applyActions(builder.maker, nameAccepted, valueAccepted, valueBegin, valueCommit, valueRollback);
+
+        return valueAccepted;
     }
 
     public class AttributeNameBegin extends ValueAction {

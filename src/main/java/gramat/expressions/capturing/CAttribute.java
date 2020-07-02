@@ -19,12 +19,14 @@ public class CAttribute extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var machine = content.machine(builder, initial);
+        var accepted = content.build(builder, initial);
         var begin = new AttributeBegin();
         var commit = new AttributeCommit(begin);
         var rollback = new AttributeRollback(begin);
-        builder.maker.addActionHook(TRX.setupActions(machine, begin, commit, rollback));
-        return machine.accepted;
+
+        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+
+        return accepted;
     }
 
     @Override

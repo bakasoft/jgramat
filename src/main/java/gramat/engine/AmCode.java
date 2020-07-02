@@ -5,6 +5,7 @@ import gramat.engine.nodet.NRoot;
 import gramat.engine.nodet.NMachine;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class AmCode {
     public static void writeMachine(Appendable output, NMachine machine) {
@@ -33,6 +34,16 @@ public class AmCode {
                     for (var action : transition.actions) {
                         writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
                     }
+                }
+            }
+
+            // Marks
+            for (var state : container.states) {
+                if (state.marks.size() > 0) {
+                    output.append(String.valueOf(state.id));
+                    output.append(" # ");
+                    output.append(state.marks.stream().map(Object::toString).collect(Collectors.joining(", ")));
+                    output.append("\n");
                 }
             }
         }

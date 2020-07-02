@@ -17,12 +17,14 @@ public class CJoin extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var machine = content.machine(builder, initial);
+        var accepted = content.build(builder, initial);
         var begin = new JoinBegin();
         var commit = new JoinCommit(begin);
         var rollback = new JoinRollback(begin);
-        builder.maker.addActionHook(TRX.setupActions(machine, begin, commit, rollback));
-        return machine.accepted;
+
+        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+
+        return accepted;
     }
 
     @Override

@@ -19,12 +19,14 @@ public class CValue extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var machine = content.machine(builder, initial);
+        var accepted = content.build(builder, initial);
         var begin = new ValueBegin();
         var commit = new ValueCommit(begin);
         var rollback = new ValueRollback(begin);
-        builder.maker.addActionHook(TRX.setupActions(machine, begin, commit, rollback));
-        return machine.accepted;
+
+        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+
+        return accepted;
     }
 
     @Override

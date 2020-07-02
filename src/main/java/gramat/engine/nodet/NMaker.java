@@ -1,6 +1,7 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
+import gramat.engine.Action;
 import gramat.expressions.Expression;
 
 import java.util.*;
@@ -48,6 +49,8 @@ public class NMaker  {
     private final Map<String, NMachine> namedMachines;
     private final Set<String> recursiveNames;
 
+    private final List<NGroup> groups;
+
     private NMaker(NRoot root) {
         this.root = root;
         transitionHooks = new ArrayList<>();
@@ -56,6 +59,16 @@ public class NMaker  {
         placeholders = new ArrayList<>();
         namedMachines = new HashMap<>();
         recursiveNames = new HashSet<>();
+        groups = new ArrayList<>();
+    }
+
+    public NGroup newGroup(Action begin, Action commit, Action rollback) {
+        var number = groups.size() + 1;
+        var group = new NGroup(number, begin, commit, rollback);
+
+        groups.add(group);
+
+        return group;
     }
 
     public boolean addRecursiveName(String name) {
