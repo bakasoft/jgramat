@@ -1,12 +1,11 @@
 package gramat.compiling;
 
-import gramat.expressions.Expression;
+import gramat.epsilon.Input;
 import gramat.parsing.test.TestValue;
 import gramat.runtime.EvalContext;
 import gramat.util.GramatWriter;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
-import gramat.util.parsing.Source;
 
 import java.util.HashMap;
 
@@ -35,7 +34,7 @@ public class GrammarTest {
             throw new ParseException("Expression not found: " + expressionName, location);
         }
 
-        EvalContext evalContext = new EvalContext(Source.of(input), new HashMap<>());
+        EvalContext evalContext = new EvalContext(Input.of(input), new HashMap<>());
 
         boolean matches = expression.eval(evalContext);
 

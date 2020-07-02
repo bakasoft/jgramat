@@ -1,7 +1,5 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
 import gramat.epsilon.Builder;
 import gramat.epsilon.State;
 
@@ -23,19 +21,6 @@ public class RawOptionalAutomaton extends RawAutomaton {
     @Override
     public RawAutomaton collapse() {
         return new RawOptionalAutomaton(content.collapse());
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var initial = context.language.state();
-        var accepted = context.language.state();
-        var segment = content.build(context);
-
-        context.language.transition(initial, accepted, null);
-        context.language.transition(initial, segment.initial, null);
-        context.language.transition(segment.accepted, accepted, null);
-
-        return context.segment(initial, accepted);
     }
 
     @Override

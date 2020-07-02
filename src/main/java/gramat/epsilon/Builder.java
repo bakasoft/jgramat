@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Builder {
 
-    public final Assembler assembler;
+    public final Maker assembler;
 
     private final Language language;
     private final Builder parent;
@@ -17,7 +17,7 @@ public class Builder {
     private final Set<State> states;
     private final List<Transition> transitions;
 
-    public Builder(Assembler assembler, Language language, Builder parent) {
+    public Builder(Maker assembler, Language language, Builder parent) {
         this.assembler = assembler;
         this.language = language;
         this.parent = parent;

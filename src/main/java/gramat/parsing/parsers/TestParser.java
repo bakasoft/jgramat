@@ -1,12 +1,10 @@
 package gramat.parsing.parsers;
 
 import gramat.compiling.GrammarTest;
-import gramat.parsers.BaseParsers;
-import gramat.parsers.Mark;
+import gramat.parsing.Mark;
 import gramat.parsing.Parser;
 import gramat.parsing.Reader;
 import gramat.parsing.test.TestValue;
-import gramat.util.parsing.Source;
 
 import java.io.IOException;
 import java.nio.file.Files;

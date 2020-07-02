@@ -1,7 +1,5 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.units.RawNopAutomaton;
 import gramat.epsilon.Builder;
 import gramat.epsilon.State;
@@ -25,21 +23,6 @@ public class RawParallelAutomaton extends RawCompositeAutomaton {
     @Override
     public List<RawAutomaton> getChildren() {
         return Collections.unmodifiableList(items);
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var initial = context.language.state();
-        var accepted = context.language.state();
-
-        for (var item : items) {
-            var segment = item.build(context);
-
-            context.language.transition(initial, segment.initial, null);
-            context.language.transition(segment.accepted, accepted, null);
-        }
-
-        return context.segment(initial, accepted);
     }
 
     @Override

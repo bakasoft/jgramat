@@ -1,8 +1,7 @@
 package gramat.eval;
 
-import gramat.automata.dfa.DState;
-import gramat.automata.dfa.DTransitionWild;
 import gramat.epsilon.Action;
+import gramat.epsilon.ActionRuntime;
 import gramat.runtime.*;
 import gramat.util.Debugger;
 import gramat.util.GramatWriter;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class Evaluator {
+public class Evaluator implements ActionRuntime {
 
     public final Source source;
 
@@ -61,76 +60,12 @@ public class Evaluator {
         return assemblerStack.pop();
     }
 
-    public DState eval(DState root) {
-        var state = root;
-        int lastValue = 0;
+    @Override
+    public void run(Action action) {
+        if (action instanceof TRXAction) {
+            var a = (TRXAction) action;
 
-        System.out.println("---------->>");
-        System.out.println(state.getAmCode());
-        System.out.println("----------");
-
-        while(true) {
-            if (state.isFinal()) {
-                return state;
-            } else {
-                var value = source.peek();
-
-                DState newState;
-
-                if (lastValue == Source.EOF && value == lastValue) {
-                    newState = null;
-                }
-                else {
-                    var actions = new ArrayList<Action>();
-                    newState = move(state, value, actions);
-                    for (var action : actions) {
-//                        action.run(this);
-                    }
-                }
-
-                if (newState == null) {
-                    return state;
-                }
-
-                // check for infinite loop
-                source.moveNext();
-
-                state = newState;
-                lastValue = value;
-            }
+            a.run(this);
         }
     }
-
-    private DState move(DState state, int symbol, List<Action> actions) {
-        if (state.options.size() > 0) {
-            DState result = null;
-
-            for (var option : state.options) {
-                result = eval(option);
-
-                if (result.isAccepted()) {
-                    break;
-                }
-            }
-
-            if (!result.isAccepted()) {
-                return null;
-            }
-        }
-
-        DState wild = null;
-
-        for (var trn : state.transitions) {
-            if (trn instanceof DTransitionWild) {
-                wild = trn.target;
-            }
-            else if (trn.accepts(symbol)) {
-                actions.addAll(trn.actions);
-                return trn.target;
-            }
-        }
-
-        return wild;
-    }
-
 }

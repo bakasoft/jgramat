@@ -2,8 +2,7 @@ package gramat.parsing.parsers;
 
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.units.RawSourceEnd;
-import gramat.parsers.Mark;
-import gramat.parsing.Parser;
+import gramat.parsing.Mark;
 import gramat.parsing.Reader;
 
 public class EndParser {

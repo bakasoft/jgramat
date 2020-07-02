@@ -1,6 +1,7 @@
 package gramat.parsing;
 
-import gramat.automata.dfa.DState;
+import gramat.epsilon.Input;
+import gramat.epsilon.Machine;
 import gramat.eval.Evaluator;
 import gramat.eval.RejectedError;
 import gramat.runtime.EvalContext;
@@ -10,18 +11,18 @@ import java.util.HashMap;
 
 public class CompiledExpression {
 
-    private final DState root;
+    private final Machine machine;
 
-    public CompiledExpression(DState root) {
-        this.root = root;
+    public CompiledExpression(Machine machine) {
+        this.machine = machine;
     }
 
     public Object eval(String input) throws RejectedError {
-        return eval(Source.of(input));
+        return eval(Input.of(input));
     }
 
-    public Object eval(Source source) throws RejectedError {
-        var context = new EvalContext(source, new HashMap<>());
+    public Object eval(Input input) throws RejectedError {
+        var context = new EvalContext(input, new HashMap<>());
         var evaluator = new Evaluator(context);
 
         evaluator.pushAssembler();

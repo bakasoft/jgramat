@@ -1,4 +1,3 @@
-import gramat.compiling.Compiler;
 import org.junit.Test;
 
 import java.nio.file.Paths;

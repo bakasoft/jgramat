@@ -1,13 +1,10 @@
 package gramat.parsing.parsers;
 
-import gramat.parsers.BaseParsers;
-import gramat.parsers.Mark;
+import gramat.parsing.Mark;
 import gramat.parsing.Parser;
 import gramat.parsing.Reader;
-import gramat.util.parsing.Source;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class ImportParser {
 

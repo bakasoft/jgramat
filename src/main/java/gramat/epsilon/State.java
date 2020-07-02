@@ -1,8 +1,5 @@
 package gramat.epsilon;
 
-import gramat.automata.ndfa.NState;
-import gramat.automata.ndfa.NStateSet;
-
 import java.util.*;
 
 public class State {

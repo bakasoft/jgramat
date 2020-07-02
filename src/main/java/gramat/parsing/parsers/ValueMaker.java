@@ -5,7 +5,7 @@ import gramat.automata.raw.actuators.*;
 import gramat.builtin.IdentityParser;
 import gramat.builtin.NullParser;
 import gramat.builtin.TrueParser;
-import gramat.parsers.Mark;
+import gramat.parsing.Mark;
 import gramat.parsing.Parser;
 import gramat.parsing.Reader;
 

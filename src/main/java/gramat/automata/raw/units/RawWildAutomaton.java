@@ -1,7 +1,5 @@
 package gramat.automata.raw.units;
 
-import gramat.automata.ndfa.*;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.epsilon.Builder;
 import gramat.epsilon.State;
@@ -20,18 +18,6 @@ public class RawWildAutomaton extends RawAutomaton {
     @Override
     public RawAutomaton collapse() {
         return this;
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var state = context.language.state();
-        var wild = context.language.symbols.getWild();
-
-        context.language.transition(state, state, wild);
-
-//        context.linkHook(state, RawWildAutomaton::resolve_wild_state);
-
-        return context.segment(state, state);
     }
 
     @Override

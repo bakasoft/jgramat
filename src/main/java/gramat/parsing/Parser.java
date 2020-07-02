@@ -1,22 +1,13 @@
 package gramat.parsing;
 
 import gramat.GramatException;
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NStateSet;
-import gramat.automata.raw.CollapseContext;
 import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.GrammarTest;
-import gramat.compiling.ValueParser;
 import gramat.eval.RejectedError;
-import gramat.expressions.Expression;
-import gramat.parsing.parsers.ExpressionParser;
 import gramat.parsing.parsers.ImportParser;
 import gramat.parsing.parsers.RuleParser;
 import gramat.parsing.parsers.TestParser;
-import gramat.runtime.EvalContext;
 import gramat.util.GramatWriter;
-import gramat.util.parsing.ParseException;
-import gramat.util.parsing.Source;
 
 import java.nio.file.Path;
 import java.util.*;

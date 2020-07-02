@@ -1,9 +1,6 @@
-import gramat.compiling.Compiler;
-import gramat.parsing.Options;
 import gramat.parsing.Parser;
 import org.junit.Test;
 
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 public class GramatTest {

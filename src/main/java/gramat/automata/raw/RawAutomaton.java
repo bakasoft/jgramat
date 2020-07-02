@@ -1,6 +1,5 @@
 package gramat.automata.raw;
 
-import gramat.automata.ndfa.NMachineBuilder;
 import gramat.epsilon.Builder;
 import gramat.epsilon.State;
 
@@ -8,7 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-abstract public class RawAutomaton implements NMachineBuilder {
+abstract public class RawAutomaton {
 
     abstract public State build(Builder builder, State initial);
 

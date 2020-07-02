@@ -1,7 +1,5 @@
 package gramat.automata.raw.units;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawStringAutomaton;
 import gramat.epsilon.Builder;
@@ -25,17 +23,6 @@ public class RawCharAutomaton extends RawStringAutomaton {
     @Override
     public RawAutomaton collapse() {
         return this;
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var initial = context.language.state();
-        var accepted = context.language.state();
-        var symbol = context.language.symbols.getChar(value);
-
-        context.language.transition(initial, accepted, symbol);
-
-        return context.segment(initial, accepted);
     }
 
     @Override

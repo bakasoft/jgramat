@@ -1,7 +1,5 @@
 package gramat.automata.raw.actuators;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
 import gramat.compiling.ValueParser;
 import gramat.epsilon.Builder;
@@ -30,16 +28,6 @@ public class RawValue extends RawAutomaton {
     @Override
     public RawAutomaton collapse() {
         return new RawValue(content.collapse(), parser);
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var machine = context.machine(content);
-        var start = new ValueStart(parser);
-        var save = new ValueSave(start, parser);
-        var cancel = new ValueCancel(start, parser);
-//        context.actionHook(machine, TRX.setupActions(start, save, cancel));
-        return machine;
     }
 
     @Override

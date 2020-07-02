@@ -1,20 +1,20 @@
 package gramat.eval;
 
-import gramat.automata.dfa.DState;
+import gramat.epsilon.State;
 import gramat.util.parsing.Location;
 
 public class RejectedError extends Exception {
 
-    private final DState state;
+    private final State state;
     private final Location location;
 
-    public RejectedError(DState state, Location location) {
+    public RejectedError(State state, Location location) {
         super(generate_message(state, location));
         this.state = state;
         this.location = location;
     }
 
-    public DState getState() {
+    public State getState() {
         return state;
     }
 
@@ -22,7 +22,7 @@ public class RejectedError extends Exception {
         return location;
     }
 
-    private static String generate_message(DState state, Location location) {
+    private static String generate_message(State state, Location location) {
         StringBuilder message = new StringBuilder();
 
         message.append("Rejected at ");
@@ -33,7 +33,7 @@ public class RejectedError extends Exception {
             message.append("Expected: ");
 
             for (var trn : state.transitions) {
-                message.append(trn.getSymbol());
+                message.append(trn.symbol);
                 message.append(" ");
             }
 

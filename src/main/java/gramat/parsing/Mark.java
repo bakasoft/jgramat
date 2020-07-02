@@ -1,4 +1,4 @@
-package gramat.parsers;
+package gramat.parsing;
 
 public class Mark {
 

@@ -1,7 +1,5 @@
 package gramat.automata.raw.actuators;
 
-import gramat.automata.ndfa.NContext;
-import gramat.automata.ndfa.NSegment;
 import gramat.automata.raw.RawAutomaton;
 import gramat.epsilon.Builder;
 import gramat.epsilon.State;
@@ -27,16 +25,6 @@ public class RawJoin extends RawAutomaton {
     @Override
     public RawAutomaton collapse() {
         return new RawJoin(content.collapse());
-    }
-
-    @Override
-    public NSegment build(NContext context) {
-        var machine = context.machine(content);
-        var start = new JoinStart();
-        var save = new JoinSave();
-        var cancel = new JoinCancel();
-//        context.actionHook(machine, TRX.setupActions(start, save, cancel));
-        return machine;
     }
 
     @Override

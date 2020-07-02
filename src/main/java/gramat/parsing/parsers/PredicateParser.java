@@ -4,8 +4,7 @@ import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.RawParallelAutomaton;
 import gramat.automata.raw.units.RawCharAutomaton;
 import gramat.automata.raw.units.RawRangeAutomaton;
-import gramat.parsers.Mark;
-import gramat.parsing.Parser;
+import gramat.parsing.Mark;
 import gramat.parsing.Reader;
 
 import java.util.ArrayList;

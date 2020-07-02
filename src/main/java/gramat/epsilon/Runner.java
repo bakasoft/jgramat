@@ -4,11 +4,13 @@ import java.util.*;
 
 public class Runner {
 
+    private final ActionRuntime actionRuntime;
     private final Input input;
     private final Stack<Token> tokenStack;
 
-    public Runner(Input input) {
+    public Runner(Input input, ActionRuntime actionRuntime) {
         this.input = input;
+        this.actionRuntime = actionRuntime;
         this.tokenStack = new Stack<>();
     }
 
@@ -99,7 +101,7 @@ public class Runner {
                 tokenStack.pop();
             }
             else {
-                // TODO
+                actionRuntime.run(action);
             }
         }
     }

@@ -1,10 +1,10 @@
 package gramat.runtime;
 
 import gramat.GramatException;
+import gramat.epsilon.Input;
 import gramat.expressions.Expression;
 import gramat.util.parsing.Location;
 import gramat.util.parsing.ParseException;
-import gramat.util.parsing.Source;
 import gramat.values.*;
 
 import java.util.*;
@@ -13,7 +13,7 @@ public class EvalContext {
 
     private final Map<String, Class<?>> typeMapping;
 
-    public final Source source;
+    public final Input input;
 
     private int debugTabs = 0;
     public boolean debugMode = false;
@@ -28,8 +28,8 @@ public class EvalContext {
 
     private StackItem stack;
 
-    public EvalContext(Source source, Map<String, Class<?>> typeMapping) {
-        this.source = source;
+    public EvalContext(Input input, Map<String, Class<?>> typeMapping) {
+        this.input = input;
         this.typeMapping = typeMapping;
     }
 
@@ -47,7 +47,7 @@ public class EvalContext {
     }
 
     public void commit(Expression expression) {
-        var pos = source.getPosition();
+        var pos = input.getPosition();
         if (pos > lastCommitPosition) {
             lastCommitName = expression != null ? expression.getDescription() : null;
             lastCommitPosition = pos;
@@ -78,11 +78,11 @@ public class EvalContext {
     public void printDebugLine(String action, Expression expression) {
         StringBuilder sample = new StringBuilder();
 
-        int pos = source.getPosition();
+        int pos = input.getPosition();
 
         for (int i = pos - 10; i <= pos + 9; i++) {
-            if (i >= 0 && i < source.getLength()) {
-                var c = source.getChar(i);
+            if (i >= 0 && i < input.getLength()) {
+                var c = input.getChar(i);
 
                 if (Character.isISOControl(c)) {
                     c = ' ';
@@ -212,7 +212,7 @@ public class EvalContext {
             }
             else if (node.edit instanceof EditSendSegment) {
                 var edit = (EditSendSegment)node.edit;
-                bufferStack.peek().add(new PlainValue(source.extract(edit.pos0, edit.posF), edit.parser));
+                bufferStack.peek().add(new PlainValue(input.extract(edit.pos0, edit.posF), edit.parser));
             }
             else if (node.edit instanceof EditSendFragment) {
                 var edit = (EditSendFragment)node.edit;
@@ -233,12 +233,12 @@ public class EvalContext {
         }
 
         var values = bufferStack.pop();
-        var result = collapseValues(values, source.getLocation());
+        var result = collapseValues(values, input.getLocation());
         return result.build();
     }
 
     public EvalContext createEmptyContext() {
-        return new EvalContext(source, typeMapping);
+        return new EvalContext(input, typeMapping);
     }
 
     public void add(Edit edit) {

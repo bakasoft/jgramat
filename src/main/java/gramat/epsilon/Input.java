@@ -1,8 +1,14 @@
 package gramat.epsilon;
 
+import gramat.util.parsing.Location;
+
 import java.util.Objects;
 
 public class Input {
+
+    public static Input of(String text) {
+        return new Input(text.toCharArray());
+    }
 
     public static final char STX = '\u0002'; // Start of Text
     public static final char ETX = '\u0003'; // End of Text
@@ -19,15 +25,7 @@ public class Input {
     }
 
     public char peek() {
-        if (position < 0) {
-            return STX;
-        }
-        else if (position < length) {
-            return content[position];
-        }
-        else {
-            return ETX;
-        }
+        return getChar(position);
     }
 
     public void move() {
@@ -38,5 +36,33 @@ public class Input {
 
     public boolean alive() {
         return position <= length;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public char getChar(int index) {
+        if (index < 0) {
+            return STX;
+        }
+        else if (index < length) {
+            return content[index];
+        }
+        else {
+            return ETX;
+        }
+    }
+
+    public String extract(int begin, int end) {
+        return new String(content, begin, end - begin);
+    }
+
+    public Location getLocation() {
+        return null; // TODO
     }
 }

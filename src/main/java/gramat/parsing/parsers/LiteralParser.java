@@ -3,11 +3,8 @@ package gramat.parsing.parsers;
 import gramat.automata.raw.RawAutomaton;
 import gramat.automata.raw.units.RawLiteralAutomaton;
 import gramat.expressions.flat.CharAutomaton;
-import gramat.parsers.BaseParsers;
-import gramat.parsers.Mark;
-import gramat.parsing.Parser;
+import gramat.parsing.Mark;
 import gramat.parsing.Reader;
-import gramat.util.parsing.Location;
 
 public class LiteralParser {
 

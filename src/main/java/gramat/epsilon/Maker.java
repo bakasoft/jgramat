@@ -7,25 +7,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Assembler {
+public class Maker {
+
+    public static Machine make(String name, RawAutomaton automaton) {
+        var maker = new Maker();
+
+        return maker.assemble(name, automaton);
+    }
 
     private final List<Runnable> linkHooks;
     private final List<Runnable> recursiveHooks;
     private final List<Runnable> actionHooks;
     private final Map<String, Machine> machines;
 
-    public Assembler() {
+    private Maker() {
         this.linkHooks = new ArrayList<>();
         this.recursiveHooks = new ArrayList<>();
         this.actionHooks = new ArrayList<>();
         this.machines = new HashMap<>();
     }
 
-    public Machine assemble(RawAutomaton automaton) {
+    public Machine assemble(String name, RawAutomaton automaton) {
         var language = new Language();
         var builder = new Builder(this, language, null);
         var initial = language.newState();
         var machine = builder.machine(automaton, initial);
+
+        machines.put(name, machine);
 
         for (var hook : linkHooks) {
             hook.run();
@@ -41,7 +49,6 @@ public class Assembler {
 
         System.out.println("NDFA -----------");
         System.out.println(machine.getAmCode());
-
         return machine;
     }
 

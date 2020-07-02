@@ -2,8 +2,6 @@ package bm.parsing;
 
 import bm.BmException;
 import bm.parsing.data.SourceFile;
-import gramat.Grammar;
-import gramat.compiling.Compiler;
 import gramat.expressions.Expression;
 import gramat.output.GrammarWriter;
 import gramat.util.FileTool;
@@ -15,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class BmParser {
 

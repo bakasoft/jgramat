@@ -1,6 +1,6 @@
 package gramat.parsing.parsers;
 
-import gramat.parsers.Mark;
+import gramat.parsing.Mark;
 import gramat.parsing.Parser;
 import gramat.parsing.Reader;
 
