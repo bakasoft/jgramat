@@ -33,7 +33,8 @@ public class DRunner {
                 if (transition.badge == null || Objects.equals(transition.badge, badge)) {
                     if (transition.symbol instanceof SymbolWild) {
                         wildTransition = transition;
-                    } else if (transition.symbol.matches(symbol)) {
+                    }
+                    else if (transition.symbol.matches(symbol)) {
                         nextTransition = transition;
                         break;
                     }

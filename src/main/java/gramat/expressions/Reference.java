@@ -27,47 +27,19 @@ public class Reference extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var content = getExpression();
+        var badge = builder.root.badges.newBadge();
+        var machine = content.buildOnce(builder, name);
+        var accepted = builder.root.newState();
 
-        if (isRecursive()) {
-            if (builder.maker.addRecursiveName(name)) {
-                builder.maker.addRecursiveHook(hook(builder.maker));
-            }
+        builder.root.newEmptyTransition(initial, machine.initial, badge);
+        builder.root.newEmptyTransition(machine.accepted, accepted, badge);
 
-            NPlaceholder placeholder = builder.maker.makePlaceholder(builder, name, initial);
-
-            return placeholder.accepted;
-        }
-        else {
-            return content.build(builder, initial);
-        }
+        return accepted;
     }
 
     @Override
     public List<Expression> getChildren() {
-        return List.of(getExpression());
+        return getExpression().getChildren();
     }
 
-    private Runnable hook(NMaker maker) {
-        return () -> {
-            System.out.println("Recursive hook....");
-
-            var root = maker.root;
-            NMachine machine = maker.getMachine(name);
-
-            if (machine == null) {
-                var content = getExpression();
-
-                machine = content.machine(new NBuilder(maker), root.newState());
-
-                maker.setMachine(name, machine);
-            }
-
-            for (var ph : maker.getPlaceholders(name)) {
-                machine.newEmptyTransition(ph.initial, machine.initial);
-                machine.newEmptyTransition(machine.accepted, ph.accepted);
-            }
-
-            // TODO add badges
-        };
-    }
 }

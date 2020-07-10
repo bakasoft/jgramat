@@ -60,10 +60,10 @@ public class Repetition extends Expression {
         var accepted = content.build(builder, initial);
 
         // zero times
-        builder.newEmptyTransition(initial, accepted);
+        builder.root.newEmptyTransition(initial, accepted);
 
         // more times
-        builder.newEmptyTransition(accepted, initial);
+        builder.root.newEmptyTransition(accepted, initial);
 
         return accepted;
     }
@@ -73,11 +73,11 @@ public class Repetition extends Expression {
         var accepted = content.build(builder, initial);
 
         // zero times
-        builder.newEmptyTransition(initial, accepted);
+        builder.root.newEmptyTransition(initial, accepted);
 
         // more times
         var aux = separator.build(builder, accepted);
-        builder.newEmptyTransition(aux, initial);
+        builder.root.newEmptyTransition(aux, initial);
 
         return accepted;
     }
@@ -88,7 +88,7 @@ public class Repetition extends Expression {
 
         // more times
         var aux = content.build(builder, accepted);
-        builder.newEmptyTransition(aux, accepted);
+        builder.root.newEmptyTransition(aux, accepted);
 
         return accepted;
     }
@@ -100,7 +100,7 @@ public class Repetition extends Expression {
         // more times
         var aux1 = separator.build(builder, accepted);
         var aux2 = content.build(builder, aux1);
-        builder.newEmptyTransition(aux2, accepted);
+        builder.root.newEmptyTransition(aux2, accepted);
 
         return accepted;
     }

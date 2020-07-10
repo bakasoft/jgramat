@@ -15,9 +15,9 @@ public class LiteralChar extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var accepted = builder.newState();
+        var accepted = builder.root.newState();
 
-        builder.newCharTransition(initial, accepted, (char)value);
+        builder.root.newCharTransition(initial, accepted, (char)value);
 
         return accepted;
     }

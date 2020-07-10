@@ -1,49 +1,60 @@
 package gramat.engine;
 
-import gramat.engine.nodet.NContainer;
-import gramat.engine.nodet.NRoot;
 import gramat.engine.nodet.NMachine;
+import gramat.engine.nodet.NState;
+import gramat.engine.nodet.NStateList;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 public class AmCode {
-    public static void writeMachine(Appendable output, NMachine machine) {
-        try {
-            writeInitial(output, String.valueOf(machine.initial.id));
-            writeAccepted(output, String.valueOf(machine.accepted.id));
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        writeContainer(output, machine);
+    public static void writeMachine(Appendable output, NMachine machine) {
+        write(output, machine.initial, new NStateList(machine.accepted));
     }
 
-    public static void writeContainer(Appendable output, NContainer container) {
+    public static void write(Appendable output, NState initial, NStateList accepted) {
         try {
-            for (var transition : container.transitions) {
-                var sourceID = String.valueOf(transition.source.id);
-                var targetID = String.valueOf(transition.target.id);
-                var symbol = transition.symbol.toString();
+            var control = new HashSet<NState>();
+            var queue = new LinkedList<NState>();
+            var states = new ArrayList<NState>();
 
-                if (transition.actions.isEmpty()) {
-                    writeTransition(output, sourceID, targetID, symbol, null, null);
-                }
-                else {
-                    for (var action : transition.actions) {
-                        writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+            queue.add(initial);
+
+            do {
+                var state = queue.remove();
+
+                if (control.add(state)) {
+                    states.add(state);
+
+                    for (var transition : state.getTransitions()) {
+                        queue.add(transition.target);
                     }
                 }
+            } while (queue.size() > 0);
+
+            for (var state : states) {
+                writeState(
+                        output,
+                        state.id,
+                        state == initial,
+                        accepted.contains(state),
+                        state.marks.stream().map(Object::toString).collect(Collectors.joining(", "))
+                );
             }
 
-            // Marks
-            for (var state : container.states) {
-                if (state.marks.size() > 0) {
-                    output.append(String.valueOf(state.id));
-                    output.append(" # ");
-                    output.append(state.marks.stream().map(Object::toString).collect(Collectors.joining(", ")));
-                    output.append("\n");
+            for (var state : states) {
+                for (var transition : state.getTransitions()) {
+                    var sourceID = transition.source.id;
+                    var targetID = transition.target.id;
+                    var symbol = transition.symbol == null ? "¶" : transition.symbol.toString();
+                    var badge = transition.badge == null ? "-" : transition.badge.id;
+
+                    writeTransition(output, sourceID, targetID, symbol + "/" + badge, null, null);
                 }
             }
         }
@@ -52,16 +63,25 @@ public class AmCode {
         }
     }
 
-    private static void writeInitial(Appendable output, String stateID) throws IOException {
-        output.append("-> ");
+    private static void writeState(Appendable output, String stateID, boolean initial, boolean accepted, String comment) throws IOException {
+        if (initial) {
+            output.append("-> ");
+        }
+
         output.append(stateID);
+
+        if (accepted) {
+            output.append(" <=");
+        }
+
+        if (comment != null && !comment.isBlank()) {
+            output.append(" # ");
+            output.append(comment);
+        }
+
         output.append("\n");
     }
 
-    private static void writeAccepted(Appendable output, String stateID) throws IOException {
-        output.append(stateID);
-        output.append(" <=\n");
-    }
 
     private static void writeTransition(Appendable output, String sourceID, String targetID, String symbol, String beforeAction, String afterAction) throws IOException {
         output.append(sourceID);

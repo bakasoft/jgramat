@@ -29,14 +29,14 @@ public class CAttributeDynamic extends Expression {
         var nameCommit = new AttributeNameCommit(nameBegin);
         var nameRollback = new AttributeNameRollback(nameBegin);
 
-        TRX.applyActions(builder.maker, initial, nameAccepted, nameBegin, nameCommit, nameRollback);
+        TRX.applyActions(builder, initial, nameAccepted, nameBegin, nameCommit, nameRollback);
 
         var valueAccepted = value.build(builder, nameAccepted);
         var valueBegin = new AttributeValueBegin();
         var valueCommit = new AttributeValueCommit(valueBegin, nameCommit);
         var valueRollback = new AttributeValueRollback(valueBegin);
 
-        TRX.applyActions(builder.maker, nameAccepted, valueAccepted, valueBegin, valueCommit, valueRollback);
+        TRX.applyActions(builder, nameAccepted, valueAccepted, valueBegin, valueCommit, valueRollback);
 
         return valueAccepted;
     }

@@ -1,17 +1,28 @@
 package gramat.engine;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class SymbolSource {
+public class SymbolSource implements Iterable<Symbol> {
 
     private final List<Symbol> symbols;
 
     private SymbolWild wild;
-    private SymbolEmpty empty;
 
     public SymbolSource() {
         symbols = new ArrayList<>();
+        wild = null;
+    }
+
+    public SymbolSource(SymbolSource source) {
+        this.symbols = new ArrayList<>(source.symbols);
+        this.wild = source.wild;
+    }
+
+    @Override
+    public Iterator<Symbol> iterator() {
+        return symbols.iterator();
     }
 
     public SymbolChar getChar(char value) {
@@ -53,15 +64,13 @@ public class SymbolSource {
     public SymbolWild getWild() {
         if (wild == null) {
             wild = new SymbolWild();
+
+            symbols.add(wild);
         }
         return wild;
     }
 
-    public SymbolEmpty getEmpty() {
-        if (empty == null) {
-            empty = new SymbolEmpty();
-        }
-        return empty;
+    public SymbolSource copy() {
+        return new SymbolSource(this);
     }
-
 }

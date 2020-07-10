@@ -1,8 +1,11 @@
 package gramat.engine.nodet;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import gramat.GramatException;
+import gramat.engine.Badge;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class NStateList implements Iterable<NState> {
 
@@ -28,6 +31,12 @@ public class NStateList implements Iterable<NState> {
         return states.add(state);
     }
 
+    private void addAll(NStateList items) {
+        for (var item : items) {
+            add(item);
+        }
+    }
+
     public NStateList copy() {
         return new NStateList(this);
     }
@@ -39,5 +48,96 @@ public class NStateList implements Iterable<NState> {
     @Override
     public Iterator<NState> iterator() {
         return states.iterator();
+    }
+
+    public boolean remove(NState state) {
+        return states.remove(state);
+    }
+
+    public void replace(NState oldState, NState newState) {
+        for (int i = 0; i < states.size(); i++) {
+            if (states.get(i) == oldState) {
+                states.set(i, newState);
+            }
+        }
+    }
+
+    public void replaceAll(NStateList oldStates, NState newState) {
+        for (int i = 0; i < states.size(); i++) {
+            if (oldStates.contains(states.get(i))) {
+                states.set(i, newState);
+            }
+        }
+    }
+
+    public boolean isEmpty() {
+        return states.isEmpty();
+    }
+
+    public boolean removeAll(NStateList states) {
+        return this.states.removeAll(states.states);
+    }
+
+    public List<NState> toList() {
+        return Collections.unmodifiableList(states);
+    }
+
+    public String computeID() {
+        return states.stream().map(s -> s.id).sorted().collect(Collectors.joining("_"));
+    }
+
+    public NStateList getEmptyClosure(Badge badge) {
+        var closure = new NStateList();
+        for (var state : states) {
+            closure.addAll(state.getEmptyClosure(badge));
+        }
+        return closure;
+    }
+
+    public NState findByID(String id) {
+        for (var state : states) {
+            if (Objects.equals(state.id, id)) {
+                return state;
+            }
+        }
+        throw new GramatException("State not found" + id);
+    }
+
+    public boolean containsID(String id) {
+        for (var state : states) {
+            if (Objects.equals(state.id, id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getUniqueID(String baseID) {
+        var n = 1;
+        var id = baseID;
+
+        while (containsID(id)) {
+            id = baseID + "_".repeat(n);
+
+            n++;
+        }
+
+        return id;
+    }
+
+    public NStateList subtract(Collection<NState> items) {
+        var result = new NStateList();
+
+        for (var state : states) {
+            if (!items.contains(state)) {
+                result.add(state);
+            }
+        }
+
+        return result;
+    }
+
+    public int size() {
+        return states.size();
     }
 }

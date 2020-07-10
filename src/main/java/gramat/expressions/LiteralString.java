@@ -19,9 +19,9 @@ public class LiteralString extends Expression {
         var last = initial;
 
         for (char c : chars) {
-            var next = builder.newState();
+            var next = builder.root.newState();
 
-            builder.newCharTransition(last, next, c);
+            builder.root.newCharTransition(last, next, c);
 
             last = next;
         }

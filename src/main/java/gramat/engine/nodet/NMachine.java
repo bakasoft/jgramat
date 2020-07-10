@@ -2,13 +2,14 @@ package gramat.engine.nodet;
 
 import gramat.engine.AmCode;
 
-public class NMachine extends NContainer {
+public class NMachine {
 
+    public final String name;
     public final NState initial;
     public final NState accepted;
 
-    public NMachine(NRoot root, NState initial, NState accepted, NStateList states, NTransitionList transitions) {
-        super(root, states, transitions);
+    public NMachine(String name, NState initial, NState accepted) {
+        this.name = name;
         this.initial = initial;
         this.accepted = accepted;
     }

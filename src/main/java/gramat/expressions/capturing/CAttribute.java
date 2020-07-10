@@ -24,7 +24,7 @@ public class CAttribute extends Expression {
         var commit = new AttributeCommit(begin);
         var rollback = new AttributeRollback(begin);
 
-        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
 
         return accepted;
     }

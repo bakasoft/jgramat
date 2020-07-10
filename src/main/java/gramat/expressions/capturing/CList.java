@@ -24,7 +24,7 @@ public class CList extends Expression {
         var commit = new ListCommit(begin);
         var rollback = new ListRollback(begin);
 
-        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
 
         return accepted;
     }

@@ -7,10 +7,10 @@ import gramat.expressions.capturing.ValueRuntime;
 
 public class Rule {
 
-    private final DState root;
+    private final DState initial;
 
-    public Rule(DState root) {
-        this.root = root;
+    public Rule(DState initial) {
+        this.initial = initial;
     }
 
     public Object eval(String input) throws Rejection {
@@ -23,7 +23,7 @@ public class Rule {
 
         runtime.pushAssembler();
 
-        var end = runner.eval(root);
+        var end = runner.eval(initial);
 
         if(end.accepted) {
             var assembler = runtime.popAssembler();

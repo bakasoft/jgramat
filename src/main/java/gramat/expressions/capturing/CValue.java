@@ -24,7 +24,7 @@ public class CValue extends Expression {
         var commit = new ValueCommit(begin);
         var rollback = new ValueRollback(begin);
 
-        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
 
         return accepted;
     }

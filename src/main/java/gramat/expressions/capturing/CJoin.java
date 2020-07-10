@@ -22,7 +22,7 @@ public class CJoin extends Expression {
         var commit = new JoinCommit(begin);
         var rollback = new JoinRollback(begin);
 
-        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
 
         return accepted;
     }

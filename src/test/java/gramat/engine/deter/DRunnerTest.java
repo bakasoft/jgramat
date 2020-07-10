@@ -13,7 +13,7 @@ public class DRunnerTest {
     @Test
     public void runner_test() throws Rejection {
         var builder = new DBuilder();
-        var groupBadge = new Badge();
+        var groupBadge = new Badge(0);
 
         builder.accept(3);
         builder.transition(0, 1, Input.STX);

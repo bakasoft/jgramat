@@ -23,7 +23,7 @@ public class CObject extends Expression {
         var commit = new ObjectCommit(begin);
         var rollback = new ObjectRollback(begin);
 
-        TRX.applyActions(builder.maker, initial, accepted, begin, commit, rollback);
+        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
 
         return accepted;
     }

@@ -14,18 +14,24 @@ abstract public class Expression {
 
     abstract public List<Expression> getChildren();
 
-    public NMachine machine(NBuilder builder, NState initial) {
-        var context = new NBuilder(builder);
-        var accepted = build(context, initial);
+    public NMachine buildOnce(NBuilder builder, String name) {
+        var machine = builder.getMachine(name);
 
-        // freeze states & transitions
-        var machineStates = context.states.copy();
-        var machineTransitions = context.transitions.copy();
+        if (machine == null) {
+            // create stand-alone machine
+            machine = new NMachine(name, builder.root.newState(), builder.root.newState());
 
-        // be sure initial state is in the states set
-        machineStates.add(initial);
+            // make it public so recursive builds can use it
+            builder.addMachine(machine);
 
-        return new NMachine(context.root, initial, accepted, machineStates, machineTransitions);
+            // build expression inside machine (can be recursive)
+            var aux = build(builder, machine.initial);
+
+            // connect with the public machine
+            builder.root.newEmptyTransition(aux, machine.accepted);
+        }
+
+        return machine;
     }
 
     public boolean isRecursive() {

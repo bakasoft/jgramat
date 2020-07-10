@@ -11,9 +11,9 @@ import java.util.List;
 public class Wildcard extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
-        builder.newWildTransition(initial, initial);
+        builder.root.newWildTransition(initial, initial);
 
-        builder.maker.addTransitionHook(() -> {
+        builder.addTransitionHook(() -> {
             var queue = new LinkedList<NState>();
             var control = new HashSet<NState>();
 
@@ -27,7 +27,7 @@ public class Wildcard extends Expression {
                 if (control.add(state)) {
                     var transitions = state.getTransitions();
                     if (!transitions.hasWilds() && transitions.size() > 0) {
-                        builder.newWildTransition(state, initial);
+                        builder.root.newWildTransition(state, initial);
 
                         for (var trn : transitions) {
                             queue.add(trn.target);

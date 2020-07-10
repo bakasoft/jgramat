@@ -1,8 +1,9 @@
 package gramat;
 
 import gramat.common.TextException;
-import gramat.engine.Determiner;
-import gramat.engine.nodet.NMaker;
+import gramat.engine.nodet.NAutomaton;
+import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NRoot;
 import gramat.expressions.Expression;
 import gramat.parsing.*;
 import gramat.parsing.parsers.ImportParser;
@@ -40,9 +41,15 @@ public class Grammar {
             throw new RuntimeException("not found: " + name);
         }
 
-        var machine = NMaker.compile(name, expression);
-        var root = Determiner.compile(machine);
-        return new Rule(root);
+        var root = new NRoot();
+        var builder = new NBuilder(root);
+        var machine = builder.compile(name, expression);
+        var automaton = new NAutomaton(root, machine);
+
+        automaton.makeDeterministic();
+
+        var initial = automaton.compile();
+        return new Rule(initial);
     }
 
     public void parse(Path file) {
