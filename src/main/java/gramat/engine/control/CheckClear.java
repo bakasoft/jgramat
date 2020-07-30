@@ -21,7 +21,7 @@ public class CheckClear extends Check {
 
     @Override
     public String toString() {
-        return "EMPTY";
+        return "CLEAR";
     }
 
 }

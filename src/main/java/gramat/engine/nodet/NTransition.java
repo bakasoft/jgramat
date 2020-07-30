@@ -49,4 +49,8 @@ public class NTransition {
     public Check getCheck() {
         return check;
     }
+
+    public void setCheck(Check check) {
+        this.check = check;
+    }
 }

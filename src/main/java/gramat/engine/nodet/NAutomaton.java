@@ -64,9 +64,11 @@ public class NAutomaton extends NRoot {
             this.delete(oldState);
         }
 
-        System.out.println("NDFA >>>>>>>>>>");
+        generateClearChecks(initial);
+
+        System.out.println("DFA >>>>>>>>>>");
         AmCode.write(System.out, initial, accepted);
-        System.out.println("<<<<<<<<<< NDFA");
+        System.out.println("<<<<<<<<<< DFA");
     }
 
     private NStateList makeClosureDeterministic(StateMaker stateMaker, NStateList oldSources, Symbol symbol, Check check) {
@@ -87,6 +89,48 @@ public class NAutomaton extends NRoot {
         }
 
         return null;
+    }
+
+    private void generateClearChecks(NState initial) {
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+
+        queue.add(initial);
+
+        do {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                var stateTransitions = state.getTransitions();
+
+                for (var target : stateTransitions.collectTargets()) {
+                    queue.add(target);
+                }
+
+                for (var symbol : stateTransitions.collectSymbols()) {
+                    NTransition nullCheckTransition = null;
+                    var symbolChecks = new HashSet<Check>();
+
+                    for (var transition : stateTransitions.sublistBySymbol(symbol)) {
+                        if (symbolChecks.add(transition.getCheck())) {
+                            if (transition.isCheckNull()) {
+                                if (nullCheckTransition != null) {
+                                    throw new RuntimeException("Too much options for null-check!");
+                                }
+                                nullCheckTransition = transition;
+                            }
+                        }
+                        else {
+                            throw new RuntimeException("Non-deterministic check!");
+                        }
+                    }
+
+                    if (symbolChecks.size() > 1 && nullCheckTransition != null) {
+                        nullCheckTransition.setCheck(checks.getClear());
+                    }
+                }
+            }
+        } while (queue.size() > 0);
     }
 
     private class StateMaker {
