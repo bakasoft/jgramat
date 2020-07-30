@@ -1,7 +1,4 @@
-Value = String | Object
-
-@string String = {+'a-z'}
-@object Object = "{" { @set(String: ":" Value) / "," } "}"
+@object Object = "{" { @set({+'a-z'}: ":" ({+'a-z'} | Object)) / "," } "}"
 
 Test = ^ Object $
 

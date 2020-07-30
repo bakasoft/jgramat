@@ -69,15 +69,22 @@ public class Repetition extends Expression {
     }
 
     private NState zero_or_more_with_separator(NBuilder builder, NState initial) {
-        // one time
-        var accepted = content.build(builder, initial);
+        var accepted = builder.root.newState();
 
-        // zero times
+        // zero times, bypass loop
         builder.root.newEmptyTransition(initial, accepted);
 
+        // create stand-alone internal content
+        var contentStart = builder.root.newState();
+        var contentAccepted = content.build(builder, contentStart);
+
+        // connect content with the external states
+        builder.root.newEmptyTransition(initial, contentStart);
+        builder.root.newEmptyTransition(contentAccepted, accepted);
+
         // more times
-        var aux = separator.build(builder, accepted);
-        builder.root.newEmptyTransition(aux, initial);
+        var separatorAccepted = separator.build(builder, contentAccepted);
+        builder.root.newEmptyTransition(separatorAccepted, contentStart);
 
         return accepted;
     }

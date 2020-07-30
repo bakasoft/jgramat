@@ -55,7 +55,7 @@ public class NRoot {
     }
 
     public void newEmptyTransition(NState source, NState target) {
-        newEmptyTransition(source, target, checks.wild());
+        newEmptyTransition(source, target, null);
     }
 
     public void newEmptyTransition(NState source, NState target, ControlCheck check) {
@@ -63,7 +63,7 @@ public class NRoot {
     }
 
     public void newCharTransition(NState source, NState target, char value) {
-        newCharTransition(source, target, value, checks.wild());
+        newCharTransition(source, target, value, null);
     }
 
     public void newCharTransition(NState source, NState target, char value, ControlCheck check) {
@@ -73,7 +73,7 @@ public class NRoot {
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end) {
-        newRangeTransition(source, target, begin, end, checks.wild());
+        newRangeTransition(source, target, begin, end, null);
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end, ControlCheck check) {
@@ -83,7 +83,7 @@ public class NRoot {
     }
 
     public void newWildTransition(NState source, NState target) {
-        newWildTransition(source, target, checks.wild());
+        newWildTransition(source, target, null);
     }
 
     public void newWildTransition(NState source, NState target, ControlCheck check) {

@@ -52,7 +52,9 @@ public class NBuilder {
         System.out.println("NDFA >>>>>>>>>>");
         System.out.println(machine.getAmCode());
         System.out.println("<<<<<<<<<< NDFA");
-        return machine;
+
+        throw new RuntimeException("TODO first fix until here");
+//        return machine;
     }
 
     public NGroup newGroup(Action begin, Action commit, Action rollback) {
