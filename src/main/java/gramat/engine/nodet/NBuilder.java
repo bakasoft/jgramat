@@ -1,7 +1,7 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
-import gramat.engine.Action;
+import gramat.engine.actions.Action;
 import gramat.expressions.Expression;
 
 import java.util.*;
@@ -53,8 +53,7 @@ public class NBuilder {
         System.out.println(machine.getAmCode());
         System.out.println("<<<<<<<<<< NDFA");
 
-        throw new RuntimeException("TODO first fix until here");
-//        return machine;
+        return machine;
     }
 
     public NGroup newGroup(Action begin, Action commit, Action rollback) {

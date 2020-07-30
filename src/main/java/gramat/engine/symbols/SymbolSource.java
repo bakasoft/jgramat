@@ -1,4 +1,4 @@
-package gramat.engine;
+package gramat.engine.symbols;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,16 +8,12 @@ public class SymbolSource implements Iterable<Symbol> {
 
     private final List<Symbol> symbols;
 
-    private SymbolWild wild;
-
     public SymbolSource() {
         symbols = new ArrayList<>();
-        wild = null;
     }
 
     public SymbolSource(SymbolSource source) {
         this.symbols = new ArrayList<>(source.symbols);
-        this.wild = source.wild;
     }
 
     @Override
@@ -62,12 +58,31 @@ public class SymbolSource implements Iterable<Symbol> {
     }
 
     public SymbolWild getWild() {
-        if (wild == null) {
-            wild = new SymbolWild();
-
-            symbols.add(wild);
+        for (var symbol : symbols) {
+            if (symbol instanceof SymbolWild) {
+                return (SymbolWild)symbol;
+            }
         }
+
+        var wild = new SymbolWild();
+
+        symbols.add(wild);
+
         return wild;
+    }
+
+    public SymbolNull getNull() {
+        for (var symbol : symbols) {
+            if (symbol instanceof SymbolNull) {
+                return (SymbolNull)symbol;
+            }
+        }
+
+        var symbol = new SymbolNull();
+
+        symbols.add(symbol);
+
+        return symbol;
     }
 
     public SymbolSource copy() {

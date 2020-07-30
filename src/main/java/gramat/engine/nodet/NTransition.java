@@ -1,19 +1,52 @@
 package gramat.engine.nodet;
 
-import gramat.engine.Symbol;
-import gramat.engine.stack.ControlCheck;
+import gramat.engine.symbols.Symbol;
+import gramat.engine.control.Check;
+import gramat.engine.symbols.SymbolNull;
+import gramat.engine.symbols.SymbolWild;
+
+import java.util.Objects;
 
 public class NTransition {
 
-    public NState source;
-    public NState target;
-    public Symbol symbol;
-    public ControlCheck check;
+    public final NState source;
+    public final NState target;
 
-    public NTransition(NState source, NState target, Symbol symbol, ControlCheck check) {
+    private Symbol symbol;
+    private Check check;
+
+    public NTransition(NState source, NState target, Symbol symbol, Check check) {
         this.source = source;
         this.target = target;
-        this.symbol = symbol;
-        this.check = check;
+        this.symbol = Objects.requireNonNull(symbol);
+        this.check = Objects.requireNonNull(check);
+    }
+
+    public boolean isSymbolNull() {
+        return symbol.isNull();
+    }
+
+    public boolean isSymbolWild() {
+        return symbol.isWild();
+    }
+
+    public boolean isSymbol(Symbol symbol) {
+        return Objects.equals(this.symbol, symbol);
+    }
+
+    public boolean isCheck(Check check) {
+        return Objects.equals(this.check, check);
+    }
+
+    public boolean isCheckNull() {
+        return check.isNull();
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
+    public Check getCheck() {
+        return check;
     }
 }

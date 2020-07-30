@@ -1,10 +1,10 @@
 package gramat.engine.deter;
 
-import gramat.engine.Action;
-import gramat.engine.Symbol;
-import gramat.engine.SymbolSource;
-import gramat.engine.stack.CheckSource;
-import gramat.engine.stack.ControlCheck;
+import gramat.engine.actions.Action;
+import gramat.engine.symbols.Symbol;
+import gramat.engine.symbols.SymbolSource;
+import gramat.engine.control.CheckSource;
+import gramat.engine.control.Check;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,11 +55,11 @@ public class DBuilder {
         return transition(getState(source), getState(target), symbolSource.getChar(symbol), null, actions);
     }
 
-    public DTransition transition(int source, int target, char symbol, ControlCheck check, Action... actions) {
+    public DTransition transition(int source, int target, char symbol, Check check, Action... actions) {
         return transition(getState(source), getState(target), symbolSource.getChar(symbol), check, actions);
     }
 
-    public DTransition transition(DState source, DState target, Symbol symbol, ControlCheck check, Action... actions) {
+    public DTransition transition(DState source, DState target, Symbol symbol, Check check, Action... actions) {
         var transition = new DTransition(target, symbol, check);
 
         Collections.addAll(transition.actions, actions);

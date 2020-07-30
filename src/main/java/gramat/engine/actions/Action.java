@@ -1,4 +1,4 @@
-package gramat.engine;
+package gramat.engine.actions;
 
 abstract public class Action {
 

@@ -26,10 +26,10 @@ public class DRunnerTest {
         builder.transition(5, 5, 'a');
         builder.transition(5, 2, ',');
 
-        builder.transition(2, 6, '}', builder.checkSource.empty());
+        builder.transition(2, 6, '}', builder.checkSource.getClear());
         builder.transition(2, 5, '}', builder.checkSource.pop("obj"));
 
-        builder.transition(5, 6, '}', builder.checkSource.empty());
+        builder.transition(5, 6, '}', builder.checkSource.getClear());
         builder.transition(5, 5, '}', builder.checkSource.pop("obj"));
 
         builder.transition(6, 7, Input.ETX);

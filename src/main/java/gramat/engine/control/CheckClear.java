@@ -1,12 +1,12 @@
-package gramat.engine.stack;
+package gramat.engine.control;
 
-public class EmptyCheck extends ControlCheck {
+public class CheckClear extends Check {
 
-    EmptyCheck() {}
+    CheckClear() {}
 
     @Override
     public boolean test(ControlStack stack) {
-        return stack.empty();
+        return stack.isClear();
     }
 
     @Override
@@ -15,8 +15,8 @@ public class EmptyCheck extends ControlCheck {
     }
 
     @Override
-    public boolean compare(ControlCheck check) {
-        return check instanceof EmptyCheck;
+    public boolean compare(Check check) {
+        return check instanceof CheckClear;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class NTool {
 
             if (control.add(state)) {
                 for (var trn : state.getTransitions()) {
-                    if (trn.symbol == null) {
+                    if (trn.isSymbolNull()) {
                         queue.add(trn.target);
                     }
                     else {
@@ -43,7 +43,7 @@ public class NTool {
 
             if (control.add(state)) {
                 for (var trn : root.findTransitionsByTarget(state)) {
-                    if (trn.symbol == null) {
+                    if (trn.isSymbolNull()) {
                         queue.add(trn.source);
                     }
                     else {

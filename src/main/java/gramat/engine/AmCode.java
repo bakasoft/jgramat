@@ -51,8 +51,8 @@ public class AmCode {
                 for (var transition : state.getTransitions()) {
                     var sourceID = transition.source.id;
                     var targetID = transition.target.id;
-                    var symbol = transition.symbol == null ? "¶" : transition.symbol.toString();
-                    var check = transition.check == null ? null : transition.check.toString();
+                    var symbol = transition.getSymbol().toString();
+                    var check = transition.getCheck().toString();
 
                     if (check != null) {
                         symbol = symbol + " / " + check;

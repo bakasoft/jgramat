@@ -2,11 +2,10 @@ package gramat.engine.deter;
 
 import gramat.common.TextException;
 import gramat.engine.*;
-import gramat.engine.stack.ControlStack;
-
-import javax.naming.ldap.Control;
-import java.util.Objects;
-import java.util.Stack;
+import gramat.engine.actions.Action;
+import gramat.engine.actions.ActionExecutor;
+import gramat.engine.control.ControlStack;
+import gramat.engine.symbols.SymbolWild;
 
 public class DRunner {
 
@@ -67,7 +66,7 @@ public class DRunner {
             input.move();
         }
 
-        if (controlStack.active()) {
+        if (controlStack.isActive()) {
             throw new TextException("Unexpected end", input.getLocation());
         }
 

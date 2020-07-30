@@ -1,6 +1,7 @@
-package gramat.engine;
+package gramat.engine.symbols;
 
-public class SymbolWild extends Symbol {
+public class SymbolNull extends Symbol {
+
     @Override
     public boolean matches(char chr) {
         return false;
@@ -8,6 +9,6 @@ public class SymbolWild extends Symbol {
 
     @Override
     public String toString() {
-        return "*";
+        return "¶";
     }
 }

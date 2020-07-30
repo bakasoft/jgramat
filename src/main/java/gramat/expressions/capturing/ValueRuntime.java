@@ -1,7 +1,7 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.Action;
-import gramat.engine.ActionExecutor;
+import gramat.engine.actions.Action;
+import gramat.engine.actions.ActionExecutor;
 import gramat.engine.Input;
 
 import java.util.Stack;

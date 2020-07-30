@@ -1,4 +1,4 @@
-package gramat.engine.stack;
+package gramat.engine.control;
 
 import java.util.Objects;
 import java.util.Stack;
@@ -23,15 +23,15 @@ public class ControlStack {
         return Objects.equals(stack.peek(), token);
     }
 
-    public boolean empty() {
-        return stack.isEmpty();
-    }
-
     public void pop() {
         stack.pop();
     }
 
-    public boolean active() {
+    public boolean isClear() {
+        return stack.isEmpty();
+    }
+
+    public boolean isActive() {
         return stack.size() > 0;
     }
 }

@@ -1,7 +1,7 @@
 package gramat.expressions;
 
 import gramat.Grammar;
-import gramat.engine.Symbol;
+import gramat.engine.symbols.Symbol;
 import gramat.engine.nodet.*;
 
 import java.util.HashSet;
@@ -47,16 +47,16 @@ public class Reference extends Expression {
             var control = new HashSet<Symbol>();
 
             for (var trn : NTool.findOutgoingSymbolTransitions(machine.initial)) {
-                if (control.add(trn.symbol)) {
-                    builder.root.newTransition(initial, trn.target, trn.symbol, push);
+                if (control.add(trn.getSymbol())) {
+                    builder.root.newTransition(initial, trn.target, trn.getSymbol(), push);
                 }
             }
 
             control.clear();
 
             for (var trn : NTool.findIncomingSymbolTransitions(machine.accepted)) {
-                if (control.add(trn.symbol)) {
-                    builder.root.newTransition(trn.source, accepted, trn.symbol, pop);
+                if (control.add(trn.getSymbol())) {
+                    builder.root.newTransition(trn.source, accepted, trn.getSymbol(), pop);
                 }
             }
         });

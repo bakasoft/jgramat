@@ -1,10 +1,10 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
-import gramat.engine.*;
-import gramat.engine.stack.CheckSource;
-import gramat.engine.stack.ControlCheck;
-import gramat.engine.stack.WildCheck;
+import gramat.engine.control.CheckSource;
+import gramat.engine.control.Check;
+import gramat.engine.symbols.Symbol;
+import gramat.engine.symbols.SymbolSource;
 
 import java.util.*;
 
@@ -48,45 +48,45 @@ public class NRoot {
         return state;
     }
 
-    public void newTransition(NState source, NState target, Symbol symbol, ControlCheck check) {
+    public void newTransition(NState source, NState target, Symbol symbol, Check check) {
         var transition = new NTransition(source, target, symbol, check);
 
         transitions.add(transition);
     }
 
     public void newEmptyTransition(NState source, NState target) {
-        newEmptyTransition(source, target, null);
+        newEmptyTransition(source, target, checks.getNull());
     }
 
-    public void newEmptyTransition(NState source, NState target, ControlCheck check) {
-        newTransition(source, target, null, check);
+    public void newEmptyTransition(NState source, NState target, Check check) {
+        newTransition(source, target, symbols.getNull(), check);
     }
 
     public void newCharTransition(NState source, NState target, char value) {
-        newCharTransition(source, target, value, null);
+        newCharTransition(source, target, value, checks.getNull());
     }
 
-    public void newCharTransition(NState source, NState target, char value, ControlCheck check) {
+    public void newCharTransition(NState source, NState target, char value, Check check) {
         var symbol = symbols.getChar(value);
 
         newTransition(source, target, symbol, check);
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end) {
-        newRangeTransition(source, target, begin, end, null);
+        newRangeTransition(source, target, begin, end, checks.getNull());
     }
 
-    public void newRangeTransition(NState source, NState target, char begin, char end, ControlCheck check) {
+    public void newRangeTransition(NState source, NState target, char begin, char end, Check check) {
         var symbol = symbols.getRange(begin, end);
 
         newTransition(source, target, symbol, check);
     }
 
     public void newWildTransition(NState source, NState target) {
-        newWildTransition(source, target, null);
+        newWildTransition(source, target, checks.getNull());
     }
 
-    public void newWildTransition(NState source, NState target, ControlCheck check) {
+    public void newWildTransition(NState source, NState target, Check check) {
         var symbol = symbols.getWild();
 
         newTransition(source, target, symbol, check);
@@ -127,8 +127,8 @@ public class NRoot {
 
             if (closure.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.symbol == null) {
-                        if (trn.check != null) {
+                    if (trn.isSymbolNull()) {
+                        if (!trn.isCheckNull()) {
                             throw new RuntimeException("Not-null check found");
                         }
                         queue.add(trn.target);
@@ -154,7 +154,7 @@ public class NRoot {
 
             if (control.add(target)) {
                 for (var trn : findTransitionsByTarget(target)) {
-                    if (trn.symbol == null) {
+                    if (trn.isSymbolNull()) {
                         result.add(trn.source);
 
                         queue.add(trn.source);
@@ -167,11 +167,10 @@ public class NRoot {
         return result;
     }
 
-    public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol) {
+    public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol, Check check) {
         var result = new NTransitionList();
         for (var transition : transitions) {
-            if (sources.contains(transition.source)
-                    && transition.symbol == symbol) {
+            if (sources.contains(transition.source) && transition.isSymbol(symbol) && transition.isCheck(check)) {
                 result.add(transition);
             }
         }

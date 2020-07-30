@@ -1,4 +1,6 @@
-package gramat.engine;
+package gramat.engine.symbols;
+
+import gramat.engine.AmCode;
 
 public class SymbolRange extends Symbol {
 

@@ -1,11 +1,7 @@
 package gramat.engine.nodet;
 
-import gramat.engine.SymbolWild;
-import gramat.engine.stack.ControlCheck;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class NTransitionList extends ArrayList<NTransition> {
 
@@ -22,7 +18,7 @@ public class NTransitionList extends ArrayList<NTransition> {
     }
 
     public boolean hasWilds() {
-        return stream().anyMatch(s -> s.symbol instanceof SymbolWild);
+        return stream().anyMatch(NTransition::isSymbolWild);
     }
 
     public NStateList collectTargets() {
@@ -31,17 +27,5 @@ public class NTransitionList extends ArrayList<NTransition> {
             result.add(transition.target);
         }
         return result;
-    }
-
-    public List<ControlCheck> collectChecks() {
-        var checks = new ArrayList<ControlCheck>();
-
-        for (var transition : this) {
-            if (transition.check != null && !checks.contains(transition.check)) {
-                checks.add(transition.check);
-            }
-        }
-
-        return checks;
     }
 }

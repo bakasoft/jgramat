@@ -1,4 +1,4 @@
-package gramat.engine;
+package gramat.engine.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;

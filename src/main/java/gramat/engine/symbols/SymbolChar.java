@@ -1,4 +1,7 @@
-package gramat.engine;
+package gramat.engine.symbols;
+
+import gramat.engine.AmCode;
+import gramat.engine.Input;
 
 public class SymbolChar extends Symbol {
 

@@ -1,6 +1,6 @@
 package gramat.engine.nodet;
 
-import gramat.engine.Action;
+import gramat.engine.actions.Action;
 import gramat.engine.nodet.marks.GroupAccepted;
 import gramat.engine.nodet.marks.GroupContent;
 import gramat.engine.nodet.marks.GroupInitial;

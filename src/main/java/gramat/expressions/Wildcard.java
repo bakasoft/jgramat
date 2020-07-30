@@ -1,6 +1,5 @@
 package gramat.expressions;
 
-import gramat.engine.SymbolWild;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NState;
 

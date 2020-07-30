@@ -1,12 +1,12 @@
-package gramat.engine.stack;
+package gramat.engine.control;
 
 import java.util.Objects;
 
-public class PushCheck extends ControlCheck {
+public class CheckPush extends Check {
 
     public final String token;
 
-    PushCheck(String token) {
+    CheckPush(String token) {
         this.token = token;
     }
 
@@ -21,9 +21,9 @@ public class PushCheck extends ControlCheck {
     }
 
     @Override
-    public boolean compare(ControlCheck check) {
-        if (check instanceof PushCheck) {
-            return Objects.equals(this.token, ((PushCheck) check).token);
+    public boolean compare(Check check) {
+        if (check instanceof CheckPush) {
+            return Objects.equals(this.token, ((CheckPush) check).token);
         }
         return false;
     }

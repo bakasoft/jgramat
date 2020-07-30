@@ -1,8 +1,8 @@
-package gramat.engine.stack;
+package gramat.engine.control;
 
-public class WildCheck extends ControlCheck {
+public class CheckNull extends Check {
 
-    WildCheck() {}
+    CheckNull() {}
 
     @Override
     public boolean test(ControlStack stack) {
@@ -15,13 +15,13 @@ public class WildCheck extends ControlCheck {
     }
 
     @Override
-    public boolean compare(ControlCheck check) {
-        return check instanceof WildCheck;
+    public boolean compare(Check check) {
+        return check instanceof CheckNull;
     }
 
     @Override
     public String toString() {
-        return "WILD";
+        return "¶";
     }
 
 }
