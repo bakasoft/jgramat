@@ -2,6 +2,9 @@ package gramat.engine.nodet;
 
 import gramat.GramatException;
 import gramat.engine.*;
+import gramat.engine.stack.CheckSource;
+import gramat.engine.stack.ControlCheck;
+import gramat.engine.stack.WildCheck;
 
 import java.util.*;
 
@@ -10,19 +13,19 @@ public class NRoot {
     public final NStateList states;
     public final NTransitionList transitions;
     public final SymbolSource symbols;
-    public final BadgeSource badges;
+    public final CheckSource checks;
 
     private int next_state_id = 1;
 
     public NRoot() {
-        this(new NStateList(), new NTransitionList(), new SymbolSource(), new BadgeSource());
+        this(new NStateList(), new NTransitionList(), new SymbolSource(), new CheckSource());
     }
 
-    public NRoot(NStateList states, NTransitionList transitions, SymbolSource symbols, BadgeSource badges) {
+    public NRoot(NStateList states, NTransitionList transitions, SymbolSource symbols, CheckSource checks) {
         this.states = states;
         this.transitions = transitions;
         this.symbols = symbols;
-        this.badges = badges;
+        this.checks = checks;
     }
 
     public NState newState() {
@@ -45,48 +48,48 @@ public class NRoot {
         return state;
     }
 
-    public void newTransition(NState source, NState target, Symbol symbol, Badge badge) {
-        var transition = new NTransition(source, target, symbol, badge);
+    public void newTransition(NState source, NState target, Symbol symbol, ControlCheck check) {
+        var transition = new NTransition(source, target, symbol, check);
 
         transitions.add(transition);
     }
 
     public void newEmptyTransition(NState source, NState target) {
-        newEmptyTransition(source, target, badges.global);
+        newEmptyTransition(source, target, checks.wild());
     }
 
-    public void newEmptyTransition(NState source, NState target, Badge badge) {
-        newTransition(source, target, null, badge);
+    public void newEmptyTransition(NState source, NState target, ControlCheck check) {
+        newTransition(source, target, null, check);
     }
 
     public void newCharTransition(NState source, NState target, char value) {
-        newCharTransition(source, target, value, badges.global);
+        newCharTransition(source, target, value, checks.wild());
     }
 
-    public void newCharTransition(NState source, NState target, char value, Badge badge) {
+    public void newCharTransition(NState source, NState target, char value, ControlCheck check) {
         var symbol = symbols.getChar(value);
 
-        newTransition(source, target, symbol, badge);
+        newTransition(source, target, symbol, check);
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end) {
-        newRangeTransition(source, target, begin, end, badges.global);
+        newRangeTransition(source, target, begin, end, checks.wild());
     }
 
-    public void newRangeTransition(NState source, NState target, char begin, char end, Badge badge) {
+    public void newRangeTransition(NState source, NState target, char begin, char end, ControlCheck check) {
         var symbol = symbols.getRange(begin, end);
 
-        newTransition(source, target, symbol, badge);
+        newTransition(source, target, symbol, check);
     }
 
     public void newWildTransition(NState source, NState target) {
-        newWildTransition(source, target, badges.global);
+        newWildTransition(source, target, checks.wild());
     }
 
-    public void newWildTransition(NState source, NState target, Badge badge) {
+    public void newWildTransition(NState source, NState target, ControlCheck check) {
         var symbol = symbols.getWild();
 
-        newTransition(source, target, symbol, badge);
+        newTransition(source, target, symbol, check);
     }
 
     public NTransitionList findTransitionsBySource(NState source) {
@@ -113,7 +116,7 @@ public class NRoot {
         return result;
     }
 
-    public NStateList computeEmptyClosure(NState state, Badge badge) {
+    public NStateList computeEmptyClosure(NState state) {
         var closure = new NStateList();
         var queue = new LinkedList<NState>();
 
@@ -124,7 +127,10 @@ public class NRoot {
 
             if (closure.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.symbol == null && (trn.badge == null || trn.badge == badge)) {
+                    if (trn.symbol == null) {
+                        if (trn.check != null) {
+                            throw new RuntimeException("Not-null check found");
+                        }
                         queue.add(trn.target);
                     }
                 }

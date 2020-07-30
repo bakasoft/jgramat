@@ -1,10 +1,8 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
-import gramat.engine.Badge;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class NStateList implements Iterable<NState> {
@@ -86,10 +84,10 @@ public class NStateList implements Iterable<NState> {
         return states.stream().map(s -> s.id).sorted().collect(Collectors.joining("_"));
     }
 
-    public NStateList getEmptyClosure(Badge badge) {
+    public NStateList getEmptyClosure() {
         var closure = new NStateList();
         for (var state : states) {
-            closure.addAll(state.getEmptyClosure(badge));
+            closure.addAll(state.getEmptyClosure());
         }
         return closure;
     }

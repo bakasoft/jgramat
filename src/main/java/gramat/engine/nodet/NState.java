@@ -1,7 +1,5 @@
 package gramat.engine.nodet;
 
-import gramat.engine.Badge;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +20,8 @@ public class NState {
         return root.findTransitionsBySource(this);
     }
 
-    public NStateList getEmptyClosure(Badge badge) {
-        return root.computeEmptyClosure(this, badge);
+    public NStateList getEmptyClosure() {
+        return root.computeEmptyClosure(this);
     }
 
     public NStateList getInverseEmptyClosure() {

@@ -17,7 +17,7 @@ public class NAutomaton extends NRoot {
     }
 
     public NAutomaton(NRoot root, NState initial, NStateList accepted) {
-        super(root.states.copy(), root.transitions.copy(), root.symbols.copy(), root.badges.copy());
+        super(root.states.copy(), root.transitions.copy(), root.symbols.copy(), root.checks.copy());
         this.initial = initial;
         this.accepted = accepted;
     }
@@ -55,7 +55,7 @@ public class NAutomaton extends NRoot {
             return state;
         });
 
-        var initialClosure = initial.getEmptyClosure(null);
+        var initialClosure = initial.getEmptyClosure();
 
         queue.add(initialClosure);
 
@@ -68,21 +68,15 @@ public class NAutomaton extends NRoot {
 
                     if (oldTransitions.size() > 0) {
                         // get empty closure of all targets
-                        var badges = oldTransitions.collectBadges();
+                        var oldTargets = oldTransitions.collectTargets().getEmptyClosure();
 
-                        for (var badge : badges) {
-                            var oldTargets = oldTransitions
-                                    .collectTargets(badge)
-                                    .getEmptyClosure(badge);
+                        if (oldTargets.size() > 0) {
+                            var newSource = stateMaker.apply(oldSources);
+                            var newTarget = stateMaker.apply(oldTargets);
 
-                            if (oldTargets.size() > 0) {
-                                var newSource = stateMaker.apply(oldSources);
-                                var newTarget = stateMaker.apply(oldTargets);
+                            newTransition(newSource, newTarget, symbol, null);
 
-                                newTransition(newSource, newTarget, symbol, badge);
-
-                                queue.add(oldTargets);
-                            }
+                            queue.add(oldTargets);
                         }
                     }
                 }
@@ -106,41 +100,41 @@ public class NAutomaton extends NRoot {
     }
 
     private void move_badges_to_non_null() {
-        while(true) {
-            NTransition currTransition = null;
-
-            for (var transition : transitions) {
-                if (transition.symbol == null && transition.badge != null) {
-                    currTransition = transition;
-                    break;
-                }
-            }
-
-            if (currTransition == null) {
-                break;
-            }
-
-            var nextTransitions = currTransition.target.getTransitions();
-
-            for (var nextTransition : nextTransitions) {
-                if (nextTransition.badge == null) {
-                    nextTransition.badge = currTransition.badge;
-                } else {
-                    newTransition(
-                            nextTransition.source,
-                            nextTransition.target,
-                            nextTransition.symbol,
-                            currTransition.badge);
-                }
-            }
-
-            currTransition.badge = null;
-        }
-
-
-        System.out.println("NDFA >>>>>>>>>>");
-        AmCode.write(System.out, initial, accepted);
-        System.out.println("<<<<<<<<<< NDFA");
+//        while(true) {
+//            NTransition currTransition = null;
+//
+//            for (var transition : transitions) {
+//                if (transition.symbol == null && transition.badge != null) {
+//                    currTransition = transition;
+//                    break;
+//                }
+//            }
+//
+//            if (currTransition == null) {
+//                break;
+//            }
+//
+//            var nextTransitions = currTransition.target.getTransitions();
+//
+//            for (var nextTransition : nextTransitions) {
+//                if (nextTransition.badge == null) {
+//                    nextTransition.badge = currTransition.badge;
+//                } else {
+//                    newTransition(
+//                            nextTransition.source,
+//                            nextTransition.target,
+//                            nextTransition.symbol,
+//                            currTransition.badge);
+//                }
+//            }
+//
+//            currTransition.badge = null;
+//        }
+//
+//
+//        System.out.println("NDFA >>>>>>>>>>");
+//        AmCode.write(System.out, initial, accepted);
+//        System.out.println("<<<<<<<<<< NDFA");
     }
 
 }

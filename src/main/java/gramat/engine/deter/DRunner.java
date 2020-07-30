@@ -2,7 +2,9 @@ package gramat.engine.deter;
 
 import gramat.common.TextException;
 import gramat.engine.*;
+import gramat.engine.stack.ControlStack;
 
+import javax.naming.ldap.Control;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -10,12 +12,12 @@ public class DRunner {
 
     private final Input input;
     private final ActionExecutor executor;
-    private final Stack<Badge> badgeStack;
+    private final ControlStack controlStack;
 
     public DRunner(Input input, ActionExecutor executor) {
         this.input = input;
         this.executor = executor;
-        this.badgeStack = new Stack<>();
+        this.controlStack = new ControlStack();
     }
 
     public DState eval(DState initial) {
@@ -24,13 +26,12 @@ public class DRunner {
         while(state != null) {
             // peek current values
             var symbol = input.peek();
-            var badge = badgeStack.isEmpty() ? null : badgeStack.peek();
 
             // find matching transition
             DTransition wildTransition = null;
             DTransition nextTransition = null;
             for (var transition : state.transitions) {
-                if (transition.badge == null || Objects.equals(transition.badge, badge)) {
+                if (transition.check == null || transition.check.test(controlStack)) {
                     if (transition.symbol instanceof SymbolWild) {
                         wildTransition = transition;
                     }
@@ -51,6 +52,11 @@ public class DRunner {
                 break;
             }
 
+            // apply check
+            if (nextTransition.check != null) {
+                nextTransition.check.apply(controlStack);
+            }
+
             // execute actions
             for (var action : nextTransition.actions) {
                 execute(action);
@@ -61,7 +67,7 @@ public class DRunner {
             input.move();
         }
 
-        if (badgeStack.size() > 0) {
+        if (controlStack.active()) {
             throw new TextException("Unexpected end", input.getLocation());
         }
 
@@ -69,15 +75,7 @@ public class DRunner {
     }
 
     private void execute(Action action) {
-        if (action instanceof BadgeActionPush) {
-            var badge = ((BadgeActionPush) action).badge;
-
-            badgeStack.push(badge);
-        }
-        else if (action instanceof BadgeActionPop) {
-            badgeStack.pop();
-        }
-        else if (!executor.run(action)) {
+        if (!executor.run(action)) {
             throw new TextException("Action cannot be executed: " + action, input.getLocation());
         }
     }

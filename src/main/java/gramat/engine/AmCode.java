@@ -52,9 +52,13 @@ public class AmCode {
                     var sourceID = transition.source.id;
                     var targetID = transition.target.id;
                     var symbol = transition.symbol == null ? "¶" : transition.symbol.toString();
-                    var badge = transition.badge == null ? "-" : transition.badge.id;
+                    var check = transition.check == null ? null : transition.check.toString();
 
-                    writeTransition(output, sourceID, targetID, symbol + "/" + badge, null, null);
+                    if (check != null) {
+                        symbol = symbol + " / " + check;
+                    }
+
+                    writeTransition(output, sourceID, targetID, symbol, null, null);
                 }
             }
         }

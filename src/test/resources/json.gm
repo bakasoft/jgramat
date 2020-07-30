@@ -1,0 +1,8 @@
+Value = String | Object
+
+@string String = {+'a-z'}
+@object Object = "{" { @set(String: ":" Value) / "," } "}"
+
+Test = ^ Object $
+
+@match Test `{abc:{},ghi:jkl,mno:pqr}` {abc:{}, ghi:jkl, mno: pqr}

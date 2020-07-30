@@ -27,12 +27,11 @@ public class Reference extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var content = getExpression();
-        var badge = builder.root.badges.newBadge();
         var machine = content.buildOnce(builder, name);
         var accepted = builder.root.newState();
 
-        builder.root.newEmptyTransition(initial, machine.initial, badge);
-        builder.root.newEmptyTransition(machine.accepted, accepted, badge);
+        builder.root.newEmptyTransition(initial, machine.initial);
+        builder.root.newEmptyTransition(machine.accepted, accepted);
 
         return accepted;
     }

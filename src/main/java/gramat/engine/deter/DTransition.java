@@ -1,8 +1,8 @@
 package gramat.engine.deter;
 
 import gramat.engine.ActionList;
-import gramat.engine.Badge;
 import gramat.engine.Symbol;
+import gramat.engine.stack.ControlCheck;
 
 import java.util.Objects;
 
@@ -10,13 +10,13 @@ public class DTransition {
 
     public final DState target;
     public final Symbol symbol;
-    public final Badge badge;
+    public final ControlCheck check;
     public final ActionList actions;
 
-    public DTransition(DState target, Symbol symbol, Badge badge) {
+    public DTransition(DState target, Symbol symbol, ControlCheck check) {
         this.target = Objects.requireNonNull(target);
         this.symbol = Objects.requireNonNull(symbol);
-        this.badge = badge;  // this can be null
+        this.check = check;
         this.actions = new ActionList();
     }
 

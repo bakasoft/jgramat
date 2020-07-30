@@ -1,7 +1,7 @@
 package gramat.engine.nodet;
 
-import gramat.engine.Badge;
 import gramat.engine.SymbolWild;
+import gramat.engine.stack.ControlCheck;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,25 +25,23 @@ public class NTransitionList extends ArrayList<NTransition> {
         return stream().anyMatch(s -> s.symbol instanceof SymbolWild);
     }
 
-    public NStateList collectTargets(Badge badge) {
+    public NStateList collectTargets() {
         var result = new NStateList();
         for (var transition : this) {
-            if (transition.badge == null || transition.badge == badge) {
-                result.add(transition.target);
-            }
+            result.add(transition.target);
         }
         return result;
     }
 
-    public List<Badge> collectBadges() {
-        var badges = new ArrayList<Badge>();
+    public List<ControlCheck> collectChecks() {
+        var checks = new ArrayList<ControlCheck>();
 
         for (var transition : this) {
-            if (transition.badge != null && !badges.contains(transition.badge)) {
-                badges.add(transition.badge);
+            if (transition.check != null && !checks.contains(transition.check)) {
+                checks.add(transition.check);
             }
         }
 
-        return badges;
+        return checks;
     }
 }
