@@ -1,7 +1,7 @@
 package gramat.engine.deter;
 
 import gramat.Rejection;
-import gramat.Rule;
+import gramat.Parser;
 import gramat.engine.Input;
 import org.junit.Test;
 
@@ -34,16 +34,16 @@ public class DRunnerTest {
 
         builder.transition(6, 7, Input.ETX);
 
-        var rule = new Rule(builder.getState(0));
+        var parser = new Parser(builder.getState(0));
 
-        assert rule.eval("{}") == null;
-        assert rule.eval("{aa:a}") == null;
-        assert rule.eval("{a:a,aa:a}") == null;
-        assert rule.eval("{a:{}}") == null;
-        assert rule.eval("{a:{},aa:{}}") == null;
-        assert rule.eval("{a:{a:a},a:{}}") == null;
-        assert rule.eval("{a:{a:aa},a:{a:a}}") == null;
-        assert rule.eval("{a:{aa:{}},a:{a:{}}}") == null;
+        assert parser.eval("{}") == null;
+        assert parser.eval("{aa:a}") == null;
+        assert parser.eval("{a:a,aa:a}") == null;
+        assert parser.eval("{a:{}}") == null;
+        assert parser.eval("{a:{},aa:{}}") == null;
+        assert parser.eval("{a:{a:a},a:{}}") == null;
+        assert parser.eval("{a:{a:aa},a:{a:a}}") == null;
+        assert parser.eval("{a:{aa:{}},a:{a:{}}}") == null;
     }
 
 }

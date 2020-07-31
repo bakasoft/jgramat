@@ -5,11 +5,13 @@ import gramat.engine.nodet.NAutomaton;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NRoot;
 import gramat.expressions.Expression;
+import gramat.expressions.Rule;
 import gramat.parsing.*;
 import gramat.parsing.parsers.ImportParser;
 import gramat.parsing.parsers.RuleParser;
 import gramat.parsing.parsers.TestParser;
 import gramat.parsing.test.TestValue;
+import gramat.tools.RuleSet;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -20,7 +22,7 @@ public class Grammar {
 
     private Path workingDir;
 
-    private final LinkedHashMap<String, Expression> expressions;
+    private final RuleSet rules;
 
     private final HashSet<Path> parsedFiles;
 
@@ -30,12 +32,12 @@ public class Grammar {
 
     public Grammar(Options options) {
         this.options = options;
-        expressions = new LinkedHashMap<>();
+        rules = new RuleSet();
         parsedFiles = new HashSet<>();
     }
 
-    public Rule compile(String name) {
-        var expression = expressions.get(name);
+    public Parser compile(String name) {
+        var expression = rules.get(name);
 
         if (expression == null) {
             throw new RuntimeException("not found: " + name);
@@ -49,7 +51,7 @@ public class Grammar {
         automaton.makeDeterministic();
 
         var initial = automaton.compile();
-        return new Rule(initial);
+        return new Parser(initial);
     }
 
     public void parse(Path file) {
@@ -82,22 +84,20 @@ public class Grammar {
         }
     }
 
-    public Expression findExpression(String name) {
-        var expression = expressions.get(name);
+    public Rule findRule(String name) {
+        var rule = rules.get(name);
 
-        if (expression == null) {
+        if (rule == null) {
             throw new RuntimeException("not found: " + name);
         }
 
-        return expression;
+        return rule;
     }
 
-    public void define(String name, Expression expression) {
-        if (expressions.containsKey(name)) {
-            throw new RuntimeException("already defined: " + name);
+    public void addRule(Rule rule) {
+        if (!rules.add(rule)) {
+            throw new RuntimeException("already defined: " + rule.name);
         }
-
-        expressions.put(name, expression);
     }
 
     public Path resolveFile(Path file) {

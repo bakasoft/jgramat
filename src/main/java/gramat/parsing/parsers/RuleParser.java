@@ -1,6 +1,7 @@
 package gramat.parsing.parsers;
 
 import gramat.common.TextException;
+import gramat.expressions.Rule;
 import gramat.parsing.Mark;
 import gramat.Grammar;
 import gramat.parsing.Reader;
@@ -32,7 +33,7 @@ public class RuleParser {
 
             reader.skipBlanks();
 
-            boolean soft;
+            boolean soft;  // TODO remove everything related with hard and soft assignments
 
             if (reader.pull(Mark.HARD_ASSIGNMENT_MARK)) {
                 soft = false;
@@ -53,7 +54,7 @@ public class RuleParser {
                 expression = ValueMaker.make(grammar, reader, keyword, name, null, expression);
             }
 
-            grammar.define(name, expression);
+            grammar.addRule(new Rule(name, expression));
 
             return true;
         });

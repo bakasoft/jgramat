@@ -5,11 +5,11 @@ import gramat.engine.deter.DRunner;
 import gramat.engine.deter.DState;
 import gramat.expressions.capturing.ValueRuntime;
 
-public class Rule {
+public class Parser {
 
     private final DState initial;
 
-    public Rule(DState initial) {
+    public Parser(DState initial) {
         this.initial = initial;
     }
 
