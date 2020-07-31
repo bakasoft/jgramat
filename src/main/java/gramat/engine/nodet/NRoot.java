@@ -177,6 +177,10 @@ public class NRoot {
         return result;
     }
 
+    protected void delete(NTransition transition) {
+        transitions.remove(transition);
+    }
+
     protected void delete(NState state) {
         transitions.removeIf(t -> t.source == state || t.target == state);
         states.remove(state);

@@ -8,8 +8,6 @@ public class NMachine {
     public final NState initial;
     public final NState accepted;
 
-    public boolean used;
-
     public NMachine(String name, NState initial, NState accepted) {
         this.name = name;
         this.initial = initial;

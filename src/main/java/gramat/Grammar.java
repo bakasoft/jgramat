@@ -4,7 +4,6 @@ import gramat.common.TextException;
 import gramat.engine.nodet.NAutomaton;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NRoot;
-import gramat.expressions.Expression;
 import gramat.expressions.Rule;
 import gramat.parsing.*;
 import gramat.parsing.parsers.ImportParser;
@@ -37,15 +36,15 @@ public class Grammar {
     }
 
     public Parser compile(String name) {
-        var expression = rules.get(name);
+        var rule = rules.get(name);
 
-        if (expression == null) {
+        if (rule == null) {
             throw new RuntimeException("not found: " + name);
         }
 
         var root = new NRoot();
         var builder = new NBuilder(root);
-        var machine = builder.compile(name, expression);
+        var machine = builder.compile(rule);
         var automaton = new NAutomaton(root, machine);
 
         automaton.makeDeterministic();
@@ -112,14 +111,14 @@ public class Grammar {
         return workingDir.resolve(file);
     }
 
-    public void runTest(String expressionName, String input, boolean expectedMatch, TestValue expectedValue) {
+    public void runTest(String ruleName, String input, boolean expectedMatch, TestValue expectedValue) {
         if (options.ignoreTests) {
             return;  // TODO improve this handling
         }
 
-        System.out.println("Testing " + expressionName);
+        System.out.println("Testing " + ruleName);
 
-        var expression = compile(expressionName);
+        var expression = compile(ruleName);
 
         Object output;
         Rejection error;

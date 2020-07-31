@@ -2,7 +2,9 @@ package gramat.engine.nodet;
 
 import gramat.GramatException;
 import gramat.engine.actions.Action;
+import gramat.engine.symbols.Symbol;
 import gramat.expressions.Expression;
+import gramat.expressions.Rule;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,9 +17,11 @@ public class NBuilder {
     private final List<Runnable> recursiveHooks;
     private final List<Runnable> actionHooks;
 
-    private final List<NPlaceholder> placeholders;
-    private final List<NMachine> machines;
-    private final Set<String> recursiveNames;
+    private final List<NPlaceholder> placeholders;  // TODO is this still used?
+    private final List<NMachine> machines;  // TODO is this still used?
+    private final List<NFragment> fragments;
+    private final Set<String> recursiveNames;  // TODO is this still used?
+    private final Map<String, Integer> namedCounts;
 
     private final List<NGroup> groups;
 
@@ -30,11 +34,85 @@ public class NBuilder {
         machines = new ArrayList<>();
         recursiveNames = new HashSet<>();
         groups = new ArrayList<>();
+        fragments = new ArrayList<>();
+        namedCounts = new HashMap<>();
     }
 
-    public NMachine compile(String name, Expression expression) {
+    public int nextCount(String name) {
+        var count = namedCounts.get(name);
+
+        if (count == null) {
+            namedCounts.put(name, 0);
+            return 0;
+        }
+
+        count++;
+
+        namedCounts.put(name, count);
+
+        return count;
+    }
+
+    public NFragment makeFragment(Rule rule) {
+        // search in public fragments to avoid infinite recursion
+        for (var fragment : fragments) {
+            if (Objects.equals(fragment.name, rule.name)) {
+                return fragment;
+            }
+        }
+
+        var fragment = new NFragment(rule.name);
+
+        // make it public so infinite recursion is handled
+        fragments.add(fragment);
+
+        // create isolated state for the fragment
+        var initial = root.newState();
+
+        // build expression normally (infinite recursion should be handled at this point)
+        var accepted = rule.expression.build(this, initial);
+
+        // create trash collectors
+        var trashTransitions = new HashSet<NTransition>();
+        var trashStates = new HashSet<NState>();
+
+        // generate targets for the fragment
+        for (var trn : NTool.findOutgoingSymbolTransitions(initial)) {
+            // TODO what about non-null checks? we shouldn't ignore them
+            fragment.targets.add(new NFragment.Target(trn.getSymbol(), trn.target));
+
+            // delete transition and source (won't be used since we are building a fragment)
+            trashTransitions.add(trn);
+            trashStates.add(trn.source);
+        }
+
+        // generate sources for the fragment
+        for (var trn : NTool.findIncomingSymbolTransitions(accepted)) {
+            // TODO what about non-null checks? we shouldn't ignore them
+            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol()));
+
+            // delete transition and target (won't be used since we are building a fragment)
+            trashTransitions.add(trn);
+            trashStates.add(trn.target);
+        }
+
+        // empty trash collectors
+        for (var trn : trashTransitions) {
+            root.delete(trn);
+        }
+        for (var state : trashStates) {
+            root.delete(state);
+        }
+
+        fragment.ready = true;
+
+        return fragment;
+    }
+
+    public NMachine compile(Rule rule) {
         var builder = new NBuilder(root);
-        var machine = expression.buildOnce(builder, name);
+        var initial = builder.root.newState();
+        var accepted = rule.build(builder, initial);
 
         for (var hook : builder.transitionHooks) {
             hook.run();
@@ -48,7 +126,8 @@ public class NBuilder {
             hook.run();
         }
 
-        // recreate machine with all states and transitions created by the hooks
+        var machine = new NMachine(rule.name, initial, accepted);
+
         System.out.println("NDFA >>>>>>>>>>");
         System.out.println(machine.getAmCode());
         System.out.println("<<<<<<<<<< NDFA");

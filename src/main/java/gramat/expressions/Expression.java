@@ -14,26 +14,6 @@ abstract public class Expression {
 
     abstract public List<Expression> getChildren();
 
-    public NMachine buildOnce(NBuilder builder, String name) {
-        var machine = builder.getMachine(name);
-
-        if (machine == null) {
-            // create stand-alone machine
-            machine = new NMachine(name, builder.root.newState(), builder.root.newState());
-
-            // make it public so recursive builds can use it
-            builder.addMachine(machine);
-
-            // build expression inside machine (can be recursive)
-            var aux = build(builder, machine.initial);
-
-            // connect with the public machine
-            builder.root.newEmptyTransition(aux, machine.accepted);
-        }
-
-        return machine;
-    }
-
     public boolean isRecursive() {
         var control = new HashSet<Expression>();
         var queue = new LinkedList<>(getChildren());

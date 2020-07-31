@@ -21,6 +21,7 @@ public class NTool {
                         queue.add(trn.target);
                     }
                     else {
+                        // TODO what about checks? the should be null right?
                         result.add(trn);
                     }
                 }
@@ -47,6 +48,7 @@ public class NTool {
                         queue.add(trn.source);
                     }
                     else {
+                        // TODO what about checks? the should be null right?
                         result.add(trn);
                     }
                 }

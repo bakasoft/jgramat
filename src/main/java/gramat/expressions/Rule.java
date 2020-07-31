@@ -22,40 +22,29 @@ public class Rule extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
+        // Non-recursive rules doesn't need special handling
         if (!expression.isRecursive()) {
             return expression.build(builder, initial);
         }
 
-        var machine = expression.buildOnce(builder, name);
-
-//        if (machine.used) {
-//            builder.root.newEmptyTransition(initial, machine.initial);
-//
-//            return machine.accepted;
-//        }
-//
-//        machine.used = true;
-
+        var fragment = builder.makeFragment(this);
         var accepted = builder.root.newState();
 
         builder.addRecursiveHook(() -> {
-            var id = (++idCount);
-            var push = builder.root.checks.push(name + id);
-            var pop = builder.root.checks.pop(name + id);
-            var control = new HashSet<Symbol>();
-
-            for (var trn : NTool.findOutgoingSymbolTransitions(machine.initial)) {
-                if (control.add(trn.getSymbol())) {
-                    builder.root.newTransition(initial, trn.target, trn.getSymbol(), push);
-                }
+            if (!fragment.ready) {
+                throw new RuntimeException("fragment not ready");
             }
 
-            control.clear();
+            var id = builder.nextCount(name);
+            var push = builder.root.checks.push(name + id);
+            var pop = builder.root.checks.pop(name + id);
 
-            for (var trn : NTool.findIncomingSymbolTransitions(machine.accepted)) {
-                if (control.add(trn.getSymbol())) {
-                    builder.root.newTransition(trn.source, accepted, trn.getSymbol(), pop);
-                }
+            for (var target : fragment.targets) {
+                builder.root.newTransition(initial, target.target, target.symbol, push);
+            }
+
+            for (var source : fragment.sources) {
+                builder.root.newTransition(source.source, accepted, source.symbol, pop);
             }
         });
 
