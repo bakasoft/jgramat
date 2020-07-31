@@ -1,14 +1,10 @@
 package gramat.engine.nodet;
 
-import gramat.GramatException;
 import gramat.engine.actions.Action;
-import gramat.engine.symbols.Symbol;
-import gramat.expressions.Expression;
 import gramat.expressions.Rule;
 import gramat.tools.NamedCounts;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class NBuilder {
 
@@ -19,10 +15,7 @@ public class NBuilder {
     private final List<Runnable> recursiveHooks;
     private final List<Runnable> actionHooks;
 
-    private final List<NPlaceholder> placeholders;  // TODO is this still used?
-    private final List<NMachine> machines;  // TODO is this still used?
     private final List<NFragment> fragments;
-    private final Set<String> recursiveNames;  // TODO is this still used?
 
     private final List<NGroup> groups;
 
@@ -31,9 +24,6 @@ public class NBuilder {
         transitionHooks = new ArrayList<>();
         recursiveHooks = new ArrayList<>();
         actionHooks = new ArrayList<>();
-        placeholders = new ArrayList<>();
-        machines = new ArrayList<>();
-        recursiveNames = new HashSet<>();
         groups = new ArrayList<>();
         fragments = new ArrayList<>();
         counts = new NamedCounts();
@@ -130,29 +120,6 @@ public class NBuilder {
         return group;
     }
 
-    public boolean addRecursiveName(String name) {
-        return recursiveNames.add(name);
-    }
-
-    public NPlaceholder makePlaceholder(NBuilder builder, String name, NState initial) {
-        for (var placeholder : placeholders) {
-            if (placeholder.name.equals(name) && placeholder.initial == initial) {
-                return placeholder;
-            }
-        }
-
-        var accepted = root.newState();
-        var placeholder = new NPlaceholder(name, initial, accepted);
-
-        placeholders.add(placeholder);
-
-        return placeholder;
-    }
-
-    public List<NPlaceholder> getPlaceholders(String name) {
-        return placeholders.stream().filter(p -> p.name.equals(name)).collect(Collectors.toUnmodifiableList());
-    }
-
     public void addTransitionHook(Runnable hook) {
         this.transitionHooks.add(hook);
     }
@@ -163,22 +130,6 @@ public class NBuilder {
 
     public void addActionHook(Runnable hook) {
         this.actionHooks.add(hook);
-    }
-
-    public NMachine getMachine(String name) {
-        for (var machine : machines) {
-            if (Objects.equals(machine.name, name)) {
-                return machine;
-            }
-        }
-        return null;
-    }
-
-    public void addMachine(NMachine machine) {
-        if (getMachine(machine.name) != null) {
-            throw new GramatException("already registered: " + machine.name);
-        }
-        machines.add(machine);
     }
 
 }
