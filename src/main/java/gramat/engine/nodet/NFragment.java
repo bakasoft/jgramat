@@ -11,7 +11,6 @@ public class NFragment {
     public final List<Target> targets;
     public final List<Source> sources;
     public boolean ready;
-    public int count;
 
     public NFragment(String name) {
         this.name = name;

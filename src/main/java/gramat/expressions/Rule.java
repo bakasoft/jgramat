@@ -35,7 +35,7 @@ public class Rule extends Expression {
                 throw new RuntimeException("fragment not ready");
             }
 
-            var id = builder.nextCount(name);
+            var id = builder.counts.next(name);
             var push = builder.root.checks.push(name + id);
             var pop = builder.root.checks.pop(name + id);
 

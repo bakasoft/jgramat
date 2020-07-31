@@ -5,6 +5,7 @@ import gramat.engine.actions.Action;
 import gramat.engine.symbols.Symbol;
 import gramat.expressions.Expression;
 import gramat.expressions.Rule;
+import gramat.tools.NamedCounts;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 public class NBuilder {
 
     public final NRoot root;
+    public final NamedCounts counts;
 
     private final List<Runnable> transitionHooks;
     private final List<Runnable> recursiveHooks;
@@ -21,7 +23,6 @@ public class NBuilder {
     private final List<NMachine> machines;  // TODO is this still used?
     private final List<NFragment> fragments;
     private final Set<String> recursiveNames;  // TODO is this still used?
-    private final Map<String, Integer> namedCounts;
 
     private final List<NGroup> groups;
 
@@ -35,22 +36,7 @@ public class NBuilder {
         recursiveNames = new HashSet<>();
         groups = new ArrayList<>();
         fragments = new ArrayList<>();
-        namedCounts = new HashMap<>();
-    }
-
-    public int nextCount(String name) {
-        var count = namedCounts.get(name);
-
-        if (count == null) {
-            namedCounts.put(name, 0);
-            return 0;
-        }
-
-        count++;
-
-        namedCounts.put(name, count);
-
-        return count;
+        counts = new NamedCounts();
     }
 
     public NFragment makeFragment(Rule rule) {
