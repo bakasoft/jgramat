@@ -36,18 +36,16 @@ abstract public class Expression {
 
     public boolean isRecursive() {
         var control = new HashSet<Expression>();
-        var queue = new LinkedList<Expression>();
-
-        queue.addAll(getChildren());
+        var queue = new LinkedList<>(getChildren());
 
         while (queue.size() > 0) {
             var expression = queue.remove();
 
-            if (control.add(expression)) {
-                if (expression == this) {
-                    return true;
-                }
+            if (expression == this) {
+                return true;
+            }
 
+            if (control.add(expression)) {
                 queue.addAll(expression.getChildren());
             }
         }

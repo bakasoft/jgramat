@@ -124,10 +124,6 @@ public class NAutomaton extends NRoot {
                             throw new RuntimeException("Non-deterministic check!");
                         }
                     }
-
-                    if (symbolChecks.size() > 1 && nullCheckTransition != null) {
-                        nullCheckTransition.setCheck(checks.getClear());
-                    }
                 }
             }
         } while (queue.size() > 0);

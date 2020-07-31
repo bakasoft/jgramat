@@ -9,6 +9,8 @@ import java.util.List;
 
 public class Reference extends Expression {
 
+    private static int idCount = 0;
+
     private final Grammar grammar;
     private final String name;
 
@@ -29,21 +31,27 @@ public class Reference extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var content = getExpression();
-        var machine = content.buildOnce(builder, name);
 
-        if (machine.used) {
-            builder.root.newEmptyTransition(initial, machine.initial);
-
-            return machine.accepted;
+        if (!content.isRecursive()) {
+            return content.build(builder, initial);
         }
 
-        machine.used = true;
+        var machine = content.buildOnce(builder, name);
+
+//        if (machine.used) {
+//            builder.root.newEmptyTransition(initial, machine.initial);
+//
+//            return machine.accepted;
+//        }
+//
+//        machine.used = true;
 
         var accepted = builder.root.newState();
 
         builder.addRecursiveHook(() -> {
-            var push = builder.root.checks.push(name);
-            var pop = builder.root.checks.pop(name);
+            var id = (++idCount);
+            var push = builder.root.checks.push(name + id);
+            var pop = builder.root.checks.pop(name + id);
             var control = new HashSet<Symbol>();
 
             for (var trn : NTool.findOutgoingSymbolTransitions(machine.initial)) {
@@ -66,7 +74,7 @@ public class Reference extends Expression {
 
     @Override
     public List<Expression> getChildren() {
-        return getExpression().getChildren();
+        return List.of(getExpression());
     }
 
 }
