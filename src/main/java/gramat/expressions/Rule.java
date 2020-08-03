@@ -41,10 +41,14 @@ public class Rule extends Expression {
 
             for (var target : fragment.targets) {
                 builder.root.newTransition(initial, target.target, target.symbol, push);
+
+                initial.marks.addAll(target.marks);
             }
 
             for (var source : fragment.sources) {
                 builder.root.newTransition(source.source, accepted, source.symbol, pop);
+
+                accepted.marks.addAll(source.marks);
             }
         });
 

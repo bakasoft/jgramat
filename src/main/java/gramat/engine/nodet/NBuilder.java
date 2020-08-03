@@ -54,8 +54,11 @@ public class NBuilder {
 
         // generate targets for the fragment
         for (var trn : NTool.findOutgoingSymbolTransitions(initial)) {
-            // TODO what about non-null checks? we shouldn't ignore them
-            fragment.targets.add(new NFragment.Target(trn.getSymbol(), trn.target));
+            if (!trn.isCheckNull()) {
+                throw new RuntimeException("expected null-check");
+            }
+
+            fragment.targets.add(new NFragment.Target(trn.source.marks, trn.getSymbol(), trn.target));
 
             // delete transition and source (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -64,8 +67,11 @@ public class NBuilder {
 
         // generate sources for the fragment
         for (var trn : NTool.findIncomingSymbolTransitions(accepted)) {
-            // TODO what about non-null checks? we shouldn't ignore them
-            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol()));
+            if (!trn.isCheckNull()) {
+                throw new RuntimeException("expected null-check");
+            }
+
+            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol(), trn.target.marks));
 
             // delete transition and target (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -100,6 +106,11 @@ public class NBuilder {
 
         for (var hook : builder.actionHooks) {
             hook.run();
+        }
+
+        // TODO remove this debugging message
+        for (var group: builder.groups) {
+            System.out.println("GROUP " + group.number + " - " + group.initialMark + "->" + group.contentMark + "->" + group.acceptedMark + " - " + group.beginAction + "->" + group.commitAction + "->" + group.rollbackAction);
         }
 
         var machine = new NMachine(rule.name, initial, accepted);
