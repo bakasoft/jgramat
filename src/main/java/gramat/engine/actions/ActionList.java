@@ -23,6 +23,20 @@ public class ActionList implements Iterable<Action> {
             return false;
         }
 
+        // check if it is already overridden
+        for (var action : actions) {
+            if (action.overrides.contains(item)) {
+                return false;
+            }
+        }
+
+        // remove overridden actions
+        for (var i = actions.size() - 1; i >= 0; i--) {
+            if (item.overrides.contains(actions.get(i))) {
+                actions.remove(i);
+            }
+        }
+
         actions.add(item);
         return true;
     }

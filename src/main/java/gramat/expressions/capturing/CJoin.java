@@ -1,5 +1,6 @@
 package gramat.expressions.capturing;
 
+import gramat.engine.actions.Action;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -20,6 +21,10 @@ public class CJoin extends Expression {
         var begin = new JoinBegin();
         var commit = new JoinCommit(begin);
         var sustain = new JoinSustain(begin);
+
+        // setup overrides
+        begin.overrides(sustain);
+        commit.overrides(sustain);
 
         TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 

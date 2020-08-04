@@ -28,12 +28,20 @@ public class CAttributeDynamic extends Expression {
         var nameCommit = new AttributeNameCommit(nameBegin);
         var nameSustain = new AttributeNameSustain(nameBegin);
 
+        // setup overrides
+        nameBegin.overrides(nameSustain);
+        nameCommit.overrides(nameSustain);
+
         TRX2.applyActions(builder, initial, nameAccepted, nameBegin, nameCommit, nameSustain);
 
         var valueAccepted = value.build(builder, nameAccepted);
         var valueBegin = new AttributeValueBegin();
         var valueCommit = new AttributeValueCommit(valueBegin, nameCommit);
         var valueSustain = new AttributeValueSustain(valueBegin);
+
+        // setup overrides
+        valueBegin.overrides(valueSustain);
+        valueCommit.overrides(valueSustain);
 
         TRX2.applyActions(builder, nameAccepted, valueAccepted, valueBegin, valueCommit, valueSustain);
 

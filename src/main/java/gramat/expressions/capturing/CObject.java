@@ -23,6 +23,10 @@ public class CObject extends Expression {
         var commit = new ObjectCommit(begin);
         var sustain = new ObjectSustain(begin);
 
+        // setup overrides
+        begin.overrides(sustain);
+        commit.overrides(sustain);
+
         TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;

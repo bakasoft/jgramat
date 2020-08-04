@@ -24,6 +24,10 @@ public class CValue extends Expression {
         var commit = new ValueCommit(begin);
         var sustain = new ValueSustain(begin);
 
+        // setup overrides
+        begin.overrides(sustain);
+        commit.overrides(sustain);
+
         TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;

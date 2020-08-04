@@ -23,6 +23,10 @@ public class CList extends Expression {
         var commit = new ListCommit(begin);
         var sustain = new ListSustain(begin);
 
+        // setup overrides
+        begin.overrides(sustain);
+        commit.overrides(sustain);
+
         TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
