@@ -1,8 +1,8 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
-import gramat.engine.control.CheckSource;
-import gramat.engine.control.Check;
+import gramat.engine.checks.CheckSource;
+import gramat.engine.checks.Check;
 import gramat.engine.symbols.Symbol;
 import gramat.engine.symbols.SymbolSource;
 

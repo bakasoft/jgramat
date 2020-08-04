@@ -2,7 +2,7 @@ package gramat.engine.deter;
 
 import gramat.engine.actions.ActionList;
 import gramat.engine.symbols.Symbol;
-import gramat.engine.control.Check;
+import gramat.engine.checks.Check;
 
 import java.util.Objects;
 

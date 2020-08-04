@@ -3,9 +3,7 @@ package gramat.engine.nodet;
 import gramat.engine.actions.Action;
 import gramat.engine.actions.ActionList;
 import gramat.engine.symbols.Symbol;
-import gramat.engine.control.Check;
-import gramat.engine.symbols.SymbolNull;
-import gramat.engine.symbols.SymbolWild;
+import gramat.engine.checks.Check;
 
 import java.util.Objects;
 

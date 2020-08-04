@@ -1,35 +1,36 @@
-package gramat.engine.control;
+package gramat.engine.checks;
 
 import java.util.Objects;
 
-public class CheckPop extends Check {
+public class CheckPush extends Check {
 
     public final String token;
 
-    CheckPop(String token) {
+    CheckPush(String token) {
         this.token = token;
     }
 
     @Override
     public boolean test(ControlStack stack) {
-        return stack.test(token);
+        return true;
     }
 
     @Override
     public void apply(ControlStack stack) {
-        stack.pop();
+        stack.push(token);
     }
 
     @Override
     public boolean compare(Check check) {
-        if (check instanceof CheckPop) {
-            return Objects.equals(this.token, ((CheckPop) check).token);
+        if (check instanceof CheckPush) {
+            return Objects.equals(this.token, ((CheckPush) check).token);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "POP[" + token + "]";
+        return "PUSH[" + token + "]";
     }
+
 }

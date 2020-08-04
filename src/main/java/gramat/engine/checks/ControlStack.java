@@ -1,4 +1,4 @@
-package gramat.engine.control;
+package gramat.engine.checks;
 
 import java.util.Objects;
 import java.util.Stack;

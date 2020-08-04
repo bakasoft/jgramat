@@ -106,9 +106,9 @@ public class NBuilder {
 
         var machine = new NMachine(rule.name, initial, accepted);
 
-        System.out.println("NDFA >>>>>>>>>>");
+        System.out.println("N-DFA >>>>>>>>>>");
         System.out.println(machine.getAmCode());
-        System.out.println("<<<<<<<<<< NDFA");
+        System.out.println("<<<<<<<<<< N-DFA");
 
         return machine;
     }

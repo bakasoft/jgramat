@@ -1,4 +1,4 @@
-package gramat.engine.control;
+package gramat.engine.checks;
 
 abstract public class Check {
 

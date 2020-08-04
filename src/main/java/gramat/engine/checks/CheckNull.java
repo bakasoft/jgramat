@@ -1,27 +1,27 @@
-package gramat.engine.control;
+package gramat.engine.checks;
 
-public class CheckAny extends Check {
+public class CheckNull extends Check {
 
-    CheckAny() {}
+    CheckNull() {}
 
     @Override
     public boolean test(ControlStack stack) {
-        return true;
+        return false;
     }
 
     @Override
     public void apply(ControlStack stack) {
-        // do nothing
+
     }
 
     @Override
     public boolean compare(Check check) {
-        return check instanceof CheckAny;
+        return check instanceof CheckNull;
     }
 
     @Override
     public String toString() {
-        return "ANY";
+        return "¶";
     }
 
 }

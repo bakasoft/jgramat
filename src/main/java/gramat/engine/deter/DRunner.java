@@ -4,7 +4,7 @@ import gramat.common.TextException;
 import gramat.engine.*;
 import gramat.engine.actions.Action;
 import gramat.engine.actions.ActionExecutor;
-import gramat.engine.control.ControlStack;
+import gramat.engine.checks.ControlStack;
 import gramat.engine.symbols.SymbolWild;
 
 public class DRunner {

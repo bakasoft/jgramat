@@ -1,4 +1,4 @@
-package gramat.engine.control;
+package gramat.engine.checks;
 
 public class CheckClear extends Check {
 

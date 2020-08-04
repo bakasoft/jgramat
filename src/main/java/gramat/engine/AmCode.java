@@ -1,5 +1,7 @@
 package gramat.engine;
 
+import gramat.engine.indet.IMachine;
+import gramat.engine.indet.IState;
 import gramat.engine.nodet.NMachine;
 import gramat.engine.nodet.NState;
 import gramat.engine.nodet.NStateList;
@@ -21,7 +23,6 @@ public class AmCode {
         try {
             var control = new HashSet<NState>();
             var queue = new LinkedList<NState>();
-            var states = new ArrayList<NState>();
 
             queue.add(initial);
 
@@ -29,45 +30,37 @@ public class AmCode {
                 var state = queue.remove();
 
                 if (control.add(state)) {
-                    states.add(state);
+                    if (state == initial) {
+                        writeState(output, initial.id, true, false, null);
+                    }
 
                     for (var transition : state.getTransitions()) {
+                        var sourceID = transition.source.id;
+                        var targetID = transition.target.id;
+                        var symbol = transition.getSymbol().toString();
+                        var check = transition.getCheck().toString();
+
+                        if (check != null) {
+                            symbol = symbol + " / " + check;
+                        }
+
+                        if (transition.actions.isEmpty()) {
+                            writeTransition(output, sourceID, targetID, symbol, null, null);
+                        }
+                        else {
+                            for (var action : transition.actions) {
+                                writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                            }
+                        }
+
                         queue.add(transition.target);
+                    }
+
+                    if (accepted.contains(state)) {
+                        writeState(output, state.id, false, true, null);
                     }
                 }
             } while (queue.size() > 0);
-
-            for (var state : states) {
-                writeState(
-                        output,
-                        state.id,
-                        state == initial,
-                        accepted.contains(state),
-                        null
-                );
-            }
-
-            for (var state : states) {
-                for (var transition : state.getTransitions()) {
-                    var sourceID = transition.source.id;
-                    var targetID = transition.target.id;
-                    var symbol = transition.getSymbol().toString();
-                    var check = transition.getCheck().toString();
-
-                    if (check != null) {
-                        symbol = symbol + " / " + check;
-                    }
-
-                    if (transition.actions.isEmpty()) {
-                        writeTransition(output, sourceID, targetID, symbol, null, null);
-                    }
-                    else {
-                        for (var action : transition.actions) {
-                            writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
-                        }
-                    }
-                }
-            }
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -92,7 +85,6 @@ public class AmCode {
 
         output.append("\n");
     }
-
 
     private static void writeTransition(Appendable output, String sourceID, String targetID, String symbol, String beforeAction, String afterAction) throws IOException {
         output.append(sourceID);
@@ -166,5 +158,53 @@ public class AmCode {
         }
 
         return output.toString();
+    }
+
+    public static void write(PrintStream output, IMachine machine) {
+        try {
+            var control = new HashSet<IState>();
+            var queue = new LinkedList<IState>();
+
+            queue.add(machine.initial);
+
+            do {
+                var state = queue.remove();
+
+                if (control.add(state)) {
+                    if (state == machine.initial) {
+                        writeState(output, state.computeID(), true, false, null);
+                    }
+
+                    for (var transition : machine.findTransitionsBySource(state)) {
+                        var sourceID = transition.source.computeID();
+                        var targetID = transition.target.computeID();
+                        var symbol = transition.symbol.toString();
+                        var check = transition.check.toString();
+
+                        if (check != null) {
+                            symbol = symbol + " / " + check;
+                        }
+
+                        if (transition.actions.isEmpty()) {
+                            writeTransition(output, sourceID, targetID, symbol, null, null);
+                        }
+                        else {
+                            for (var action : transition.actions) {
+                                writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                            }
+                        }
+
+                        queue.add(transition.target);
+                    }
+
+                    if (state.accepted) {
+                        writeState(output, state.computeID(), false, true, null);
+                    }
+                }
+            } while (queue.size() > 0);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -3,8 +3,8 @@ package gramat.engine.deter;
 import gramat.engine.actions.Action;
 import gramat.engine.symbols.Symbol;
 import gramat.engine.symbols.SymbolSource;
-import gramat.engine.control.CheckSource;
-import gramat.engine.control.Check;
+import gramat.engine.checks.CheckSource;
+import gramat.engine.checks.Check;
 
 import java.util.ArrayList;
 import java.util.Collections;
