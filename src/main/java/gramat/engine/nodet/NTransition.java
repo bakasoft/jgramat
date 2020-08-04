@@ -1,6 +1,5 @@
 package gramat.engine.nodet;
 
-import gramat.engine.actions.Action;
 import gramat.engine.actions.ActionList;
 import gramat.engine.symbols.Symbol;
 import gramat.engine.checks.Check;
@@ -12,8 +11,9 @@ public class NTransition {
     public final NState source;
     public final NState target;
 
-    private Symbol symbol;
-    private Check check;
+    public final Symbol symbol;
+    public final Check check;
+    
     public final ActionList actions;
 
     public NTransition(NState source, NState target, Symbol symbol, Check check) {
@@ -24,14 +24,6 @@ public class NTransition {
         this.actions = new ActionList();
     }
 
-    public boolean isSymbolNull() {
-        return symbol.isNull();
-    }
-
-    public boolean isSymbolWild() {
-        return symbol.isWild();
-    }
-
     public boolean isSymbol(Symbol symbol) {
         return Objects.equals(this.symbol, symbol);
     }
@@ -40,23 +32,4 @@ public class NTransition {
         return Objects.equals(this.check, check);
     }
 
-    public boolean isCheckNull() {
-        return check.isNull();
-    }
-
-    public Symbol getSymbol() {
-        return symbol;
-    }
-
-    public Check getCheck() {
-        return check;
-    }
-
-    public void setCheck(Check check) {
-        this.check = check;
-    }
-
-    public void addAction(Action action) {
-        this.actions.add(action);
-    }
 }

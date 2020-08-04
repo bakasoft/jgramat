@@ -37,8 +37,8 @@ public class AmCode {
                     for (var transition : state.getTransitions()) {
                         var sourceID = transition.source.id;
                         var targetID = transition.target.id;
-                        var symbol = transition.getSymbol().toString();
-                        var check = transition.getCheck().toString();
+                        var symbol = transition.symbol.toString();
+                        var check = transition.check.toString();
 
                         if (check != null) {
                             symbol = symbol + " / " + check;

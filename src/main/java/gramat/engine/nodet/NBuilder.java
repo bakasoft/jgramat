@@ -50,11 +50,11 @@ public class NBuilder {
 
         // generate targets for the fragment
         for (var trn : NTool.findOutgoingSymbolTransitions(initial)) {
-            if (!trn.isCheckNull()) {
+            if (!trn.check.isNull()) {
                 throw new RuntimeException("expected null-check");
             }
 
-            fragment.targets.add(new NFragment.Target(trn.actions, trn.getSymbol(), trn.target));
+            fragment.targets.add(new NFragment.Target(trn.actions, trn.symbol, trn.target));
 
             // delete transition and source (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -63,11 +63,11 @@ public class NBuilder {
 
         // generate sources for the fragment
         for (var trn : NTool.findIncomingSymbolTransitions(accepted)) {
-            if (!trn.isCheckNull()) {
+            if (!trn.check.isNull()) {
                 throw new RuntimeException("expected null-check");
             }
 
-            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol(), trn.actions));
+            fragment.sources.add(new NFragment.Source(trn.source, trn.symbol, trn.actions));
 
             // delete transition and target (won't be used since we are building a fragment)
             trashTransitions.add(trn);

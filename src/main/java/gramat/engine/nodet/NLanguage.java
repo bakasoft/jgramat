@@ -129,8 +129,8 @@ public class NLanguage {
 
             if (closure.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.isSymbolNull()) {
-                        if (!trn.isCheckNull()) {
+                    if (trn.symbol.isNull()) {
+                        if (!trn.check.isNull()) {
                             throw new RuntimeException("Not-null check found");
                         }
                         queue.add(trn.target);
@@ -156,7 +156,7 @@ public class NLanguage {
 
             if (control.add(target)) {
                 for (var trn : findTransitionsByTarget(target)) {
-                    if (trn.isSymbolNull()) {
+                    if (trn.symbol.isNull()) {
                         result.add(trn.source);
 
                         queue.add(trn.source);

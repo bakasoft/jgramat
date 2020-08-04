@@ -19,7 +19,7 @@ public class NTransitionList extends ArrayList<NTransition> {
     }
 
     public boolean hasWilds() {
-        return stream().anyMatch(NTransition::isSymbolWild);
+        return stream().anyMatch(trn -> trn.symbol.isWild());
     }
 
     public NStateList collectSources() {
@@ -41,7 +41,7 @@ public class NTransitionList extends ArrayList<NTransition> {
     public Set<Symbol> collectSymbols() {
         var result = new HashSet<Symbol>();
         for (var transition : this) {
-            result.add(transition.getSymbol());
+            result.add(transition.symbol);
         }
         return result;
     }
@@ -49,7 +49,7 @@ public class NTransitionList extends ArrayList<NTransition> {
     public NTransitionList sublistBySymbol(Symbol symbol) {
         var result = new NTransitionList();
         for (var transition : this) {
-            if (Objects.equals(transition.getSymbol(), symbol)) {
+            if (Objects.equals(transition.symbol, symbol)) {
                 result.add(transition);
             }
         }

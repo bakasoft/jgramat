@@ -17,11 +17,11 @@ public class NTool {
 
             if (control.add(state)) {
                 for (var trn : state.getTransitions()) {
-                    if (trn.isSymbolNull()) {
+                    if (trn.symbol.isNull()) {
                         queue.add(trn.target);
                     }
                     else {
-                        if (!trn.isCheckNull()) {
+                        if (!trn.check.isNull()) {
                             throw new RuntimeException("expected null check");
                         }
                         result.add(trn);
@@ -46,11 +46,11 @@ public class NTool {
 
             if (control.add(state)) {
                 for (var trn : lang.findTransitionsByTarget(state)) {
-                    if (trn.isSymbolNull()) {
+                    if (trn.symbol.isNull()) {
                         queue.add(trn.source);
                     }
                     else {
-                        if (!trn.isCheckNull()) {
+                        if (!trn.check.isNull()) {
                             throw new RuntimeException("expected null check");
                         }
                         result.add(trn);
@@ -74,7 +74,7 @@ public class NTool {
 
             if (control.add(state)) {
                 for (var trn : state.getTransitions()) {
-                    if (!trn.isSymbolNull()) {
+                    if (!trn.symbol.isNull()) {
                         result.add(trn);
                     }
 
