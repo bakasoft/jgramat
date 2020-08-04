@@ -155,10 +155,6 @@ public class NAutomaton extends NRoot {
 
             state = newState(states.getUniqueID(id));
 
-            for (var item : items) {
-                state.marks.addAll(item.marks);
-            }
-
             newStates.put(id, state);
 
             return state;

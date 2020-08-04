@@ -20,14 +20,12 @@ public class NFragment {
     }
 
     public static class Target {
-        public final List<NMark> marks;
         public final ActionList actions;
         public final Symbol symbol;
         public final NState target;
 
-        public Target(ActionList actions, List<NMark> marks, Symbol symbol, NState target) {
+        public Target(ActionList actions, Symbol symbol, NState target) {
             this.actions = actions;
-            this.marks = marks;
             this.symbol = symbol;
             this.target = target;
         }
@@ -36,13 +34,11 @@ public class NFragment {
     public static class Source {
         public final NState source;
         public final Symbol symbol;
-        public final List<NMark> marks;
         public final ActionList actions;
 
-        public Source(NState source, Symbol symbol, List<NMark> marks, ActionList actions) {
+        public Source(NState source, Symbol symbol, ActionList actions) {
             this.symbol = symbol;
             this.source = source;
-            this.marks = marks;
             this.actions = actions;
         }
     }

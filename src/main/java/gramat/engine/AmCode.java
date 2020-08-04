@@ -43,7 +43,7 @@ public class AmCode {
                         state.id,
                         state == initial,
                         accepted.contains(state),
-                        state.marks.stream().map(Object::toString).collect(Collectors.joining(", "))
+                        null
                 );
             }
 

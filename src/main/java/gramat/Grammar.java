@@ -50,13 +50,6 @@ public class Grammar {
 
         automaton.makeDeterministic();
 
-        // TODO remove this debugging message
-        for (var group: machine.groups) {
-            System.out.println("GROUP " + group.number + " - " + group.initialMark + "->" + group.contentMark + "->" + group.acceptedMark + " - " + group.beginAction + "->" + group.commitAction + "->" + group.rollbackAction);
-
-            builder.resolve_group(group, automaton.getInitial());
-        }
-
         System.out.println("DFA >>>>>>>>>>");
         AmCode.write(System.out, automaton.getInitial(), automaton.getAccepted());
         System.out.println("<<<<<<<<<< DFA");
