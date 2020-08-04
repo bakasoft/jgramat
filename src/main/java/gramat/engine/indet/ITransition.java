@@ -11,14 +11,12 @@ public class ITransition {
     public final IState source;
     public final IState target;
     public final Symbol symbol;
-    public final Check check;
     public final ActionList actions;
 
-    public ITransition(IState source, IState target, Symbol symbol, Check check) {
+    public ITransition(IState source, IState target, Symbol symbol) {
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
         this.symbol = Objects.requireNonNull(symbol);
-        this.check = check;
         this.actions = new ActionList();
     }
 }

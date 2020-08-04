@@ -37,13 +37,15 @@ public class Rule extends Expression {
             var pop = builder.lang.checks.pop(name + id);
 
             for (var target : fragment.targets) {
-                var trn = builder.lang.newTransition(initial, target.target, target.symbol, push);
+                var symbol = builder.lang.symbols.getCheck(target.symbol, push);
+                var trn = builder.lang.newTransition(initial, target.target, symbol);
 
                 trn.actions.addAll(target.actions);
             }
 
             for (var source : fragment.sources) {
-                var trn = builder.lang.newTransition(source.source, accepted, source.symbol, pop);
+                var symbol = builder.lang.symbols.getCheck(source.symbol, pop);
+                var trn = builder.lang.newTransition(source.source, accepted, symbol);
 
                 trn.actions.addAll(source.actions);
             }

@@ -22,9 +22,6 @@ public class NTool {
                         queue.add(trn.target);
                     }
                     else {
-                        if (trn.check != null) {
-                            throw new RuntimeException("expected null check");
-                        }
                         result.add(trn);
                     }
                 }
@@ -52,9 +49,6 @@ public class NTool {
                         queue.add(trn.source);
                     }
                     else {
-                        if (trn.check != null) {
-                            throw new RuntimeException("expected null check");
-                        }
                         result.add(trn);
                     }
                 }

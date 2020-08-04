@@ -1,6 +1,7 @@
 package gramat.engine.symbols;
 
 import gramat.engine.AmCode;
+import gramat.engine.Runner;
 
 public class SymbolRange extends Symbol {
 
@@ -13,7 +14,8 @@ public class SymbolRange extends Symbol {
     }
 
     @Override
-    public boolean matches(char chr) {
+    public boolean matches(Runner runner) {
+        var chr = runner.getChar();
         return chr >= begin && chr <= end;
     }
 

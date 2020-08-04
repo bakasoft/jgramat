@@ -48,8 +48,8 @@ public class NLanguage {
         return state;
     }
 
-    public NTransition newTransition(NState source, NState target, Symbol symbol, Check check) {
-        var transition = new NTransition(source, target, symbol, check);
+    public NTransition newTransition(NState source, NState target, Symbol symbol) {
+        var transition = new NTransition(source, target, symbol);
 
         transitions.add(transition);
 
@@ -57,41 +57,25 @@ public class NLanguage {
     }
 
     public void newEmptyTransition(NState source, NState target) {
-        newEmptyTransition(source, target, null);
-    }
-
-    public void newEmptyTransition(NState source, NState target, Check check) {
-        newTransition(source, target, null, check);
+        newTransition(source, target, null);
     }
 
     public void newCharTransition(NState source, NState target, char value) {
-        newCharTransition(source, target, value, null);
-    }
-
-    public void newCharTransition(NState source, NState target, char value, Check check) {
         var symbol = symbols.getChar(value);
 
-        newTransition(source, target, symbol, check);
+        newTransition(source, target, symbol);
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end) {
-        newRangeTransition(source, target, begin, end, null);
-    }
-
-    public void newRangeTransition(NState source, NState target, char begin, char end, Check check) {
         var symbol = symbols.getRange(begin, end);
 
-        newTransition(source, target, symbol, check);
+        newTransition(source, target, symbol);
     }
 
     public void newWildTransition(NState source, NState target) {
-        newWildTransition(source, target, null);
-    }
-
-    public void newWildTransition(NState source, NState target, Check check) {
         var symbol = symbols.getWild();
 
-        newTransition(source, target, symbol, check);
+        newTransition(source, target, symbol);
     }
 
     public NTransitionList findTransitionsBySource(NState source) {
@@ -130,9 +114,6 @@ public class NLanguage {
             if (closure.add(source)) {
                 for (var trn : source.getTransitions()) {
                     if (trn.symbol == null) {
-                        if (trn.check != null) {
-                            throw new RuntimeException("Not-null check found");
-                        }
                         queue.add(trn.target);
                     }
                 }
@@ -169,10 +150,10 @@ public class NLanguage {
         return result;
     }
 
-    public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol, Check check) {
+    public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol) {
         var result = new NTransitionList();
         for (var transition : transitions) {
-            if (sources.contains(transition.source) && Objects.equals(transition.symbol, symbol) && Objects.equals(transition.check, check)) {
+            if (sources.contains(transition.source) && Objects.equals(transition.symbol, symbol)) {
                 result.add(transition);
             }
         }

@@ -27,9 +27,6 @@ public class IMachine {
         var control = new HashSet<String>();
         var initialClosure = source.initial.getEmptyClosure();
 
-        var checksAndNull = new ArrayList<>(lang.checks.getItems());
-        checksAndNull.add(null);  // TODO this is not beautiful
-
         queue.add(initialClosure);
 
         do {
@@ -37,21 +34,19 @@ public class IMachine {
 
             if (control.add(oldSources.computeID())) {
                 for (var symbol : lang.symbols) {
-                    for (var check : checksAndNull) {
-                        var oldTransitions = lang.findTransitionsFrom(oldSources, symbol, check);
+                    var oldTransitions = lang.findTransitionsFrom(oldSources, symbol);
 
-                        if (oldTransitions.size() > 0) {
-                            // get empty closure of all targets
-                            var oldTargets = oldTransitions.collectTargets().getEmptyClosure();
+                    if (oldTransitions.size() > 0) {
+                        // get empty closure of all targets
+                        var oldTargets = oldTransitions.collectTargets().getEmptyClosure();
 
-                            if (oldTargets.size() > 0) {
-                                var newSource = getOrCreateState(oldSources);
-                                var newTarget = getOrCreateState(oldTargets);
+                        if (oldTargets.size() > 0) {
+                            var newSource = getOrCreateState(oldSources);
+                            var newTarget = getOrCreateState(oldTargets);
 
-                                createTransition(newSource, newTarget, symbol, check);
+                            createTransition(newSource, newTarget, symbol);
 
-                                queue.add(oldTargets);
-                            }
+                            queue.add(oldTargets);
                         }
                     }
                 }
@@ -98,8 +93,8 @@ public class IMachine {
         return null;
     }
 
-    private void createTransition(IState source, IState target, Symbol symbol, Check check) {
-        var transition = new ITransition(source, target, symbol, check);
+    private void createTransition(IState source, IState target, Symbol symbol) {
+        var transition = new ITransition(source, target, symbol);
 
         transitions.add(transition);
     }

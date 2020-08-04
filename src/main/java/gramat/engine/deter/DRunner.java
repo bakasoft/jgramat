@@ -7,7 +7,7 @@ import gramat.engine.actions.ActionExecutor;
 import gramat.engine.checks.ControlStack;
 import gramat.engine.symbols.SymbolWild;
 
-public class DRunner {
+public class DRunner implements Runner {
 
     private final Input input;
     private final ActionExecutor executor;
@@ -19,13 +19,20 @@ public class DRunner {
         this.controlStack = new ControlStack();
     }
 
+    @Override
+    public char getChar() {
+        return input.peek();
+    }
+
+    @Override
+    public ControlStack getControlStack() {
+        return controlStack;
+    }
+
     public DState eval(DState initial) {
         DState state = initial;
 
         while(state != null) {
-            // peek current values
-            var symbol = input.peek();
-
             // find matching transition
             DTransition wildTransition = null;
             DTransition nextTransition = null;
@@ -34,7 +41,7 @@ public class DRunner {
                     if (transition.symbol instanceof SymbolWild) {
                         wildTransition = transition;
                     }
-                    else if (transition.symbol.matches(symbol)) {
+                    else if (transition.symbol.matches(this)) {
                         nextTransition = transition;
                         break;
                     }

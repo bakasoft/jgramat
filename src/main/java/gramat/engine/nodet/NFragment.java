@@ -5,6 +5,7 @@ import gramat.engine.symbols.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class NFragment {
 
@@ -25,9 +26,9 @@ public class NFragment {
         public final NState target;
 
         public Target(ActionList actions, Symbol symbol, NState target) {
-            this.actions = actions;
-            this.symbol = symbol;
-            this.target = target;
+            this.actions = Objects.requireNonNull(actions);
+            this.symbol = Objects.requireNonNull(symbol);
+            this.target = Objects.requireNonNull(target);
         }
     }
 
@@ -37,9 +38,9 @@ public class NFragment {
         public final ActionList actions;
 
         public Source(NState source, Symbol symbol, ActionList actions) {
-            this.symbol = symbol;
-            this.source = source;
-            this.actions = actions;
+            this.symbol = Objects.requireNonNull(symbol);
+            this.source = Objects.requireNonNull(source);
+            this.actions = Objects.requireNonNull(actions);
         }
     }
 

@@ -89,7 +89,7 @@ public class NBuilder {
                         }
 
                         // join actions
-                        var trn3 = lang.newTransition(trn1.source, trn2.target, symbol, null); // TODO null check? nani?!
+                        var trn3 = lang.newTransition(trn1.source, trn2.target, symbol);
                         trn3.actions.addAll(trn1.actions);
                         trn3.actions.addAll(trn2.actions);
 
@@ -128,10 +128,6 @@ public class NBuilder {
 
         // generate targets for the fragment
         for (var trn : NTool.findOutgoingSymbolTransitions(initial)) {
-            if (trn.check != null) {
-                throw new RuntimeException("expected null-check");
-            }
-
             fragment.targets.add(new NFragment.Target(trn.actions, trn.symbol, trn.target));
 
             // delete transition and source (won't be used since we are building a fragment)
@@ -141,11 +137,7 @@ public class NBuilder {
 
         // generate sources for the fragment
         for (var trn : NTool.findIncomingSymbolTransitions(accepted)) {
-            if (trn.check != null) {
-                throw new RuntimeException("expected null-check");
-            }
-
-            fragment.sources.add(new NFragment.Source(trn.source, trn.symbol , trn.actions));
+            fragment.sources.add(new NFragment.Source(trn.source, trn.symbol, trn.actions));
 
             // delete transition and target (won't be used since we are building a fragment)
             trashTransitions.add(trn);

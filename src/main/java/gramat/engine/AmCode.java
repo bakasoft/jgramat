@@ -38,11 +38,6 @@ public class AmCode {
                         var sourceID = transition.source.id;
                         var targetID = transition.target.id;
                         var symbol = transition.symbol != null ? transition.symbol.toString() : "¶";
-                        var check = transition.check != null ? transition.check.toString() : null;
-
-                        if (check != null) {
-                            symbol = symbol + " / " + check;
-                        }
 
                         if (transition.actions.isEmpty()) {
                             writeTransition(output, sourceID, targetID, symbol, null, null);
@@ -179,11 +174,6 @@ public class AmCode {
                         var sourceID = transition.source.computeID();
                         var targetID = transition.target.computeID();
                         var symbol = transition.symbol.toString();
-                        var check = transition.check != null ? transition.check.toString() : null;
-
-                        if (check != null) {
-                            symbol = symbol + " / " + check;
-                        }
 
                         if (transition.actions.isEmpty()) {
                             writeTransition(output, sourceID, targetID, symbol, null, null);

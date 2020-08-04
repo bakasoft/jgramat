@@ -1,8 +1,11 @@
 package gramat.engine.symbols;
 
+import gramat.engine.checks.Check;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class SymbolSource implements Iterable<Symbol> {
 
@@ -10,10 +13,6 @@ public class SymbolSource implements Iterable<Symbol> {
 
     public SymbolSource() {
         symbols = new ArrayList<>();
-    }
-
-    public SymbolSource(SymbolSource source) {
-        this.symbols = new ArrayList<>(source.symbols);
     }
 
     @Override
@@ -57,6 +56,24 @@ public class SymbolSource implements Iterable<Symbol> {
         return range;
     }
 
+    public SymbolCheck getCheck(Symbol symbol, Check check) {
+        for (var s : symbols) {
+            if (s instanceof SymbolCheck) {
+                var sch = (SymbolCheck)s;
+
+                if (Objects.equals(sch.symbol, symbol) && Objects.equals(sch.check, check)) {
+                    return sch;
+                }
+            }
+        }
+
+        var sch = new SymbolCheck(symbol, check);
+
+        symbols.add(sch);
+
+        return sch;
+    }
+
     public SymbolWild getWild() {
         for (var symbol : symbols) {
             if (symbol instanceof SymbolWild) {
@@ -69,9 +86,5 @@ public class SymbolSource implements Iterable<Symbol> {
         symbols.add(wild);
 
         return wild;
-    }
-
-    public SymbolSource copy() {
-        return new SymbolSource(this);
     }
 }
