@@ -64,6 +64,13 @@ public class IMachine {
             throw new GramatException("cannot find initial state");
         }
 
+        // mark accepted states
+        for (var state : states) {
+            if (state.origin.contains(source.accepted)) {
+                state.accepted = true;
+            }
+        }
+
         return initial;
     }
 
