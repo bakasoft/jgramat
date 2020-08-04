@@ -17,7 +17,7 @@ public class Optional extends Expression {
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
 
-        builder.root.newEmptyTransition(initial, accepted);
+        builder.lang.newEmptyTransition(initial, accepted);
 
         return accepted;
     }

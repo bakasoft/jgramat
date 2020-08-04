@@ -2,23 +2,23 @@ package gramat.engine.nodet;
 
 public class NState {
 
-    public final NRoot root;
+    public final NLanguage lang;
     public final String id;
 
-    public NState(NRoot root, String id) {
-        this.root = root;
+    public NState(NLanguage lang, String id) {
+        this.lang = lang;
         this.id = id;
     }
 
     public NTransitionList getTransitions() {
-        return root.findTransitionsBySource(this);
+        return lang.findTransitionsBySource(this);
     }
 
     public NStateList getEmptyClosure() {
-        return root.computeEmptyClosure(this);
+        return lang.computeEmptyClosure(this);
     }
 
     public NStateList getInverseEmptyClosure() {
-        return root.computeInverseEmptyClosure(this);
+        return lang.computeInverseEmptyClosure(this);
     }
 }

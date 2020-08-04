@@ -11,7 +11,7 @@ public class TRX2 {
 //        var beginTransitions = NTool.findOutgoingSymbolTransitions(initial);
         var beginTransitions = initial.getTransitions();
 //        var commitTransitions = NTool.findIncomingSymbolTransitions(accepted);
-        var commitTransitions = builder.root.findTransitionsByTarget(accepted);
+        var commitTransitions = builder.lang.findTransitionsByTarget(accepted);
 //        var contentTransitions = NTool.findSymbolTransitions(initial, accepted);
         var contentTransitions = NTool.findAllTransitions(initial, accepted);
 

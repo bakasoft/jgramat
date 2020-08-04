@@ -15,12 +15,12 @@ public class Alternation extends Expression {
 
     @Override
     public NState build(NBuilder builder, NState initial) {
-        var accepted = builder.root.newState();
+        var accepted = builder.lang.newState();
 
         for (var item : items) {
             var last = item.build(builder, initial);
 
-            builder.root.newEmptyTransition(last, accepted);
+            builder.lang.newEmptyTransition(last, accepted);
         }
 
         return accepted;

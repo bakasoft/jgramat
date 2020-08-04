@@ -8,7 +8,7 @@ import gramat.engine.symbols.SymbolSource;
 
 import java.util.*;
 
-public class NRoot {
+public class NLanguage {
 
     public final NStateList states;
     public final NTransitionList transitions;
@@ -17,11 +17,11 @@ public class NRoot {
 
     private int next_state_id = 1;
 
-    public NRoot() {
+    public NLanguage() {
         this(new NStateList(), new NTransitionList(), new SymbolSource(), new CheckSource());
     }
 
-    public NRoot(NStateList states, NTransitionList transitions, SymbolSource symbols, CheckSource checks) {
+    public NLanguage(NStateList states, NTransitionList transitions, SymbolSource symbols, CheckSource checks) {
         this.states = states;
         this.transitions = transitions;
         this.symbols = symbols;
@@ -183,7 +183,7 @@ public class NRoot {
         transitions.remove(transition);
     }
 
-    protected void delete(NState state) {
+    public void delete(NState state) {
         transitions.removeIf(t -> t.source == state || t.target == state);
         states.remove(state);
     }

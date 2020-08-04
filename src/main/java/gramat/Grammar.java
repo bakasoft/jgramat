@@ -1,10 +1,9 @@
 package gramat;
 
 import gramat.common.TextException;
-import gramat.engine.AmCode;
-import gramat.engine.nodet.NAutomaton;
+import gramat.engine.indet.IMachine;
 import gramat.engine.nodet.NBuilder;
-import gramat.engine.nodet.NRoot;
+import gramat.engine.nodet.NLanguage;
 import gramat.expressions.Rule;
 import gramat.parsing.*;
 import gramat.parsing.parsers.ImportParser;
@@ -43,18 +42,11 @@ public class Grammar {
             throw new RuntimeException("not found: " + name);
         }
 
-        var root = new NRoot();
-        var builder = new NBuilder(root);
-        var machine = builder.compile(rule);
-        var automaton = new NAutomaton(root, machine);
-
-        automaton.makeDeterministic();
-
-        System.out.println("DFA >>>>>>>>>>");
-        AmCode.write(System.out, automaton.getInitial(), automaton.getAccepted());
-        System.out.println("<<<<<<<<<< DFA");
-
-        var initial = automaton.compile();
+        var lang = new NLanguage();
+        var builder = new NBuilder(lang);
+        var nMachine = builder.compile(rule);
+        var iMachine = new IMachine(lang, nMachine);
+        var initial = iMachine.compile();
 
         return new Parser(initial);
     }

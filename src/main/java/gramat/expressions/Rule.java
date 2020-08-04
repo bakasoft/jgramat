@@ -2,10 +2,7 @@ package gramat.expressions;
 
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NState;
-import gramat.engine.nodet.NTool;
-import gramat.engine.symbols.Symbol;
 
-import java.util.HashSet;
 import java.util.List;
 
 public class Rule extends Expression {
@@ -28,7 +25,7 @@ public class Rule extends Expression {
         }
 
         var fragment = builder.makeFragment(this);
-        var accepted = builder.root.newState();
+        var accepted = builder.lang.newState();
 
         builder.addRecursiveHook(() -> {
             if (!fragment.ready) {
@@ -36,17 +33,17 @@ public class Rule extends Expression {
             }
 
             var id = builder.counts.next(name);
-            var push = builder.root.checks.push(name + id);
-            var pop = builder.root.checks.pop(name + id);
+            var push = builder.lang.checks.push(name + id);
+            var pop = builder.lang.checks.pop(name + id);
 
             for (var target : fragment.targets) {
-                var trn = builder.root.newTransition(initial, target.target, target.symbol, push);
+                var trn = builder.lang.newTransition(initial, target.target, target.symbol, push);
 
                 trn.actions.addAll(target.actions);
             }
 
             for (var source : fragment.sources) {
-                var trn = builder.root.newTransition(source.source, accepted, source.symbol, pop);
+                var trn = builder.lang.newTransition(source.source, accepted, source.symbol, pop);
 
                 trn.actions.addAll(source.actions);
             }

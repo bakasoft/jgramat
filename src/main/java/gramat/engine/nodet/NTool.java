@@ -34,7 +34,7 @@ public class NTool {
     }
 
     public static NTransitionList findIncomingSymbolTransitions(NState target) {
-        var root = target.root;
+        var lang = target.lang;
         var result = new NTransitionList();
         var control = new HashSet<NState>();
         var queue = new LinkedList<NState>();
@@ -45,7 +45,7 @@ public class NTool {
             var state = queue.remove();
 
             if (control.add(state)) {
-                for (var trn : root.findTransitionsByTarget(state)) {
+                for (var trn : lang.findTransitionsByTarget(state)) {
                     if (trn.isSymbolNull()) {
                         queue.add(trn.source);
                     }

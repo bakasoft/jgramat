@@ -56,68 +56,68 @@ public class Repetition extends Expression {
     }
 
     private NState zero_or_more_no_separator(NBuilder builder, NState initial) {
-        var accepted = builder.root.newState();
+        var accepted = builder.lang.newState();
 
         // zero times
-        builder.root.newEmptyTransition(initial, accepted);
+        builder.lang.newEmptyTransition(initial, accepted);
 
         // one time
-        var contentStart = builder.root.newState();
+        var contentStart = builder.lang.newState();
         var contentAccepted = content.build(builder, contentStart);
-        builder.root.newEmptyTransition(initial, contentStart);
-        builder.root.newEmptyTransition(contentAccepted, accepted);
+        builder.lang.newEmptyTransition(initial, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, accepted);
 
         // more times
-        builder.root.newEmptyTransition(contentAccepted, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, contentStart);
 
         return accepted;
     }
 
     private NState zero_or_more_with_separator(NBuilder builder, NState initial) {
         // zero times
-        var accepted = builder.root.newState();
-        builder.root.newEmptyTransition(initial, accepted);
+        var accepted = builder.lang.newState();
+        builder.lang.newEmptyTransition(initial, accepted);
 
         // one time
-        var contentStart = builder.root.newState();
+        var contentStart = builder.lang.newState();
         var contentAccepted = content.build(builder, contentStart);
-        builder.root.newEmptyTransition(initial, contentStart);
-        builder.root.newEmptyTransition(contentAccepted, accepted);
+        builder.lang.newEmptyTransition(initial, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, accepted);
 
         // more times
         var separatorAccepted = separator.build(builder, contentAccepted);
-        builder.root.newEmptyTransition(separatorAccepted, contentStart);
+        builder.lang.newEmptyTransition(separatorAccepted, contentStart);
 
         return accepted;
     }
 
     private NState one_or_more_no_separator(NBuilder builder, NState initial) {
-        var accepted = builder.root.newState();
+        var accepted = builder.lang.newState();
 
         // one time
-        var contentStart = builder.root.newState();
+        var contentStart = builder.lang.newState();
         var contentAccepted = content.build(builder, contentStart);
-        builder.root.newEmptyTransition(initial, contentStart);
-        builder.root.newEmptyTransition(contentAccepted, accepted);
+        builder.lang.newEmptyTransition(initial, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, accepted);
 
         // more times
-        builder.root.newEmptyTransition(contentAccepted, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, contentStart);
 
         return accepted;
     }
 
     private NState one_or_more_with_separator(NBuilder builder, NState initial) {
-        var accepted = builder.root.newState();
+        var accepted = builder.lang.newState();
 
         // one time
-        var contentStart = builder.root.newState();
+        var contentStart = builder.lang.newState();
         var contentAccepted = content.build(builder, contentStart);
-        builder.root.newEmptyTransition(initial, contentStart);
-        builder.root.newEmptyTransition(contentAccepted, accepted);
+        builder.lang.newEmptyTransition(initial, contentStart);
+        builder.lang.newEmptyTransition(contentAccepted, accepted);
 
         // more times
         var separatorAccepted = separator.build(builder, contentAccepted);
-        builder.root.newEmptyTransition(separatorAccepted, contentStart);
+        builder.lang.newEmptyTransition(separatorAccepted, contentStart);
 
         return accepted;
     }

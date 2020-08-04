@@ -1,6 +1,5 @@
 package gramat.engine.nodet;
 
-import gramat.engine.actions.Action;
 import gramat.expressions.Rule;
 import gramat.tools.NamedCounts;
 
@@ -8,7 +7,7 @@ import java.util.*;
 
 public class NBuilder {
 
-    public final NRoot root;
+    public final NLanguage lang;
     public final NamedCounts counts;
 
     private final List<Runnable> transitionHooks;
@@ -17,8 +16,8 @@ public class NBuilder {
 
     private final List<NFragment> fragments;
 
-    public NBuilder(NRoot root) {
-        this.root = root;
+    public NBuilder(NLanguage lang) {
+        this.lang = lang;
         transitionHooks = new ArrayList<>();
         recursiveHooks = new ArrayList<>();
         actionHooks = new ArrayList<>();
@@ -40,7 +39,7 @@ public class NBuilder {
         fragments.add(fragment);
 
         // create isolated state for the fragment
-        var initial = root.newState();
+        var initial = lang.newState();
 
         // build expression normally (infinite recursion should be handled at this point)
         var accepted = rule.expression.build(this, initial);
@@ -77,10 +76,10 @@ public class NBuilder {
 
         // empty trash collectors
         for (var trn : trashTransitions) {
-            root.delete(trn);
+            lang.delete(trn);
         }
         for (var state : trashStates) {
-            root.delete(state);
+            lang.delete(state);
         }
 
         fragment.ready = true;
@@ -89,8 +88,8 @@ public class NBuilder {
     }
 
     public NMachine compile(Rule rule) {
-        var builder = new NBuilder(root);
-        var initial = builder.root.newState();
+        var builder = new NBuilder(lang);
+        var initial = builder.lang.newState();
         var accepted = rule.build(builder, initial);
 
         for (var hook : builder.transitionHooks) {
