@@ -71,6 +71,23 @@ public class IMachine {
             }
         }
 
+        // distribute actions
+        for (var iTran : this.transitions) {
+            for (var nTran : lang.transitions) {
+                // skip not matching symbols (null symbols actually matches)
+                if (nTran.symbol != null && !Objects.equals(iTran.symbol, nTran.symbol)) {
+                    continue;
+                }
+                // skip not matching directions
+                else if (!iTran.source.origin.contains(nTran.source) || !iTran.target.origin.contains(nTran.target)) {
+                    continue;
+                }
+
+                // apply actions
+                iTran.actions.addAll(nTran.actions);
+            }
+        }
+
         return initial;
     }
 
