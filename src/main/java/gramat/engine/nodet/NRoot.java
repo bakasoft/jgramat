@@ -48,10 +48,12 @@ public class NRoot {
         return state;
     }
 
-    public void newTransition(NState source, NState target, Symbol symbol, Check check) {
+    public NTransition newTransition(NState source, NState target, Symbol symbol, Check check) {
         var transition = new NTransition(source, target, symbol, check);
 
         transitions.add(transition);
+
+        return transition;
     }
 
     public void newEmptyTransition(NState source, NState target) {

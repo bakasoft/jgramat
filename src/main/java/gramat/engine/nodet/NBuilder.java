@@ -17,7 +17,7 @@ public class NBuilder {
 
     private final List<NFragment> fragments;
 
-    private final List<NGroup> groups;
+    public final List<NGroup> groups;
 
     public NBuilder(NRoot root) {
         this.root = root;
@@ -58,7 +58,7 @@ public class NBuilder {
                 throw new RuntimeException("expected null-check");
             }
 
-            fragment.targets.add(new NFragment.Target(trn.source.marks, trn.getSymbol(), trn.target));
+            fragment.targets.add(new NFragment.Target(trn.actions, trn.source.marks, trn.getSymbol(), trn.target));
 
             // delete transition and source (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -71,7 +71,7 @@ public class NBuilder {
                 throw new RuntimeException("expected null-check");
             }
 
-            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol(), trn.target.marks));
+            fragment.sources.add(new NFragment.Source(trn.source, trn.getSymbol(), trn.target.marks, trn.actions));
 
             // delete transition and target (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -108,18 +108,98 @@ public class NBuilder {
             hook.run();
         }
 
-        // TODO remove this debugging message
-        for (var group: builder.groups) {
-            System.out.println("GROUP " + group.number + " - " + group.initialMark + "->" + group.contentMark + "->" + group.acceptedMark + " - " + group.beginAction + "->" + group.commitAction + "->" + group.rollbackAction);
-        }
-
-        var machine = new NMachine(rule.name, initial, accepted);
+        var machine = new NMachine(rule.name, initial, accepted, builder.groups);
 
         System.out.println("NDFA >>>>>>>>>>");
         System.out.println(machine.getAmCode());
         System.out.println("<<<<<<<<<< NDFA");
 
         return machine;
+    }
+
+    private Set<NState> find_states_with_mark(NState root, NMark mark) {
+        var result = new HashSet<NState>();
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+
+        queue.add(root);
+
+        while (queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                if (state.marks.contains(mark)) {
+                    result.add(state);
+                }
+
+                for (var trn : state.getTransitions()) {
+                    queue.add(trn.target);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void resolve_group(NGroup group, NState root) {
+        var initialStates = find_states_with_mark(root, group.initialMark);
+        var contentStates = find_states_with_mark(root, group.contentMark);
+        var acceptedStates = find_states_with_mark(root, group.acceptedMark);
+
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+
+        queue.add(root);
+
+        while (queue.size() > 0) {
+            var source = queue.remove();
+
+            if (control.add(source)) {
+                for (var trn : source.getTransitions()) {
+                    if (initialStates.contains(source)) {
+                        if (acceptedStates.contains(trn.target)) {
+                            // initial -> accepted = commit
+                            trn.addAction(group.commitAction);
+                        }
+                        else if (initialStates.contains(trn.target)) {
+                            // initial -> initial = nothing
+                        }
+                        else if (contentStates.contains(trn.target)) {
+                            // initial -> content = begin
+                            trn.addAction(group.beginAction);
+                        }
+                    }
+                    else if (acceptedStates.contains(source)) {
+                        if (initialStates.contains(trn.target)) {
+                            // accepted -> initial = begin (again)
+                            trn.addAction(group.beginAction);
+                        }
+                        else if (acceptedStates.contains(trn.target)) {
+                            // content -> accepted = commit
+                            trn.addAction(group.commitAction);
+                        }
+
+                        // accepted -> other = nothing
+                    }
+                    else if (contentStates.contains(source)) {
+                        if (initialStates.contains(trn.target)) {
+                            // content -> initial = begin (again)
+                            trn.addAction(group.beginAction);
+                        }
+                        else if (acceptedStates.contains(trn.target)) {
+                            // content -> accepted = commit
+                            trn.addAction(group.commitAction);
+                        }
+                        else if (!contentStates.contains(trn.target)) {
+                            // content -> other = rollback
+                            trn.addAction(group.rollbackAction);
+                        }
+                    }
+
+                    queue.add(trn.target);
+                }
+            }
+        }
     }
 
     public NGroup newGroup(Action begin, Action commit, Action rollback) {

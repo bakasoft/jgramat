@@ -21,9 +21,9 @@ public class CObject extends Expression {
         var accepted = content.build(builder, initial);
         var begin = new ObjectBegin();
         var commit = new ObjectCommit(begin);
-        var rollback = new ObjectRollback(begin);
+        var sustain = new ObjectSustain(begin);
 
-        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
+        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
     }
@@ -77,6 +77,25 @@ public class CObject extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT OBJECT";
+        }
+    }
+
+    public class ObjectSustain extends ValueAction {
+
+        private final ObjectBegin begin;
+
+        public ObjectSustain(ObjectBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN OBJECT";
         }
     }
 

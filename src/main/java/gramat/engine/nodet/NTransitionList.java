@@ -22,6 +22,14 @@ public class NTransitionList extends ArrayList<NTransition> {
         return stream().anyMatch(NTransition::isSymbolWild);
     }
 
+    public NStateList collectSources() {
+        var result = new NStateList();
+        for (var transition : this) {
+            result.add(transition.source);
+        }
+        return result;
+    }
+
     public NStateList collectTargets() {
         var result = new NStateList();
         for (var transition : this) {

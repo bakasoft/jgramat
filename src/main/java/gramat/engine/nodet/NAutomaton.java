@@ -65,10 +65,6 @@ public class NAutomaton extends NRoot {
         }
 
         generateClearChecks(initial);
-
-        System.out.println("DFA >>>>>>>>>>");
-        AmCode.write(System.out, initial, accepted);
-        System.out.println("<<<<<<<<<< DFA");
     }
 
     private NStateList makeClosureDeterministic(StateMaker stateMaker, NStateList oldSources, Symbol symbol, Check check) {
@@ -127,6 +123,14 @@ public class NAutomaton extends NRoot {
                 }
             }
         } while (queue.size() > 0);
+    }
+
+    public NState getInitial() {
+        return initial;
+    }
+
+    public NStateList getAccepted() {
+        return accepted;
     }
 
     private class StateMaker {

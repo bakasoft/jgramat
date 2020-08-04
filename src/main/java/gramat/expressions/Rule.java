@@ -40,15 +40,18 @@ public class Rule extends Expression {
             var pop = builder.root.checks.pop(name + id);
 
             for (var target : fragment.targets) {
-                builder.root.newTransition(initial, target.target, target.symbol, push);
+                var trn = builder.root.newTransition(initial, target.target, target.symbol, push);
 
                 initial.marks.addAll(target.marks);
+                trn.actions.addAll(target.actions);
             }
 
             for (var source : fragment.sources) {
-                builder.root.newTransition(source.source, accepted, source.symbol, pop);
+                var trn = builder.root.newTransition(source.source, accepted, source.symbol, pop);
 
                 accepted.marks.addAll(source.marks);
+
+                trn.actions.addAll(source.actions);
             }
         });
 

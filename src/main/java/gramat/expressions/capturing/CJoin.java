@@ -19,9 +19,9 @@ public class CJoin extends Expression {
         var accepted = content.build(builder, initial);
         var begin = new JoinBegin();
         var commit = new JoinCommit(begin);
-        var rollback = new JoinRollback(begin);
+        var sustain = new JoinSustain(begin);
 
-        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
+        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
     }
@@ -60,6 +60,25 @@ public class CJoin extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT JOIN";
+        }
+    }
+
+    public class JoinSustain extends ValueAction {
+
+        private final JoinBegin begin;
+
+        public JoinSustain(JoinBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO implement
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN JOIN";
         }
     }
 

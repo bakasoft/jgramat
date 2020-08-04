@@ -26,16 +26,16 @@ public class CAttributeDynamic extends Expression {
         var nameAccepted = name.build(builder, initial);
         var nameBegin = new AttributeNameBegin();
         var nameCommit = new AttributeNameCommit(nameBegin);
-        var nameRollback = new AttributeNameRollback(nameBegin);
+        var nameSustain = new AttributeNameSustain(nameBegin);
 
-        TRX.applyActions(builder, initial, nameAccepted, nameBegin, nameCommit, nameRollback);
+        TRX2.applyActions(builder, initial, nameAccepted, nameBegin, nameCommit, nameSustain);
 
         var valueAccepted = value.build(builder, nameAccepted);
         var valueBegin = new AttributeValueBegin();
         var valueCommit = new AttributeValueCommit(valueBegin, nameCommit);
-        var valueRollback = new AttributeValueRollback(valueBegin);
+        var valueSustain = new AttributeValueSustain(valueBegin);
 
-        TRX.applyActions(builder, nameAccepted, valueAccepted, valueBegin, valueCommit, valueRollback);
+        TRX2.applyActions(builder, nameAccepted, valueAccepted, valueBegin, valueCommit, valueSustain);
 
         return valueAccepted;
     }
@@ -85,6 +85,25 @@ public class CAttributeDynamic extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT ATTRIBUTE NAME";
+        }
+    }
+
+    public class AttributeNameSustain extends ValueAction {
+
+        private final AttributeNameBegin begin;
+
+        public AttributeNameSustain(AttributeNameBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN ATTRIBUTE NAME";
         }
     }
 
@@ -164,6 +183,25 @@ public class CAttributeDynamic extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT ATTRIBUTE VALUE";
+        }
+    }
+
+    public class AttributeValueSustain extends ValueAction {
+
+        private final AttributeValueBegin begin;
+
+        public AttributeValueSustain(AttributeValueBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN ATTRIBUTE VALUE";
         }
     }
 

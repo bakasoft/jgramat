@@ -21,9 +21,9 @@ public class CAttribute extends Expression {
         var accepted = content.build(builder, initial);
         var begin = new AttributeBegin();
         var commit = new AttributeCommit(begin);
-        var rollback = new AttributeRollback(begin);
+        var sustain = new AttributeSustain(begin);
 
-        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
+        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
     }
@@ -69,6 +69,25 @@ public class CAttribute extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT ATTRIBUTE: " + name;
+        }
+    }
+
+    public class AttributeSustain extends ValueAction {
+
+        private final AttributeBegin begin;
+
+        public AttributeSustain(AttributeBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN ATTRIBUTE: " + name;
         }
     }
 

@@ -58,14 +58,12 @@ public class Repetition extends Expression {
     private NState zero_or_more_no_separator(NBuilder builder, NState initial) {
         var accepted = builder.root.newState();
 
-        // zero times, bypass loop
+        // zero times
         builder.root.newEmptyTransition(initial, accepted);
 
-        // create stand-alone internal content
+        // one time
         var contentStart = builder.root.newState();
         var contentAccepted = content.build(builder, contentStart);
-
-        // connect content with the external states
         builder.root.newEmptyTransition(initial, contentStart);
         builder.root.newEmptyTransition(contentAccepted, accepted);
 
@@ -76,16 +74,13 @@ public class Repetition extends Expression {
     }
 
     private NState zero_or_more_with_separator(NBuilder builder, NState initial) {
+        // zero times
         var accepted = builder.root.newState();
-
-        // zero times, bypass loop
         builder.root.newEmptyTransition(initial, accepted);
 
-        // create stand-alone internal content
+        // one time
         var contentStart = builder.root.newState();
         var contentAccepted = content.build(builder, contentStart);
-
-        // connect content with the external states
         builder.root.newEmptyTransition(initial, contentStart);
         builder.root.newEmptyTransition(contentAccepted, accepted);
 
@@ -97,14 +92,16 @@ public class Repetition extends Expression {
     }
 
     private NState one_or_more_no_separator(NBuilder builder, NState initial) {
+        var accepted = builder.root.newState();
+
+        // one time
         var contentStart = builder.root.newState();
-
+        var contentAccepted = content.build(builder, contentStart);
         builder.root.newEmptyTransition(initial, contentStart);
-
-        var accepted = content.build(builder, contentStart);
+        builder.root.newEmptyTransition(contentAccepted, accepted);
 
         // more times
-        builder.root.newEmptyTransition(accepted, contentStart);
+        builder.root.newEmptyTransition(contentAccepted, contentStart);
 
         return accepted;
     }
@@ -112,11 +109,9 @@ public class Repetition extends Expression {
     private NState one_or_more_with_separator(NBuilder builder, NState initial) {
         var accepted = builder.root.newState();
 
-        // create stand-alone internal content
+        // one time
         var contentStart = builder.root.newState();
         var contentAccepted = content.build(builder, contentStart);
-
-        // connect content with the external states
         builder.root.newEmptyTransition(initial, contentStart);
         builder.root.newEmptyTransition(contentAccepted, accepted);
 

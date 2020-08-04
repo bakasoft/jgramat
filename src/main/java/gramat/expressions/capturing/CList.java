@@ -21,9 +21,9 @@ public class CList extends Expression {
         var accepted = content.build(builder, initial);
         var begin = new ListBegin();
         var commit = new ListCommit(begin);
-        var rollback = new ListRollback(begin);
+        var sustain = new ListSustain(begin);
 
-        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
+        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
     }
@@ -63,6 +63,25 @@ public class CList extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT LIST";
+        }
+    }
+
+    public class ListSustain extends ValueAction {
+
+        private final ListBegin begin;
+
+        public ListSustain(ListBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO implement
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN LIST";
         }
     }
 

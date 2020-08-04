@@ -58,7 +58,14 @@ public class AmCode {
                         symbol = symbol + " / " + check;
                     }
 
-                    writeTransition(output, sourceID, targetID, symbol, null, null);
+                    if (transition.actions.isEmpty()) {
+                        writeTransition(output, sourceID, targetID, symbol, null, null);
+                    }
+                    else {
+                        for (var action : transition.actions) {
+                            writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                        }
+                    }
                 }
             }
         }

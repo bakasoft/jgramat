@@ -62,4 +62,53 @@ public class NTool {
         return result;
     }
 
+    public static NTransitionList findSymbolTransitions(NState start, NState stop) {
+        var result = new NTransitionList();
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+
+        queue.add(start);
+
+        while(queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                for (var trn : state.getTransitions()) {
+                    if (!trn.isSymbolNull()) {
+                        result.add(trn);
+                    }
+
+                    if (trn.source != stop || trn.target == stop) {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static NTransitionList findAllTransitions(NState start, NState stop) {
+        var result = new NTransitionList();
+        var control = new HashSet<NState>();
+        var queue = new LinkedList<NState>();
+
+        queue.add(start);
+
+        while(queue.size() > 0) {
+            var state = queue.remove();
+
+            if (control.add(state)) {
+                for (var trn : state.getTransitions()) {
+                    result.add(trn);
+
+                    if (trn.source != stop || trn.target == stop) {
+                        queue.add(trn.target);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 }

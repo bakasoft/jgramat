@@ -1,5 +1,7 @@
 package gramat.engine.nodet;
 
+import gramat.engine.actions.Action;
+import gramat.engine.actions.ActionList;
 import gramat.engine.symbols.Symbol;
 import gramat.engine.control.Check;
 import gramat.engine.symbols.SymbolNull;
@@ -14,12 +16,14 @@ public class NTransition {
 
     private Symbol symbol;
     private Check check;
+    public final ActionList actions;
 
     public NTransition(NState source, NState target, Symbol symbol, Check check) {
         this.source = source;
         this.target = target;
         this.symbol = Objects.requireNonNull(symbol);
         this.check = Objects.requireNonNull(check);
+        this.actions = new ActionList();
     }
 
     public boolean isSymbolNull() {
@@ -52,5 +56,9 @@ public class NTransition {
 
     public void setCheck(Check check) {
         this.check = check;
+    }
+
+    public void addAction(Action action) {
+        this.actions.add(action);
     }
 }

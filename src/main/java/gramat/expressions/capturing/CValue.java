@@ -22,9 +22,9 @@ public class CValue extends Expression {
         var accepted = content.build(builder, initial);
         var begin = new ValueBegin();
         var commit = new ValueCommit(begin);
-        var rollback = new ValueRollback(begin);
+        var sustain = new ValueSustain(begin);
 
-        TRX.applyActions(builder, initial, accepted, begin, commit, rollback);
+        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
 
         return accepted;
     }
@@ -80,6 +80,25 @@ public class CValue extends Expression {
         @Override
         public String getDescription() {
             return "COMMIT VALUE";
+        }
+    }
+
+    public class ValueSustain extends ValueAction {
+
+        private final ValueBegin begin;
+
+        public ValueSustain(ValueBegin begin) {
+            this.begin = begin;
+        }
+
+        @Override
+        public void run(ValueRuntime runtime) {
+            // TODO
+        }
+
+        @Override
+        public String getDescription() {
+            return "SUSTAIN VALUE";
         }
     }
 
