@@ -43,8 +43,6 @@ public class NBuilder {
             hook.run();
         }
 
-        join_mono_transitions(initial, accepted);
-
         var machine = new NMachine(rule.name, initial, accepted);
 
         System.out.println("N-DFA >>>>>>>>>>");
@@ -52,55 +50,6 @@ public class NBuilder {
         System.out.println("<<<<<<<<<< N-DFA");
 
         return machine;
-    }
-
-    private void join_mono_transitions(NState initial, NState accepted) {
-        boolean keepJoining = true;
-
-        while(keepJoining) {
-            keepJoining = false;
-
-            for (var i = 0; i < lang.transitions.size(); i++) {
-                var trn1 = lang.transitions.get(i);
-
-                if (trn1.target != accepted) {
-                    var targetOutgoing = lang.findTransitionsBySource(trn1.target);
-                    var targetIncoming = lang.findTransitionsByTarget(trn1.target);
-
-                    targetIncoming.remove(trn1);  // exclude this transition
-
-                    // check if there is a candidate to join
-                    if (targetIncoming.isEmpty() && targetOutgoing.size() == 1) {
-                        var trn2 = targetOutgoing.get(0);
-                        Symbol symbol;
-
-                        if (trn1.symbol != null && trn2.symbol != null) {
-                            // skip this candidate: two symbols cannot be joined
-                            continue;
-                        }
-                        else if (trn1.symbol != null) {
-                            symbol = trn1.symbol;
-                        }
-                        else if (trn2.symbol != null) {
-                            symbol = trn2.symbol;
-                        }
-                        else {
-                            symbol = null;
-                        }
-
-                        // join actions
-                        var trn3 = lang.newTransition(trn1.source, trn2.target, symbol);
-                        trn3.actions.addAll(trn1.actions);
-                        trn3.actions.addAll(trn2.actions);
-
-                        lang.delete(trn1);
-                        lang.delete(trn2);
-
-                        keepJoining = true;
-                    }
-                }
-            }
-        }
     }
 
     public NFragment makeFragment(Rule rule) {

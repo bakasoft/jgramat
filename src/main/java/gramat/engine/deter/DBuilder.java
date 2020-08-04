@@ -62,7 +62,7 @@ public class DBuilder {
     public DTransition transition(DState source, DState target, Symbol symbol, Check check, Action... actions) {
         var transition = new DTransition(target, symbol, check);
 
-        Collections.addAll(transition.actions, actions);
+        transition.actions.addAll(actions);
 
         source.transitions.add(transition);
 

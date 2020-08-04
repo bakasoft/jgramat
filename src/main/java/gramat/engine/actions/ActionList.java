@@ -1,19 +1,42 @@
 package gramat.engine.actions;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
-public class ActionList extends ArrayList<Action> {
+public class ActionList implements Iterable<Action> {
+
+    private final ArrayList<Action> actions;
 
     public ActionList() {
-
+        actions = new ArrayList<>();
     }
 
-    public ActionList(Collection<Action> items) {
-        super(items);
+    public void addAll(ActionList items) {
+        for (var item : items) {
+            this.add(item);
+        }
     }
 
-    public ActionList copy() {
-        return new ActionList(this);
+    public boolean add(Action item) {
+        if (actions.contains(item)) {
+            return false;
+        }
+
+        actions.add(item);
+        return true;
+    }
+
+    @Override
+    public Iterator<Action> iterator() {
+        return actions.iterator();
+    }
+
+    public void addAll(Action[] items) {
+        Collections.addAll(actions, items);
+    }
+
+    public boolean isEmpty() {
+        return actions.isEmpty();
     }
 }
