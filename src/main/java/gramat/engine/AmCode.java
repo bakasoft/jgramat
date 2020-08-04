@@ -37,8 +37,8 @@ public class AmCode {
                     for (var transition : state.getTransitions()) {
                         var sourceID = transition.source.id;
                         var targetID = transition.target.id;
-                        var symbol = transition.symbol.toString();
-                        var check = transition.check.toString();
+                        var symbol = transition.symbol != null ? transition.symbol.toString() : "¶";
+                        var check = transition.check != null ? transition.check.toString() : null;
 
                         if (check != null) {
                             symbol = symbol + " / " + check;
@@ -179,7 +179,7 @@ public class AmCode {
                         var sourceID = transition.source.computeID();
                         var targetID = transition.target.computeID();
                         var symbol = transition.symbol.toString();
-                        var check = transition.check.toString();
+                        var check = transition.check != null ? transition.check.toString() : null;
 
                         if (check != null) {
                             symbol = symbol + " / " + check;

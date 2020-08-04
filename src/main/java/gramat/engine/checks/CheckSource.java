@@ -54,45 +54,6 @@ public class CheckSource implements Iterable<Check> {
         return pop;
     }
 
-    public Check getNull() {
-        for (var check : checks) {
-            if (check instanceof CheckNull) {
-                return check;
-            }
-        }
-        var wild = new CheckNull();
-
-        checks.add(wild);
-
-        return wild;
-    }
-
-    public Check getAny() {
-        for (var check : checks) {
-            if (check instanceof CheckAny) {
-                return check;
-            }
-        }
-        var any = new CheckAny();
-
-        checks.add(any);
-
-        return any;
-    }
-
-    public Check getClear() {
-        for (var check : checks) {
-            if (check instanceof CheckClear) {
-                return check;
-            }
-        }
-        var empty = new CheckClear();
-
-        checks.add(empty);
-
-        return empty;
-    }
-
     public CheckSource copy() {
         return new CheckSource(new ArrayList<>(checks));
     }

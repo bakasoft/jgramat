@@ -27,6 +27,9 @@ public class IMachine {
         var control = new HashSet<String>();
         var initialClosure = source.initial.getEmptyClosure();
 
+        var checksAndNull = new ArrayList<>(lang.checks.getItems());
+        checksAndNull.add(null);  // TODO this is not beautiful
+
         queue.add(initialClosure);
 
         do {
@@ -34,22 +37,20 @@ public class IMachine {
 
             if (control.add(oldSources.computeID())) {
                 for (var symbol : lang.symbols) {
-                    if (!symbol.isNull()) {
-                        for (var check : lang.checks) {
-                            var oldTransitions = lang.findTransitionsFrom(oldSources, symbol, check);
+                    for (var check : checksAndNull) {
+                        var oldTransitions = lang.findTransitionsFrom(oldSources, symbol, check);
 
-                            if (oldTransitions.size() > 0) {
-                                // get empty closure of all targets
-                                var oldTargets = oldTransitions.collectTargets().getEmptyClosure();
+                        if (oldTransitions.size() > 0) {
+                            // get empty closure of all targets
+                            var oldTargets = oldTransitions.collectTargets().getEmptyClosure();
 
-                                if (oldTargets.size() > 0) {
-                                    var newSource = getOrCreateState(oldSources);
-                                    var newTarget = getOrCreateState(oldTargets);
+                            if (oldTargets.size() > 0) {
+                                var newSource = getOrCreateState(oldSources);
+                                var newTarget = getOrCreateState(oldTargets);
 
-                                    createTransition(newSource, newTarget, symbol, check);
+                                createTransition(newSource, newTarget, symbol, check);
 
-                                    queue.add(oldTargets);
-                                }
+                                queue.add(oldTargets);
                             }
                         }
                     }

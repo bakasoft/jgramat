@@ -57,15 +57,15 @@ public class NLanguage {
     }
 
     public void newEmptyTransition(NState source, NState target) {
-        newEmptyTransition(source, target, checks.getNull());
+        newEmptyTransition(source, target, null);
     }
 
     public void newEmptyTransition(NState source, NState target, Check check) {
-        newTransition(source, target, symbols.getNull(), check);
+        newTransition(source, target, null, check);
     }
 
     public void newCharTransition(NState source, NState target, char value) {
-        newCharTransition(source, target, value, checks.getNull());
+        newCharTransition(source, target, value, null);
     }
 
     public void newCharTransition(NState source, NState target, char value, Check check) {
@@ -75,7 +75,7 @@ public class NLanguage {
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end) {
-        newRangeTransition(source, target, begin, end, checks.getNull());
+        newRangeTransition(source, target, begin, end, null);
     }
 
     public void newRangeTransition(NState source, NState target, char begin, char end, Check check) {
@@ -85,7 +85,7 @@ public class NLanguage {
     }
 
     public void newWildTransition(NState source, NState target) {
-        newWildTransition(source, target, checks.getNull());
+        newWildTransition(source, target, null);
     }
 
     public void newWildTransition(NState source, NState target, Check check) {
@@ -129,8 +129,8 @@ public class NLanguage {
 
             if (closure.add(source)) {
                 for (var trn : source.getTransitions()) {
-                    if (trn.symbol.isNull()) {
-                        if (!trn.check.isNull()) {
+                    if (trn.symbol == null) {
+                        if (trn.check != null) {
                             throw new RuntimeException("Not-null check found");
                         }
                         queue.add(trn.target);
@@ -156,7 +156,7 @@ public class NLanguage {
 
             if (control.add(target)) {
                 for (var trn : findTransitionsByTarget(target)) {
-                    if (trn.symbol.isNull()) {
+                    if (trn.symbol == null) {
                         result.add(trn.source);
 
                         queue.add(trn.source);
@@ -172,7 +172,7 @@ public class NLanguage {
     public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol, Check check) {
         var result = new NTransitionList();
         for (var transition : transitions) {
-            if (sources.contains(transition.source) && transition.isSymbol(symbol) && transition.isCheck(check)) {
+            if (sources.contains(transition.source) && Objects.equals(transition.symbol, symbol) && Objects.equals(transition.check, check)) {
                 result.add(transition);
             }
         }

@@ -18,7 +18,7 @@ public class ITransition {
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
         this.symbol = Objects.requireNonNull(symbol);
-        this.check = Objects.requireNonNull(check);
+        this.check = check;
         this.actions = new ActionList();
     }
 }

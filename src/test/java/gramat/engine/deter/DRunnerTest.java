@@ -15,22 +15,22 @@ public class DRunnerTest {
 
         builder.transition(0, 1, Input.STX);
 
-        builder.transition(1, 2, '{');
+        builder.transition(1, 2, '{', builder.checkSource.pop("obj1"));
         builder.transition(2, 3, 'a');
         builder.transition(3, 3, 'a');
         builder.transition(3, 4, ':');
 
-        builder.transition(4, 2, '{', builder.checkSource.push("obj"));
+        builder.transition(4, 2, '{', builder.checkSource.push("obj2"));
 
         builder.transition(4, 5, 'a');
         builder.transition(5, 5, 'a');
         builder.transition(5, 2, ',');
 
-        builder.transition(2, 6, '}', builder.checkSource.getClear());
-        builder.transition(2, 5, '}', builder.checkSource.pop("obj"));
+        builder.transition(2, 6, '}', builder.checkSource.pop("obj1"));
+        builder.transition(2, 5, '}', builder.checkSource.pop("obj2"));
 
-        builder.transition(5, 6, '}', builder.checkSource.getClear());
-        builder.transition(5, 5, '}', builder.checkSource.pop("obj"));
+        builder.transition(5, 6, '}', builder.checkSource.pop("obj1"));
+        builder.transition(5, 5, '}', builder.checkSource.pop("obj2"));
 
         builder.transition(6, 7, Input.ETX);
 

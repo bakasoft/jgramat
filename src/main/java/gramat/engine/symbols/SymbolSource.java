@@ -71,20 +71,6 @@ public class SymbolSource implements Iterable<Symbol> {
         return wild;
     }
 
-    public SymbolNull getNull() {
-        for (var symbol : symbols) {
-            if (symbol instanceof SymbolNull) {
-                return (SymbolNull)symbol;
-            }
-        }
-
-        var symbol = new SymbolNull();
-
-        symbols.add(symbol);
-
-        return symbol;
-    }
-
     public SymbolSource copy() {
         return new SymbolSource(this);
     }

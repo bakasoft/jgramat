@@ -8,8 +8,4 @@ abstract public class Check {
 
     abstract public boolean compare(Check check);
 
-    public boolean isNull() {
-        return this instanceof CheckNull;
-    }
-
 }
