@@ -1,6 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.List;
@@ -18,34 +18,34 @@ public class Rule extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
+    public NState build(NCompiler compiler, NState initial) {
         // Non-recursive rules doesn't need special handling
         if (!expression.isRecursive()) {
-            return expression.build(builder, initial);
+            return expression.build(compiler, initial);
         }
 
-        var fragment = builder.makeFragment(this);
-        var accepted = builder.lang.newState();
+        var fragment = compiler.makeFragment(this);
+        var accepted = compiler.lang.newState();
 
-        builder.addRecursiveHook(() -> {
+        compiler.addRecursiveHook(() -> {
             if (!fragment.ready) {
                 throw new RuntimeException("fragment not ready");
             }
 
-            var id = builder.counts.next(name);
-            var push = builder.checks.push(name + id);
-            var pop = builder.checks.pop(name + id);
+            var id = compiler.counts.next(name);
+            var push = compiler.checks.push(name + id);
+            var pop = compiler.checks.pop(name + id);
 
             for (var target : fragment.targets) {
-                var symbol = builder.symbols.getCheck(target.symbol, push);
-                var trn = builder.lang.newTransition(initial, target.target, symbol);
+                var symbol = compiler.symbols.getCheck(target.symbol, push);
+                var trn = compiler.lang.newTransition(initial, target.target, symbol);
 
                 trn.actions.addAll(target.actions);
             }
 
             for (var source : fragment.sources) {
-                var symbol = builder.symbols.getCheck(source.symbol, pop);
-                var trn = builder.lang.newTransition(source.source, accepted, symbol);
+                var symbol = compiler.symbols.getCheck(source.symbol, pop);
+                var trn = compiler.lang.newTransition(source.source, accepted, symbol);
 
                 trn.actions.addAll(source.actions);
             }

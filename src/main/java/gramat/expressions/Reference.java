@@ -20,10 +20,10 @@ public class Reference extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
+    public NState build(NCompiler compiler, NState initial) {
         var rule = getRule();
 
-        return rule.build(builder, initial);
+        return rule.build(compiler, initial);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.List;
@@ -14,13 +14,13 @@ public class Alternation extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
-        var accepted = builder.lang.newState();
+    public NState build(NCompiler compiler, NState initial) {
+        var accepted = compiler.lang.newState();
 
         for (var item : items) {
-            var last = item.build(builder, initial);
+            var last = item.build(compiler, initial);
 
-            builder.lang.newEmptyTransition(last, accepted);
+            compiler.lang.newEmptyTransition(last, accepted);
         }
 
         return accepted;

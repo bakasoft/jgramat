@@ -1,6 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.HashSet;
@@ -9,12 +9,12 @@ import java.util.List;
 
 public class Wildcard extends Expression {
     @Override
-    public NState build(NBuilder builder, NState initial) {
-        var wild = builder.symbols.getWild();
+    public NState build(NCompiler compiler, NState initial) {
+        var wild = compiler.symbols.getWild();
 
-        builder.lang.newTransition(initial, initial, wild);
+        compiler.lang.newTransition(initial, initial, wild);
 
-        builder.addTransitionHook(() -> {
+        compiler.addTransitionHook(() -> {
             var queue = new LinkedList<NState>();
             var control = new HashSet<NState>();
 
@@ -28,7 +28,7 @@ public class Wildcard extends Expression {
                 if (control.add(state)) {
                     var transitions = state.getTransitions();
                     if (!transitions.hasWilds() && transitions.size() > 0) {
-                        builder.lang.newTransition(state, initial, wild);
+                        compiler.lang.newTransition(state, initial, wild);
 
                         for (var trn : transitions) {
                             queue.add(trn.target);

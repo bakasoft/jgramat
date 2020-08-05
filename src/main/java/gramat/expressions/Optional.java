@@ -1,6 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.List;
@@ -14,10 +14,10 @@ public class Optional extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
-        var accepted = content.build(builder, initial);
+    public NState build(NCompiler compiler, NState initial) {
+        var accepted = content.build(compiler, initial);
 
-        builder.lang.newEmptyTransition(initial, accepted);
+        compiler.lang.newEmptyTransition(initial, accepted);
 
         return accepted;
     }

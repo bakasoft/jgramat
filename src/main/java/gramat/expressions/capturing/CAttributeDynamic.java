@@ -1,6 +1,6 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
 
@@ -22,8 +22,8 @@ public class CAttributeDynamic extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
-        var nameAccepted = name.build(builder, initial);
+    public NState build(NCompiler compiler, NState initial) {
+        var nameAccepted = name.build(compiler, initial);
         var namePress = new AttributeNamePress();
         var nameRelease = new AttributeNameRelease(namePress);
         var nameSustain = new AttributeNameSustain(namePress);
@@ -32,9 +32,9 @@ public class CAttributeDynamic extends Expression {
         namePress.overrides(nameSustain);
         nameRelease.overrides(nameSustain);
 
-        TRX2.applyActions(builder, initial, nameAccepted, namePress, nameRelease, nameSustain);
+        TRX2.applyActions(compiler, initial, nameAccepted, namePress, nameRelease, nameSustain);
 
-        var valueAccepted = value.build(builder, nameAccepted);
+        var valueAccepted = value.build(compiler, nameAccepted);
         var valuePress = new AttributeValuePress();
         var valueRelease = new AttributeValueRelease(valuePress, nameRelease);
         var valueSustain = new AttributeValueSustain(valuePress);
@@ -43,7 +43,7 @@ public class CAttributeDynamic extends Expression {
         valuePress.overrides(valueSustain);
         valueRelease.overrides(valueSustain);
 
-        TRX2.applyActions(builder, nameAccepted, valueAccepted, valuePress, valueRelease, valueSustain);
+        TRX2.applyActions(compiler, nameAccepted, valueAccepted, valuePress, valueRelease, valueSustain);
 
         return valueAccepted;
     }

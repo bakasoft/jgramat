@@ -1,6 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.List;
@@ -14,11 +14,11 @@ public class Sequence extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
+    public NState build(NCompiler compiler, NState initial) {
         var last = initial;
 
         for (var item : items) {
-            last = item.build(builder, last);
+            last = item.build(compiler, last);
         }
 
         return last;

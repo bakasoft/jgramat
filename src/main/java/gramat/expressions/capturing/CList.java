@@ -1,6 +1,6 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
 
@@ -17,8 +17,8 @@ public class CList extends Expression {
     }
 
     @Override
-    public NState build(NBuilder builder, NState initial) {
-        var accepted = content.build(builder, initial);
+    public NState build(NCompiler compiler, NState initial) {
+        var accepted = content.build(compiler, initial);
         var press = new ListPress();
         var release = new ListRelease(press);
         var sustain = new ListSustain(press);
@@ -27,7 +27,7 @@ public class CList extends Expression {
         press.overrides(sustain);
         release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
+        TRX2.applyActions(compiler, initial, accepted, press, release, sustain);
 
         return accepted;
     }

@@ -8,7 +8,7 @@ import gramat.tools.NamedCounts;
 
 import java.util.*;
 
-public class NBuilder {
+public class NCompiler {
 
     public final NLanguage lang;
     public final NamedCounts counts;
@@ -21,7 +21,7 @@ public class NBuilder {
 
     private final List<NFragment> fragments;
 
-    public NBuilder(NLanguage lang) {
+    public NCompiler(NLanguage lang) {
         this.lang = lang;
         checks = new CheckSource();
         symbols = new SymbolSource();

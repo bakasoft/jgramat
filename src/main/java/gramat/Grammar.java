@@ -1,8 +1,8 @@
 package gramat;
 
 import gramat.common.TextException;
-import gramat.engine.indet.ILanguage;
-import gramat.engine.nodet.NBuilder;
+import gramat.engine.indet.ICompiler;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NLanguage;
 import gramat.expressions.Rule;
 import gramat.parsing.*;
@@ -43,11 +43,11 @@ public class Grammar {
         }
 
         var lang = new NLanguage();
-        var nBuilder = new NBuilder(lang);
+        var nBuilder = new NCompiler(lang);
         var nMachine = nBuilder.compile(rule);
-        var iBuilder = new ILanguage();
-        var iInitial = iBuilder.convertToDFA(lang, nBuilder.symbols, nMachine);
-        var dInitial = iBuilder.compile(iInitial);
+        var iCompiler = new ICompiler();
+        var iInitial = iCompiler.convertToDFA(lang, nBuilder.symbols, nMachine);
+        var dInitial = iCompiler.compile(iInitial);
 
         return new Parser(dInitial);
     }

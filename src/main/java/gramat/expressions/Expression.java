@@ -1,7 +1,6 @@
 package gramat.expressions;
 
-import gramat.engine.nodet.NBuilder;
-import gramat.engine.nodet.NMachine;
+import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 
 import java.util.HashSet;
@@ -10,7 +9,7 @@ import java.util.List;
 
 abstract public class Expression {
 
-    abstract public NState build(NBuilder builder, NState initial);
+    abstract public NState build(NCompiler compiler, NState initial);
 
     abstract public List<Expression> getChildren();
 
