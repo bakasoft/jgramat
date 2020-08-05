@@ -1,6 +1,5 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.actions.Action;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -18,15 +17,15 @@ public class CJoin extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
-        var begin = new JoinBegin();
-        var commit = new JoinCommit(begin);
-        var sustain = new JoinSustain(begin);
+        var press = new JoinPress();
+        var release = new JoinRelease(press);
+        var sustain = new JoinSustain(press);
 
         // setup overrides
-        begin.overrides(sustain);
-        commit.overrides(sustain);
+        press.overrides(sustain);
+        release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
+        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
 
         return accepted;
     }
@@ -36,7 +35,7 @@ public class CJoin extends Expression {
         return List.of(content);
     }
 
-    public class JoinBegin extends ValueAction {
+    public class JoinPress extends ValueAction {
 
         @Override
         public void run(ValueRuntime runtime) {
@@ -45,16 +44,16 @@ public class CJoin extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN JOIN";
+            return "PRESS JOIN";
         }
     }
 
-    public class JoinCommit extends ValueAction {
+    public class JoinRelease extends ValueAction {
 
-        private final JoinBegin begin;
+        private final JoinPress press;
 
-        public JoinCommit(JoinBegin begin) {
-            this.begin = begin;
+        public JoinRelease(JoinPress press) {
+            this.press = press;
         }
 
         @Override
@@ -64,16 +63,16 @@ public class CJoin extends Expression {
 
         @Override
         public String getDescription() {
-            return "COMMIT JOIN";
+            return "RELEASE JOIN";
         }
     }
 
     public class JoinSustain extends ValueAction {
 
-        private final JoinBegin begin;
+        private final JoinPress press;
 
-        public JoinSustain(JoinBegin begin) {
-            this.begin = begin;
+        public JoinSustain(JoinPress press) {
+            this.press = press;
         }
 
         @Override
@@ -87,12 +86,12 @@ public class CJoin extends Expression {
         }
     }
 
-    public class JoinRollback extends ValueAction {
+    public class JoinCancel extends ValueAction {
 
-        private final JoinBegin begin;
+        private final JoinPress press;
 
-        public JoinRollback(JoinBegin begin) {
-            this.begin = begin;
+        public JoinCancel(JoinPress press) {
+            this.press = press;
         }
 
         @Override
@@ -102,7 +101,7 @@ public class CJoin extends Expression {
 
         @Override
         public String getDescription() {
-            return "ROLLBACK JOIN";
+            return "CANCEL JOIN";
         }
     }
 }

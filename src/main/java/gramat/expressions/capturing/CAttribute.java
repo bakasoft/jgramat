@@ -19,15 +19,15 @@ public class CAttribute extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
-        var begin = new AttributeBegin();
-        var commit = new AttributeCommit(begin);
-        var sustain = new AttributeSustain(begin);
+        var press = new AttributePress();
+        var release = new AttributeRelease(press);
+        var sustain = new AttributeSustain(press);
 
         // setup overrides
-        begin.overrides(sustain);
-        commit.overrides(sustain);
+        press.overrides(sustain);
+        release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
+        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
 
         return accepted;
     }
@@ -37,7 +37,7 @@ public class CAttribute extends Expression {
         return List.of(content);
     }
 
-    public class AttributeBegin extends ValueAction {
+    public class AttributePress extends ValueAction {
 
         @Override
         public void run(ValueRuntime runtime) {
@@ -46,17 +46,17 @@ public class CAttribute extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN ATTRIBUTE: " + name;
+            return "PRESS ATTRIBUTE: " + name;
         }
 
     }
 
-    public class AttributeCommit extends ValueAction {
+    public class AttributeRelease extends ValueAction {
 
-        private final AttributeBegin begin;
+        private final AttributePress press;
 
-        public AttributeCommit(AttributeBegin begin) {
-            this.begin = begin;
+        public AttributeRelease(AttributePress press) {
+            this.press = press;
         }
 
         @Override
@@ -72,15 +72,15 @@ public class CAttribute extends Expression {
 
         @Override
         public String getDescription() {
-            return "COMMIT ATTRIBUTE: " + name;
+            return "RELEASE ATTRIBUTE: " + name;
         }
     }
 
     public class AttributeSustain extends ValueAction {
 
-        private final AttributeBegin begin;
+        private final AttributePress begin;
 
-        public AttributeSustain(AttributeBegin begin) {
+        public AttributeSustain(AttributePress begin) {
             this.begin = begin;
         }
 
@@ -95,12 +95,12 @@ public class CAttribute extends Expression {
         }
     }
 
-    public class AttributeRollback extends ValueAction {
+    public class AttributeCancel extends ValueAction {
 
-        private final AttributeBegin begin;
+        private final AttributePress press;
 
-        public AttributeRollback(AttributeBegin begin) {
-            this.begin = begin;
+        public AttributeCancel(AttributePress press) {
+            this.press = press;
         }
 
         @Override
@@ -110,7 +110,7 @@ public class CAttribute extends Expression {
 
         @Override
         public String getDescription() {
-            return "ROLLBACK ATTRIBUTE: " + name;
+            return "CANCEL ATTRIBUTE: " + name;
         }
     }
 }

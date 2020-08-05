@@ -20,15 +20,15 @@ public class CValue extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
-        var begin = new ValueBegin();
-        var commit = new ValueCommit(begin);
-        var sustain = new ValueSustain(begin);
+        var press = new ValuePress();
+        var release = new ValueRelease(press);
+        var sustain = new ValueSustain(press);
 
         // setup overrides
-        begin.overrides(sustain);
-        commit.overrides(sustain);
+        press.overrides(sustain);
+        release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
+        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
 
         return accepted;
     }
@@ -38,7 +38,7 @@ public class CValue extends Expression {
         return List.of(content);
     }
 
-    public class ValueBegin extends ValueAction {
+    public class ValuePress extends ValueAction {
 
         public Integer position;
 
@@ -53,28 +53,28 @@ public class CValue extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN VALUE";
+            return "PRESS VALUE";
         }
     }
 
-    public class ValueCommit extends ValueAction {
+    public class ValueRelease extends ValueAction {
 
-        private final ValueBegin begin;
+        private final ValuePress press;
 
-        public ValueCommit(ValueBegin begin) {
-            this.begin = begin;
+        public ValueRelease(ValuePress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.position != null) {
-                var position0 = begin.position;
+            if (press.position != null) {
+                var position0 = press.position;
                 var positionF = runtime.input.getPosition();
                 var value = runtime.input.extract(position0, positionF);
 
                 runtime.peekAssembler().pushValue(value, parser);
 
-                begin.position = null;
+                press.position = null;
             }
             else {
                 System.out.println("Missing start point");
@@ -83,16 +83,16 @@ public class CValue extends Expression {
 
         @Override
         public String getDescription() {
-            return "COMMIT VALUE";
+            return "RELEASE VALUE";
         }
     }
 
     public class ValueSustain extends ValueAction {
 
-        private final ValueBegin begin;
+        private final ValuePress press;
 
-        public ValueSustain(ValueBegin begin) {
-            this.begin = begin;
+        public ValueSustain(ValuePress press) {
+            this.press = press;
         }
 
         @Override
@@ -106,26 +106,26 @@ public class CValue extends Expression {
         }
     }
 
-    public class ValueRollback extends ValueAction {
+    public class ValueCancel extends ValueAction {
 
-        private final ValueBegin begin;
+        private final ValuePress press;
 
-        public ValueRollback(ValueBegin begin) {
-            this.begin = begin;
+        public ValueCancel(ValuePress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.position == null) {
+            if (press.position == null) {
                 System.out.println("WARNING: canceling before start @ " + this);
             }
 
-            begin.position = null;
+            press.position = null;
         }
 
         @Override
         public String getDescription() {
-            return "ROLLBACK VALUE";
+            return "CANCEL VALUE";
         }
     }
 }

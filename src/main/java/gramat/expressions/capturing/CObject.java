@@ -19,15 +19,15 @@ public class CObject extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
-        var begin = new ObjectBegin();
-        var commit = new ObjectCommit(begin);
-        var sustain = new ObjectSustain(begin);
+        var press = new ObjectPress();
+        var release = new ObjectRelease(press);
+        var sustain = new ObjectSustain(press);
 
         // setup overrides
-        begin.overrides(sustain);
-        commit.overrides(sustain);
+        press.overrides(sustain);
+        release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
+        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
 
         return accepted;
     }
@@ -37,7 +37,7 @@ public class CObject extends Expression {
         return List.of(content);
     }
 
-    public class ObjectBegin extends ValueAction {
+    public class ObjectPress extends ValueAction {
 
         // TODO add comment why this is active by default
         public boolean active = true;
@@ -52,44 +52,44 @@ public class CObject extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN OBJECT";
+            return "PRESS OBJECT";
         }
 
     }
 
-    public class ObjectCommit extends ValueAction {
+    public class ObjectRelease extends ValueAction {
 
-        private final ObjectBegin begin;
+        private final ObjectPress press;
 
-        public ObjectCommit(ObjectBegin begin) {
-            this.begin = begin;
+        public ObjectRelease(ObjectPress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
+            if (press.active) {
                 var assembler = runtime.popAssembler();
 
                 var object = assembler.getAttributes();  // TODO add types
 
                 runtime.peekAssembler().pushValue(object);
 
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "COMMIT OBJECT";
+            return "RELEASE OBJECT";
         }
     }
 
     public class ObjectSustain extends ValueAction {
 
-        private final ObjectBegin begin;
+        private final ObjectPress press;
 
-        public ObjectSustain(ObjectBegin begin) {
-            this.begin = begin;
+        public ObjectSustain(ObjectPress press) {
+            this.press = press;
         }
 
         @Override
@@ -103,25 +103,25 @@ public class CObject extends Expression {
         }
     }
 
-    public class ObjectRollback extends ValueAction {
+    public class ObjectCancel extends ValueAction {
 
-        private final ObjectBegin begin;
+        private final ObjectPress press;
 
-        public ObjectRollback(ObjectBegin begin) {
-            this.begin = begin;
+        public ObjectCancel(ObjectPress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
+            if (press.active) {
                 runtime.popAssembler();
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "ROLLBACK OBJECT";
+            return "CANCEL OBJECT";
         }
     }
 }

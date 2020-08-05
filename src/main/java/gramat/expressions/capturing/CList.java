@@ -19,15 +19,15 @@ public class CList extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = content.build(builder, initial);
-        var begin = new ListBegin();
-        var commit = new ListCommit(begin);
-        var sustain = new ListSustain(begin);
+        var press = new ListPress();
+        var release = new ListRelease(press);
+        var sustain = new ListSustain(press);
 
         // setup overrides
-        begin.overrides(sustain);
-        commit.overrides(sustain);
+        press.overrides(sustain);
+        release.overrides(sustain);
 
-        TRX2.applyActions(builder, initial, accepted, begin, commit, sustain);
+        TRX2.applyActions(builder, initial, accepted, press, release, sustain);
 
         return accepted;
     }
@@ -37,7 +37,7 @@ public class CList extends Expression {
         return List.of(content);
     }
 
-    public class ListBegin extends ValueAction {
+    public class ListPress extends ValueAction {
 
         @Override
         public void run(ValueRuntime runtime) {
@@ -46,17 +46,17 @@ public class CList extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN LIST";
+            return "PRESS LIST";
         }
 
     }
 
-    public class ListCommit extends ValueAction {
+    public class ListRelease extends ValueAction {
 
-        private final ListBegin begin;
+        private final ListPress press;
 
-        public ListCommit(ListBegin begin) {
-            this.begin = begin;
+        public ListRelease(ListPress press) {
+            this.press = press;
         }
 
         @Override
@@ -66,16 +66,16 @@ public class CList extends Expression {
 
         @Override
         public String getDescription() {
-            return "COMMIT LIST";
+            return "RELEASE LIST";
         }
     }
 
     public class ListSustain extends ValueAction {
 
-        private final ListBegin begin;
+        private final ListPress press;
 
-        public ListSustain(ListBegin begin) {
-            this.begin = begin;
+        public ListSustain(ListPress press) {
+            this.press = press;
         }
 
         @Override
@@ -89,12 +89,12 @@ public class CList extends Expression {
         }
     }
 
-    public class ListRollback extends ValueAction {
+    public class ListCancel extends ValueAction {
 
-        private final ListBegin begin;
+        private final ListPress press;
 
-        public ListRollback(ListBegin begin) {
-            this.begin = begin;
+        public ListCancel(ListPress press) {
+            this.press = press;
         }
 
         @Override
@@ -104,7 +104,7 @@ public class CList extends Expression {
 
         @Override
         public String getDescription() {
-            return "ROLLBACK LIST";
+            return "CANCEL LIST";
         }
     }
 }

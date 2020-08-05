@@ -24,31 +24,31 @@ public class CAttributeDynamic extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var nameAccepted = name.build(builder, initial);
-        var nameBegin = new AttributeNameBegin();
-        var nameCommit = new AttributeNameCommit(nameBegin);
-        var nameSustain = new AttributeNameSustain(nameBegin);
+        var namePress = new AttributeNamePress();
+        var nameRelease = new AttributeNameRelease(namePress);
+        var nameSustain = new AttributeNameSustain(namePress);
 
         // setup overrides
-        nameBegin.overrides(nameSustain);
-        nameCommit.overrides(nameSustain);
+        namePress.overrides(nameSustain);
+        nameRelease.overrides(nameSustain);
 
-        TRX2.applyActions(builder, initial, nameAccepted, nameBegin, nameCommit, nameSustain);
+        TRX2.applyActions(builder, initial, nameAccepted, namePress, nameRelease, nameSustain);
 
         var valueAccepted = value.build(builder, nameAccepted);
-        var valueBegin = new AttributeValueBegin();
-        var valueCommit = new AttributeValueCommit(valueBegin, nameCommit);
-        var valueSustain = new AttributeValueSustain(valueBegin);
+        var valuePress = new AttributeValuePress();
+        var valueRelease = new AttributeValueRelease(valuePress, nameRelease);
+        var valueSustain = new AttributeValueSustain(valuePress);
 
         // setup overrides
-        valueBegin.overrides(valueSustain);
-        valueCommit.overrides(valueSustain);
+        valuePress.overrides(valueSustain);
+        valueRelease.overrides(valueSustain);
 
-        TRX2.applyActions(builder, nameAccepted, valueAccepted, valueBegin, valueCommit, valueSustain);
+        TRX2.applyActions(builder, nameAccepted, valueAccepted, valuePress, valueRelease, valueSustain);
 
         return valueAccepted;
     }
 
-    public class AttributeNameBegin extends ValueAction {
+    public class AttributeNamePress extends ValueAction {
 
         public boolean active;
 
@@ -62,46 +62,46 @@ public class CAttributeDynamic extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN ATTRIBUTE NAME";
+            return "PRESS ATTRIBUTE NAME";
         }
 
     }
 
-    public class AttributeNameCommit extends ValueAction {
+    public class AttributeNameRelease extends ValueAction {
 
-        private final AttributeNameBegin begin;
+        private final AttributeNamePress press;
 
         public String name;
 
-        public AttributeNameCommit(AttributeNameBegin begin) {
-            this.begin = begin;
+        public AttributeNameRelease(AttributeNamePress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
+            if (press.active) {
                 var assembler = runtime.popAssembler();
 
                 name = assembler.popString();
 
                 assembler.expectEmpty();
 
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "COMMIT ATTRIBUTE NAME";
+            return "RELEASE ATTRIBUTE NAME";
         }
     }
 
     public class AttributeNameSustain extends ValueAction {
 
-        private final AttributeNameBegin begin;
+        private final AttributeNamePress press;
 
-        public AttributeNameSustain(AttributeNameBegin begin) {
-            this.begin = begin;
+        public AttributeNameSustain(AttributeNamePress press) {
+            this.press = press;
         }
 
         @Override
@@ -115,30 +115,30 @@ public class CAttributeDynamic extends Expression {
         }
     }
 
-    public class AttributeNameRollback extends ValueAction {
+    public class AttributeNameCancel extends ValueAction {
 
-        private final AttributeNameBegin begin;
+        private final AttributeNamePress press;
 
-        public AttributeNameRollback(AttributeNameBegin begin) {
-            this.begin = begin;
+        public AttributeNameCancel(AttributeNamePress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
+            if (press.active) {
                 runtime.popAssembler();
 
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "ROLLBACK ATTRIBUTE NAME";
+            return "CANCEL ATTRIBUTE NAME";
         }
     }
 
-    public class AttributeValueBegin extends ValueAction {
+    public class AttributeValuePress extends ValueAction {
 
         public boolean active;
 
@@ -152,28 +152,28 @@ public class CAttributeDynamic extends Expression {
 
         @Override
         public String getDescription() {
-            return "BEGIN ATTRIBUTE VALUE";
+            return "PRESS ATTRIBUTE VALUE";
         }
 
     }
 
-    public class AttributeValueCommit extends ValueAction {
+    public class AttributeValueRelease extends ValueAction {
 
-        private final AttributeValueBegin begin;
+        private final AttributeValuePress press;
 
-        private final AttributeNameCommit commitedName;
+        private final AttributeNameRelease releasedName;
 
 
-        public AttributeValueCommit(AttributeValueBegin begin, AttributeNameCommit commitedName) {
-            this.begin = begin;
-            this.commitedName = commitedName;
+        public AttributeValueRelease(AttributeValuePress press, AttributeNameRelease releasedName) {
+            this.press = press;
+            this.releasedName = releasedName;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
-                if (commitedName.name != null) {
-                    var name = commitedName.name;
+            if (press.active) {
+                if (releasedName.name != null) {
+                    var name = releasedName.name;
                     var assembler = runtime.popAssembler();
                     var value = assembler.popValue();
 
@@ -184,22 +184,22 @@ public class CAttributeDynamic extends Expression {
                     System.out.println("Missing name");
                 }
 
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "COMMIT ATTRIBUTE VALUE";
+            return "RELEASE ATTRIBUTE VALUE";
         }
     }
 
     public class AttributeValueSustain extends ValueAction {
 
-        private final AttributeValueBegin begin;
+        private final AttributeValuePress press;
 
-        public AttributeValueSustain(AttributeValueBegin begin) {
-            this.begin = begin;
+        public AttributeValueSustain(AttributeValuePress press) {
+            this.press = press;
         }
 
         @Override
@@ -213,26 +213,26 @@ public class CAttributeDynamic extends Expression {
         }
     }
 
-    public class AttributeValueRollback extends ValueAction {
+    public class AttributeValueCancel extends ValueAction {
 
-        private final AttributeValueBegin begin;
+        private final AttributeValuePress press;
 
-        public AttributeValueRollback(AttributeValueBegin begin) {
-            this.begin = begin;
+        public AttributeValueCancel(AttributeValuePress press) {
+            this.press = press;
         }
 
         @Override
         public void run(ValueRuntime runtime) {
-            if (begin.active) {
+            if (press.active) {
                 runtime.popAssembler();
 
-                begin.active = false;
+                press.active = false;
             }
         }
 
         @Override
         public String getDescription() {
-            return "ROLLBACK ATTRIBUTE VALUE";
+            return "CANCEL ATTRIBUTE VALUE";
         }
     }
 }
