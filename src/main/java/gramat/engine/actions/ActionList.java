@@ -53,4 +53,8 @@ public class ActionList implements Iterable<Action> {
     public boolean isEmpty() {
         return actions.isEmpty();
     }
+
+    public Action[] toArray() {
+        return actions.toArray(Action[]::new);
+    }
 }

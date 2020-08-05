@@ -5,6 +5,7 @@ import gramat.engine.*;
 import gramat.engine.actions.Action;
 import gramat.engine.actions.ActionExecutor;
 import gramat.engine.checks.ControlStack;
+import gramat.engine.symbols.SymbolCheck;
 import gramat.engine.symbols.SymbolWild;
 
 public class DRunner implements Runner {
@@ -36,12 +37,11 @@ public class DRunner implements Runner {
             // find matching transition
             DTransition wildTransition = null;
             DTransition nextTransition = null;
-            for (var transition : state.transitions) {
-                if (transition.check == null || transition.check.test(controlStack)) {
+            if (state.transitions != null) {
+                for (var transition : state.transitions) {
                     if (transition.symbol instanceof SymbolWild) {
                         wildTransition = transition;
-                    }
-                    else if (transition.symbol.matches(this)) {
+                    } else if (transition.symbol.matches(this)) {
                         nextTransition = transition;
                         break;
                     }
@@ -59,8 +59,10 @@ public class DRunner implements Runner {
             }
 
             // apply check
-            if (nextTransition.check != null) {
-                nextTransition.check.apply(controlStack);
+            if (nextTransition.symbol instanceof SymbolCheck) {
+                var sch = (SymbolCheck) nextTransition.symbol;
+
+                sch.check.apply(controlStack);
             }
 
             // execute actions

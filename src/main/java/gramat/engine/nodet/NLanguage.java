@@ -1,10 +1,7 @@
 package gramat.engine.nodet;
 
 import gramat.GramatException;
-import gramat.engine.checks.CheckSource;
-import gramat.engine.checks.Check;
 import gramat.engine.symbols.Symbol;
-import gramat.engine.symbols.SymbolSource;
 
 import java.util.*;
 
@@ -12,20 +9,12 @@ public class NLanguage {
 
     public final NStateList states;
     public final NTransitionList transitions;
-    public final SymbolSource symbols;
-    public final CheckSource checks;
 
     private int next_state_id = 1;
 
     public NLanguage() {
-        this(new NStateList(), new NTransitionList(), new SymbolSource(), new CheckSource());
-    }
-
-    public NLanguage(NStateList states, NTransitionList transitions, SymbolSource symbols, CheckSource checks) {
-        this.states = states;
-        this.transitions = transitions;
-        this.symbols = symbols;
-        this.checks = checks;
+        this.states = new NStateList();
+        this.transitions = new NTransitionList();
     }
 
     public NState newState() {
@@ -58,24 +47,6 @@ public class NLanguage {
 
     public void newEmptyTransition(NState source, NState target) {
         newTransition(source, target, null);
-    }
-
-    public void newCharTransition(NState source, NState target, char value) {
-        var symbol = symbols.getChar(value);
-
-        newTransition(source, target, symbol);
-    }
-
-    public void newRangeTransition(NState source, NState target, char begin, char end) {
-        var symbol = symbols.getRange(begin, end);
-
-        newTransition(source, target, symbol);
-    }
-
-    public void newWildTransition(NState source, NState target) {
-        var symbol = symbols.getWild();
-
-        newTransition(source, target, symbol);
     }
 
     public NTransitionList findTransitionsBySource(NState source) {

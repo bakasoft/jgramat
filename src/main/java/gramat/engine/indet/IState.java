@@ -4,17 +4,15 @@ import gramat.engine.nodet.NStateList;
 
 public class IState {
 
+    public final String id;
     public final NStateList origin;
 
     public boolean accepted;
 
-    public IState(NStateList origin) {
+    public IState(String id, NStateList origin) {
+        this.id = id;
         this.origin = origin;
         this.accepted = false;
-    }
-
-    public String computeID() {
-        return origin.computeID();
     }
 
 }

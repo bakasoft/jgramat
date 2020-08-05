@@ -20,8 +20,9 @@ public class LiteralString extends Expression {
 
         for (char c : chars) {
             var next = builder.lang.newState();
+            var symbol = builder.symbols.getChar(c);
 
-            builder.lang.newCharTransition(last, next, c);
+            builder.lang.newTransition(last, next, symbol);
 
             last = next;
         }

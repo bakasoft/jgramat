@@ -29,7 +29,7 @@ public class Rejection extends Exception {
         message.append(location.toString());
         message.append("\n");
 
-        if (state.transitions.size() > 0) {
+        if (state.transitions.length > 0) {
             message.append("Expected: ");
 
             for (var trn : state.transitions) {

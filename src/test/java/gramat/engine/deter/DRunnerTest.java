@@ -3,38 +3,51 @@ package gramat.engine.deter;
 import gramat.Rejection;
 import gramat.Parser;
 import gramat.engine.Input;
+import gramat.engine.checks.CheckSource;
+import gramat.engine.indet.ILanguage;
+import gramat.engine.symbols.SymbolSource;
 import org.junit.Test;
 
 public class DRunnerTest {
 
     @Test
     public void runner_test() throws Rejection {
-        var builder = new DBuilder();
+        var lang = new ILanguage();
+        var symbols = new SymbolSource();
+        var checks = new CheckSource();
 
-        builder.accept(7);
+        var s0 = lang.createState("0", false);
+        var s1 = lang.createState("1", false);
+        var s2 = lang.createState("2", false);
+        var s3 = lang.createState("3", false);
+        var s4 = lang.createState("4", false);
+        var s5 = lang.createState("5", false);
+        var s6 = lang.createState("6", false);
+        var s7 = lang.createState("7", true);
 
-        builder.transition(0, 1, Input.STX);
+        lang.createTransition(s0, s1, symbols.getChar(Input.STX));
 
-        builder.transition(1, 2, '{', builder.checkSource.pop("obj1"));
-        builder.transition(2, 3, 'a');
-        builder.transition(3, 3, 'a');
-        builder.transition(3, 4, ':');
+        lang.createTransition(s1, s2, symbols.getCheck(symbols.getChar('{'), checks.push("obj1")));
+        lang.createTransition(s2, s3, symbols.getChar('a'));
+        lang.createTransition(s3, s3, symbols.getChar('a'));
+        lang.createTransition(s3, s4, symbols.getChar(':'));
 
-        builder.transition(4, 2, '{', builder.checkSource.push("obj2"));
+        lang.createTransition(s4, s2, symbols.getCheck(symbols.getChar('{'), checks.push("obj2")));
 
-        builder.transition(4, 5, 'a');
-        builder.transition(5, 5, 'a');
-        builder.transition(5, 2, ',');
+        lang.createTransition(s4, s5, symbols.getChar('a'));
+        lang.createTransition(s5, s5, symbols.getChar('a'));
+        lang.createTransition(s5, s2, symbols.getChar(','));
 
-        builder.transition(2, 6, '}', builder.checkSource.pop("obj1"));
-        builder.transition(2, 5, '}', builder.checkSource.pop("obj2"));
+        lang.createTransition(s2, s6, symbols.getCheck(symbols.getChar('}'), checks.pop("obj1")));
+        lang.createTransition(s2, s5, symbols.getCheck(symbols.getChar('}'), checks.pop("obj2")));
 
-        builder.transition(5, 6, '}', builder.checkSource.pop("obj1"));
-        builder.transition(5, 5, '}', builder.checkSource.pop("obj2"));
+        lang.createTransition(s5, s6, symbols.getCheck(symbols.getChar('}'), checks.pop("obj1")));
+        lang.createTransition(s5, s5, symbols.getCheck(symbols.getChar('}'), checks.pop("obj2")));
 
-        builder.transition(6, 7, Input.ETX);
+        lang.createTransition(s6, s7, symbols.getChar(Input.ETX));
 
-        var parser = new Parser(builder.getState(0));
+        var initial = lang.compile(s0);
+        var parser = new Parser(initial);
 
         assert parser.eval("{}") == null;
         assert parser.eval("{aa:a}") == null;

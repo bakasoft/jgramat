@@ -33,18 +33,18 @@ public class Rule extends Expression {
             }
 
             var id = builder.counts.next(name);
-            var push = builder.lang.checks.push(name + id);
-            var pop = builder.lang.checks.pop(name + id);
+            var push = builder.checks.push(name + id);
+            var pop = builder.checks.pop(name + id);
 
             for (var target : fragment.targets) {
-                var symbol = builder.lang.symbols.getCheck(target.symbol, push);
+                var symbol = builder.symbols.getCheck(target.symbol, push);
                 var trn = builder.lang.newTransition(initial, target.target, symbol);
 
                 trn.actions.addAll(target.actions);
             }
 
             for (var source : fragment.sources) {
-                var symbol = builder.lang.symbols.getCheck(source.symbol, pop);
+                var symbol = builder.symbols.getCheck(source.symbol, pop);
                 var trn = builder.lang.newTransition(source.source, accepted, symbol);
 
                 trn.actions.addAll(source.actions);

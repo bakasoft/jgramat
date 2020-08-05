@@ -1,6 +1,6 @@
 package gramat.engine;
 
-import gramat.engine.indet.IMachine;
+import gramat.engine.indet.ILanguage;
 import gramat.engine.indet.IState;
 import gramat.engine.nodet.NMachine;
 import gramat.engine.nodet.NState;
@@ -8,10 +8,8 @@ import gramat.engine.nodet.NStateList;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 public class AmCode {
 
@@ -155,24 +153,24 @@ public class AmCode {
         return output.toString();
     }
 
-    public static void write(PrintStream output, IMachine machine) {
+    public static void write(PrintStream output, ILanguage lang, IState initial) {
         try {
             var control = new HashSet<IState>();
             var queue = new LinkedList<IState>();
 
-            queue.add(machine.initial);
+            queue.add(initial);
 
             do {
                 var state = queue.remove();
 
                 if (control.add(state)) {
-                    if (state == machine.initial) {
-                        writeState(output, state.computeID(), true, false, null);
+                    if (state == initial) {
+                        writeState(output, state.id, true, false, null);
                     }
 
-                    for (var transition : machine.findTransitionsBySource(state)) {
-                        var sourceID = transition.source.computeID();
-                        var targetID = transition.target.computeID();
+                    for (var transition : lang.findTransitionsBySource(state)) {
+                        var sourceID = transition.source.id;
+                        var targetID = transition.target.id;
                         var symbol = transition.symbol.toString();
 
                         if (transition.actions.isEmpty()) {
@@ -188,7 +186,7 @@ public class AmCode {
                     }
 
                     if (state.accepted) {
-                        writeState(output, state.computeID(), false, true, null);
+                        writeState(output, state.id, false, true, null);
                     }
                 }
             } while (queue.size() > 0);

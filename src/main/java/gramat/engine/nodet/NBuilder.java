@@ -1,6 +1,8 @@
 package gramat.engine.nodet;
 
+import gramat.engine.checks.CheckSource;
 import gramat.engine.symbols.Symbol;
+import gramat.engine.symbols.SymbolSource;
 import gramat.expressions.Rule;
 import gramat.tools.NamedCounts;
 
@@ -10,6 +12,8 @@ public class NBuilder {
 
     public final NLanguage lang;
     public final NamedCounts counts;
+    public final CheckSource checks;
+    public final SymbolSource symbols;
 
     private final List<Runnable> transitionHooks;
     private final List<Runnable> recursiveHooks;
@@ -19,6 +23,8 @@ public class NBuilder {
 
     public NBuilder(NLanguage lang) {
         this.lang = lang;
+        checks = new CheckSource();
+        symbols = new SymbolSource();
         transitionHooks = new ArrayList<>();
         recursiveHooks = new ArrayList<>();
         actionHooks = new ArrayList<>();
@@ -27,19 +33,18 @@ public class NBuilder {
     }
 
     public NMachine compile(Rule rule) {
-        var builder = new NBuilder(lang);
-        var initial = builder.lang.newState();
-        var accepted = rule.build(builder, initial);
+        var initial = lang.newState();
+        var accepted = rule.build(this, initial);
 
-        for (var hook : builder.transitionHooks) {
+        for (var hook : transitionHooks) {
             hook.run();
         }
 
-        for (var hook : builder.recursiveHooks) {
+        for (var hook : recursiveHooks) {
             hook.run();
         }
 
-        for (var hook : builder.actionHooks) {
+        for (var hook : actionHooks) {
             hook.run();
         }
 

@@ -1,7 +1,7 @@
 package gramat;
 
 import gramat.common.TextException;
-import gramat.engine.indet.IMachine;
+import gramat.engine.indet.ILanguage;
 import gramat.engine.nodet.NBuilder;
 import gramat.engine.nodet.NLanguage;
 import gramat.expressions.Rule;
@@ -43,12 +43,13 @@ public class Grammar {
         }
 
         var lang = new NLanguage();
-        var builder = new NBuilder(lang);
-        var nMachine = builder.compile(rule);
-        var iMachine = new IMachine(lang, nMachine);
-        var initial = iMachine.compile();
+        var nBuilder = new NBuilder(lang);
+        var nMachine = nBuilder.compile(rule);
+        var iBuilder = new ILanguage();
+        var iInitial = iBuilder.convertToDFA(lang, nBuilder.symbols, nMachine);
+        var dInitial = iBuilder.compile(iInitial);
 
-        return new Parser(initial);
+        return new Parser(dInitial);
     }
 
     public void parse(Path file) {

@@ -18,8 +18,9 @@ public class LiteralRange extends Expression {
     @Override
     public NState build(NBuilder builder, NState initial) {
         var accepted = builder.lang.newState();
+        var symbol = builder.symbols.getRange(begin, end);
 
-        builder.lang.newRangeTransition(initial, accepted, begin, end);
+        builder.lang.newTransition(initial, accepted, symbol);
 
         return accepted;
     }

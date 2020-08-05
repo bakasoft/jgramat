@@ -1,23 +1,20 @@
 package gramat.engine.deter;
 
-import gramat.engine.actions.ActionList;
+import gramat.engine.actions.Action;
 import gramat.engine.symbols.Symbol;
-import gramat.engine.checks.Check;
 
 import java.util.Objects;
 
 public class DTransition {
 
-    public final DState target;
     public final Symbol symbol;
-    public final Check check;
-    public final ActionList actions;
+    public final DState target;
+    public final Action[] actions;
 
-    public DTransition(DState target, Symbol symbol, Check check) {
-        this.target = Objects.requireNonNull(target);
+    public DTransition(Symbol symbol, DState target, Action[] actions) {
         this.symbol = Objects.requireNonNull(symbol);
-        this.check = check;
-        this.actions = new ActionList();
+        this.target = Objects.requireNonNull(target);
+        this.actions = Objects.requireNonNull(actions);
     }
 
 }
