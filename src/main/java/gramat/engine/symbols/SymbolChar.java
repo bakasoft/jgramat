@@ -2,7 +2,6 @@ package gramat.engine.symbols;
 
 import gramat.engine.AmCode;
 import gramat.engine.Input;
-import gramat.engine.Runner;
 
 public class SymbolChar extends Symbol {
 
@@ -10,11 +9,6 @@ public class SymbolChar extends Symbol {
 
     public SymbolChar(char value) {
         this.value = value;
-    }
-
-    @Override
-    public boolean matches(Runner runner) {
-        return value == runner.getChar();
     }
 
     @Override

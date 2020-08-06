@@ -1,7 +1,6 @@
 package gramat.engine.symbols;
 
 import gramat.engine.AmCode;
-import gramat.engine.Runner;
 
 public class SymbolRange extends Symbol {
 
@@ -11,12 +10,6 @@ public class SymbolRange extends Symbol {
     public SymbolRange(char begin, char end) {
         this.begin = begin;
         this.end = end;
-    }
-
-    @Override
-    public boolean matches(Runner runner) {
-        var chr = runner.getChar();
-        return chr >= begin && chr <= end;
     }
 
     @Override
