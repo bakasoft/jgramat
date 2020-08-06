@@ -7,12 +7,15 @@ public class ControlStack {
 
     private final Stack<String> stack;
 
+    public int version;
+
     public ControlStack() {
         stack = new Stack<>();
     }
 
     public void push(String token) {
         stack.push(token);
+        version++;
     }
 
     public boolean test(String token) {
@@ -25,6 +28,7 @@ public class ControlStack {
 
     public void pop() {
         stack.pop();
+        version++;
     }
 
     public boolean isClear() {

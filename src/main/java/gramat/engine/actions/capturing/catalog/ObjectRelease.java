@@ -13,14 +13,14 @@ public class ObjectRelease extends CapturingAction {
 
     @Override
     public void run(CapturingContext context) {
-        if (press.active) {
-            var assembler = context.popAssembler();
+        var accept = context.tryPostpone(p -> p instanceof ObjectAccept);
 
-            var object = assembler.getAttributes();  // TODO add types
+        if (accept == null) {
+            if (context.present.removeLast(p -> p instanceof ObjectReject) == null) {
+                throw new RuntimeException("expected reject");
+            }
 
-            context.peekAssembler().pushValue(object);
-
-            press.active = false;
+            context.future.enqueue(new ObjectAccept(press));
         }
     }
 

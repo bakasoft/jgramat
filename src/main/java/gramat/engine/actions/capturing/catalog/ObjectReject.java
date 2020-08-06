@@ -3,20 +3,17 @@ package gramat.engine.actions.capturing.catalog;
 import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
 
-public class ObjectCancel extends CapturingAction {
+public class ObjectReject extends CapturingAction {
 
     private final ObjectPress press;
 
-    public ObjectCancel(ObjectPress press) {
+    public ObjectReject(ObjectPress press) {
         this.press = press;
     }
 
     @Override
     public void run(CapturingContext context) {
-        if (press.active) {
-            context.popAssembler();
-            press.active = false;
-        }
+        context.popAssembler();
     }
 
     @Override

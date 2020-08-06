@@ -5,15 +5,11 @@ import gramat.engine.actions.capturing.CapturingContext;
 
 public class ValuePress extends CapturingAction {
 
-    public Integer position;
-
     @Override
     public void run(CapturingContext context) {
-        if (position != null) {
-            System.out.println("WARNING: re-starting @ " + this);
-        }
+        int beginPosition = context.input.getPosition();
 
-        position = context.input.getPosition();
+        context.future.enqueue(new ValueReject(this, beginPosition));
     }
 
     @Override

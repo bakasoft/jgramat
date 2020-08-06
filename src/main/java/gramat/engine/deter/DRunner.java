@@ -3,6 +3,7 @@ package gramat.engine.deter;
 import gramat.common.TextException;
 import gramat.engine.*;
 import gramat.engine.actions.Action;
+import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
 import gramat.engine.checks.Check;
 import gramat.engine.checks.ControlStack;
@@ -130,8 +131,15 @@ public class DRunner {
 
             // execute actions
             for (var action : nextTransition.actions) {
-                // TODO run?
+                if (action instanceof CapturingAction) {
+                    ((CapturingAction) action).run(capturingContext);
+                }
+                else {
+                    throw new RuntimeException("unsupported action class: " + action.getClass());
+                }
             }
+
+            capturingContext.flushFuture();
 
             // go next state
             state = nextTransition.target;

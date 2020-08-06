@@ -3,25 +3,23 @@ package gramat.engine.actions.capturing.catalog;
 import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
 
-public class ValueCancel extends CapturingAction {
+public class ValueReject extends CapturingAction {
 
     private final ValuePress press;
+    public final int beginPosition;
 
-    public ValueCancel(ValuePress press) {
+    public ValueReject(ValuePress press, int beginPosition) {
         this.press = press;
+        this.beginPosition = beginPosition;
     }
 
     @Override
     public void run(CapturingContext context) {
-        if (press.position == null) {
-            System.out.println("WARNING: canceling before start @ " + this);
-        }
-
-        press.position = null;
+        // just don't capture the value
     }
 
     @Override
     public String getDescription() {
-        return "CANCEL VALUE";
+        return "VALUE REJECT";
     }
 }

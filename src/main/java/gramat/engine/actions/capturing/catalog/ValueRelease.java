@@ -16,16 +16,21 @@ public class ValueRelease extends CapturingAction {
 
     @Override
     public void run(CapturingContext context) {
-        if (press.position != null) {
-            var position0 = press.position;
-            var positionF = context.input.getPosition();
-            var value = context.input.extract(position0, positionF);
+        var endPosition = context.input.getPosition();
+        var accept = (ValueAccept)context.tryPostpone(p -> p instanceof ValueAccept);
 
-            context.peekAssembler().pushValue(value, parser);
+        if (accept != null) {
+            // update end position
+            accept.endPosition = endPosition;
+        }
+        else {
+            var reject  = (ValueReject)context.present.removeLast(p -> p instanceof ValueReject);
 
-            press.position = null;
-        } else {
-            System.out.println("Missing start point");
+            if (reject == null) {
+                throw new RuntimeException("expected reject");
+            }
+
+            context.future.enqueue(new ValueAccept(press, parser, reject.beginPosition, endPosition));
         }
     }
 

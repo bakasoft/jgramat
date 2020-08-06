@@ -5,15 +5,11 @@ import gramat.engine.actions.capturing.CapturingContext;
 
 public class ObjectPress extends CapturingAction {
 
-    // TODO add comment why this is active by default
-    public boolean active = true;
-
     @Override
     public void run(CapturingContext context) {
-        if (!active) {
-            context.pushAssembler();
-            active = true;
-        }
+        context.pushAssembler();
+
+        context.future.enqueue(new ObjectReject(this));
     }
 
     @Override

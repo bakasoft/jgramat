@@ -1,7 +1,11 @@
 @string String = {+'a-z'}
 
+TestString = ^ String $
+
+@match TestString `abc` abc
+
 @object Object = "{" { @set(String: ":" (String | Object)) / "," } "}"
 
-Test = ^ Object $
+TestObject = ^ Object $
 
-@match Test `{abc:{},ghi:jkl,mno:pqr}` {abc:{}, ghi:jkl, mno: pqr}
+@match TestObject `{}` {}
