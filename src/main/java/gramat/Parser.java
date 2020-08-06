@@ -3,7 +3,7 @@ package gramat;
 import gramat.engine.Input;
 import gramat.engine.deter.DRunner;
 import gramat.engine.deter.DState;
-import gramat.expressions.capturing.ValueRuntime;
+import gramat.engine.actions.capturing.CapturingContext;
 
 public class Parser {
 
@@ -18,15 +18,14 @@ public class Parser {
     }
 
     public Object eval(Input input) throws Rejection {
-        var runtime = new ValueRuntime(input);
-        var runner = new DRunner(input, runtime);
+        var runner = new DRunner(input);
 
-        runtime.pushAssembler();
+        runner.capturingContext.pushAssembler();
 
         var end = runner.eval(initial);
 
         if(end.accepted) {
-            var assembler = runtime.popAssembler();
+            var assembler = runner.capturingContext.popAssembler();
 
             if (assembler.isEmpty()) {
                 return null;

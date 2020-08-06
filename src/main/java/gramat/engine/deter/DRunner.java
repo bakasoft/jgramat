@@ -3,7 +3,7 @@ package gramat.engine.deter;
 import gramat.common.TextException;
 import gramat.engine.*;
 import gramat.engine.actions.Action;
-import gramat.engine.actions.ActionExecutor;
+import gramat.engine.actions.capturing.CapturingContext;
 import gramat.engine.checks.Check;
 import gramat.engine.checks.ControlStack;
 import gramat.engine.symbols.*;
@@ -11,12 +11,12 @@ import gramat.engine.symbols.*;
 public class DRunner {
 
     private final Input input;
-    private final ActionExecutor executor;
+    public final CapturingContext capturingContext;
     private final ControlStack controlStack;
 
-    public DRunner(Input input, ActionExecutor executor) {
+    public DRunner(Input input) {
         this.input = input;
-        this.executor = executor;
+        this.capturingContext = new CapturingContext(input);
         this.controlStack = new ControlStack();
     }
 
@@ -130,7 +130,7 @@ public class DRunner {
 
             // execute actions
             for (var action : nextTransition.actions) {
-                execute(action);
+                // TODO run?
             }
 
             // go next state
@@ -143,12 +143,6 @@ public class DRunner {
         }
 
         return state;
-    }
-
-    private void execute(Action action) {
-        if (!executor.run(action)) {
-            throw new TextException("Action cannot be executed: " + action, input.getLocation());
-        }
     }
 
 }

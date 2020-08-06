@@ -1,8 +1,8 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.actions.capturing.ValuePress;
-import gramat.engine.actions.capturing.ValueRelease;
-import gramat.engine.actions.capturing.ValueSustain;
+import gramat.engine.actions.capturing.catalog.ValuePress;
+import gramat.engine.actions.capturing.catalog.ValueRelease;
+import gramat.engine.actions.capturing.catalog.ValueSustain;
 import gramat.engine.parsers.ValueParser;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;

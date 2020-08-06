@@ -1,8 +1,8 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.actions.capturing.ListPress;
-import gramat.engine.actions.capturing.ListRelease;
-import gramat.engine.actions.capturing.ListSustain;
+import gramat.engine.actions.capturing.catalog.ListPress;
+import gramat.engine.actions.capturing.catalog.ListRelease;
+import gramat.engine.actions.capturing.catalog.ListSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;

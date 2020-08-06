@@ -1,6 +1,6 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.actions.capturing.*;
+import gramat.engine.actions.capturing.catalog.*;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
