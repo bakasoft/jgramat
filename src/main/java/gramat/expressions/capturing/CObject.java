@@ -1,5 +1,8 @@
 package gramat.expressions.capturing;
 
+import gramat.engine.actions.capturing.ObjectPress;
+import gramat.engine.actions.capturing.ObjectRelease;
+import gramat.engine.actions.capturing.ObjectSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -37,91 +40,4 @@ public class CObject extends Expression {
         return List.of(content);
     }
 
-    public class ObjectPress extends ValueAction {
-
-        // TODO add comment why this is active by default
-        public boolean active = true;
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            if (!active) {
-                runtime.pushAssembler();
-                active = true;
-            }
-        }
-
-        @Override
-        public String getDescription() {
-            return "PRESS OBJECT";
-        }
-
-    }
-
-    public class ObjectRelease extends ValueAction {
-
-        private final ObjectPress press;
-
-        public ObjectRelease(ObjectPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            if (press.active) {
-                var assembler = runtime.popAssembler();
-
-                var object = assembler.getAttributes();  // TODO add types
-
-                runtime.peekAssembler().pushValue(object);
-
-                press.active = false;
-            }
-        }
-
-        @Override
-        public String getDescription() {
-            return "RELEASE OBJECT";
-        }
-    }
-
-    public class ObjectSustain extends ValueAction {
-
-        private final ObjectPress press;
-
-        public ObjectSustain(ObjectPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO
-        }
-
-        @Override
-        public String getDescription() {
-            return "SUSTAIN OBJECT";
-        }
-    }
-
-    public class ObjectCancel extends ValueAction {
-
-        private final ObjectPress press;
-
-        public ObjectCancel(ObjectPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            if (press.active) {
-                runtime.popAssembler();
-                press.active = false;
-            }
-        }
-
-        @Override
-        public String getDescription() {
-            return "CANCEL OBJECT";
-        }
-    }
 }

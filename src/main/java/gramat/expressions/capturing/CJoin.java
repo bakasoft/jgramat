@@ -1,5 +1,8 @@
 package gramat.expressions.capturing;
 
+import gramat.engine.actions.capturing.JoinPress;
+import gramat.engine.actions.capturing.JoinRelease;
+import gramat.engine.actions.capturing.JoinSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -35,73 +38,4 @@ public class CJoin extends Expression {
         return List.of(content);
     }
 
-    public class JoinPress extends ValueAction {
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "PRESS JOIN";
-        }
-    }
-
-    public class JoinRelease extends ValueAction {
-
-        private final JoinPress press;
-
-        public JoinRelease(JoinPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "RELEASE JOIN";
-        }
-    }
-
-    public class JoinSustain extends ValueAction {
-
-        private final JoinPress press;
-
-        public JoinSustain(JoinPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "SUSTAIN JOIN";
-        }
-    }
-
-    public class JoinCancel extends ValueAction {
-
-        private final JoinPress press;
-
-        public JoinCancel(JoinPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "CANCEL JOIN";
-        }
-    }
 }

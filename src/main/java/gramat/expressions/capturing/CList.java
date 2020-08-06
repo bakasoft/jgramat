@@ -1,5 +1,8 @@
 package gramat.expressions.capturing;
 
+import gramat.engine.actions.capturing.ListPress;
+import gramat.engine.actions.capturing.ListRelease;
+import gramat.engine.actions.capturing.ListSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -37,74 +40,4 @@ public class CList extends Expression {
         return List.of(content);
     }
 
-    public class ListPress extends ValueAction {
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "PRESS LIST";
-        }
-
-    }
-
-    public class ListRelease extends ValueAction {
-
-        private final ListPress press;
-
-        public ListRelease(ListPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "RELEASE LIST";
-        }
-    }
-
-    public class ListSustain extends ValueAction {
-
-        private final ListPress press;
-
-        public ListSustain(ListPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "SUSTAIN LIST";
-        }
-    }
-
-    public class ListCancel extends ValueAction {
-
-        private final ListPress press;
-
-        public ListCancel(ListPress press) {
-            this.press = press;
-        }
-
-        @Override
-        public void run(ValueRuntime runtime) {
-            // TODO implement
-        }
-
-        @Override
-        public String getDescription() {
-            return "CANCEL LIST";
-        }
-    }
 }

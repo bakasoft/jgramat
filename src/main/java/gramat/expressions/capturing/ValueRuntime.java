@@ -3,6 +3,7 @@ package gramat.expressions.capturing;
 import gramat.engine.actions.Action;
 import gramat.engine.actions.ActionExecutor;
 import gramat.engine.Input;
+import gramat.engine.actions.capturing.ValueAction;
 
 import java.util.Stack;
 
