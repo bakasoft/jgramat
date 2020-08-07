@@ -13,7 +13,7 @@ public class ObjectSustain extends CapturingAction {
 
     @Override
     public void run(CapturingContext context) {
-        if (context.tryPostpone(p -> p instanceof ObjectReject) == null) {
+        if (context.tryPostpone(ObjectReject.class) == null) {
             throw new RuntimeException("expected reject to be posposed");
         }
     }

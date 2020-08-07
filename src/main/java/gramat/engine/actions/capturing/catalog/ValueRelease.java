@@ -17,14 +17,14 @@ public class ValueRelease extends CapturingAction {
     @Override
     public void run(CapturingContext context) {
         var endPosition = context.input.getPosition();
-        var accept = (ValueAccept)context.tryPostpone(p -> p instanceof ValueAccept);
+        var accept = context.tryPostpone(ValueAccept.class);
 
         if (accept != null) {
             // update end position
             accept.endPosition = endPosition;
         }
         else {
-            var reject  = (ValueReject)context.present.removeLast(p -> p instanceof ValueReject);
+            var reject  = context.present.removeLast(ValueReject.class);
 
             if (reject == null) {
                 throw new RuntimeException("expected reject");

@@ -44,8 +44,8 @@ public class CapturingContext {
         return assemblerStack.pop();
     }
 
-    public CapturingAction tryPostpone(Predicate<CapturingAction> condition) {
-        var action = present.removeLast(condition);
+    public <T extends CapturingAction> T tryPostpone(Class<T> type) {
+        var action = present.removeLast(type);
 
         if (action == null) {
             return null;

@@ -13,7 +13,7 @@ public class ValueSustain extends CapturingAction {
 
     @Override
     public void run(CapturingContext context) {
-        var reject = context.tryPostpone(p -> p instanceof ValueReject);
+        var reject = context.tryPostpone(ValueReject.class);
 
         if (reject == null) {
             throw new RuntimeException("expected reject to be posposed");

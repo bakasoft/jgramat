@@ -13,10 +13,10 @@ public class ObjectRelease extends CapturingAction {
 
     @Override
     public void run(CapturingContext context) {
-        var accept = context.tryPostpone(p -> p instanceof ObjectAccept);
+        var accept = context.tryPostpone(ObjectAccept.class);
 
         if (accept == null) {
-            if (context.present.removeLast(p -> p instanceof ObjectReject) == null) {
+            if (context.present.removeLast(ObjectReject.class) == null) {
                 throw new RuntimeException("expected reject");
             }
 

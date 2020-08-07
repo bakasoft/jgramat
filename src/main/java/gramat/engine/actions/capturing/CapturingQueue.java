@@ -27,10 +27,12 @@ public class CapturingQueue {
         return result;
     }
 
-    public CapturingAction removeLast(Predicate<CapturingAction> condition) {
+    public <T extends CapturingAction> T removeLast(Class<T> type) {
         for (int i = queue.size() - 1; i >= 0; i--) {
-            if (condition.test(queue.get(i))) {
-                return queue.remove(i);
+            if (type.isInstance(queue.get(i))) {
+                var action = queue.remove(i);
+
+                return type.cast(action);
             }
         }
 
