@@ -9,7 +9,7 @@ public class ValuePress extends CapturingAction {
     public void run(CapturingContext context) {
         int beginPosition = context.input.getPosition();
 
-        context.future.enqueue(new ValueReject(this, beginPosition));
+        context.future.append(new ValueReject(this, beginPosition));
     }
 
     @Override

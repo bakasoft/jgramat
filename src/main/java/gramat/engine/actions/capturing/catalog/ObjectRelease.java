@@ -20,7 +20,7 @@ public class ObjectRelease extends CapturingAction {
                 throw new RuntimeException("expected reject");
             }
 
-            context.future.enqueue(new ObjectAccept(press));
+            context.future.append(new ObjectAccept(press));
         }
     }
 

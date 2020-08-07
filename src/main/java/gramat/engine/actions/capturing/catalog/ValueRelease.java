@@ -25,7 +25,7 @@ public class ValueRelease extends CapturingAction {
                 throw new RuntimeException("expected reject");
             }
 
-            context.future.enqueue(new ValueAccept(press, parser, reject.beginPosition));
+            context.future.append(new ValueAccept(press, parser, reject.beginPosition));
         }
     }
 

@@ -9,7 +9,7 @@ public class ObjectPress extends CapturingAction {
     public void run(CapturingContext context) {
         context.pushAssembler();
 
-        context.future.enqueue(new ObjectReject(this));
+        context.future.append(new ObjectReject(this));
     }
 
     @Override

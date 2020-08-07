@@ -3,28 +3,21 @@ package gramat.engine.actions.capturing;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class CapturingQueue {
 
     private final LinkedList<CapturingAction> queue;
 
     public CapturingQueue() {
-        this(new LinkedList<>());
+        this.queue = new LinkedList<>();
     }
 
-    private CapturingQueue(LinkedList<CapturingAction> queue) {
-        this.queue = queue;
-    }
-
-    public void enqueue(CapturingAction action) {
+    public void append(CapturingAction action) {
         queue.add(action);
     }
 
-    public List<CapturingAction> dequeueAll() {
-        var result = new ArrayList<>(queue);
-        queue.clear();
-        return result;
+    public void appendAll(List<CapturingAction> actions) {
+        queue.addAll(actions);
     }
 
     public <T extends CapturingAction> T removeLast(Class<T> type) {
@@ -39,7 +32,9 @@ public class CapturingQueue {
         return null;
     }
 
-    public void enqueueAll(List<CapturingAction> actions) {
-        queue.addAll(actions);
+    public List<CapturingAction> removeAll() {
+        var result = new ArrayList<>(queue);
+        queue.clear();
+        return result;
     }
 }

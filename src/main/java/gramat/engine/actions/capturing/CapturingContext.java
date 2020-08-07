@@ -3,7 +3,6 @@ package gramat.engine.actions.capturing;
 import gramat.engine.Input;
 
 import java.util.Stack;
-import java.util.function.Predicate;
 
 public class CapturingContext {
 
@@ -51,14 +50,14 @@ public class CapturingContext {
             return null;
         }
 
-        future.enqueue(action);
+        future.append(action);
         return action;
     }
 
     public void flushFuture() {
-        var actions = present.dequeueAll();
+        var actions = present.removeAll();
 
-        present.enqueueAll(future.dequeueAll());
+        present.appendAll(future.removeAll());
 
         for (var action : actions) {
             action.run(this);
