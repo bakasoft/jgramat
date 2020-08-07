@@ -21,4 +21,9 @@ public class AttributeNameBaton extends CapturingSubAction<AbstractContainerPres
     public String getDescription() {
         return "ATTRIBUTE NAME BATON";
     }
+
+    @Override
+    public final int getOrder() {
+        return 6;
+    }
 }

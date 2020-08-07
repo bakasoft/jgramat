@@ -13,4 +13,9 @@ public class AttributeValueReject extends AbstractContainerReject {
     public String getDescription() {
         return "CANCEL ATTRIBUTE VALUE";
     }
+
+    @Override
+    public final int getOrder() {
+        return 10;
+    }
 }

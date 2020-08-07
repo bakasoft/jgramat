@@ -34,4 +34,9 @@ public class ObjectPress extends AbstractContainerPress {
         return "PRESS OBJECT";
     }
 
+    @Override
+    public final int getOrder() {
+        return 1;
+    }
+
 }

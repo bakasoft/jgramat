@@ -33,4 +33,9 @@ public class AttributeNamePress extends AbstractContainerPress {
     public String getDescription() {
         return "PRESS ATTRIBUTE NAME";
     }
+
+    @Override
+    public final int getOrder() {
+        return 1;
+    }
 }

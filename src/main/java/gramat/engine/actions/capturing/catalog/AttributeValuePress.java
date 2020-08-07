@@ -6,6 +6,12 @@ public class AttributeValuePress extends AbstractContainerPress {
 
     @Override
     protected Object createInitializator(CapturingContext context) {
+        var accept = context.dequeue(AttributeNameAccept.class);
+
+        if (accept != null) {
+            accept.run(context);
+        }
+
         var baton = context.dequeue(AttributeNameBaton.class);
 
         if (baton == null) {
@@ -40,5 +46,10 @@ public class AttributeValuePress extends AbstractContainerPress {
     @Override
     public String getDescription() {
         return "PRESS ATTRIBUTE VALUE";
+    }
+
+    @Override
+    public final int getOrder() {
+        return 7;
     }
 }

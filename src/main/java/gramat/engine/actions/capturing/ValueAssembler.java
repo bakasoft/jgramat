@@ -37,7 +37,7 @@ public class ValueAssembler {
 
     public Object popValue() {
         if (valueStack.isEmpty()) {
-            throw new RuntimeException();
+            throw new RuntimeException("empty stack");
         }
         return valueStack.pop();
     }

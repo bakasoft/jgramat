@@ -25,4 +25,9 @@ public class AttributeValueAccept extends AbstractContainerAccept {
     public String getDescription() {
         return "CANCEL ATTRIBUTE VALUE";
     }
+
+    @Override
+    public final int getOrder() {
+        return 11;
+    }
 }

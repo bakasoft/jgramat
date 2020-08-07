@@ -20,4 +20,9 @@ public class ListRelease extends CapturingAction {
     public String getDescription() {
         return "RELEASE LIST";
     }
+
+    @Override
+    public final int getOrder() {
+        return 3;
+    }
 }

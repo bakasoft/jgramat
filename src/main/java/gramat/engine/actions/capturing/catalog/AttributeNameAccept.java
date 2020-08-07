@@ -22,4 +22,9 @@ public class AttributeNameAccept extends AbstractContainerAccept {
     public String getDescription() {
         return "CANCEL ATTRIBUTE NAME";
     }
+
+    @Override
+    public final int getOrder() {
+        return 5;
+    }
 }

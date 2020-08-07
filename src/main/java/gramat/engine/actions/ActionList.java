@@ -2,6 +2,7 @@ package gramat.engine.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 public class ActionList implements Iterable<Action> {
@@ -38,6 +39,9 @@ public class ActionList implements Iterable<Action> {
         }
 
         actions.add(item);
+
+        actions.sort(Comparator.comparingInt(Action::getOrder));
+
         return true;
     }
 

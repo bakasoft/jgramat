@@ -60,7 +60,13 @@ public class CapturingContext {
     }
 
     public <T extends CapturingAction> T dequeue(Class<T> type) {
-        return present.removeLast(type);
+        var action = present.removeLast(type);
+
+        if (action != null) {
+            return action;
+        }
+
+        return future.removeLast(type);
     }
 
     public void flushFuture() {

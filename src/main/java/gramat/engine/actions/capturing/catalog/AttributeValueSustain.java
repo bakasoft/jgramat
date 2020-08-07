@@ -10,4 +10,9 @@ public class AttributeValueSustain extends AbstractContainerSustain {
     public String getDescription() {
         return "SUSTAIN ATTRIBUTE VALUE";
     }
+
+    @Override
+    public final int getOrder() {
+        return 8;
+    }
 }

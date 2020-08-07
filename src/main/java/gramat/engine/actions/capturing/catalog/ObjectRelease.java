@@ -10,4 +10,9 @@ public class ObjectRelease extends AbstractContainerRelease {
     public String getDescription() {
         return "RELEASE OBJECT";
     }
+
+    @Override
+    public final int getOrder() {
+        return 3;
+    }
 }

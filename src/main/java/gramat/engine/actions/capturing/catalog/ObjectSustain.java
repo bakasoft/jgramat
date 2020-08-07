@@ -10,4 +10,9 @@ public class ObjectSustain extends AbstractContainerSustain {
     public String getDescription() {
         return "SUSTAIN OBJECT";
     }
+
+    @Override
+    public final int getOrder() {
+        return 2;
+    }
 }

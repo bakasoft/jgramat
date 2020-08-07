@@ -10,4 +10,9 @@ public class AttributeValueRelease extends AbstractContainerRelease {
     public String getDescription() {
         return "RELEASE ATTRIBUTE VALUE";
     }
+
+    @Override
+    public final int getOrder() {
+        return 9;
+    }
 }

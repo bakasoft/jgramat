@@ -39,4 +39,9 @@ public class ValuePress extends AbstractValuePress {
     public String getDescription() {
         return "PRESS VALUE";
     }
+
+    @Override
+    public final int getOrder() {
+        return 1;
+    }
 }

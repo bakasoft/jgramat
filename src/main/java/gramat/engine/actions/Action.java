@@ -7,6 +7,8 @@ abstract public class Action {
 
     abstract public String getDescription();
 
+    abstract public int getOrder();
+
     public final List<Action> overrides;
 
     public Action() {

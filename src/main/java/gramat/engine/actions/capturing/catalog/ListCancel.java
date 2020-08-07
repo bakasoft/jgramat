@@ -20,4 +20,9 @@ public class ListCancel extends CapturingAction {
     public String getDescription() {
         return "CANCEL LIST";
     }
+
+    @Override
+    public final int getOrder() {
+        return 4;
+    }
 }

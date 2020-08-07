@@ -20,4 +20,9 @@ public class JoinSustain extends CapturingAction {
     public String getDescription() {
         return "SUSTAIN JOIN";
     }
+
+    @Override
+    public final int getOrder() {
+        return 2;
+    }
 }

@@ -10,4 +10,9 @@ public class ObjectReject extends AbstractContainerReject {
     public String getDescription() {
         return "REJECT OBJECT";
     }
+
+    @Override
+    public final int getOrder() {
+        return 4;
+    }
 }
