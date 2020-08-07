@@ -31,7 +31,7 @@ public class ValuePress extends AbstractValuePress {
     }
 
     @Override
-    public ValueParser getParser() {
+    protected ValueParser getParser() {
         return parser;
     }
 

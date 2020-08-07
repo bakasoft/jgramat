@@ -14,12 +14,12 @@ abstract public class AbstractValuePress  extends CapturingAction {
 
     abstract protected AbstractValueAccept createAccept(int beginPosition);
 
-    public abstract ValueParser getParser();
+    abstract protected ValueParser getParser();
 
     @Override
-    public void run(CapturingContext context) {
+    public final void run(CapturingContext context) {
         int beginPosition = context.input.getPosition();
 
-        context.future.append(createReject(beginPosition));
+        context.enqueue(createReject(beginPosition));
     }
 }

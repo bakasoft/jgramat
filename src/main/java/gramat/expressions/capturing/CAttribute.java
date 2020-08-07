@@ -1,8 +1,8 @@
 package gramat.expressions.capturing;
 
-import gramat.engine.actions.capturing.catalog.AttributePress;
-import gramat.engine.actions.capturing.catalog.AttributeRelease;
-import gramat.engine.actions.capturing.catalog.AttributeSustain;
+import gramat.engine.actions.capturing.catalog.AttributeStaticPress;
+import gramat.engine.actions.capturing.catalog.AttributeStaticRelease;
+import gramat.engine.actions.capturing.catalog.AttributeStaticSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -22,9 +22,9 @@ public class CAttribute extends Expression {
     @Override
     public NState build(NCompiler compiler, NState initial) {
         var accepted = content.build(compiler, initial);
-        var press = new AttributePress(name);
-        var release = new AttributeRelease(name, press);
-        var sustain = new AttributeSustain(name, press);
+        var press = new AttributeStaticPress(name);
+        var release = new AttributeStaticRelease(name, press);
+        var sustain = new AttributeStaticSustain(name, press);
 
         // setup overrides
         press.overrides(sustain);

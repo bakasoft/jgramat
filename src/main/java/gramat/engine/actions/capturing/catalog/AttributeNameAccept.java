@@ -3,20 +3,23 @@ package gramat.engine.actions.capturing.catalog;
 import gramat.engine.actions.capturing.CapturingContext;
 import gramat.engine.actions.capturing.ValueAssembler;
 
-public class ObjectAccept extends AbstractContainerAccept {
+public class AttributeNameAccept extends AbstractContainerAccept {
 
-    public ObjectAccept(AbstractContainerPress origin) {
+    public AttributeNameAccept(AbstractContainerPress origin) {
         super(origin);
     }
 
+    @Override
     protected void processContent(CapturingContext context, ValueAssembler assembler) {
-        var object = assembler.getAttributes();  // TODO add types
+        var name = assembler.popString();
 
-        context.peekAssembler().pushValue(object);
+        assembler.expectEmpty();
+
+        context.enqueue(new AttributeNameBaton(origin, name));
     }
 
     @Override
     public String getDescription() {
-        return "ACCEPT OBJECT";
+        return "CANCEL ATTRIBUTE NAME";
     }
 }

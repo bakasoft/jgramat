@@ -1,23 +1,36 @@
 package gramat.engine.actions.capturing.catalog;
 
-import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
 
-public class AttributeNamePress extends CapturingAction {
-
-    public boolean active;
+public class AttributeNamePress extends AbstractContainerPress {
 
     @Override
-    public void run(CapturingContext context) {
-        if (!active) {
-            context.pushAssembler();
-            active = true;
-        }
+    protected Object createInitializator(CapturingContext context) {
+        return null;
+    }
+
+    @Override
+    protected AbstractContainerReject createReject(Object initializator) {
+        return new AttributeNameReject(this);
+    }
+
+    @Override
+    protected AbstractContainerAccept createAccept(AbstractContainerReject reject) {
+        return new AttributeNameAccept(this);
+    }
+
+    @Override
+    protected Class<? extends AbstractContainerAccept> getAcceptClass() {
+        return AttributeNameAccept.class;
+    }
+
+    @Override
+    protected Class<? extends AbstractContainerReject> getRejectClass() {
+        return AttributeNameReject.class;
     }
 
     @Override
     public String getDescription() {
         return "PRESS ATTRIBUTE NAME";
     }
-
 }

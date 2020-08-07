@@ -10,7 +10,7 @@ abstract public class AbstractValueSustain extends CapturingSubAction<AbstractVa
     }
 
     @Override
-    public void run(CapturingContext context) {
+    public final void run(CapturingContext context) {
         var reject = context.tryPostpone(origin.getRejectType());
 
         if (reject == null) {

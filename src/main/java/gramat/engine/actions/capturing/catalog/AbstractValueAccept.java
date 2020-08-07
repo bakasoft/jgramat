@@ -13,7 +13,7 @@ abstract public class AbstractValueAccept extends CapturingSubAction<AbstractVal
     }
 
     @Override
-    public void run(CapturingContext context) {
+    public final void run(CapturingContext context) {
         var endPosition = context.input.getPosition();
         var value = context.input.extract(beginPosition, endPosition);
         var parser = origin.getParser();

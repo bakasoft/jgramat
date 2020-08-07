@@ -1,22 +1,19 @@
 package gramat.engine.actions.capturing.catalog;
 
-import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
+import gramat.engine.actions.capturing.ValueAssembler;
 
-public class AttributeRelease extends CapturingAction {
+public class AttributeValueAccept extends AbstractContainerAccept {
 
     private final String name;
-    private final AttributePress press;
 
-    public AttributeRelease(String name, AttributePress press) {
+    public AttributeValueAccept(AbstractContainerPress origin, String name) {
+        super(origin);
         this.name = name;
-        this.press = press;
     }
 
     @Override
-    public void run(CapturingContext context) {
-        var assembler = context.popAssembler();
-
+    protected void processContent(CapturingContext context, ValueAssembler assembler) {
         var value = assembler.popValue();
 
         assembler.expectEmpty();
@@ -26,6 +23,6 @@ public class AttributeRelease extends CapturingAction {
 
     @Override
     public String getDescription() {
-        return "RELEASE ATTRIBUTE: " + name;
+        return "CANCEL ATTRIBUTE VALUE";
     }
 }

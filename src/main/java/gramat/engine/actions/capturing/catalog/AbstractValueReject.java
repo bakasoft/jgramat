@@ -13,7 +13,7 @@ abstract public class AbstractValueReject extends CapturingSubAction<AbstractVal
     }
 
     @Override
-    public void run(CapturingContext context) {
+    public final void run(CapturingContext context) {
         // just don't capture the value
     }
 

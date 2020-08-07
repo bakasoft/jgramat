@@ -37,7 +37,7 @@ public class CAttributeDynamic extends Expression {
 
         var valueAccepted = value.build(compiler, nameAccepted);
         var valuePress = new AttributeValuePress();
-        var valueRelease = new AttributeValueRelease(valuePress, nameRelease);
+        var valueRelease = new AttributeValueRelease(valuePress);
         var valueSustain = new AttributeValueSustain(valuePress);
 
         // setup overrides

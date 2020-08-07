@@ -1,6 +1,7 @@
 package gramat.engine.actions.capturing;
 
 import gramat.engine.Input;
+import gramat.engine.actions.capturing.catalog.ObjectReject;
 
 import java.util.Stack;
 
@@ -10,8 +11,8 @@ public class CapturingContext {
 
     private final Stack<ValueAssembler> assemblerStack;
 
-    public final CapturingQueue future;
-    public final CapturingQueue present;
+    private final CapturingQueue future;
+    private final CapturingQueue present;
 
 
     public CapturingContext(Input input) {
@@ -54,6 +55,14 @@ public class CapturingContext {
         return action;
     }
 
+    public void enqueue(CapturingAction action) {
+        future.append(action);
+    }
+
+    public <T extends CapturingAction> T dequeue(Class<T> type) {
+        return present.removeLast(type);
+    }
+
     public void flushFuture() {
         var actions = present.removeAll();
 
@@ -63,5 +72,4 @@ public class CapturingContext {
             action.run(this);
         }
     }
-
 }

@@ -3,23 +3,23 @@ package gramat.engine.actions.capturing.catalog;
 import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
 
-public class AttributeSustain extends CapturingAction {
+public class AttributeStaticReject extends CapturingAction {
 
     private final String name;
-    private final AttributePress begin;
+    private final AttributeStaticPress press;
 
-    public AttributeSustain(String name, AttributePress begin) {
+    public AttributeStaticReject(String name, AttributeStaticPress press) {
         this.name = name;
-        this.begin = begin;
+        this.press = press;
     }
 
     @Override
     public void run(CapturingContext context) {
-        // TODO
+        context.popAssembler();
     }
 
     @Override
     public String getDescription() {
-        return "SUSTAIN ATTRIBUTE: " + name;
+        return "CANCEL ATTRIBUTE: " + name;
     }
 }
