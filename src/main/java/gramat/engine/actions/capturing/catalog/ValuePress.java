@@ -1,15 +1,38 @@
 package gramat.engine.actions.capturing.catalog;
 
-import gramat.engine.actions.capturing.CapturingAction;
-import gramat.engine.actions.capturing.CapturingContext;
+import gramat.engine.parsers.ValueParser;
 
-public class ValuePress extends CapturingAction {
+public class ValuePress extends AbstractValuePress {
+
+    private final ValueParser parser;
+
+    public ValuePress(ValueParser parser) {
+        this.parser = parser;
+    }
 
     @Override
-    public void run(CapturingContext context) {
-        int beginPosition = context.input.getPosition();
+    protected Class<? extends AbstractValueAccept> getAcceptType() {
+        return ValueAccept.class;
+    }
 
-        context.future.append(new ValueReject(this, beginPosition));
+    @Override
+    protected Class<? extends AbstractValueReject> getRejectType() {
+        return ValueReject.class;
+    }
+
+    @Override
+    protected ValueReject createReject(int beginPosition) {
+        return new ValueReject(this, beginPosition);
+    }
+
+    @Override
+    protected AbstractValueAccept createAccept(int beginPosition) {
+        return new ValueAccept(this, beginPosition);
+    }
+
+    @Override
+    public ValueParser getParser() {
+        return parser;
     }
 
     @Override

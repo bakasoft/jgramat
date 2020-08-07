@@ -23,8 +23,8 @@ public class CValue extends Expression {
     @Override
     public NState build(NCompiler compiler, NState initial) {
         var accepted = content.build(compiler, initial);
-        var press = new ValuePress();
-        var release = new ValueRelease(parser, press);
+        var press = new ValuePress(parser);
+        var release = new ValueRelease(press);
         var sustain = new ValueSustain(press);
 
         // setup overrides
