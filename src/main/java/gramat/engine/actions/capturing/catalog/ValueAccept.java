@@ -11,19 +11,15 @@ public class ValueAccept extends CapturingAction {
 
     private final int beginPosition;
 
-    public int endPosition;
-
-    public ValueAccept(ValuePress press, ValueParser parser, int beginPosition, int endPosition) {
+    public ValueAccept(ValuePress press, ValueParser parser, int beginPosition) {
         this.press = press;
         this.parser = parser;
         this.beginPosition = beginPosition;
-        this.endPosition = endPosition;
     }
 
     @Override
     public void run(CapturingContext context) {
-        endPosition = context.input.getPosition();  // TODO check if this replace the field
-
+        var endPosition = context.input.getPosition();
         var value = context.input.extract(beginPosition, endPosition);
 
         context.peekAssembler().pushValue(value, parser);
