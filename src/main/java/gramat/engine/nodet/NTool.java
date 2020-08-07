@@ -6,7 +6,6 @@ import java.util.LinkedList;
 public class NTool {
 
     public static NTransitionList findOutgoingSymbolTransitions(NState initial) {
-        // TODO this method is ignoring actions, try to return a Map<Symbol, NTransitionList>
         var result = new NTransitionList();
         var control = new HashSet<NState>();
         var queue = new LinkedList<NState>();
@@ -32,7 +31,6 @@ public class NTool {
     }
 
     public static NTransitionList findIncomingSymbolTransitions(NState target) {
-        // TODO this method is ignoring actions, try to return a Map<Symbol, NTransitionList>
         var lang = target.lang;
         var result = new NTransitionList();
         var control = new HashSet<NState>();
@@ -100,6 +98,48 @@ public class NTool {
 
                     if (trn.source != stop || trn.target == stop) {
                         queue.add(trn.target);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static NTransitionList computeInverseEmptyClosure(NLanguage lang, NTransition initial, NState stop) {
+        var result = new NTransitionList();
+        var queue = new LinkedList<NTransition>();
+
+        queue.add(initial);
+
+        while(queue.size() > 0) {
+            var transition = queue.remove();
+
+            if (result.add(transition) && transition.source != stop) {
+                for (var trn : lang.findTransitionsByTarget(transition.source)) {
+                    if (trn.symbol == null) {
+                        queue.add(trn);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static NTransitionList computeEmptyClosure(NLanguage lang, NTransition initial, NState stop) {
+        var result = new NTransitionList();
+        var queue = new LinkedList<NTransition>();
+
+        queue.add(initial);
+
+        while(queue.size() > 0) {
+            var transition = queue.remove();
+
+            if (result.add(transition) && transition.target != stop) {
+                for (var trn : lang.findTransitionsBySource(transition.target)) {
+                    if (trn.symbol == null) {
+                        queue.add(trn);
                     }
                 }
             }

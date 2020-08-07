@@ -30,6 +30,7 @@ public class CValue extends Expression {
         // setup overrides
         press.overrides(sustain);
         release.overrides(sustain);
+        release.overrides(press);  // TODO Confirm if this is true (double check recursive expressions)
 
         TRX2.applyActions(compiler, initial, accepted, press, release, sustain);
 

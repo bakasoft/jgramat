@@ -2,11 +2,10 @@ package gramat.engine.indet;
 
 import gramat.GramatException;
 import gramat.engine.AmCode;
+import gramat.engine.actions.ActionList;
 import gramat.engine.deter.DState;
 import gramat.engine.deter.DTransition;
-import gramat.engine.nodet.NLanguage;
-import gramat.engine.nodet.NMachine;
-import gramat.engine.nodet.NStateList;
+import gramat.engine.nodet.*;
 import gramat.engine.symbols.SymbolSource;
 
 import java.util.*;
@@ -70,19 +69,23 @@ public class ICompiler {
         }
 
         // distribute actions
-        for (var iTran : iLang.transitions) {
-            for (var nTran : nLang.transitions) {
-                // skip not matching symbols (null symbols actually matches)
-                if (nTran.symbol != null && !Objects.equals(iTran.symbol, nTran.symbol)) {
-                    continue;
-                }
-                // skip not matching directions
-                else if (!iTran.source.origin.contains(nTran.source) || !iTran.target.origin.contains(nTran.target)) {
-                    continue;
-                }
+        for (var nTran : nLang.transitions) {
+            var sourceTrans = NTool.computeInverseEmptyClosure(nLang, nTran, null);
 
-                // apply actions
-                iTran.actions.addAll(nTran.actions);
+            // collect all actions
+            var actions = sourceTrans.collectActions();
+
+            var sources = sourceTrans.collectSources();
+            var target = nTran.target;
+
+            for (var iTran : iLang.transitions) {
+                var symbolMatches = (nTran.symbol == null || Objects.equals(iTran.symbol, nTran.symbol));
+                if (symbolMatches
+                        && iTran.source.origin.containsAny(sources)
+                        && iTran.target.origin.contains(target)) {
+                    // apply actions
+                    iTran.actions.addAll(actions);
+                }
             }
         }
 

@@ -43,6 +43,19 @@ public class NStateList implements Iterable<NState> {
         return states.contains(state);
     }
 
+    public boolean containsAll(NStateList states) {
+        return this.states.containsAll(states.toList());
+    }
+
+    public boolean containsAny(NStateList list) {
+        for (var state : list) {
+            if (states.contains(state)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public Iterator<NState> iterator() {
         return states.iterator();

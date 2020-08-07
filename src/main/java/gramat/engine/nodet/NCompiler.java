@@ -82,7 +82,11 @@ public class NCompiler {
 
         // generate targets for the fragment
         for (var trn : NTool.findOutgoingSymbolTransitions(initial)) {
-            fragment.targets.add(new NFragment.Target(trn.actions, trn.symbol, trn.target));
+            // take into account empty transitions by using the INVERSE empty closure
+            var closure = NTool.computeInverseEmptyClosure(lang, trn, initial);
+            var actions = closure.collectActions();
+
+            fragment.targets.add(new NFragment.Target(actions, trn.symbol, trn.target));
 
             // delete transition and source (won't be used since we are building a fragment)
             trashTransitions.add(trn);
@@ -91,7 +95,11 @@ public class NCompiler {
 
         // generate sources for the fragment
         for (var trn : NTool.findIncomingSymbolTransitions(accepted)) {
-            fragment.sources.add(new NFragment.Source(trn.source, trn.symbol, trn.actions));
+            // take into account empty transitions by using the REGULAR empty closure
+            var closure = NTool.computeEmptyClosure(lang, trn, accepted);
+            var actions = closure.collectActions();
+
+            fragment.sources.add(new NFragment.Source(trn.source, trn.symbol, actions));
 
             // delete transition and target (won't be used since we are building a fragment)
             trashTransitions.add(trn);

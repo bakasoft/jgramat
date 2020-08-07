@@ -18,7 +18,4 @@ public class NState {
         return lang.computeEmptyClosure(this);
     }
 
-    public NStateList getInverseEmptyClosure() {
-        return lang.computeInverseEmptyClosure(this);
-    }
 }

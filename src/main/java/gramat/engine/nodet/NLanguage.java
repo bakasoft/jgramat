@@ -94,33 +94,6 @@ public class NLanguage {
         return closure;
     }
 
-    public NStateList computeInverseEmptyClosure(NState state) {
-        var result = new NStateList();
-        var queue = new LinkedList<NState>();
-        var control = new NStateList();
-
-        queue.add(state);
-
-        result.add(state);
-
-        do {
-            var target = queue.remove();
-
-            if (control.add(target)) {
-                for (var trn : findTransitionsByTarget(target)) {
-                    if (trn.symbol == null) {
-                        result.add(trn.source);
-
-                        queue.add(trn.source);
-                    }
-                }
-            }
-        }
-        while(queue.size() > 0);
-
-        return result;
-    }
-
     public NTransitionList findTransitionsFrom(NStateList sources, Symbol symbol) {
         var result = new NTransitionList();
         for (var transition : transitions) {

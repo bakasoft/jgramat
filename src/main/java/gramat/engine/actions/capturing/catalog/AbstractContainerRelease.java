@@ -16,11 +16,13 @@ abstract public class AbstractContainerRelease extends CapturingSubAction<Abstra
         if (accept == null) {
             var reject = context.dequeue(origin.getRejectClass());
 
-            if (reject == null) {
-                throw new RuntimeException("expected reject");
+            if (reject != null) {
+                context.enqueue(origin.createAccept(reject));
             }
-
-            context.enqueue(origin.createAccept(reject));
+            // TODO Confirm if is OK ignore missing reject
+            // else {
+            //    throw new RuntimeException("expected reject");
+            // }
         }
     }
 

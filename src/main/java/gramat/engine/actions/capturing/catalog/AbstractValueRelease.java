@@ -16,11 +16,14 @@ abstract public class AbstractValueRelease extends CapturingSubAction<AbstractVa
         if (accept == null) {
             var reject  = context.dequeue(origin.getRejectType());
 
-            if (reject == null) {
-                throw new RuntimeException("expected reject");
-            }
+            if (reject != null) {
+                context.enqueue(origin.createAccept(reject.beginPosition));
 
-            context.enqueue(origin.createAccept(reject.beginPosition));
+            }
+            // TODO Confirm if is OK ignore missing reject
+            // else {
+            //     throw new RuntimeException("expected reject");
+            // }
         }
     }
 }

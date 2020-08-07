@@ -2,6 +2,8 @@
 
 TestString = ^ String $
 
+@match TestString `a` a
+@match TestString `ab` ab
 @match TestString `abc` abc
 
 @object Object = "{" { @set(String: ":" (String | Object)) / "," } "}"
@@ -9,3 +11,4 @@ TestString = ^ String $
 TestObject = ^ Object $
 
 @match TestObject `{}` {}
+@match TestObject `{a:{}}` {a:{}}

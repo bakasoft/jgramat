@@ -32,6 +32,7 @@ public class CAttributeDynamic extends Expression {
         // setup overrides
         namePress.overrides(nameSustain);
         nameRelease.overrides(nameSustain);
+        nameRelease.overrides(namePress);  // TODO Confirm if this is true (double check recursive expressions)
 
         TRX2.applyActions(compiler, initial, nameAccepted, namePress, nameRelease, nameSustain);
 
@@ -43,6 +44,7 @@ public class CAttributeDynamic extends Expression {
         // setup overrides
         valuePress.overrides(valueSustain);
         valueRelease.overrides(valueSustain);
+        valueRelease.overrides(valuePress);  // TODO Confirm if this is true (double check recursive expressions)
 
         TRX2.applyActions(compiler, nameAccepted, valueAccepted, valuePress, valueRelease, valueSustain);
 

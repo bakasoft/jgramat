@@ -146,6 +146,8 @@ public class DRunner {
             input.move();
         }
 
+        capturingContext.flushFuture();
+
         if (controlStack.isActive()) {
             throw new TextException("Unexpected end", input.getLocation());
         }

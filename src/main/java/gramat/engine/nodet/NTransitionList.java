@@ -1,23 +1,34 @@
 package gramat.engine.nodet;
 
+import gramat.engine.actions.ActionList;
 import gramat.engine.symbols.Symbol;
 import gramat.engine.symbols.SymbolCheck;
 import gramat.engine.symbols.SymbolWild;
+import gramat.tools.Store;
 
 import java.util.*;
 
-public class NTransitionList extends ArrayList<NTransition> {
+public class NTransitionList extends Store<NTransition> {
 
     public NTransitionList() {
 
     }
 
-    public NTransitionList(Collection<NTransition> source) {
-        super(source);
+    public NTransitionList(NTransition trn) {
+        add(trn);
     }
 
-    public NTransitionList copy() {
-        return new NTransitionList(this);
+    @Override
+    public boolean canAdd(NTransition item) {
+        if (contains(item)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canRemove(NTransition item) {
+        return true;
     }
 
     public boolean hasWilds() {
@@ -65,6 +76,16 @@ public class NTransitionList extends ArrayList<NTransition> {
                 result.add(transition);
             }
         }
+        return result;
+    }
+
+    public ActionList collectActions() {
+        var result = new ActionList();
+
+        for (var item : this) {
+            result.addAll(item.actions);
+        }
+
         return result;
     }
 }
