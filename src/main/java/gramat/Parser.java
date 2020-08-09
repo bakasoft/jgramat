@@ -4,6 +4,7 @@ import gramat.engine.Input;
 import gramat.engine.deter.DRunner;
 import gramat.engine.deter.DState;
 import gramat.engine.actions.capturing.CapturingContext;
+import gramat.tools.Debug;
 
 public class Parser {
 
@@ -18,6 +19,8 @@ public class Parser {
     }
 
     public Object eval(Input input) throws Rejection {
+        Debug.clear();
+
         var runner = new DRunner(input);
 
         runner.capturingContext.pushAssembler();

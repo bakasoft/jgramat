@@ -23,7 +23,7 @@ public class AttributeValueAccept extends AbstractContainerAccept {
 
     @Override
     public String getDescription() {
-        return "CANCEL ATTRIBUTE VALUE";
+        return "ACCEPT ATTRIBUTE VALUE";
     }
 
     @Override

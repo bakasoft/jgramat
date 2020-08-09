@@ -19,4 +19,8 @@ abstract public class Action {
         overrides.add(action);
     }
 
+    @Override
+    public String toString() {
+        return getDescription();
+    }
 }

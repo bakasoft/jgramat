@@ -20,7 +20,7 @@ public class AttributeStaticReject extends CapturingAction {
 
     @Override
     public String getDescription() {
-        return "CANCEL ATTRIBUTE: " + name;
+        return "REJECT ATTRIBUTE: " + name;
     }
 
     @Override

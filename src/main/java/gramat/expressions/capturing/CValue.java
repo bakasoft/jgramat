@@ -10,7 +10,7 @@ import gramat.expressions.Expression;
 
 import java.util.List;
 
-public class CValue extends Expression {
+public class CValue extends CData {
 
     private final Expression content;
     private final ValueParser parser;

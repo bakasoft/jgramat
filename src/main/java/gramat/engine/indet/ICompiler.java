@@ -96,10 +96,15 @@ public class ICompiler {
         return initial;
     }
 
-    public DState compile(IState initial) {
+    public DState compile(IState nInitial) {
         var stateMap = new HashMap<IState, DState>();
+        var dInitial = make_deter(nInitial, stateMap);
 
-        return make_deter(initial, stateMap);
+        System.out.println("D-DFA >>>>>>>>>>");
+        AmCode.write(System.out, dInitial);
+        System.out.println("<<<<<<<<<< D-DFA");
+
+        return dInitial;
     }
 
     private DState make_deter(IState iState, Map<IState, DState> map) {

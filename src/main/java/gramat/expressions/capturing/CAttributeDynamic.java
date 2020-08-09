@@ -24,6 +24,18 @@ public class CAttributeDynamic extends Expression {
 
     @Override
     public NState build(NCompiler compiler, NState initial) {
+        var nameData = name.findData();
+
+        if (nameData.isEmpty()) {
+            throw new RuntimeException("Expected data");
+        }
+
+        var valueData = value.findData();
+
+        if (valueData.isEmpty()) {
+            throw new RuntimeException("Expected data");
+        }
+
         var nameAccepted = name.build(compiler, initial);
         var namePress = new AttributeNamePress();
         var nameRelease = new AttributeNameRelease(namePress);

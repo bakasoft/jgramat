@@ -8,6 +8,7 @@ import gramat.engine.actions.capturing.CapturingContext;
 import gramat.engine.checks.Check;
 import gramat.engine.checks.ControlStack;
 import gramat.engine.symbols.*;
+import gramat.tools.Debug;
 
 public class DRunner {
 
@@ -116,7 +117,7 @@ public class DRunner {
     public DState eval(DState initial) {
         DState state = initial;
 
-        while(state != null) {
+        while(true) {
             var nextTransition = chooseNextTransition(state);
 
             // halt
@@ -124,14 +125,20 @@ public class DRunner {
                 break;
             }
 
+            Debug.log("Next transition: " + state.id + " -> " + nextTransition.target.id + " : " + Input.pretty(input.peek()));
+
             // apply check
             if (nextTransition.check != null) {
+                Debug.log("Apply check: " + nextTransition.check);
+
                 nextTransition.check.apply(controlStack);
             }
 
             // execute actions
             for (var action : nextTransition.actions) {
                 if (action instanceof CapturingAction) {
+                    Debug.log("Execute action: " + action);
+
                     ((CapturingAction) action).run(capturingContext);
                 }
                 else {
@@ -151,6 +158,8 @@ public class DRunner {
         if (controlStack.isActive()) {
             throw new TextException("Unexpected end", input.getLocation());
         }
+
+        Debug.log("Result: " + state.id);
 
         return state;
     }

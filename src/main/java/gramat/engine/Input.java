@@ -42,4 +42,18 @@ public class Input extends TextSource {
         }
     }
 
+    public static String pretty(char c) {
+        // TODO improve this method
+        if (c == STX) {
+            return "STX";
+        }
+        else if (c == ETX) {
+            return "ETX";
+        }
+        else if (c == ' ') {
+            return "SPACE";
+        }
+        return "'" + c + "'";
+    }
+
 }

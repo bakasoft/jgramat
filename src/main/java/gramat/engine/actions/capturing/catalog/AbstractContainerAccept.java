@@ -12,8 +12,14 @@ abstract public class AbstractContainerAccept extends CapturingSubAction<Abstrac
         super(origin);
     }
 
+    protected void beforeProcessContent(CapturingContext context) {
+
+    }
+
     @Override
     public final void run(CapturingContext context) {
+        beforeProcessContent(context);
+
         var assembler = context.popAssembler();
 
         processContent(context, assembler);

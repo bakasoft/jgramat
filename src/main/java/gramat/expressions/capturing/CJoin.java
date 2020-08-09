@@ -9,7 +9,7 @@ import gramat.expressions.Expression;
 
 import java.util.List;
 
-public class CJoin extends Expression {
+public class CJoin extends CData {
 
     private final Expression content;
 

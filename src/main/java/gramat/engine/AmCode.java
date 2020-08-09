@@ -1,5 +1,6 @@
 package gramat.engine;
 
+import gramat.engine.deter.DState;
 import gramat.engine.indet.ILanguage;
 import gramat.engine.indet.IState;
 import gramat.engine.nodet.NMachine;
@@ -187,6 +188,50 @@ public class AmCode {
 
                     if (state.accepted) {
                         writeState(output, state.id, false, true, null);
+                    }
+                }
+            } while (queue.size() > 0);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(PrintStream output, DState initial) {
+        try {
+            var control = new HashSet<DState>();
+            var queue = new LinkedList<DState>();
+
+            queue.add(initial);
+
+            do {
+                var source = queue.remove();
+
+                if (control.add(source)) {
+                    if (source == initial) {
+                        writeState(output, String.valueOf(source.id), true, false, null);
+                    }
+
+                    if (source.transitions != null) {
+                        for (var transition : source.transitions) {
+                            var sourceID = String.valueOf(source.id);
+                            var targetID = String.valueOf(transition.target.id);
+                            var symbol = transition.symbol.toString();
+
+                            if (transition.actions.length == 0) {
+                                writeTransition(output, sourceID, targetID, symbol, null, null);
+                            } else {
+                                for (var action : transition.actions) {
+                                    writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                                }
+                            }
+
+                            queue.add(transition.target);
+                        }
+                    }
+
+                    if (source.accepted) {
+                        writeState(output, String.valueOf(source.id), false, true, null);
                     }
                 }
             } while (queue.size() > 0);

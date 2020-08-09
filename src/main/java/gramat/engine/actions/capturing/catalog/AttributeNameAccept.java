@@ -2,11 +2,23 @@ package gramat.engine.actions.capturing.catalog;
 
 import gramat.engine.actions.capturing.CapturingContext;
 import gramat.engine.actions.capturing.ValueAssembler;
+import gramat.tools.Debug;
 
 public class AttributeNameAccept extends AbstractContainerAccept {
 
     public AttributeNameAccept(AbstractContainerPress origin) {
         super(origin);
+    }
+
+    @Override
+    protected void beforeProcessContent(CapturingContext context) {
+        var accept = context.dequeue(ValueAccept.class);
+
+        if (accept != null) {
+            Debug.log("Execute action: " + accept);
+
+            accept.run(context);
+        }
     }
 
     @Override
@@ -20,7 +32,7 @@ public class AttributeNameAccept extends AbstractContainerAccept {
 
     @Override
     public String getDescription() {
-        return "CANCEL ATTRIBUTE NAME";
+        return "ACCEPT ATTRIBUTE NAME";
     }
 
     @Override

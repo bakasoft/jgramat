@@ -1,6 +1,7 @@
 package gramat.engine.actions.capturing;
 
 import gramat.engine.parsers.ValueParser;
+import gramat.tools.Debug;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -22,6 +23,8 @@ public class ValueAssembler {
     }
 
     public void pushValue(Object value) {
+        Debug.log("Push value");
+
         valueStack.push(value);
     }
 
@@ -36,6 +39,8 @@ public class ValueAssembler {
     }
 
     public Object popValue() {
+        Debug.log("Pop value");
+
         if (valueStack.isEmpty()) {
             throw new RuntimeException("empty stack");
         }
@@ -65,6 +70,8 @@ public class ValueAssembler {
     }
 
     public void setAttribute(String name, Object value) {
+        Debug.log("Set attribute: " + name);
+
         if (attributeMap.containsKey(name)) {
             throw new RuntimeException("attribute already defined: " + name);
         }

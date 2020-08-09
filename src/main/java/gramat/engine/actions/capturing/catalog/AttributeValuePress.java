@@ -1,6 +1,7 @@
 package gramat.engine.actions.capturing.catalog;
 
 import gramat.engine.actions.capturing.CapturingContext;
+import gramat.tools.Debug;
 
 public class AttributeValuePress extends AbstractContainerPress {
 
@@ -9,6 +10,8 @@ public class AttributeValuePress extends AbstractContainerPress {
         var accept = context.dequeue(AttributeNameAccept.class);
 
         if (accept != null) {
+            Debug.log("Execute action: " + accept);
+
             accept.run(context);
         }
 

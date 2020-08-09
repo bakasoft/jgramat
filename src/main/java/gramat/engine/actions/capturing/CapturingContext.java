@@ -1,7 +1,7 @@
 package gramat.engine.actions.capturing;
 
 import gramat.engine.Input;
-import gramat.engine.actions.capturing.catalog.ObjectReject;
+import gramat.tools.Debug;
 
 import java.util.Stack;
 
@@ -25,6 +25,7 @@ public class CapturingContext {
     }
 
     public void pushAssembler() {
+        Debug.log("Push assembler", +1);
         assemblerStack.add(new ValueAssembler());
     }
 
@@ -37,6 +38,8 @@ public class CapturingContext {
     }
 
     public ValueAssembler popAssembler() {
+        Debug.log(-1, "Pop assembler");
+
         if (assemblerStack.isEmpty()) {
             throw new RuntimeException();
         }
@@ -51,22 +54,31 @@ public class CapturingContext {
             return null;
         }
 
+        Debug.log("Postponed action: " + action);
+
         future.append(action);
         return action;
     }
 
     public void enqueue(CapturingAction action) {
+        Debug.log("Enqueued action: " + action);
+
         future.append(action);
     }
 
     public <T extends CapturingAction> T dequeue(Class<T> type) {
         var action = present.removeLast(type);
 
-        if (action != null) {
-            return action;
+        if (action == null) {
+            action = future.removeLast(type);
         }
 
-        return future.removeLast(type);
+        if (action == null) {
+            return null;
+        }
+
+        Debug.log("Dequeued action: " + action);
+        return action;
     }
 
     public void flushFuture() {
@@ -75,6 +87,8 @@ public class CapturingContext {
         present.appendAll(future.removeAll());
 
         for (var action : actions) {
+            Debug.log("Execute action: " + action);
+
             action.run(this);
         }
     }
