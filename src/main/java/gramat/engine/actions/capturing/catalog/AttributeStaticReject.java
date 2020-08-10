@@ -22,9 +22,4 @@ public class AttributeStaticReject extends CapturingAction {
     public String getDescription() {
         return "REJECT ATTRIBUTE: " + name;
     }
-
-    @Override
-    public final int getOrder() {
-        return 4;
-    }
 }

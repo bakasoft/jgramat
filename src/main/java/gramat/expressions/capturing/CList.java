@@ -21,8 +21,9 @@ public class CList extends CData {
 
     @Override
     public NState build(NCompiler compiler, NState initial) {
-        var accepted = content.build(compiler, initial);
+        // the order of action instances matter
         var press = new ListPress();
+        var accepted = content.build(compiler, initial);
         var release = new ListRelease(press);
         var sustain = new ListSustain(press);
 

@@ -5,13 +5,17 @@ import java.util.List;
 
 abstract public class Action {
 
-    abstract public String getDescription();
+    private static int next_order = 0;
 
-    abstract public int getOrder();
+    abstract public String getDescription();
 
     public final List<Action> overrides;
 
+    private final int order;
+
     public Action() {
+        order = next_order;
+        next_order++;
         overrides = new ArrayList<>();
     }
 
@@ -22,5 +26,9 @@ abstract public class Action {
     @Override
     public String toString() {
         return getDescription();
+    }
+
+    public final int getOrder() {
+        return order;
     }
 }

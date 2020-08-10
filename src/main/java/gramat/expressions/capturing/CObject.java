@@ -21,8 +21,9 @@ public class CObject extends CData {
 
     @Override
     public NState build(NCompiler compiler, NState initial) {
-        var accepted = content.build(compiler, initial);
+        // the order of action instances matter
         var press = new ObjectPress();
+        var accepted = content.build(compiler, initial);
         var release = new ObjectRelease(press);
         var sustain = new ObjectSustain(press);
 

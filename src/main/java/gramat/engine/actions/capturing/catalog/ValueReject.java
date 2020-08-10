@@ -10,9 +10,4 @@ public class ValueReject extends AbstractValueReject {
     public String getDescription() {
         return "VALUE REJECT";
     }
-
-    @Override
-    public final int getOrder() {
-        return 4;
-    }
 }

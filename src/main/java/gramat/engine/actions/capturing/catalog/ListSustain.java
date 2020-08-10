@@ -20,9 +20,4 @@ public class ListSustain extends CapturingAction {
     public String getDescription() {
         return "SUSTAIN LIST";
     }
-
-    @Override
-    public final int getOrder() {
-        return 2;
-    }
 }

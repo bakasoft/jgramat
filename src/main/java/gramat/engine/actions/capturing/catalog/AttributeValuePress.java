@@ -50,9 +50,4 @@ public class AttributeValuePress extends AbstractContainerPress {
     public String getDescription() {
         return "PRESS ATTRIBUTE VALUE";
     }
-
-    @Override
-    public final int getOrder() {
-        return 7;
-    }
 }

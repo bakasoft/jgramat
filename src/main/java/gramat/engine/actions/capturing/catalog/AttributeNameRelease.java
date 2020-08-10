@@ -10,9 +10,4 @@ public class AttributeNameRelease extends AbstractContainerRelease {
     public String getDescription() {
         return "RELEASE ATTRIBUTE NAME";
     }
-
-    @Override
-    public final int getOrder() {
-        return 3;
-    }
 }

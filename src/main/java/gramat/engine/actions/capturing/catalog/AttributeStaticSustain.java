@@ -22,9 +22,4 @@ public class AttributeStaticSustain extends CapturingAction {
     public String getDescription() {
         return "SUSTAIN ATTRIBUTE: " + name;
     }
-
-    @Override
-    public final int getOrder() {
-        return 2;
-    }
 }

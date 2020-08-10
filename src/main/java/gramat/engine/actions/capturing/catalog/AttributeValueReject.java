@@ -13,9 +13,4 @@ public class AttributeValueReject extends AbstractContainerReject {
     public String getDescription() {
         return "REJECT ATTRIBUTE VALUE";
     }
-
-    @Override
-    public final int getOrder() {
-        return 10;
-    }
 }

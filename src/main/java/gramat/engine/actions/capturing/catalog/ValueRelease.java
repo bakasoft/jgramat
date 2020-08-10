@@ -10,9 +10,4 @@ public class ValueRelease extends AbstractValueRelease {
     public String getDescription() {
         return "RELEASE VALUE";
     }
-
-    @Override
-    public final int getOrder() {
-        return 3;
-    }
 }

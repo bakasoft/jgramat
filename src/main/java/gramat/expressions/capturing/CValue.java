@@ -22,8 +22,9 @@ public class CValue extends CData {
 
     @Override
     public NState build(NCompiler compiler, NState initial) {
-        var accepted = content.build(compiler, initial);
+        // the order of action instances matter
         var press = new ValuePress(parser);
+        var accepted = content.build(compiler, initial);
         var release = new ValueRelease(press);
         var sustain = new ValueSustain(press);
 

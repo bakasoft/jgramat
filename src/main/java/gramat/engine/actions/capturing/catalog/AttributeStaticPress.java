@@ -21,9 +21,4 @@ public class AttributeStaticPress extends CapturingAction {
         return "PRESS ATTRIBUTE: " + name;
     }
 
-    @Override
-    public final int getOrder() {
-        return 1;
-    }
-
 }

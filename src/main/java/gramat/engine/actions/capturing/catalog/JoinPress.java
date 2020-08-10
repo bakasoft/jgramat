@@ -14,9 +14,4 @@ public class JoinPress extends CapturingAction {
     public String getDescription() {
         return "PRESS JOIN";
     }
-
-    @Override
-    public final int getOrder() {
-        return 1;
-    }
 }

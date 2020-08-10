@@ -25,9 +25,4 @@ public class AttributeValueAccept extends AbstractContainerAccept {
     public String getDescription() {
         return "ACCEPT ATTRIBUTE VALUE";
     }
-
-    @Override
-    public final int getOrder() {
-        return 11;
-    }
 }

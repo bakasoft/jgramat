@@ -34,9 +34,4 @@ public class AttributeNameAccept extends AbstractContainerAccept {
     public String getDescription() {
         return "ACCEPT ATTRIBUTE NAME";
     }
-
-    @Override
-    public final int getOrder() {
-        return 5;
-    }
 }

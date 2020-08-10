@@ -10,9 +10,4 @@ public class AttributeNameReject extends AbstractContainerReject {
     public String getDescription() {
         return "REJECT ATTRIBUTE NAME";
     }
-
-    @Override
-    public final int getOrder() {
-        return 4;
-    }
 }

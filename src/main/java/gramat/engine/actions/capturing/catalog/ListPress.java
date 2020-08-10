@@ -14,10 +14,4 @@ public class ListPress extends CapturingAction {
     public String getDescription() {
         return "PRESS LIST";
     }
-
-    @Override
-    public final int getOrder() {
-        return 1;
-    }
-
 }

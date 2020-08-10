@@ -19,9 +19,4 @@ public class ObjectAccept extends AbstractContainerAccept {
     public String getDescription() {
         return "ACCEPT OBJECT";
     }
-
-    @Override
-    public final int getOrder() {
-        return 5;
-    }
 }

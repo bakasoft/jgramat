@@ -28,9 +28,4 @@ public class AttributeStaticRelease extends CapturingAction {
     public String getDescription() {
         return "RELEASE ATTRIBUTE: " + name;
     }
-
-    @Override
-    public final int getOrder() {
-        return 3;
-    }
 }

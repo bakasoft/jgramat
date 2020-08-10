@@ -10,9 +10,4 @@ public class ValueSustain extends AbstractValueSustain {
     public String getDescription() {
         return "SUSTAIN VALUE";
     }
-
-    @Override
-    public final int getOrder() {
-        return 2;
-    }
 }

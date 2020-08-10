@@ -20,9 +20,4 @@ public class JoinCancel extends CapturingAction {
     public String getDescription() {
         return "CANCEL JOIN";
     }
-
-    @Override
-    public final int getOrder() {
-        return 4;
-    }
 }

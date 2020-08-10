@@ -21,8 +21,11 @@ public class CAttribute extends Expression {
 
     @Override
     public NState build(NCompiler compiler, NState initial) {
-        var accepted = content.build(compiler, initial);
+        // the order of action instances matter
         var press = new AttributeStaticPress(name);
+
+        var accepted = content.build(compiler, initial);
+
         var release = new AttributeStaticRelease(name, press);
         var sustain = new AttributeStaticSustain(name, press);
 

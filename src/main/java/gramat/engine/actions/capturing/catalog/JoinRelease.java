@@ -20,9 +20,4 @@ public class JoinRelease extends CapturingAction {
     public String getDescription() {
         return "RELEASE JOIN";
     }
-
-    @Override
-    public final int getOrder() {
-        return 3;
-    }
 }

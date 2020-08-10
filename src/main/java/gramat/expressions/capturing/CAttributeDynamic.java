@@ -36,8 +36,9 @@ public class CAttributeDynamic extends Expression {
             throw new RuntimeException("Expected data");
         }
 
-        var nameAccepted = name.build(compiler, initial);
+        // the order of action instances matter
         var namePress = new AttributeNamePress();
+        var nameAccepted = name.build(compiler, initial);
         var nameRelease = new AttributeNameRelease(namePress);
         var nameSustain = new AttributeNameSustain(namePress);
 
@@ -48,8 +49,9 @@ public class CAttributeDynamic extends Expression {
 
         TRX2.applyActions(compiler, initial, nameAccepted, namePress, nameRelease, nameSustain);
 
-        var valueAccepted = value.build(compiler, nameAccepted);
+        // the order of action instances matter
         var valuePress = new AttributeValuePress();
+        var valueAccepted = value.build(compiler, nameAccepted);
         var valueRelease = new AttributeValueRelease(valuePress);
         var valueSustain = new AttributeValueSustain(valuePress);
 
