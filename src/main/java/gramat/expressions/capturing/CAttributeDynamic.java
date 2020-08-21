@@ -40,27 +40,21 @@ public class CAttributeDynamic extends Expression {
         var namePress = new AttributeNamePress();
         var nameAccepted = name.build(compiler, initial);
         var nameRelease = new AttributeNameRelease(namePress);
-        var nameSustain = new AttributeNameSustain(namePress);
 
         // setup overrides
-        namePress.overrides(nameSustain);
-        nameRelease.overrides(nameSustain);
         nameRelease.overrides(namePress);  // TODO Confirm if this is true (double check recursive expressions)
 
-        TRX2.applyActions(compiler, initial, nameAccepted, namePress, nameRelease, nameSustain);
+        TRX2.applyActions(compiler, initial, nameAccepted, namePress, nameRelease);
 
         // the order of action instances matter
-        var valuePress = new AttributeValuePress();
+        var valuePress = new AttributeValuePress(namePress);
         var valueAccepted = value.build(compiler, nameAccepted);
         var valueRelease = new AttributeValueRelease(valuePress);
-        var valueSustain = new AttributeValueSustain(valuePress);
 
         // setup overrides
-        valuePress.overrides(valueSustain);
-        valueRelease.overrides(valueSustain);
         valueRelease.overrides(valuePress);  // TODO Confirm if this is true (double check recursive expressions)
 
-        TRX2.applyActions(compiler, nameAccepted, valueAccepted, valuePress, valueRelease, valueSustain);
+        TRX2.applyActions(compiler, nameAccepted, valueAccepted, valuePress, valueRelease);
 
         return valueAccepted;
     }

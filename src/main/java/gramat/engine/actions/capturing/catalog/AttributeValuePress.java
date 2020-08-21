@@ -1,12 +1,19 @@
 package gramat.engine.actions.capturing.catalog;
 
+import gramat.engine.actions.capturing.CapturingAction;
 import gramat.engine.actions.capturing.CapturingContext;
+import gramat.engine.actions.capturing.CapturingSubAction;
+import gramat.engine.actions.capturing.marks.NameMark;
 import gramat.tools.Debug;
 
-public class AttributeValuePress extends AbstractContainerPress {
+public class AttributeValuePress extends CapturingSubAction<AttributeNamePress> {
+
+    public AttributeValuePress(AttributeNamePress origin) {
+        super(origin);
+    }
 
     @Override
-    protected Object createInitializator(CapturingContext context) {
+    public final void run(CapturingContext context) {
         var accept = context.dequeue(AttributeNameAccept.class);
 
         if (accept != null) {
@@ -15,35 +22,15 @@ public class AttributeValuePress extends AbstractContainerPress {
             accept.run(context);
         }
 
-        var baton = context.dequeue(AttributeNameBaton.class);
+        var mark = context.tryPopMark(origin, NameMark.class);
 
-        if (baton == null) {
-            throw new RuntimeException("expected baton");
+        if (mark == null) {
+            throw new RuntimeException("expected name mark");
         }
 
-        return baton;
-    }
+        context.pushMark(this, mark);
 
-    @Override
-    protected AbstractContainerReject createReject(Object initializator) {
-        var baton = (AttributeNameBaton)initializator;
-
-        return new AttributeValueReject(this, baton.name);
-    }
-
-    @Override
-    protected AbstractContainerAccept createAccept(AbstractContainerReject reject) {
-        return new AttributeValueAccept(this, ((AttributeValueReject)reject).name);
-    }
-
-    @Override
-    protected Class<? extends AbstractContainerAccept> getAcceptClass() {
-        return AttributeValueAccept.class;
-    }
-
-    @Override
-    protected Class<? extends AbstractContainerReject> getRejectClass() {
-        return AttributeValueReject.class;
+        context.pushAssembler();
     }
 
     @Override

@@ -43,7 +43,7 @@ public class AmCode {
                         }
                         else {
                             for (var action : transition.actions) {
-                                writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                                writeTransition(output, sourceID, targetID, symbol, null, action.toString());
                             }
                         }
 
@@ -179,7 +179,7 @@ public class AmCode {
                         }
                         else {
                             for (var action : transition.actions) {
-                                writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                                writeTransition(output, sourceID, targetID, symbol, null, action.toString());
                             }
                         }
 
@@ -222,7 +222,7 @@ public class AmCode {
                                 writeTransition(output, sourceID, targetID, symbol, null, null);
                             } else {
                                 for (var action : transition.actions) {
-                                    writeTransition(output, sourceID, targetID, symbol, null, action.getDescription());
+                                    writeTransition(output, sourceID, targetID, symbol, null, action.toString());
                                 }
                             }
 

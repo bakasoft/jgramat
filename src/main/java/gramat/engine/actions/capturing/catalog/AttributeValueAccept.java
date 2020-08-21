@@ -1,19 +1,20 @@
 package gramat.engine.actions.capturing.catalog;
 
 import gramat.engine.actions.capturing.CapturingContext;
-import gramat.engine.actions.capturing.ValueAssembler;
+import gramat.engine.actions.capturing.CapturingSubAction;
 
-public class AttributeValueAccept extends AbstractContainerAccept {
+public class AttributeValueAccept extends CapturingSubAction<AttributeValuePress> {
 
     private final String name;
 
-    public AttributeValueAccept(AbstractContainerPress origin, String name) {
+    public AttributeValueAccept(AttributeValuePress origin, String name) {
         super(origin);
         this.name = name;
     }
 
     @Override
-    protected void processContent(CapturingContext context, ValueAssembler assembler) {
+    public final void run(CapturingContext context) {
+        var assembler = context.popAssembler();
         var value = assembler.popValue();
 
         assembler.expectEmpty();

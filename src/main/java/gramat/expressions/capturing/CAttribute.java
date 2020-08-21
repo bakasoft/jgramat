@@ -2,7 +2,6 @@ package gramat.expressions.capturing;
 
 import gramat.engine.actions.capturing.catalog.AttributeStaticPress;
 import gramat.engine.actions.capturing.catalog.AttributeStaticRelease;
-import gramat.engine.actions.capturing.catalog.AttributeStaticSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -27,14 +26,11 @@ public class CAttribute extends Expression {
         var accepted = content.build(compiler, initial);
 
         var release = new AttributeStaticRelease(name, press);
-        var sustain = new AttributeStaticSustain(name, press);
 
         // setup overrides
-        press.overrides(sustain);
-        release.overrides(sustain);
         release.overrides(press);  // TODO Confirm if this is true (double check recursive expressions)
 
-        TRX2.applyActions(compiler, initial, accepted, press, release, sustain);
+        TRX2.applyActions(compiler, initial, accepted, press, release);
 
         return accepted;
     }

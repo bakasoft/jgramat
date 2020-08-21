@@ -2,7 +2,6 @@ package gramat.expressions.capturing;
 
 import gramat.engine.actions.capturing.catalog.ObjectPress;
 import gramat.engine.actions.capturing.catalog.ObjectRelease;
-import gramat.engine.actions.capturing.catalog.ObjectSustain;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
 import gramat.expressions.Expression;
@@ -25,14 +24,11 @@ public class CObject extends CData {
         var press = new ObjectPress();
         var accepted = content.build(compiler, initial);
         var release = new ObjectRelease(press);
-        var sustain = new ObjectSustain(press);
 
         // setup overrides
-        press.overrides(sustain);
-        release.overrides(sustain);
         release.overrides(press);  // TODO Confirm if this is true (double check recursive expressions)
 
-        TRX2.applyActions(compiler, initial, accepted, press, release, sustain);
+        TRX2.applyActions(compiler, initial, accepted, press, release);
 
         return accepted;
     }

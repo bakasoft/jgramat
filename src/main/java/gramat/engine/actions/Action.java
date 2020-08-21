@@ -25,7 +25,7 @@ abstract public class Action {
 
     @Override
     public String toString() {
-        return getDescription();
+        return getDescription() + " #" + order;
     }
 
     public final int getOrder() {

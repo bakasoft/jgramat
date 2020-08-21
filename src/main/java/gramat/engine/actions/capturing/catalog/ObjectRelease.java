@@ -1,9 +1,21 @@
 package gramat.engine.actions.capturing.catalog;
 
-public class ObjectRelease extends AbstractContainerRelease {
+import gramat.engine.actions.capturing.CapturingContext;
+import gramat.engine.actions.capturing.CapturingSubAction;
 
-    public ObjectRelease(AbstractContainerPress origin) {
+public class ObjectRelease extends CapturingSubAction<ObjectPress> {
+
+    public ObjectRelease(ObjectPress origin) {
         super(origin);
+    }
+
+    @Override
+    public final void run(CapturingContext context) {
+        var accept = context.tryPostpone(ObjectAccept.class);
+
+        if (accept == null) {
+            context.enqueue(new ObjectAccept(origin));
+        }
     }
 
     @Override

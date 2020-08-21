@@ -23,7 +23,7 @@ public class ValueAssembler {
     }
 
     public void pushValue(Object value) {
-        Debug.log("Push value");
+        Debug.log("Push value: " + value);
 
         valueStack.push(value);
     }

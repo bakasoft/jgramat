@@ -1,8 +1,11 @@
 package gramat.engine.actions.capturing.catalog;
 
+import gramat.engine.actions.capturing.CapturingAction;
+import gramat.engine.actions.capturing.CapturingContext;
+import gramat.engine.actions.capturing.marks.MarkFactory;
 import gramat.engine.parsers.ValueParser;
 
-public class ValuePress extends AbstractValuePress {
+public class ValuePress extends CapturingAction {
 
     private final ValueParser parser;
 
@@ -11,26 +14,13 @@ public class ValuePress extends AbstractValuePress {
     }
 
     @Override
-    protected Class<? extends AbstractValueAccept> getAcceptType() {
-        return ValueAccept.class;
+    public void run(CapturingContext context) {
+        var beginPosition = context.input.getPosition();
+        var mark = MarkFactory.createMark(beginPosition);
+
+        context.pushMark(this, mark);
     }
 
-    @Override
-    protected Class<? extends AbstractValueReject> getRejectType() {
-        return ValueReject.class;
-    }
-
-    @Override
-    protected ValueReject createReject(int beginPosition) {
-        return new ValueReject(this, beginPosition);
-    }
-
-    @Override
-    protected AbstractValueAccept createAccept(int beginPosition) {
-        return new ValueAccept(this, beginPosition);
-    }
-
-    @Override
     protected ValueParser getParser() {
         return parser;
     }

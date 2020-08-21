@@ -2,7 +2,6 @@ package gramat.expressions.capturing;
 
 import gramat.engine.actions.capturing.catalog.ValuePress;
 import gramat.engine.actions.capturing.catalog.ValueRelease;
-import gramat.engine.actions.capturing.catalog.ValueSustain;
 import gramat.engine.parsers.ValueParser;
 import gramat.engine.nodet.NCompiler;
 import gramat.engine.nodet.NState;
@@ -26,14 +25,11 @@ public class CValue extends CData {
         var press = new ValuePress(parser);
         var accepted = content.build(compiler, initial);
         var release = new ValueRelease(press);
-        var sustain = new ValueSustain(press);
 
         // setup overrides
-        press.overrides(sustain);
-        release.overrides(sustain);
         release.overrides(press);  // TODO Confirm if this is true (double check recursive expressions)
 
-        TRX2.applyActions(compiler, initial, accepted, press, release, sustain);
+        TRX2.applyActions(compiler, initial, accepted, press, release);
 
         return accepted;
     }

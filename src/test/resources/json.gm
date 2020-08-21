@@ -1,3 +1,10 @@
+X = @string("000") | @integer("001")
+
+TestX = ^ X $
+
+@match TestX `001` `1`
+@match TestX `000` `000`
+
 @string String = {+'a-z'}
 
 TestString = ^ String $

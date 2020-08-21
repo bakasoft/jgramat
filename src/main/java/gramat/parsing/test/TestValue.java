@@ -1,5 +1,7 @@
 package gramat.parsing.test;
 
+import gramat.util.ClassUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +10,9 @@ abstract public class TestValue {
     protected static TestValue of(Object value) {
         if (value instanceof String) {
             return new TestString((String)value);
+        }
+        if (value instanceof Number) {
+            return new TestString(value.toString());
         }
         else if (value instanceof Map) {
             var map = new TestMap();
@@ -34,7 +39,7 @@ abstract public class TestValue {
             return list;
         }
         else {
-            throw new RuntimeException("unsupported value: " + value);
+            throw new RuntimeException("unsupported value: " + ClassUtils.prettyType(value));
         }
     }
 
