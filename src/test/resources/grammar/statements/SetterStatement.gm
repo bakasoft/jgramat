@@ -1,7 +1,0 @@
-@object SetterStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "setter" ws [ @set(`extendedType`: TypeRef)  ws "." ws ]
-    @set(`name`: Name)
-    [ ws @set(`genericParameters`: GenericParameterGroup)]
-    ws @set(`parameters`: ParameterGroup)
-    [ ws @set(`body`: InstructionBody) ]

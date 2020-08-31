@@ -1,6 +1,0 @@
-@object GetterStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "getter" ws [ @set(`extendedType`: TypeRef)  ws "." ws ]
-    @set(`name`: Name)
-    [ ws @set(`returnType`: TypeRef) ]
-    [ ws @set(`body`: InstructionBody) ]

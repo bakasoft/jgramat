@@ -1,8 +1,0 @@
-@object FunctionStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "function" ws [ @set(`extendedType`: TypeRef)  ws "." ws ]
-    @set(`name`: Name)
-    [ ws @set(`genericParameters`: GenericParameterGroup)]
-    ws @set(`parameters`: ParameterGroup)
-    [ i-ws @set(`returnType`: TypeRef) ]
-    [ ws @set(`body`: InstructionBody) ]

@@ -1,6 +1,0 @@
-@object ConstructorStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "constructor" ws @set(`extendedType`: TypeRef)  ws "." ws
-    @set(`name`: Name)
-    ws @set(`parameters`: ParameterGroup)
-    [ ws @set(`body`: InstructionBody) ]

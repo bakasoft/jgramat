@@ -1,3 +1,0 @@
-@import `json.gm`
-
-@pass Json @load(`sample-1.json`)

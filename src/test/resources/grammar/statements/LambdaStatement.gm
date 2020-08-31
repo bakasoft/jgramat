@@ -1,6 +1,0 @@
-@object LambdaStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "lambda" ws @set(`name`: Name)
-    [ ws @set(`genericParameters`: GenericParameterGroup) ]
-    ws @set(`parameters`: ParameterGroup)
-    [ i-ws @set(`returnType`: TypeRef) ]

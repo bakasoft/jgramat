@@ -1,2 +1,0 @@
-@string AccessModifier = "protect" | "share" | "export" | "test"
-@string FieldType = "let" | "var"

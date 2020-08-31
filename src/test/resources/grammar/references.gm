@@ -1,5 +1,0 @@
-@object ModulePath = @set(`nameChain`: @list({+ Name / ws "." ws }))
-
-@object TypeRef = @set(`typeName`: Name) [ ws @set(`genericArguments`: GenericArgumentGroup) ]
-
-@list TypeRefList = {+ TypeRef / ws "," ws }

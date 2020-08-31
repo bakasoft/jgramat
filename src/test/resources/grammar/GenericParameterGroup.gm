@@ -1,3 +1,0 @@
-@object GenericParameter = @set(`name`: Name) [ ws @set(`type`: TypeRef) ]
-
-@list GenericParameterGroup = "<" ws {+ GenericParameter / ws "," ws } ws ">"

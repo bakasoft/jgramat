@@ -1,5 +1,0 @@
-@object FieldStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    @set(`fieldType`: FieldType) ws @set(`name`: Name)
-    [ ws @set(`dataType`: TypeRef) ]
-    [ ws "=" ws @set(`initialValue`: Expression) ]

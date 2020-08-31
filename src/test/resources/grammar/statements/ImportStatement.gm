@@ -1,8 +1,0 @@
-@object ImportStatement =
-    "import" ws @set(`members`: ImportMemberList) ws
-    "from" ws @set(`module`: ModulePath)
-
-@list ImportMemberList = {+ ImportMember / ws "," ws }
-
-@object ImportMember =
-    [ @set(`extendedType`: Name)  ws "." ws ] @set(`name`: Name)

@@ -1,4 +1,0 @@
-@object ModuleStatement =
-    [ @set(`accessModifier`: AccessModifier) ws ]
-    "module" ws @set(`name`: Name)
-    ws "{" @set(`statements`: StatementList) ws "}"
