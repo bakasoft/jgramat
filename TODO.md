@@ -1,2 +1,0 @@
-- fix negation behavior, it shouldn't move the position always
-- add a `schema` directive to validate the schema

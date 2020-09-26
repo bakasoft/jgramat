@@ -17,15 +17,14 @@ public class Tape {
     public Tape(String content, String source) {
         this.content = content;
         this.source = source;
-        this.position = 0;
-    }
-
-    public String extract(int begin, int end) {
-        return new String(content.toCharArray(), begin, end - begin);
+        this.position = -1;
     }
 
     public char peek() {
-        if (position >= content.length()) {
+        if (position < 0) {
+            return STX;
+        }
+        else if (position >= content.length()) {
             return ETX;
         }
         return content.charAt(position);
@@ -33,6 +32,18 @@ public class Tape {
 
     public void move() {
         position++;
+    }
+
+    public char read() {
+        if (position < 0) {
+            throw new RuntimeException();
+        }
+        else if (position >= content.length()) {
+            throw new RuntimeException();
+        }
+        var chr = content.charAt(position);
+        position++;
+        return chr;
     }
 
     public boolean alive() {
@@ -62,6 +73,10 @@ public class Tape {
             }
         }
         return new Location(source, index, line + 1, column);
+    }
+
+    public String extract(int begin, int end) {
+        return content.substring(begin, end);
     }
 
     public int getPosition() {

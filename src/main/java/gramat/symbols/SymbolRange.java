@@ -1,50 +1,34 @@
 package gramat.symbols;
 
-import java.util.Objects;
+import gramat.util.PP;
+
+import java.io.PrintStream;
 
 public class SymbolRange implements Symbol {
-    public final char start;
+
+    public final char begin;
     public final char end;
 
-    public SymbolRange(char start, char end) {
-        this.start = start;
+    public SymbolRange(char begin, char end) {
+        this.begin = begin;
         this.end = end;
     }
 
-    public char getStart() {
-        return start;
-    }
-
-    public char getEnd() {
-        return end;
+    @Override
+    public void printAmCode(PrintStream out) {
+        // TODO escape chars
+        out.print(begin);
+        out.print('-');
+        out.print(end);
     }
 
     @Override
-    public boolean matches(char value) {
-        return value >= start && value <= end;
-    }
-
-    @Override
-    public boolean stacks(Symbol symbol) {
-        if (symbol instanceof SymbolRange) {
-            var range = (SymbolRange)symbol;
-
-            return this.start == range.start && this.end == range.end;
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(start, end);
+    public boolean test(char c) {
+        return c >= begin && c <= end;
     }
 
     @Override
     public String toString() {
-        return "SymbolRange{" +
-                "start=" + start +
-                ", end=" + end +
-                '}';
+        return "range " + PP.str(begin) + "," + PP.str(end);
     }
 }

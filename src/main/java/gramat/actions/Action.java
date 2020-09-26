@@ -1,42 +1,39 @@
 package gramat.actions;
 
-import gramat.Context;
-import gramat.Debug;
+import gramat.eval.Context;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.PrintStream;
+import java.util.List;
 
 abstract public class Action {
 
-    private boolean disposed;
+    public final int trxID;
 
-    abstract public boolean stack(Action other);
-
-    abstract protected void fillAttributes(Map<String, String> attributes);
-
-    abstract protected void run_impl(Context context);
-
-    abstract protected void dispose_impl();
-
-    final public void run(Context context) {
-        Debug.log("RUN: " + getClass().getSimpleName());
-        run_impl(context);
+    public Action(int trxID) {
+        this.trxID = trxID;
     }
 
-    final public Map<String, String> getAttributes() {
-        var attributes = new LinkedHashMap<String, String>();
+    abstract public boolean stacks(Action other);
 
-        fillAttributes(attributes);
+    abstract public void printAmCode(PrintStream out);
 
-        return attributes;
+    abstract public void run(Context context);
+
+    abstract public List<String> getArguments();
+
+    public final String getKey() {
+        for (var item : ActionKeys.values()) {
+            if (item.type.isInstance(this)) {
+                return item.key;
+            }
+        }
+
+        throw new RuntimeException();
     }
 
-    final public boolean isDisposed() {
-        return disposed;
+    @Override
+    public final String toString() {
+        return getKey() + "(" + String.join(", ", getArguments()) + ")" + trxID;
     }
 
-    final public void dispose() {
-        dispose_impl();
-        disposed = true;
-    }
 }

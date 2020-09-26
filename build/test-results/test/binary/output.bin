@@ -1,0 +1,50 @@
+->0
+0 -> 1 : range "a"\,"z"
+0 -> 1 !< makeValue()0
+0 -> 1 !> haltValue(default)0
+1<=
+->2
+2 -> 4 : char "{"
+2 -> 4 !< makeObject()1
+4 -> 6 : string
+4 -> 6 !< makeObject()1\
+makeAttribute()2\
+makeName()3
+4 -> 6 !> haltName()3
+6 -> 7 : char "\:"
+6 -> 7 !< makeObject()1\
+makeAttribute()2
+7 -> 5 : value
+7 -> 5 !< makeObject()1
+7 -> 5 !> haltAttribute()2
+5 -> 8 : char "\,"
+5 -> 8 !< makeObject()1\
+makeAttribute()4
+8 -> 9 : string
+8 -> 9 !< makeObject()1\
+makeAttribute()4\
+makeName()5
+8 -> 9 !> haltName()5
+9 -> 10 : char "\:"
+9 -> 10 !< makeObject()1\
+makeAttribute()4
+10 -> 5 : value
+10 -> 5 !< makeObject()1
+10 -> 5 !> haltAttribute()4
+5 -> 3 : char "}"
+5 -> 3 !> haltObject()1
+4 -> 3 : char "}"
+4 -> 3 !> haltObject()1
+3<=
+->11
+11 -> 13 : char "\\u0002"
+13 -> 14 : value
+14 -> 12 : char "\\u0003"
+12<=
+->15
+15 -> 16 : string
+15 -> 16 : object
+16<=
+->17
+17 -> 18 : object-impl
+18<=

@@ -1,0 +1,9 @@
+@machine Test-1 {
+    ->0
+    0 -> 1
+        ! "beginValue()"
+        : "a-z"
+        ! "endValue(default)"
+    2 -> 4 ! "beginObject()\nendAttribute()" : "{"
+
+}
