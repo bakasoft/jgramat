@@ -1,5 +1,6 @@
 package gramat.source;
 
+import gramat.actions.Action;
 import gramat.nodes.Node;
 import gramat.nodes.impl.*;
 import gramat.source.model.*;
@@ -148,7 +149,7 @@ public class Decompiler {
             result.options.add(option);
         }
 
-        return result;
+        return wrap_with_actions(alternation, result);
     }
 
     private MExpression make_optional(NodeOptional node) {
@@ -156,7 +157,7 @@ public class Decompiler {
 
         result.content = make_expression(node.getContent());
 
-        return result;
+        return wrap_with_actions(node, result);
 
     }
 
@@ -165,7 +166,7 @@ public class Decompiler {
 
         result.content = make_expression(node.getContent());
 
-        return result;
+        return wrap_with_actions(node, result);
     }
 
     private MExpression make_sequence(NodeSequence sequence) {
@@ -179,13 +180,55 @@ public class Decompiler {
             result.items.add(option);
         }
 
-        return result;
+        return wrap_with_actions(sequence, result);
     }
 
     private MExpression make_symbol(NodeSymbol node) {
         var result = new MExpressionSymbol();
 
         result.symbol = make_symbol(node.getSymbol());
+
+        return wrap_with_actions(node, result);
+    }
+
+    private MExpression wrap_with_actions(Node node, MExpression content) {
+        if (node.hasActions()) {
+            return content;
+        }
+
+        var mSequence = new MExpressionSequence();
+
+        mSequence.items = new ArrayList<>();
+
+        for (var action : node.getPreActions()) {
+            mSequence.items.add(make_action(action, "before"));
+        }
+
+        mSequence.items.add(content);
+
+        for (var action : node.getPostActions()) {
+            mSequence.items.add(make_action(action, "after"));
+        }
+
+        return mSequence;
+    }
+
+    private MExpressionAction make_action(Action action, String keyword) {
+        var result = new MExpressionAction();
+
+        result.keyword = keyword;
+        result.attributes = new ArrayList<>();
+
+        var attr = new MActionAttribute();
+        attr.key = action.getClass().getSimpleName();
+        result.attributes.add(attr);
+
+        for (var attrEntry : action.getAttributes().entrySet()) {
+            attr = new MActionAttribute();
+            attr.key = attrEntry.getKey();
+            attr.value = attrEntry.getValue();
+            result.attributes.add(attr);
+        }
 
         return result;
     }

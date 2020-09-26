@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NodeAlternation implements Node {
+public class NodeAlternation extends Node {
 
     private List<Node> nodes;
 
@@ -21,16 +21,8 @@ public class NodeAlternation implements Node {
         this.nodes = new ArrayList<>(nodes);
     }
 
-    public void join(NodeAlternation alt) {
-        nodes.addAll(alt.nodes);
-    }
-
-    public void add(Node node) {
-        nodes.add(node);
-    }
-
     @Override
-    public void eval(Context context) {
+    protected void eval_impl(Context context) {
         var chr = context.tape.peek();
 
         for (var node : nodes) {
@@ -39,6 +31,14 @@ public class NodeAlternation implements Node {
                 break;
             }
         }
+    }
+
+    public void join(NodeAlternation alt) {
+        nodes.addAll(alt.nodes);
+    }
+
+    public void add(Node node) {
+        nodes.add(node);
     }
 
     @Override
@@ -62,6 +62,8 @@ public class NodeAlternation implements Node {
 
                 if (collapsedNode instanceof NodeAlternation) {
                     var alternation = (NodeAlternation) collapsedNode;
+
+                    alternation.moveActionsDown();
 
                     newNodes.addAll(alternation.nodes);
                 }
@@ -102,7 +104,7 @@ public class NodeAlternation implements Node {
     }
 
     @Override
-    public Node tryStack(Node other) {
+    public Node stack(Node other) {
         if (other instanceof NodeAlternation) {
             var otherAlternation = (NodeAlternation)other;
 
@@ -110,16 +112,35 @@ public class NodeAlternation implements Node {
             var stackedNodes = Node.tryStackNodes(this.nodes, otherAlternation.nodes);
 
             if (stackedNodes != null) {
-                this.nodes = stackedNodes;
-                return this;
+                var result = new NodeAlternation(stackedNodes);
+                result.addActionsFrom(this);
+                result.addActionsFrom(other);
+                return result;
             }
         }
         return null;
     }
 
+    public void moveActionsDown() {
+        var newNodes = new ArrayList<Node>();
+
+        for (var node : nodes) {
+            var newNode = node.shallowCopy();
+
+            newNode.addActionsFrom(this);
+
+            newNodes.add(newNode);
+        }
+
+        this.nodes = newNodes;
+        this.clearActions();
+    }
+
     @Override
     public List<NodeVertex> toVertices() {
         var vertices = new ArrayList<NodeVertex>();
+
+        moveActionsDown();
 
         for (var node : nodes) {
             vertices.addAll(node.toVertices());
@@ -144,4 +165,10 @@ public class NodeAlternation implements Node {
         return true;
     }
 
+    @Override
+    public Node shallowCopy() {
+        var copy = new NodeAlternation(nodes);
+        copy.addActionsFrom(this);
+        return copy;
+    }
 }

@@ -20,6 +20,10 @@ public class Tape {
         this.position = 0;
     }
 
+    public String extract(int begin, int end) {
+        return new String(content.toCharArray(), begin, end - begin);
+    }
+
     public char peek() {
         if (position >= content.length()) {
             return ETX;
@@ -60,4 +64,7 @@ public class Tape {
         return new Location(source, index, line + 1, column);
     }
 
+    public int getPosition() {
+        return position;
+    }
 }

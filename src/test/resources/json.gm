@@ -1,0 +1,5 @@
+@object Object = "{" ws { @set(@name(String) ws ":" Value) / "," } "}"
+
+@object Object = "{" ws {
+    @before[ValueBeginAction] String @after[ValueEndAction, parser: Integer]
+    ws ":" Value @after() / "," } "}"

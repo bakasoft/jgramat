@@ -12,7 +12,7 @@ public class NodeChar extends NodeAdapter {
     }
 
     @Override
-    public Node tryStack(Node other) {
+    public Node stack(Node other) {
         if (other instanceof NodeChar) {
             var n = (NodeChar)other;
 

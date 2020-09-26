@@ -26,8 +26,19 @@ public class TestUtils {
                 if (tape.alive()) {
                     throw new RuntimeException("unexepcted EOF");
                 }
+
+                var assembler = context.popAssembler();
+
+                System.out.println("RESULT: ");
+                if (assembler.isEmpty()) {
+                    System.out.println(" - EMPTY");
+                }
+                else while (!assembler.isEmpty()) {
+                    System.out.println(" - " + assembler.popValue());
+                }
+
             }
-            catch(InvalidSyntaxException e) {
+            catch(Exception e) {
                 var decompiler = new Decompiler();
                 decompiler.decompile(compiledNode, "main");
 

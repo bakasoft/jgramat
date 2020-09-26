@@ -4,10 +4,10 @@ import gramat.Context;
 
 import java.util.List;
 
-public class NodeAdapter implements Node {
+public class NodeAdapter extends Node {
 
     @Override
-    public void eval(Context context) {
+    protected void eval_impl(Context context) {
         throw new UnsupportedOperationException();
     }
 
@@ -27,7 +27,7 @@ public class NodeAdapter implements Node {
     }
 
     @Override
-    public Node tryStack(Node other) {
+    public Node stack(Node other) {
         throw new UnsupportedOperationException();
     }
 
@@ -43,6 +43,11 @@ public class NodeAdapter implements Node {
 
     @Override
     public boolean isOptional() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Node shallowCopy() {
         throw new UnsupportedOperationException();
     }
 

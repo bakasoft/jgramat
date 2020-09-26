@@ -1,5 +1,6 @@
 package gramat;
 
+import gramat.actions.impl.*;
 import gramat.nodes.NodeFactory;
 import gramat.nodes.impl.NodeSequence;
 import gramat.symbols.SymbolFactory;
@@ -99,12 +100,8 @@ public class JsonTest {
                 )
         );
         nString.append(n.symbol(quotationMark));
-
-        // Entry
-        nEntry.append(nString);
-        nEntry.append(nWhitespace);
-        nEntry.append(n.symbol(colon));
-        nEntry.append(nValue);
+        nString.addPreAction(new ValueBegin());
+        nString.addPostAction(new ValueEnd(null));
 
         // Entry List
         nEntryList.append(nEntry);
@@ -122,6 +119,8 @@ public class JsonTest {
         nObject.append(n.optional(nEntryList));
         nObject.append(nWhitespace);
         nObject.append(n.symbol(braceClose));
+        nObject.addPreAction(new ObjectBegin());
+        nObject.addPostAction(new ObjectEnd(null));
 
         // Array
         nArray.append(n.symbol(bracketOpen));
@@ -136,6 +135,8 @@ public class JsonTest {
                 )
         ));
         nArray.append(n.symbol(bracketClose));
+        nArray.addPreAction(new ArrayBegin());
+        nArray.addPostAction(new ArrayEnd(null));
 
         // Number
         nNumber.append(n.optional(n.symbol(minus)));
@@ -159,6 +160,8 @@ public class JsonTest {
                         n.atLeast(1, n.symbol(digit))
                 )
         ));
+        nNumber.addPreAction(new ValueBegin());
+        nNumber.addPostAction(new ValueEnd(null));
 
         var nTrue = n.token("true");
         var nFalse = n.token("false");
@@ -176,6 +179,20 @@ public class JsonTest {
                 nNull
         ));
         nValue.append(nWhitespace);
+
+        // Entry
+        var nStringCopy = nString.shallowCopy();
+        nStringCopy.addPreAction(new AttributeBegin());
+        nStringCopy.addPreAction(new NameBegin());
+        nStringCopy.addPostAction(new NameEnd());
+
+        var nValueCopy = nValue.shallowCopy();
+        nValueCopy.addPostAction(new AttributeEnd(null));
+
+        nEntry.append(nStringCopy);
+        nEntry.append(nWhitespace);
+        nEntry.append(n.symbol(colon));
+        nEntry.append(nValueCopy);
     }
 
     @Test

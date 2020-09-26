@@ -9,7 +9,7 @@ import gramat.symbols.Symbol;
 
 import java.util.List;
 
-public class NodeSymbol implements Node {
+public class NodeSymbol extends Node {
 
     private final Symbol symbol;
 
@@ -17,18 +17,18 @@ public class NodeSymbol implements Node {
         this.symbol = symbol;
     }
 
-    public Symbol getSymbol() {
-        return symbol;
-    }
-
     @Override
-    public void eval(Context context) {
+    protected void eval_impl(Context context) {
         if (symbol.matches(context.tape.peek())) {
             context.tape.move();
         }
         else {
             throw new InvalidSyntaxException("Expected: " + symbol, context.tape.getLocation());
         }
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
     }
 
     @Override
@@ -47,15 +47,17 @@ public class NodeSymbol implements Node {
     }
 
     @Override
-    public Node tryStack(Node other) {
+    public Node stack(Node other) {
         if (other instanceof NodeSymbol) {
             var ns = (NodeSymbol)other;
 
             if (this.symbol.stacks(ns.symbol)) {
-                return this;
+                var result = new NodeSymbol(symbol);
+                result.addActionsFrom(this);
+                result.addActionsFrom(other);
+                return result;
             }
         }
-
         return null;
     }
 
@@ -72,5 +74,12 @@ public class NodeSymbol implements Node {
     @Override
     public boolean isOptional() {
         return false;
+    }
+
+    @Override
+    public Node shallowCopy() {
+        var copy = new NodeSymbol(symbol);
+        copy.addActionsFrom(this);
+        return copy;
     }
 }

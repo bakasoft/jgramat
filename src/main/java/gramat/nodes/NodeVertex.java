@@ -18,7 +18,7 @@ public class NodeVertex {
     }
 
     public boolean join(NodeVertex other) {
-        var stacked = node.tryStack(other.node);
+        var stacked = node.stack(other.node);
 
         if (stacked == null) {
             return false;

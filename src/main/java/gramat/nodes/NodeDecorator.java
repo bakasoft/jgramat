@@ -3,7 +3,7 @@ package gramat.nodes;
 import java.util.List;
 import java.util.Objects;
 
-abstract public class NodeDecorator implements Node {
+abstract public class NodeDecorator extends Node {
 
     protected Node content;
 
@@ -36,21 +36,6 @@ abstract public class NodeDecorator implements Node {
     @Override
     public final List<NodeVertex> toVertices() {
         return List.of(new NodeVertex(this));
-    }
-
-    @Override
-    public final Node tryStack(Node other) {
-        if (this.getClass().isInstance(other)) {
-            var otherDecorator = (NodeDecorator)other;
-            var stackedNode = this.content.tryStack(otherDecorator.content);
-
-            if (stackedNode != null) {
-                this.content = stackedNode;
-                return this;
-            }
-        }
-
-        return null;
     }
 
     public Node getContent() {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NodeSequence implements Node {
+public class NodeSequence extends Node {
 
     private List<Node> nodes;
 
@@ -21,19 +21,19 @@ public class NodeSequence implements Node {
         this.nodes = new ArrayList<>(nodes);
     }
 
+    @Override
+    protected void eval_impl(Context context) {
+        for (var node : nodes) {
+            node.eval(context);
+        }
+    }
+
     public void join(NodeSequence other) {
         this.nodes.addAll(other.nodes);
     }
 
     public void append(Node node) {
         nodes.add(node);
-    }
-
-    @Override
-    public void eval(Context context) {
-        for (var node : nodes) {
-            node.eval(context);
-        }
     }
 
     @Override
@@ -60,6 +60,8 @@ public class NodeSequence implements Node {
 
                 if (collapsedNode instanceof NodeSequence) {
                     var sequence = (NodeSequence)collapsedNode;
+
+                    sequence.moveActionsDown();
 
                     newNodes.addAll(sequence.nodes);
                 }
@@ -93,21 +95,56 @@ public class NodeSequence implements Node {
     }
 
     @Override
-    public Node tryStack(Node other) {
+    public Node stack(Node other) {
         if (other instanceof NodeSequence) {
             var otherSequence = (NodeSequence)other;
             var stackedNodes = Node.tryStackNodes(this.nodes, otherSequence.nodes);
 
             if (stackedNodes != null) {
-                this.nodes = stackedNodes;
-                return this;
+                var result = new NodeSequence(stackedNodes);
+                result.addActionsFrom(this);
+                result.addActionsFrom(other);
+                return result;
             }
         }
         return null;
     }
 
+    public void moveActionsDown() {
+        if (nodes.isEmpty()) {
+            throw new RuntimeException();
+        }
+        else if (nodes.size() == 1) {
+            var newNodes = new ArrayList<Node>();
+            var newNode = nodes.get(0).shallowCopy();
+
+            newNodes.add(newNode);
+
+            newNode.addPreActionsFrom(this);
+            newNode.addPostActionsFrom(this);
+
+            this.clearActions();
+
+            this.nodes = newNodes;
+        }
+        else {
+            var newFirst = nodes.get(0).shallowCopy();
+            var newLast = nodes.get(nodes.size() - 1).shallowCopy();
+
+            nodes.set(0, newFirst);
+            nodes.set(nodes.size() - 1, newLast);
+
+            newFirst.addPreActionsFrom(this);
+            newLast.addPostActionsFrom(this);
+
+            this.clearActions();
+        }
+    }
+
     @Override
     public List<NodeVertex> toVertices() {
+        moveActionsDown();
+
         var root = NodeVertex.fromSequence(nodes);
 
         return List.of(root);
@@ -126,5 +163,12 @@ public class NodeSequence implements Node {
             }
         }
         return true;
+    }
+
+    @Override
+    public Node shallowCopy() {
+        var copy = new NodeSequence(nodes);
+        copy.addActionsFrom(this);
+        return copy;
     }
 }
