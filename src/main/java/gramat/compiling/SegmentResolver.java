@@ -98,7 +98,7 @@ public class SegmentResolver {
                     afterMerge.add(() -> {
                         var enterNode = requireEquals(enterLine.source, enterLine.target);
 
-                        for (var link : root.findLinksTo(enterNode)) {
+                        for (var link : root.findIncomingLinks(enterNode)) {
                             for (var action : originalLink.beforeActions) {
                                 link.afterActions.add(action);
                             }
@@ -107,7 +107,7 @@ public class SegmentResolver {
 
                         var exitNode = requireEquals(exitLine.source, exitLine.target);
 
-                        for (var link : root.findLinksFrom(exitNode)) {
+                        for (var link : root.findOutgoingLinks(exitNode)) {
                             for (var action : originalLink.afterActions) {
                                 link.beforeActions.addTop(action);
                             }
@@ -121,10 +121,10 @@ public class SegmentResolver {
                     unmap_segment(refName, refOriginal);
 
                     // Distribute reference actions
-                    for (var link : root.listLinksFrom(copiedSource)) {
+                    for (var link : root.walkLinksFrom(copiedSource)) {
                         link.beforeActions.add(originalLink.beforeActions);
                     }
-                    for (var link : root.listLinksTo(copiedTarget)) {
+                    for (var link : root.walkLinksTo(copiedTarget)) {
                         link.afterActions.add(originalLink.afterActions);
                     }
                 }

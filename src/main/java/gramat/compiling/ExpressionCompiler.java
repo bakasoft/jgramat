@@ -122,14 +122,14 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment wrap_actions(Graph graph, Segment container, Action make, Action halt) {
-        var beginLinks = graph.findLinksFrom(container.sources);
-        var afterLinks = graph.findLinksTo(container.targets);
+        var beginLinks = graph.findOutgoingLinks(container.sources);
+        var afterLinks = graph.findIncomingLinks(container.targets);
 
         if (beginLinks.isEmpty() || afterLinks.isEmpty()) {
             throw new RuntimeException();
         }
 
-        for (var link : graph.listLinksFrom(container.sources)) {
+        for (var link : graph.walkLinksFrom(container.sources)) {
             var isBegin = beginLinks.contains(link);
             var isAfter = afterLinks.contains(link);
 

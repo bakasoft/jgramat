@@ -84,7 +84,7 @@ public class StateCompiler extends DefaultComponent {
                 idNodes.put(sourcesID, sources);
 
                 for (var symbol : gramat.symbols) {
-                    var links = graph.findLinksFrom(sources, symbol);
+                    var links = graph.findOutgoingLinks(sources, symbol);
 
                     if (links.size() > 0) {
                         var targets = Link.collectTargets(links);

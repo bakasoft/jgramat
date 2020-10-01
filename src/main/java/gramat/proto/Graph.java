@@ -99,19 +99,19 @@ public class Graph {
         }
     }
 
-    public List<Link> findLinksTo(NodeSet targets) {
+    public List<Link> findIncomingLinks(NodeSet targets) {
         return links.stream()
                 .filter(t -> targets.contains(t.target))
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findLinksTo(Node target) {
+    public List<Link> findIncomingLinks(Node target) {
         return links.stream()
                 .filter(t -> t.target == target)
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findLinksFrom(NodeSet sources, Symbol symbol) {
+    public List<Link> findOutgoingLinks(NodeSet sources, Symbol symbol) {
         return links.stream()
                 .filter(e -> sources.contains(e.source))
                 .map(e -> (LinkSymbol)e)  // TODO add validation for this casting
@@ -119,13 +119,13 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findLinksFrom(NodeSet sources) {
+    public List<Link> findOutgoingLinks(NodeSet sources) {
         return links.stream()
                 .filter(t -> sources.contains(t.source))
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findLinksFrom(Node source) {
+    public List<Link> findOutgoingLinks(Node source) {
         return links.stream()
                 .filter(t -> t.source == source)
                 .collect(Collectors.toList());
@@ -143,15 +143,15 @@ public class Graph {
         return refs;
     }
 
-    public List<Link> listLinksFrom(Node source) {
-        return listLinksFrom(new NodeSet(source));
+    public List<Link> walkLinksFrom(Node source) {
+        return walkLinksFrom(new NodeSet(source));
     }
 
-    public List<Link> listLinksTo(Node target) {
-        return listLinksTo(new NodeSet(target));
+    public List<Link> walkLinksTo(Node target) {
+        return walkLinksTo(new NodeSet(target));
     }
 
-    public List<Link> listLinksFrom(NodeSet sources) {
+    public List<Link> walkLinksFrom(NodeSet sources) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
@@ -162,7 +162,7 @@ public class Graph {
             var source = queue.remove();
 
             if (control.add(source)) {
-                for (var link : findLinksFrom(source)) {
+                for (var link : findOutgoingLinks(source)) {
                     result.add(link);
 
                     queue.add(link.target);
@@ -173,7 +173,7 @@ public class Graph {
         return result;
     }
 
-    public List<Link> listLinksTo(NodeSet targets) {
+    public List<Link> walkLinksTo(NodeSet targets) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
@@ -184,7 +184,7 @@ public class Graph {
             var target = queue.remove();
 
             if (control.add(target)) {
-                for (var link : findLinksTo(target)) {
+                for (var link : findIncomingLinks(target)) {
                     result.add(link);
 
                     queue.add(link.target);
