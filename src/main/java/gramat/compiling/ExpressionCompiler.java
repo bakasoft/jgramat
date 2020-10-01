@@ -1,93 +1,81 @@
-package gramat.proto;
+package gramat.compiling;
 
 import gramat.actions.*;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
-import gramat.source.ExpressionGrammar;
+import gramat.proto.Graph;
+import gramat.proto.Segment;
+import gramat.proto.VertexSet;
+import gramat.source.ExpressionMap;
 import gramat.source.expressions.*;
 import gramat.util.Count;
 
 import java.util.Objects;
 
-public class GraphCompiler extends DefaultComponent {
+public class ExpressionCompiler extends DefaultComponent {
 
+    private final Count vertexIDs;
     private final Count trxIDs;
-    private final GraphGrammar graphGrammar;
-    private final ExpressionGrammar expressionGrammar;
 
-    public GraphCompiler(Component parent, ExpressionGrammar expressionGrammar, GraphGrammar graphGrammar) {
+    public ExpressionCompiler(Component parent) {
         super(parent);
+        this.vertexIDs = new Count();
         this.trxIDs = new Count();
-        this.expressionGrammar = expressionGrammar;
-        this.graphGrammar = graphGrammar;
-    }
-    
-    public Graph compile(String name) {
-        return make_graph(name);
     }
 
-    private Graph make_graph(String name) {
-        var graph = graphGrammar.searchGraph(name);
+    public Segment compile(Expression expression) {
+        var graph = new Graph(vertexIDs);
+        var container = graph.segment();
 
-        if (graph != null) {
-            return graph;
-        }
-
-        graph = graphGrammar.createGraph(name);
-
-        var expression = expressionGrammar.findExpression(name);
-
-        graph.entryPoint = compile_expression(graph, graph.entryPoint, expression);
-
-        return graph;
+        return compile_expression(graph, container, expression);
     }
 
     private Segment compile_expression(Graph graph, Segment container, Expression expression) {
         if (expression instanceof LiteralExpression) {
-            return compile_literal((LiteralExpression)expression, graph, container);
+            return compile_literal(graph, container, (LiteralExpression)expression);
         }
         else if (expression instanceof RepetitionExpression) {
-            return compile_repetition((RepetitionExpression)expression, graph, container);
+            return compile_repetition(graph, container, (RepetitionExpression)expression);
         }
         else if (expression instanceof ValueExpression) {
-            return compile_value((ValueExpression)expression, graph, container);
+            return compile_value(graph, container, (ValueExpression)expression);
         }
         else if (expression instanceof ReferenceExpression) {
-            return compile_reference((ReferenceExpression)expression, graph, container);
+            return compile_reference(graph, container, (ReferenceExpression)expression);
         }
         else if (expression instanceof SequenceExpression) {
-            return compile_sequence((SequenceExpression)expression, graph, container);
+            return compile_sequence(graph, container, (SequenceExpression)expression);
         }
         else if (expression instanceof AlternationExpression) {
-            return compile_alternation((AlternationExpression)expression, graph, container);
+            return compile_alternation(graph, container, (AlternationExpression)expression);
         }
         else if (expression instanceof OptionalExpression) {
-            return compile_optional((OptionalExpression)expression, graph, container);
+            return compile_optional(graph, container, (OptionalExpression)expression);
         }
         else if (expression instanceof WildExpression) {
-            return compile_wild((WildExpression)expression, graph, container);
+            return compile_wild(graph, container, (WildExpression)expression);
         }
         else if (expression instanceof ArrayExpression) {
-            return compile_array((ArrayExpression)expression, graph, container);
+            return compile_array(graph, container, (ArrayExpression)expression);
         }
         else if (expression instanceof ObjectExpression) {
-            return compile_object((ObjectExpression)expression, graph, container);
+            return compile_object(graph, container, (ObjectExpression)expression);
         }
         else if (expression instanceof AttributeExpression) {
-            return compile_attribute((AttributeExpression)expression, graph, container);
+            return compile_attribute(graph, container, (AttributeExpression)expression);
         }
         else if (expression instanceof NameExpression) {
-            return compile_name((NameExpression)expression, graph, container);
+            return compile_name(graph, container, (NameExpression)expression);
         }
         else if (expression instanceof RangeExpression) {
-            return compile_range((RangeExpression)expression, graph, container);
+            return compile_range(graph, container, (RangeExpression)expression);
         }
         else {
             throw new RuntimeException("Unsupported expression: " + expression);
         }
     }
 
-    private Segment compile_value(ValueExpression value, Graph graph, Segment container) {
+    private Segment compile_value(Graph graph, Segment container, ValueExpression value) {
         var parser = gramat.parsers.findParser(value.parser);
         var trxID = trxIDs.next();
         var begin = new ValueKeep(trxID);
@@ -97,7 +85,7 @@ public class GraphCompiler extends DefaultComponent {
         return wrap_actions(graph, content, begin, end);
     }
 
-    private Segment compile_name(NameExpression name, Graph graph, Segment container) {
+    private Segment compile_name(Graph graph, Segment container, NameExpression name) {
         var trxID = trxIDs.next();
         var begin = new NameKeep(trxID);
         var content = compile_expression(graph, container, name.content);
@@ -106,7 +94,7 @@ public class GraphCompiler extends DefaultComponent {
         return wrap_actions(graph, content, begin, end);
     }
 
-    private Segment compile_attribute(AttributeExpression attribute, Graph graph, Segment container) {
+    private Segment compile_attribute(Graph graph, Segment container, AttributeExpression attribute) {
         var trxID = trxIDs.next();
         var begin = new AttributeKeep(trxID);
         var content = compile_expression(graph, container, attribute.content);
@@ -115,7 +103,7 @@ public class GraphCompiler extends DefaultComponent {
         return wrap_actions(graph, content, begin, end);
     }
 
-    private Segment compile_object(ObjectExpression object, Graph graph, Segment container) {
+    private Segment compile_object(Graph graph, Segment container, ObjectExpression object) {
         var trxID = trxIDs.next();
         var begin = new ObjectKeep(trxID);
         var content = compile_expression(graph, container, object.content);
@@ -124,7 +112,7 @@ public class GraphCompiler extends DefaultComponent {
         return wrap_actions(graph, content, begin, end);
     }
 
-    private Segment compile_array(ArrayExpression array, Graph graph, Segment container) {
+    private Segment compile_array(Graph graph, Segment container, ArrayExpression array) {
         var trxID = trxIDs.next();
         var begin = new ArrayKeep(trxID);
         var content = compile_expression(graph, container, array.content);
@@ -157,21 +145,21 @@ public class GraphCompiler extends DefaultComponent {
         return container;
     }
 
-    private Segment compile_reference(ReferenceExpression reference, Graph graph, Segment container) {
-        graph.createEdge(container.sources, container.targets, reference.name);
+    private Segment compile_reference(Graph graph, Segment container, ReferenceExpression reference) {
+        graph.createEdges(container.sources, container.targets, reference.name);
 
         return container;
     }
 
-    private Segment compile_range(RangeExpression range, Graph graph, Segment container) {
+    private Segment compile_range(Graph graph, Segment container, RangeExpression range) {
         var symbol = gramat.symbols.makeRange(range.begin, range.end);
 
-        graph.createEdge(container.sources, container.targets, symbol);
+        graph.createEdges(container.sources, container.targets, symbol);
 
         return container;
     }
 
-    private Segment compile_literal(LiteralExpression literal, Graph graph, Segment container) {
+    private Segment compile_literal(Graph graph, Segment container, LiteralExpression literal) {
         var chars = literal.value.toCharArray();
         var last = container.sources;
 
@@ -179,13 +167,13 @@ public class GraphCompiler extends DefaultComponent {
             var symbol = gramat.symbols.makeChar(chars[i]);
 
             if (i == chars.length - 1) {
-                graph.createEdge(last, container.targets, symbol);
+                graph.createEdges(last, container.targets, symbol);
                 break;
             }
             else {
                 var current = graph.createVertexSet();
 
-                graph.createEdge(last, current, symbol);
+                graph.createEdges(last, current, symbol);
 
                 last = current;
             }
@@ -194,11 +182,11 @@ public class GraphCompiler extends DefaultComponent {
         return container;
     }
 
-    private Segment compile_repetition(RepetitionExpression repetition, Graph graph, Segment container) {
+    private Segment compile_repetition(Graph graph, Segment container, RepetitionExpression repetition) {
         if (repetition.separator == null && repetition.minimum == 0) {
             var segmentFW = compile_expression(graph, container, repetition.content);
-            var segmentBW = compile_expression(graph, container.copyInverse(), repetition.content);
-            var segment = container.copy();
+            var segmentBW = compile_expression(graph, container.shallowCopyInverse(), repetition.content);
+            var segment = container.shallowCopy();
 
             segment.add(segmentFW);
             segment.add(segmentBW);
@@ -207,8 +195,8 @@ public class GraphCompiler extends DefaultComponent {
         }
         else if (repetition.separator == null && repetition.minimum == 1) {
             var segmentOne = compile_expression(graph, container, repetition.content);
-            var segmentLoop = compile_expression(graph, new Segment(container.targets, container.targets), repetition.content);
-            var segment = container.copy();
+            var segmentLoop = compile_expression(graph, graph.segment(container.targets, container.targets), repetition.content);
+            var segment = container.shallowCopy();
 
             segment.add(segmentOne);
             segment.targets.add(segmentLoop.targets);
@@ -218,10 +206,10 @@ public class GraphCompiler extends DefaultComponent {
         else if (repetition.separator != null && repetition.minimum == 0) {
             var segmentFW = compile_expression(graph, container, repetition.content);
             var segmentSP = compile_expression(
-                    graph, new Segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
+                    graph, graph.segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
             var segmentBW = compile_expression(
-                    graph, new Segment(segmentSP.targets, segmentFW.targets), repetition.content);
-            var segment = container.copy();
+                    graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
+            var segment = container.shallowCopy();
 
             segment.add(segmentFW);
             segment.targets.add(segmentFW.sources);
@@ -232,10 +220,10 @@ public class GraphCompiler extends DefaultComponent {
         else if (repetition.separator != null && repetition.minimum == 1) {
             var segmentFW = compile_expression(graph, container, repetition.content);
             var segmentSP = compile_expression(
-                    graph, new Segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
+                    graph, graph.segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
             var segmentBW = compile_expression(
-                    graph, new Segment(segmentSP.targets, segmentFW.targets), repetition.content);
-            var segment = container.copy();
+                    graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
+            var segment = container.shallowCopy();
 
             segment.add(segmentFW);
             segment.targets.add(segmentBW.targets);
@@ -247,7 +235,7 @@ public class GraphCompiler extends DefaultComponent {
         }
     }
 
-    private Segment compile_sequence(SequenceExpression sequence, Graph graph, Segment container) {
+    private Segment compile_sequence(Graph graph, Segment container, SequenceExpression sequence) {
         VertexSet first = null;
         var last = container.sources;
 
@@ -262,7 +250,7 @@ public class GraphCompiler extends DefaultComponent {
                 next = container.targets;
             }
 
-            var segment = new Segment(last, next);
+            var segment = graph.segment(last, next);
 
             segment = compile_expression(graph, segment, sequence.items.get(i));
 
@@ -275,11 +263,11 @@ public class GraphCompiler extends DefaultComponent {
 
         Objects.requireNonNull(first);
 
-        return new Segment(first, last);
+        return graph.segment(first, last);
     }
 
-    private Segment compile_alternation(AlternationExpression alternation, Graph graph, Segment container) {
-        var alternationSegment = container.copy();
+    private Segment compile_alternation(Graph graph, Segment container, AlternationExpression alternation) {
+        var alternationSegment = container.shallowCopy();
 
         for (var option : alternation.options) {
             var optionSegment = compile_expression(graph, container, option);
@@ -290,8 +278,8 @@ public class GraphCompiler extends DefaultComponent {
         return alternationSegment;
     }
 
-    private Segment compile_optional(OptionalExpression optional, Graph graph, Segment container) {
-        var segment = container.copy();
+    private Segment compile_optional(Graph graph, Segment container, OptionalExpression optional) {
+        var segment = container.shallowCopy();
 
         compile_expression(graph, segment, optional.content);
 
@@ -301,7 +289,7 @@ public class GraphCompiler extends DefaultComponent {
         return segment;
     }
 
-    private Segment compile_wild(WildExpression wild, Graph graph, Segment container) {
+    private Segment compile_wild(Graph graph, Segment container, WildExpression wild) {
         for (var target : container.targets) {
             target.wild = true;
         }

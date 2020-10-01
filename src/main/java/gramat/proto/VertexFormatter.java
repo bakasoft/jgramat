@@ -5,24 +5,28 @@ import gramat.am.formatting.AmFormatter;
 
 import java.util.stream.Collectors;
 
-public class GraphFormatter extends AmFormatter {
+public class VertexFormatter extends AmFormatter {
 
-    public GraphFormatter(Appendable output) {
+    public VertexFormatter(Appendable output) {
         super(output);
     }
 
-    public void write(Graph graph) {
-        for (var source : graph.entryPoint.sources) {
+    public void write(Graph graph, Line line) {
+        write(graph.segment(line.source, line.target));
+    }
+
+    public void write(Segment segment) {
+        for (var source : segment.sources) {
             write("->");
             value(source.id);
             newLine();
         }
 
-        for (var edge : graph.edges) {
+        for (var edge : segment.graph.edges) {
             write(edge);
         }
 
-        for (var target : graph.entryPoint.targets) {
+        for (var target : segment.targets) {
             value(target.id);
             write("<=");
             newLine();

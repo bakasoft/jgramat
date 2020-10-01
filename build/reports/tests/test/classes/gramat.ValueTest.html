@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class gramat.ValueTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class gramat.ValueTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/gramat.html">gramat</a> &gt; ValueTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.147s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">simpleRecursive</td>
+<td class="success">0.147s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>========== EXPRESSIONS
+-&gt;0
+0 -&gt; 1 : range &quot;a&quot;\,&quot;z&quot;
+0 -&gt; 1 !&lt; makeValue()0
+0 -&gt; 1 !&gt; haltValue(default)0
+1&lt;=
+-&gt;2
+2 -&gt; 4 : char &quot;{&quot;
+2 -&gt; 4 !&lt; makeObject()1
+4 -&gt; 6 : string
+4 -&gt; 6 !&lt; makeObject()1\
+makeAttribute()2\
+makeName()3
+4 -&gt; 6 !&gt; haltName()3
+6 -&gt; 7 : char &quot;\:&quot;
+6 -&gt; 7 !&lt; makeObject()1\
+makeAttribute()2
+7 -&gt; 5 : value
+7 -&gt; 5 !&lt; makeObject()1
+7 -&gt; 5 !&gt; haltAttribute()2
+5 -&gt; 8 : char &quot;\,&quot;
+5 -&gt; 8 !&lt; makeObject()1\
+makeAttribute()4
+8 -&gt; 9 : string
+8 -&gt; 9 !&lt; makeObject()1\
+makeAttribute()4\
+makeName()5
+8 -&gt; 9 !&gt; haltName()5
+9 -&gt; 10 : char &quot;\:&quot;
+9 -&gt; 10 !&lt; makeObject()1\
+makeAttribute()4
+10 -&gt; 5 : value
+10 -&gt; 5 !&lt; makeObject()1
+10 -&gt; 5 !&gt; haltAttribute()4
+5 -&gt; 3 : char &quot;}&quot;
+5 -&gt; 3 !&gt; haltObject()1
+4 -&gt; 3 : char &quot;}&quot;
+4 -&gt; 3 !&gt; haltObject()1
+3&lt;=
+-&gt;11
+11 -&gt; 13 : char &quot;\\u0002&quot;
+13 -&gt; 14 : value
+14 -&gt; 12 : char &quot;\\u0003&quot;
+12&lt;=
+-&gt;15
+15 -&gt; 16 : string
+15 -&gt; 16 : object
+16&lt;=
+-&gt;17
+17 -&gt; 18 : object-impl
+18&lt;=
+========== RESOLVED: root
+-&gt;0
+0 -&gt; 10_6_2 : char &quot;\\u0002&quot;
+10_6_2 -&gt; 3_7 : range &quot;a&quot;\,&quot;z&quot;
+10_6_2 -&gt; 3_7 !&lt; makeRecursion(value)0\
+makeRecursion(value)0
+10_6_2 -&gt; 4 : char &quot;{&quot;
+10_6_2 -&gt; 4 !&lt; makeRecursion(value)0\
+makeRecursion(value)0
+4 -&gt; 5 : range &quot;a&quot;\,&quot;z&quot;
+5 -&gt; 10_6_2 : char &quot;\:&quot;
+3_7 -&gt; 8 : char &quot;\,&quot;
+3_7 -&gt; 8 !&gt; haltRecursion(value)0\
+haltRecursion(value)0
+8 -&gt; 9 : range &quot;a&quot;\,&quot;z&quot;
+9 -&gt; 10_6_2 : char &quot;\:&quot;
+3_7 -&gt; 3_7 : char &quot;}&quot;
+3_7 -&gt; 3_7 !&gt; haltRecursion(value)0\
+haltRecursion(value)0
+4 -&gt; 3_7 : char &quot;}&quot;
+3_7 -&gt; 1 : char &quot;\\u0003&quot;
+3_7 -&gt; 1 !&gt; haltRecursion(value)0\
+haltRecursion(value)0
+1&lt;=
+========== STATE: root
+I 0;
+T 0,1
+	S &quot;\u0002&quot;;
+
+T 1,2
+	R makeRecursion(value)
+	S a,z;
+T 1,3
+	R makeRecursion(value)
+	S &quot;{&quot;;
+
+T 2,2
+	S &quot;}&quot;
+	R haltRecursion(value);
+T 2,4
+	S &quot;,&quot;
+	R haltRecursion(value);
+T 2,5
+	S &quot;\u0003&quot;
+	R haltRecursion(value);
+
+T 3,2
+	S &quot;}&quot;;
+T 3,6
+	S a,z;
+
+T 4,7
+	S a,z;
+
+A 5;
+
+T 6,1
+	S &quot;:&quot;;
+
+T 7,1
+	S &quot;:&quot;;
+
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 2
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 2
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 3
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 4
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 5
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 6
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 2
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 3
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 4
+DEBUG: transition 3 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 5
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 6
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 7
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 2
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 3
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 4
+DEBUG: transition 2 -&gt; 4 with char &quot;,&quot;
+DEBUG: moved to 5
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 4 -&gt; 7 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 6
+DEBUG: transition 7 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 7
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 8
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 9
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 10
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 2
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 3
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 4
+DEBUG: transition 3 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 5
+DEBUG: transition 2 -&gt; 4 with char &quot;,&quot;
+DEBUG: moved to 6
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 4 -&gt; 7 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 7
+DEBUG: transition 7 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 8
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 9
+DEBUG: transition 3 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 10
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 11
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 12
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: evaluating {}
+DEBUG: transition 0 -&gt; 1 with char &quot;\u0002&quot;
+DEBUG: moved to 0
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 1
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 2
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 3
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 4
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 5
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 6
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 7
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 8
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 4 with char &quot;,&quot;
+DEBUG: moved to 9
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 4 -&gt; 7 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 10
+DEBUG: transition 7 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 11
+DEBUG: transition 1 -&gt; 3 with char &quot;{&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 12
+DEBUG: transition 3 -&gt; 6 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: moved to 13
+DEBUG: transition 6 -&gt; 1 with char &quot;:&quot;
+DEBUG: moved to 14
+DEBUG: transition 1 -&gt; 2 with range &quot;a&quot;,&quot;z&quot;
+DEBUG: running action makeRecursion(value)0
+DEBUG: push call value
+DEBUG: moved to 15
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 16
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 2 with char &quot;}&quot;
+DEBUG: moved to 17
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+DEBUG: transition 2 -&gt; 5 with char &quot;\u0003&quot;
+DEBUG: moved to 18
+DEBUG: running action haltRecursion(value)0
+DEBUG: pop call value
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 6.3</a> at Sep 30, 2020, 7:18:29 PM</p>
+</div>
+</div>
+</body>
+</html>

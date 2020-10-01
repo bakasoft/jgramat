@@ -1,30 +1,25 @@
 package gramat.proto;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 public class Segment {
 
+    public final Graph graph;
     public final VertexSet sources;
     public final VertexSet targets;
 
-    public Segment(Vertex source, Vertex target) {
-        this(new VertexSet(source), new VertexSet(target));
-    }
-
-    public Segment(VertexSet sources, VertexSet targets) {
+    public Segment(Graph graph, VertexSet sources, VertexSet targets) {
+        this.graph = graph;
         this.sources = sources;
         this.targets = targets;
     }
 
-    public Segment copy() {
-        return new Segment(sources.copy(), targets.copy());
+    public Segment shallowCopy() {
+        return new Segment(graph, sources.copy(), targets.copy());
     }
 
-    public Segment copyInverse() {
-        return new Segment(targets.copy(), sources.copy());
+    public Segment shallowCopyInverse() {
+        return new Segment(graph, targets.copy(), sources.copy());
     }
 
     public void add(Segment other) {

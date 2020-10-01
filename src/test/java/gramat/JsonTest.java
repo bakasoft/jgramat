@@ -1,14 +1,14 @@
 package gramat;
 
-import gramat.eval.StateCompiler;
+import gramat.compiling.StateCompiler;
 import gramat.source.ExpressionFactory;
-import gramat.source.ExpressionGrammar;
+import gramat.source.ExpressionMap;
 import org.junit.Test;
 import util.StateTool;
 
 public class JsonTest {
 
-    public void init(ExpressionGrammar source) {
+    public void init(ExpressionMap source) {
         var factory = new ExpressionFactory();
 
         source.addExpression(
@@ -94,7 +94,7 @@ public class JsonTest {
     @Test
     public void test() {
         var gramat = new Gramat();
-        var grammar = new ExpressionGrammar(gramat);
+        var grammar = new ExpressionMap(gramat);
 
         init(grammar);
 

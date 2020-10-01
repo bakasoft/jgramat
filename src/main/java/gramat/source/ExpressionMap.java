@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ExpressionGrammar extends DefaultComponent {
+public class ExpressionMap extends DefaultComponent {
 
     private final Map<String, Expression> expressions;
 
-    public ExpressionGrammar(Component parent) {
+    public ExpressionMap(Component parent) {
         super(parent);
         expressions = new HashMap<>();
     }

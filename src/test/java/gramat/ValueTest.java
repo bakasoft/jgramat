@@ -1,7 +1,7 @@
 package gramat;
 
-import gramat.eval.StateCompiler;
-import gramat.source.ExpressionGrammar;
+import gramat.compiling.StateCompiler;
+import gramat.source.ExpressionMap;
 import gramat.source.ExpressionFactory;
 import org.junit.Test;
 import util.StateTool;
@@ -12,7 +12,7 @@ public class ValueTest {
     public void simpleRecursive() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionGrammar(gramat);
+        var grammar = new ExpressionMap(gramat);
 
         grammar.addExpression(
                 "value",
@@ -77,7 +77,7 @@ public class ValueTest {
     public void simpleRepetition() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionGrammar(gramat);
+        var grammar = new ExpressionMap(gramat);
 
         grammar.addExpression(
                 "a",
