@@ -1,10 +1,9 @@
 package gramat;
 
 import gramat.compiling.ExpressionCompiler;
-import gramat.proto.VertexFormatter;
-import gramat.proto.SegmentMap;
-import gramat.source.ExpressionFactory;
-import gramat.source.ExpressionMap;
+import gramat.proto.NodeFormatter;
+import gramat.expressions.ExpressionFactory;
+import gramat.expressions.ExpressionMap;
 import org.junit.Test;
 
 public class ExpressionCompilerTest {
@@ -17,7 +16,7 @@ public class ExpressionCompilerTest {
 
         var graph1 = compiler.compile(exf.value(exf.literal("a")));
 
-        new VertexFormatter(System.out).write(graph1);
+        new NodeFormatter(System.out).write(graph1);
     }
 
     @Test
@@ -78,7 +77,7 @@ public class ExpressionCompilerTest {
             var expr = grammar.findExpression(name);
             var graph1 = compiler.compile(expr);
 
-            new VertexFormatter(System.out).write(graph1);
+            new NodeFormatter(System.out).write(graph1);
         }
 
     }

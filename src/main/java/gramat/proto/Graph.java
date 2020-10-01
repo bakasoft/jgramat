@@ -13,8 +13,8 @@ public class Graph {
 
     private final Count ids;
 
-    public final List<Edge> edges;
-    public final List<Vertex> vertices;
+    public final List<Link> links;
+    public final List<Node> nodes;
 
     public Graph() {
         this(new Count());
@@ -22,111 +22,111 @@ public class Graph {
 
     public Graph(Count ids) {
         this.ids = ids;
-        this.edges = new ArrayList<>();
-        this.vertices = new ArrayList<>();
+        this.links = new ArrayList<>();
+        this.nodes = new ArrayList<>();
     }
 
-    public Vertex merge(Vertex left, Vertex right) {
+    public Node merge(Node left, Node right) {
         if (left == right) {
             return left;
         }
         var id = String.join("_", left.id, right.id);
-        var result = createVertex(id);
+        var result = createNode(id);
 
-        for (var edge : edges) {
-            if (isAny(edge.source, left, right)) {
-                edge.source = result;
+        for (var link : links) {
+            if (isAny(link.source, left, right)) {
+                link.source = result;
             }
-            if (isAny(edge.target, left, right)) {
-                edge.target = result;
+            if (isAny(link.target, left, right)) {
+                link.target = result;
             }
         }
 
-        if (!vertices.remove(left)) {
+        if (!nodes.remove(left)) {
             throw new RuntimeException();
         }
-        if (!vertices.remove(right)) {
+        if (!nodes.remove(right)) {
             throw new RuntimeException();
         }
 
         return result;
     }
 
-    public Vertex createVertex() {
+    public Node createNode() {
         var id = ids.nextString();
-        return createVertex(id, false);
+        return createNode(id, false);
     }
 
-    public Vertex createVertex(String id) {
-        return createVertex(id, false);
+    public Node createNode(String id) {
+        return createNode(id, false);
     }
 
-    public Vertex createVertex(String id, boolean wild) {
-        var vertex = new Vertex(id, wild);
+    public Node createNode(String id, boolean wild) {
+        var node = new Node(id, wild);
 
-        vertices.add(vertex);
+        nodes.add(node);
 
-        return vertex;
+        return node;
     }
 
-    public VertexSet createVertexSet() {
-        var vertex = createVertex();
+    public NodeSet createNodeSet() {
+        var node = createNode();
 
-        return new VertexSet(vertex);
+        return new NodeSet(node);
     }
 
-    public Edge createEdge(Vertex source, Vertex target, Symbol symbol) {
-        var edge = new EdgeSymbol(source, target, symbol);
-        edges.add(edge);
-        return edge;
+    public Link createLink(Node source, Node target, Symbol symbol) {
+        var link = new LinkSymbol(source, target, symbol);
+        links.add(link);
+        return link;
     }
 
-    public void createEdges(VertexSet sources, VertexSet targets, Symbol symbol) {
-        create_edges(sources, targets, (source, target) -> new EdgeSymbol(source, target, symbol));
+    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol) {
+        create_links(sources, targets, (source, target) -> new LinkSymbol(source, target, symbol));
     }
 
-    public void createEdges(VertexSet sources, VertexSet targets, String reference) {
-        create_edges(sources, targets, (source, target) -> new EdgeReference(source, target, reference));
+    public void createLinks(NodeSet sources, NodeSet targets, String reference) {
+        create_links(sources, targets, (source, target) -> new LinkReference(source, target, reference));
     }
 
-    private void create_edges(Iterable<Vertex> sources, Iterable<Vertex> targets, BiFunction<Vertex, Vertex, Edge> edgeMaker) {
+    private void create_links(Iterable<Node> sources, Iterable<Node> targets, BiFunction<Node, Node, Link> linkMaker) {
         for (var source : sources) {
             for (var target : targets) {
-                var edge = edgeMaker.apply(source, target);
+                var link = linkMaker.apply(source, target);
 
-                edges.add(edge);
+                links.add(link);
             }
         }
     }
 
-    public List<Edge> findEdgesTo(VertexSet targets) {
-        return edges.stream()
+    public List<Link> findLinksTo(NodeSet targets) {
+        return links.stream()
                 .filter(t -> targets.contains(t.target))
                 .collect(Collectors.toList());
     }
 
-    public List<Edge> findEdgesTo(Vertex target) {
-        return edges.stream()
+    public List<Link> findLinksTo(Node target) {
+        return links.stream()
                 .filter(t -> t.target == target)
                 .collect(Collectors.toList());
     }
 
-    public List<Edge> findEdgesFrom(VertexSet sources, Symbol symbol) {
-        return edges.stream()
+    public List<Link> findLinksFrom(NodeSet sources, Symbol symbol) {
+        return links.stream()
                 .filter(e -> sources.contains(e.source))
-                .map(e -> (EdgeSymbol)e)  // TODO add validation for this casting
+                .map(e -> (LinkSymbol)e)  // TODO add validation for this casting
                 .filter(e -> Objects.equals(e.symbol, symbol))
                 .collect(Collectors.toList());
     }
 
-    public List<Edge> findEdgesFrom(VertexSet sources) {
-        return edges.stream()
+    public List<Link> findLinksFrom(NodeSet sources) {
+        return links.stream()
                 .filter(t -> sources.contains(t.source))
                 .collect(Collectors.toList());
     }
 
-    public List<Edge> findEdgesFrom(Vertex source) {
-        return edges.stream()
+    public List<Link> findLinksFrom(Node source) {
+        return links.stream()
                 .filter(t -> t.source == source)
                 .collect(Collectors.toList());
     }
@@ -134,27 +134,27 @@ public class Graph {
     public Set<String> findReferences() {
         var refs = new LinkedHashSet<String>();
 
-        for (var edge : edges) {
-            if (edge instanceof EdgeReference) {
-                refs.add(((EdgeReference)edge).name);
+        for (var link : links) {
+            if (link instanceof LinkReference) {
+                refs.add(((LinkReference)link).name);
             }
         }
 
         return refs;
     }
 
-    public List<Edge> listEdgesFrom(Vertex source) {
-        return listEdgesFrom(new VertexSet(source));
+    public List<Link> listLinksFrom(Node source) {
+        return listLinksFrom(new NodeSet(source));
     }
 
-    public List<Edge> listEdgesTo(Vertex target) {
-        return listEdgesTo(new VertexSet(target));
+    public List<Link> listLinksTo(Node target) {
+        return listLinksTo(new NodeSet(target));
     }
 
-    public List<Edge> listEdgesFrom(VertexSet sources) {
-        var result = new ArrayList<Edge>();
-        var control = new HashSet<Vertex>();
-        var queue = new LinkedList<Vertex>();
+    public List<Link> listLinksFrom(NodeSet sources) {
+        var result = new ArrayList<Link>();
+        var control = new HashSet<Node>();
+        var queue = new LinkedList<Node>();
 
         queue.addAll(sources.toCollection());
 
@@ -162,10 +162,10 @@ public class Graph {
             var source = queue.remove();
 
             if (control.add(source)) {
-                for (var edge : findEdgesFrom(source)) {
-                    result.add(edge);
+                for (var link : findLinksFrom(source)) {
+                    result.add(link);
 
-                    queue.add(edge.target);
+                    queue.add(link.target);
                 }
             }
         }
@@ -173,10 +173,10 @@ public class Graph {
         return result;
     }
 
-    public List<Edge> listEdgesTo(VertexSet targets) {
-        var result = new ArrayList<Edge>();
-        var control = new HashSet<Vertex>();
-        var queue = new LinkedList<Vertex>();
+    public List<Link> listLinksTo(NodeSet targets) {
+        var result = new ArrayList<Link>();
+        var control = new HashSet<Node>();
+        var queue = new LinkedList<Node>();
 
         queue.addAll(targets.toCollection());
 
@@ -184,10 +184,10 @@ public class Graph {
             var target = queue.remove();
 
             if (control.add(target)) {
-                for (var edge : findEdgesTo(target)) {
-                    result.add(edge);
+                for (var link : findLinksTo(target)) {
+                    result.add(link);
 
-                    queue.add(edge.target);
+                    queue.add(link.target);
                 }
             }
         }
@@ -196,18 +196,18 @@ public class Graph {
     }
 
     public Segment segment() {
-        return new Segment(this, createVertexSet(), createVertexSet());
+        return new Segment(this, createNodeSet(), createNodeSet());
     }
 
-    public Segment segment(Vertex source, Vertex target) {
-        return new Segment(this, new VertexSet(source), new VertexSet(target));
+    public Segment segment(Node source, Node target) {
+        return new Segment(this, new NodeSet(source), new NodeSet(target));
     }
 
-    public Segment segment(VertexSet sources, VertexSet targets) {
+    public Segment segment(NodeSet sources, NodeSet targets) {
         return new Segment(this, sources, targets);
     }
 
     public Line createLine() {
-        return new Line(createVertex(), createVertex());
+        return new Line(createNode(), createNode());
     }
 }

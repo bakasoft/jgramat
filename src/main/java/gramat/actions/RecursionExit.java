@@ -2,9 +2,10 @@ package gramat.actions;
 
 import gramat.eval.Context;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
+
+import static gramat.util.Validations.tryCastAndTest;
 
 public class RecursionExit extends Action {
 
@@ -15,18 +16,12 @@ public class RecursionExit extends Action {
     }
 
     @Override
-    public boolean stacks(Action other) {
-        if (other instanceof RecursionExit) {
-            var o = (RecursionExit)other;
-
-            return Objects.equals(token, o.token);
-        }
-        return false;
-    }
-
-    @Override
-    public void printAmCode(PrintStream out) {
-        out.print("EXIT " + token);
+    public boolean contains(Action other) {
+        return tryCastAndTest(
+                RecursionExit.class,
+                other,
+                a -> Objects.equals(this.token, a.token)
+        );
     }
 
     @Override

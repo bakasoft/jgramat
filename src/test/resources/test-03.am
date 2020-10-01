@@ -1,9 +1,8 @@
-@machine Test-1 {
+Test-1 = @machine {
     ->0
     0 -> 1
-        ! "beginValue()"
-        : "a-z"
-        ! "endValue(default)"
-    2 -> 4 ! "beginObject()\nendAttribute()" : "{"
-
+        ! beginValue()
+        : a-z
+        ! endValue(default)
+    2 -> 4 ! beginObject(), endAttribute() : "{"
 }

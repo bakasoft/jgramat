@@ -12,12 +12,9 @@ public class StateTool {
         var logger = gramat.getLogger();
 
         for (var input : inputs) {
-            var tape = new Tape(input);
-            var context = new Context(tape, gramat.getLogger());
+            logger.debug("evaluating %s", input);
 
-            logger.debug("evaluating {}", input);
-
-            state.eval(context);
+            state.evalValue(input, logger);
         }
     }
 }

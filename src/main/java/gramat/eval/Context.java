@@ -1,5 +1,6 @@
 package gramat.eval;
 
+import gramat.eval.trx.TransactionID;
 import gramat.eval.trx.TransactionManager;
 import gramat.framework.Logger;
 import gramat.input.Tape;
@@ -13,30 +14,34 @@ public class Context {
 
     public final Logger logger;
 
-    private final Stack<String> callStack;
-
     private final Stack<Container> containerStack;
 
-    public final TransactionManager transactions;
+    private final TransactionManager transactions;
+
+    private final Stack<String> callStack;
 
     private Integer beginPosition;
 
     public Context(Tape tape, Logger logger) {
         this.tape = tape;
         this.logger = logger;
-        this.callStack = new Stack<>();
         this.containerStack = new Stack<>();
-        this.transactions = new TransactionManager();
+        this.callStack = new Stack<>();
+        this.transactions = new TransactionManager(logger, "root");
+    }
+
+    public TransactionManager transaction() {
+        return transactions;
     }
 
     public void pushCall(String token) {
-        logger.debug("push call %s", token);
+        logger.debug("push call: %s", token);
 
         callStack.push(token);
     }
 
     public void popCall(String token) {
-        logger.debug("pop call %s", token);
+        logger.debug("pop call: %s", token);
 
         if (callStack.isEmpty()) {
             throw new RejectedException();
@@ -44,29 +49,9 @@ public class Context {
 
         var actual = callStack.pop();
 
-        if (!Objects.equals(token, actual)) {
+        if (!Objects.equals(actual, token)) {
             throw new RejectedException("expected: " + token);
         }
-    }
-
-    public void pushBegin(int position) {
-        logger.debug("push begin %s", position);
-
-        if (beginPosition != null) {
-            throw new RuntimeException();
-        }
-        beginPosition = position;
-    }
-
-    public int popBegin() {
-        logger.debug("pop begin %s", beginPosition);
-
-        var position = beginPosition;
-        if (position == null) {
-            throw new RuntimeException();
-        }
-        beginPosition = null;
-        return position;
     }
 
     public void pushValue(Object value) {
@@ -87,5 +72,12 @@ public class Context {
 
     public Container peekContainer() {
         return containerStack.peek();
+    }
+
+    public TransactionID transactionID(int id) {
+        var level = callStack.size();
+        var token = callStack.size() > 0 ? callStack.peek() : null;
+
+        return new TransactionID(id, level, token);
     }
 }

@@ -1,8 +1,8 @@
 package gramat;
 
 import gramat.compiling.StateCompiler;
-import gramat.source.ExpressionFactory;
-import gramat.source.ExpressionMap;
+import gramat.expressions.ExpressionFactory;
+import gramat.expressions.ExpressionMap;
 import org.junit.Test;
 import util.StateTool;
 

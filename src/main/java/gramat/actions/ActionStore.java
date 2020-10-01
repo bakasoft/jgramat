@@ -2,33 +2,37 @@ package gramat.actions;
 
 import gramat.util.Store;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 public class ActionStore extends Store<Action> {
 
-    public boolean add(Action action) {
+    public boolean contains(Action action) {
         for (var item : items) {
-            if (item.stacks(action)) {
-                return false;
+            if (item.contains(action)) {
+                return true;
             }
         }
+        return false;
+    }
 
-        items.add(action);
+    public boolean add(Action action) {
+        if (contains(action)) {
+            return false;
+        }
 
+        return items.add(action);
+    }
+
+    public boolean addTop(Action action) {
+        if (contains(action)) {
+            return false;
+        }
+
+        items.add(0, action);
         return true;
     }
 
-    public void clear() {
-        items.clear();
-    }
-
-    public Iterable<Action> reverse() {
-        var buffer = new ArrayList<>(items);
-
-        Collections.reverse(buffer);
-
-        return buffer;
+    public void add(ActionStore store) {
+        for (var action : store) {
+            add(action);
+        }
     }
 }

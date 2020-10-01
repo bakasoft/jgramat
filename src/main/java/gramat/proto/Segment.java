@@ -1,14 +1,12 @@
 package gramat.proto;
 
-import java.util.Set;
-
 public class Segment {
 
     public final Graph graph;
-    public final VertexSet sources;
-    public final VertexSet targets;
+    public final NodeSet sources;
+    public final NodeSet targets;
 
-    public Segment(Graph graph, VertexSet sources, VertexSet targets) {
+    public Segment(Graph graph, NodeSet sources, NodeSet targets) {
         this.graph = graph;
         this.sources = sources;
         this.targets = targets;

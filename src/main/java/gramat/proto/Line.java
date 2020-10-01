@@ -2,10 +2,10 @@ package gramat.proto;
 
 public class Line {
 
-    public Vertex source;
-    public Vertex target;
+    public Node source;
+    public Node target;
 
-    public Line(Vertex source, Vertex target) {
+    public Line(Node source, Node target) {
         this.source = source;
         this.target = target;
     }

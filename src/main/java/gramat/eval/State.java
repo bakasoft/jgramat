@@ -110,7 +110,7 @@ public class State implements Iterable<Transition> {
                 }
             }
 
-            context.transactions.flush();
+            context.transaction().flush();
 
             state = transition.target;
         }
@@ -155,31 +155,6 @@ public class State implements Iterable<Transition> {
 
     public void markAccepted() {
         accepted = true;
-    }
-
-    public void writeAmCode(PrintStream out) {
-        var control = new HashSet<State>();
-        var queue = new LinkedList<State>();
-
-        queue.add(this);
-
-        while (queue.size() > 0) {
-            var node = queue.remove();
-
-            if (control.add(node)) {
-                if (node.transitions != null) {
-                    for (var link : node.transitions) {
-                        link.writeAmCode(node, out);
-
-                        queue.add(link.target);
-                    }
-                }
-
-                if (node.accepted) {
-                    out.println(id + " <=");
-                }
-            }
-        }
     }
 
     public Transition searchLink(State target) {

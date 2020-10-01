@@ -17,17 +17,10 @@ import java.util.Objects;
 public class StateParser extends DefaultComponent {
 
     private final Map<String, State> idNodes;
-    private int orderControl;
 
     public StateParser(Component parent) {
         super(parent);
         this.idNodes = new HashMap<>();
-    }
-
-    private int next_order() {
-        int order = orderControl;
-        orderControl++;
-        return order;
     }
 
     public State parse(Tape tape) {
@@ -124,82 +117,55 @@ public class StateParser extends DefaultComponent {
 
     private Action make_action(AmAction data) {
         if (Objects.equals(data.name, "enter")) {
-            if (data.arguments == null || data.arguments.size() != 1) {
-                throw new RuntimeException();
-            }
-
             var token = data.arguments.get(0);
 
             return new RecursionEnter(token);
         }
         else if (Objects.equals(data.name, "exit")) {
-            if (data.arguments == null || data.arguments.size() != 1) {
-                throw new RuntimeException();
-            }
-
             var token = data.arguments.get(0);
 
             return new RecursionExit(token);
         }
         else if (Objects.equals(data.name, "beginObject")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
+            var trxID = Integer.parseInt(data.arguments.get(0));
 
-            return new ObjectKeep(next_order());
+            return new ObjectBegin(trxID);
         }
         else if (Objects.equals(data.name, "beginValue")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
+            var trxID = Integer.parseInt(data.arguments.get(0));
 
-            return new ValueKeep(next_order());
+            return new ValueBegin(trxID);
         }
         else if (Objects.equals(data.name, "beginName")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
+            var trxID = Integer.parseInt(data.arguments.get(0));
 
-            return new NameKeep(next_order());
+            return new NameBegin(trxID);
         }
         else if (Objects.equals(data.name, "beginAttribute")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
+            var trxID = Integer.parseInt(data.arguments.get(0));
 
-            return new AttributeKeep(next_order());
+            return new AttributeBegin(trxID, null);
         }
         else if (Objects.equals(data.name, "endObject")) {
-            if (data.arguments == null || data.arguments.size() > 1) {
-                throw new RuntimeException();
-            }
+            var trxID = Integer.parseInt(data.arguments.get(0));
 
             var token = data.arguments.isEmpty() ? null : data.arguments.get(0);
 
-            return new ObjectHalt(next_order(), token);
+            return new ObjectEnd(trxID, token);
         }
         else if (Objects.equals(data.name, "endValue")) {
-            if (data.arguments == null || data.arguments.size() > 1) {
-                throw new RuntimeException();
-            }
-
-            var token = data.arguments.isEmpty() ? null : data.arguments.get(0);
+            var trxID = Integer.parseInt(data.arguments.get(0));
+            var token = (String)null;// TODO data.arguments.get(1);
             var parser = token != null ? gramat.parsers.findParser(token) : new StringParser("string"); // TODO???
-            return new ValueHalt(next_order(), parser);
+            return new ValueEnd(trxID, parser);
         }
         else if (Objects.equals(data.name, "endAttribute")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
-
-            return new AttributeHalt(next_order(), null);
+            var trxID = Integer.parseInt(data.arguments.get(0));
+            return new AttributeEnd(trxID, null);
         }
         else if (Objects.equals(data.name, "endName")) {
-            if (data.arguments == null || data.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
-
-            return new NameHalt(next_order());
+            var trxID = Integer.parseInt(data.arguments.get(0));
+            return new NameEnd(trxID);
         }
         else {
             throw new RuntimeException("Unsupported action: " + data.name);

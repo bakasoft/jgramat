@@ -1,12 +1,11 @@
 package gramat.compiling;
 
-import gramat.am.formatting.AmFormatter;
-import gramat.eval.AmNodeWriter;
+import gramat.eval.StateFormatter;
 import gramat.eval.State;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.proto.*;
-import gramat.source.ExpressionMap;
+import gramat.expressions.ExpressionMap;
 import gramat.util.Count;
 
 import java.util.*;
@@ -23,7 +22,7 @@ public class StateCompiler extends DefaultComponent {
             var expression = expressions.findExpression(reference);
             var segment = expressionCompiler.compile(expression);
 
-            new VertexFormatter(System.out).write(segment);
+            new NodeFormatter(System.out).write(segment);
 
             segments.register(reference, segment);
         }
@@ -34,7 +33,7 @@ public class StateCompiler extends DefaultComponent {
 
         System.out.println("========== RESOLVED: " + name);
 
-        new VertexFormatter(System.out).write(graph, line);
+        new NodeFormatter(System.out).write(graph, line);
 
         var stateCompiler = new StateCompiler(parent, graph);
 
@@ -42,7 +41,7 @@ public class StateCompiler extends DefaultComponent {
 
         System.out.println("========== STATE: " + name);
 
-        AmNodeWriter.write(state, new AmFormatter(System.out));
+        new StateFormatter(System.out).write(state);
 
         return state;
     }
@@ -50,14 +49,14 @@ public class StateCompiler extends DefaultComponent {
     private final Graph graph;
 
     private final Map<String, State> idStates;
-    private final Map<String, VertexSet> idVertices;
+    private final Map<String, NodeSet> idNodes;
     private final Count nextId;
 
     public StateCompiler(Component parent, Graph graph) {
         super(parent);
         this.graph = graph;
         this.idStates = new HashMap<>();
-        this.idVertices = new HashMap<>();
+        this.idNodes = new HashMap<>();
         this.nextId = new Count();
     }
 
@@ -71,8 +70,8 @@ public class StateCompiler extends DefaultComponent {
         return initial;
     }
 
-    private void make_deterministic(VertexSet initial) {
-        var queue = new LinkedList<VertexSet>();
+    private void make_deterministic(NodeSet initial) {
+        var queue = new LinkedList<NodeSet>();
         var control = new HashSet<String>();
 
         queue.add(initial);
@@ -82,24 +81,24 @@ public class StateCompiler extends DefaultComponent {
             var sourcesID = sources.computeID();
 
             if (control.add(sourcesID)) {
-                idVertices.put(sourcesID, sources);
+                idNodes.put(sourcesID, sources);
 
                 for (var symbol : gramat.symbols) {
-                    var edges = graph.findEdgesFrom(sources, symbol);
+                    var links = graph.findLinksFrom(sources, symbol);
 
-                    if (edges.size() > 0) {
-                        var targets = Edge.collectTargets(edges);
+                    if (links.size() > 0) {
+                        var targets = Link.collectTargets(links);
                         var newSource = make_node(sources);
                         var newTarget = make_node(targets);
 
                         var transition = newSource.addTransition(symbol, newTarget);
 
-                        for (var edge : edges) {
-                            for (var action : edge.beforeActions) {
+                        for (var link : links) {
+                            for (var action : link.beforeActions) {
                                 transition.addBefore(action);
                             }
 
-                            for (var action : edge.afterActions) {
+                            for (var action : link.afterActions) {
                                 transition.addAfter(action);
                             }
                         }
@@ -111,27 +110,27 @@ public class StateCompiler extends DefaultComponent {
         }
     }
 
-    private void mark_accepted_nodes(VertexSet targets) {
+    private void mark_accepted_nodes(NodeSet targets) {
         for (var idState : idStates.entrySet()) {
             var id = idState.getKey();
             var state = idState.getValue();
-            var vertices = idVertices.get(id);
+            var nodes = idNodes.get(id);
 
-            if (vertices.containsAny(targets)) {
+            if (nodes.containsAny(targets)) {
                 state.markAccepted();
             }
         }
     }
 
-    private State make_node(VertexSet vertices) {
-        var id = vertices.computeID();
+    private State make_node(NodeSet nodes) {
+        var id = nodes.computeID();
         var state = idStates.get(id);
 
         if (state == null) {
-//            node = new Vertex(id);  // TODO only in debug mode
+//            node = new Node(id);  // TODO only in debug mode
             state = new State(String.valueOf(nextId.nextString()));
 
-            if (vertices.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
+            if (nodes.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
                 var symbol = gramat.symbols.makeWild();
 
                 state.addTransition(symbol, state);

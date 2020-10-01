@@ -35,28 +35,6 @@ public class Transition {
         return after.add(action);
     }
 
-    public void writeAmCode(State source, PrintStream out) {
-        if (before != null) {
-            for (var action : before) {
-                out.print(source.id + " -> " + target.id + " !< ");
-                action.printAmCode(out);
-                out.println();
-            }
-        }
-
-        out.print(source.id + " -> " + target.id + " : ");
-        symbol.printAmCode(out);
-        out.println();
-
-        if (after != null) {
-            for (var action : after) {
-                out.print(source.id + " -> " + target.id + " !> ");
-                action.printAmCode(out);
-                out.println();
-            }
-        }
-    }
-
     public Symbol getSymbol() {
         return symbol;
     }

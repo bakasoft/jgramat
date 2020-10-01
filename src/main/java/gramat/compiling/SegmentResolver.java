@@ -15,7 +15,7 @@ public class SegmentResolver {
     private final SegmentMap segments;
 
     private final Map<String, Line> namedLines;
-    private final Map<Vertex, Vertex> copiedVertex;
+    private final Map<Node, Node> copiedNodes;
     private final Map<Line, String> mergeEnter;
     private final Map<Line, String> mergeExit;
 
@@ -23,7 +23,7 @@ public class SegmentResolver {
         this.segments = segments;
         this.root = new Graph();
         this.namedLines = new HashMap<>();
-        this.copiedVertex = new HashMap<>();
+        this.copiedNodes = new HashMap<>();
         this.mergeEnter = new LinkedHashMap<>();
         this.mergeExit = new LinkedHashMap<>();
     }
@@ -35,50 +35,32 @@ public class SegmentResolver {
     }
 
     public Line resolve(String name, Segment original) {
-        var step1 = new ArrayList<Runnable>();
-        var step2 = new ArrayList<Runnable>();
-        var line = resolve_segment(name, original, step1, step2);
+        var beforeMerge = new ArrayList<Runnable>();
+        var afterMerge = new ArrayList<Runnable>();
+        var line = resolve_segment(name, original, beforeMerge, afterMerge);
 
-        for (var step : step1) {
+        for (var step : beforeMerge) {
             step.run();
         }
 
-        for (var step : step2) {
-            step.run();
-        }
+        // Join recursive segments
 
         for (var merge : mergeEnter.keySet()) {
-            merge_vertices(merge.source, merge.target);
+            merge_nodes(merge.source, merge.target);
         }
 
         for (var merge : mergeExit.keySet()) {
-            merge_vertices(merge.source, merge.target);
+            merge_nodes(merge.source, merge.target);
         }
 
-        for (var entry : mergeEnter.entrySet()) {
-            var merge = entry.getKey();
-            var token = entry.getValue();
-            var vertex = requireEquals(merge.source, merge.target);
-
-            for (var edge : root.findEdgesFrom(vertex)) {
-                edge.beforeActions.add(new RecursionEnter(token));
-            }
-        }
-
-        for (var entry : mergeExit.entrySet()) {
-            var merge = entry.getKey();
-            var token = entry.getValue();
-            var vertex = requireEquals(merge.source, merge.target);
-
-            for (var edge : root.findEdgesFrom(vertex)) {
-                edge.afterActions.add(new RecursionExit(token));
-            }
+        for (var step : afterMerge) {
+            step.run();
         }
 
         return line;
     }
 
-    private Line resolve_segment(String name, Segment original, List<Runnable> step1, List<Runnable> step2) {
+    private Line resolve_segment(String name, Segment original, List<Runnable> beforeMerge, List<Runnable> afterMerge) {
         var line = namedLines.get(name);
 
         if (line != null) {
@@ -89,48 +71,70 @@ public class SegmentResolver {
 
         map_segment(name, original, line);
 
-        copy_segment(original, step1, step2);
+        copy_segment(original, beforeMerge, afterMerge);
 
         unmap_segment(name, original);
 
         return line;
     }
 
-    private void copy_segment(Segment originalSegment, List<Runnable> step1, List<Runnable> step2) {
-        for (var originalEdge : originalSegment.graph.edges) {
-            var copiedSource = copy_vertex(originalEdge.source);
-            var copiedTarget = copy_vertex(originalEdge.target);
+    private void copy_segment(Segment originalSegment, List<Runnable> beforeMerge, List<Runnable> afterMerge) {
+        for (var originalLink : originalSegment.graph.links) {
+            var copiedSource = copy_node(originalLink.source);
+            var copiedTarget = copy_node(originalLink.target);
 
-            if (originalEdge instanceof EdgeReference) {
-                var refName = ((EdgeReference)originalEdge).name;
+            if (originalLink instanceof LinkReference) {
+                var refName = ((LinkReference)originalLink).name;
                 var refOriginal = segments.find(refName);
 
                 if (namedLines.containsKey(refName)) {
                     var recursiveLine = namedLines.get(refName);
+                    var enterLine = new Line(copiedSource, recursiveLine.source);
+                    var exitLine = new Line(recursiveLine.target, copiedTarget);
 
-                    mergeEnter.put(new Line(copiedSource, recursiveLine.source), refName);
-                    mergeExit.put(new Line(recursiveLine.target, copiedTarget), refName);
+                    mergeEnter.put(enterLine, refName);
+                    mergeExit.put(exitLine, refName);
+
+                    afterMerge.add(() -> {
+                        var enterNode = requireEquals(enterLine.source, enterLine.target);
+
+                        for (var link : root.findLinksTo(enterNode)) {
+                            for (var action : originalLink.beforeActions) {
+                                link.afterActions.add(action);
+                            }
+                            link.afterActions.add(new RecursionEnter(refName));
+                        }
+
+                        var exitNode = requireEquals(exitLine.source, exitLine.target);
+
+                        for (var link : root.findLinksFrom(exitNode)) {
+                            for (var action : originalLink.afterActions) {
+                                link.beforeActions.addTop(action);
+                            }
+                            link.beforeActions.addTop(new RecursionExit(refName));
+                        }
+                    });
                 }
                 else {
                     map_segment(refName, refOriginal, new Line(copiedSource, copiedTarget));
-                    copy_segment(refOriginal, step1, step2);
+                    copy_segment(refOriginal, beforeMerge, afterMerge);
                     unmap_segment(refName, refOriginal);
 
                     // Distribute reference actions
-                    for (var edge : root.listEdgesFrom(copiedSource)) {
-                        edge.beforeActions.addAll(originalEdge.beforeActions);
+                    for (var link : root.listLinksFrom(copiedSource)) {
+                        link.beforeActions.add(originalLink.beforeActions);
                     }
-                    for (var edge : root.listEdgesTo(copiedTarget)) {
-                        edge.afterActions.addAll(originalEdge.afterActions);
+                    for (var link : root.listLinksTo(copiedTarget)) {
+                        link.afterActions.add(originalLink.afterActions);
                     }
                 }
             }
-            else if (originalEdge instanceof EdgeSymbol) {
-                var symbol = ((EdgeSymbol)originalEdge).symbol;
-                var edge = root.createEdge(copiedSource, copiedTarget, symbol);
+            else if (originalLink instanceof LinkSymbol) {
+                var symbol = ((LinkSymbol)originalLink).symbol;
+                var link = root.createLink(copiedSource, copiedTarget, symbol);
 
-                edge.beforeActions.addAll(originalEdge.beforeActions);
-                edge.afterActions.addAll(originalEdge.afterActions);
+                link.beforeActions.add(originalLink.beforeActions);
+                link.afterActions.add(originalLink.afterActions);
             }
             else {
                 throw new RuntimeException();
@@ -138,10 +142,10 @@ public class SegmentResolver {
         }
     }
 
-    private void merge_vertices(Vertex source, Vertex target) {
+    private void merge_nodes(Node source, Node target) {
         var result = root.merge(source, target);
 
-        for (var entry : copiedVertex.entrySet()) {
+        for (var entry : copiedNodes.entrySet()) {
             if (isAny(entry.getValue(), source, target)) {
                 entry.setValue(result);
             }
@@ -175,13 +179,13 @@ public class SegmentResolver {
         }
     }
 
-    private Vertex copy_vertex(Vertex original) {
-        var copy = copiedVertex.get(original);
+    private Node copy_node(Node original) {
+        var copy = copiedNodes.get(original);
 
         if (copy == null) {
-            copy = root.createVertex();
+            copy = root.createNode();
 
-            copiedVertex.put(original, copy);
+            copiedNodes.put(original, copy);
         }
 
         return copy;
@@ -191,13 +195,13 @@ public class SegmentResolver {
         namedLines.put(name, line);
 
         for (var originalSource : original.sources) {
-            if (copiedVertex.put(originalSource, line.source) != null) {
+            if (copiedNodes.put(originalSource, line.source) != null) {
                 throw new RuntimeException();
             }
         }
 
         for (var originalTarget : original.targets) {
-            if (copiedVertex.put(originalTarget, line.target) != null) {
+            if (copiedNodes.put(originalTarget, line.target) != null) {
                 throw new RuntimeException();
             }
         }
@@ -205,13 +209,13 @@ public class SegmentResolver {
 
     private void unmap_segment(String name, Segment original) {
         for (var originalSource : original.sources) {
-            if (copiedVertex.remove(originalSource) == null) {
+            if (copiedNodes.remove(originalSource) == null) {
                 throw new RuntimeException();
             }
         }
 
         for (var originalTarget : original.targets) {
-            if (copiedVertex.remove(originalTarget) == null) {
+            if (copiedNodes.remove(originalTarget) == null) {
                 throw new RuntimeException();
             }
         }

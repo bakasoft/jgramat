@@ -1,30 +1,30 @@
 package gramat.compiling;
 
 import gramat.actions.*;
+import gramat.expressions.Expression;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.proto.Graph;
 import gramat.proto.Segment;
-import gramat.proto.VertexSet;
-import gramat.source.ExpressionMap;
-import gramat.source.expressions.*;
+import gramat.proto.NodeSet;
+import gramat.expressions.impl.*;
 import gramat.util.Count;
 
 import java.util.Objects;
 
 public class ExpressionCompiler extends DefaultComponent {
 
-    private final Count vertexIDs;
-    private final Count trxIDs;
+    private final Count node_ids;
+    private final Count trx_ids;
 
     public ExpressionCompiler(Component parent) {
         super(parent);
-        this.vertexIDs = new Count();
-        this.trxIDs = new Count();
+        this.node_ids = new Count();
+        this.trx_ids = new Count();
     }
 
     public Segment compile(Expression expression) {
-        var graph = new Graph(vertexIDs);
+        var graph = new Graph(node_ids);
         var container = graph.segment();
 
         return compile_expression(graph, container, expression);
@@ -77,68 +77,68 @@ public class ExpressionCompiler extends DefaultComponent {
 
     private Segment compile_value(Graph graph, Segment container, ValueExpression value) {
         var parser = gramat.parsers.findParser(value.parser);
-        var trxID = trxIDs.next();
-        var begin = new ValueKeep(trxID);
+        var trxID = trx_ids.next();
+        var begin = new ValueBegin(trxID);
         var content = compile_expression(graph, container, value.content);
-        var end = new ValueHalt(trxID, parser);
+        var end = new ValueEnd(trxID, parser);
 
         return wrap_actions(graph, content, begin, end);
     }
 
     private Segment compile_name(Graph graph, Segment container, NameExpression name) {
-        var trxID = trxIDs.next();
-        var begin = new NameKeep(trxID);
+        var trxID = trx_ids.next();
+        var begin = new NameBegin(trxID);
         var content = compile_expression(graph, container, name.content);
-        var end = new NameHalt(trxID);
+        var end = new NameEnd(trxID);
 
         return wrap_actions(graph, content, begin, end);
     }
 
     private Segment compile_attribute(Graph graph, Segment container, AttributeExpression attribute) {
-        var trxID = trxIDs.next();
-        var begin = new AttributeKeep(trxID);
+        var trxID = trx_ids.next();
+        var begin = new AttributeBegin(trxID, attribute.name);
         var content = compile_expression(graph, container, attribute.content);
-        var end = new AttributeHalt(trxID, attribute.name);
+        var end = new AttributeEnd(trxID, attribute.name);
 
         return wrap_actions(graph, content, begin, end);
     }
 
     private Segment compile_object(Graph graph, Segment container, ObjectExpression object) {
-        var trxID = trxIDs.next();
-        var begin = new ObjectKeep(trxID);
+        var trxID = trx_ids.next();
+        var begin = new ObjectBegin(trxID);
         var content = compile_expression(graph, container, object.content);
-        var end = new ObjectHalt(trxID, object.type);
+        var end = new ObjectEnd(trxID, object.type);
 
         return wrap_actions(graph, content, begin, end);
     }
 
     private Segment compile_array(Graph graph, Segment container, ArrayExpression array) {
-        var trxID = trxIDs.next();
-        var begin = new ArrayKeep(trxID);
+        var trxID = trx_ids.next();
+        var begin = new ArrayBegin(trxID);
         var content = compile_expression(graph, container, array.content);
-        var end = new ArrayHalt(trxID, array.type);
+        var end = new ArrayEnd(trxID, array.type);
 
         return wrap_actions(graph, content, begin, end);
     }
 
     private Segment wrap_actions(Graph graph, Segment container, Action make, Action halt) {
-        var beginEdges = graph.findEdgesFrom(container.sources);
-        var afterEdges = graph.findEdgesTo(container.targets);
+        var beginLinks = graph.findLinksFrom(container.sources);
+        var afterLinks = graph.findLinksTo(container.targets);
 
-        if (beginEdges.isEmpty() || afterEdges.isEmpty()) {
+        if (beginLinks.isEmpty() || afterLinks.isEmpty()) {
             throw new RuntimeException();
         }
 
-        for (var edge : graph.listEdgesFrom(container.sources)) {
-            var isBegin = beginEdges.contains(edge);
-            var isAfter = afterEdges.contains(edge);
+        for (var link : graph.listLinksFrom(container.sources)) {
+            var isBegin = beginLinks.contains(link);
+            var isAfter = afterLinks.contains(link);
 
-            if (isBegin || !isAfter) {
-                edge.beforeActions.add(0, make);
+            if (isBegin) {
+                link.beforeActions.addTop(make);
             }
 
             if (isAfter) {
-                edge.afterActions.add(halt);
+                link.afterActions.add(halt);
             }
         }
 
@@ -146,7 +146,7 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment compile_reference(Graph graph, Segment container, ReferenceExpression reference) {
-        graph.createEdges(container.sources, container.targets, reference.name);
+        graph.createLinks(container.sources, container.targets, reference.name);
 
         return container;
     }
@@ -154,7 +154,7 @@ public class ExpressionCompiler extends DefaultComponent {
     private Segment compile_range(Graph graph, Segment container, RangeExpression range) {
         var symbol = gramat.symbols.makeRange(range.begin, range.end);
 
-        graph.createEdges(container.sources, container.targets, symbol);
+        graph.createLinks(container.sources, container.targets, symbol);
 
         return container;
     }
@@ -167,13 +167,13 @@ public class ExpressionCompiler extends DefaultComponent {
             var symbol = gramat.symbols.makeChar(chars[i]);
 
             if (i == chars.length - 1) {
-                graph.createEdges(last, container.targets, symbol);
+                graph.createLinks(last, container.targets, symbol);
                 break;
             }
             else {
-                var current = graph.createVertexSet();
+                var current = graph.createNodeSet();
 
-                graph.createEdges(last, current, symbol);
+                graph.createLinks(last, current, symbol);
 
                 last = current;
             }
@@ -206,7 +206,7 @@ public class ExpressionCompiler extends DefaultComponent {
         else if (repetition.separator != null && repetition.minimum == 0) {
             var segmentFW = compile_expression(graph, container, repetition.content);
             var segmentSP = compile_expression(
-                    graph, graph.segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
+                    graph, graph.segment(segmentFW.targets, graph.createNodeSet()), repetition.separator);
             var segmentBW = compile_expression(
                     graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
             var segment = container.shallowCopy();
@@ -220,7 +220,7 @@ public class ExpressionCompiler extends DefaultComponent {
         else if (repetition.separator != null && repetition.minimum == 1) {
             var segmentFW = compile_expression(graph, container, repetition.content);
             var segmentSP = compile_expression(
-                    graph, graph.segment(segmentFW.targets, graph.createVertexSet()), repetition.separator);
+                    graph, graph.segment(segmentFW.targets, graph.createNodeSet()), repetition.separator);
             var segmentBW = compile_expression(
                     graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
             var segment = container.shallowCopy();
@@ -236,14 +236,14 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment compile_sequence(Graph graph, Segment container, SequenceExpression sequence) {
-        VertexSet first = null;
+        NodeSet first = null;
         var last = container.sources;
 
         for (var i = 0; i < sequence.items.size(); i++) {
-            VertexSet next;
+            NodeSet next;
 
             if (i != sequence.items.size() - 1) {
-                next = graph.createVertexSet();
+                next = graph.createNodeSet();
             }
             else {
                 // only for last item

@@ -2,36 +2,36 @@ package gramat.actions;
 
 import gramat.eval.Context;
 
-import java.io.PrintStream;
 import java.util.List;
-import java.util.Objects;
 
 import static gramat.util.Validations.tryCastAndTest;
 
-public class RecursionEnter extends Action {
+public class NameEnd extends Action {
 
-    public final String token;
+    private final int trxID;
 
-    public RecursionEnter(String token) {
-        this.token = token;
+    public NameEnd(int trxID) {
+        this.trxID = trxID;
     }
 
     @Override
     public boolean contains(Action other) {
         return tryCastAndTest(
-                RecursionEnter.class,
+                NameEnd.class,
                 other,
-                a -> Objects.equals(this.token, a.token)
+                a -> a.trxID == this.trxID
         );
     }
 
     @Override
     public void run(Context context) {
-        context.pushCall(token);
+        var id = context.transactionID(trxID);
+
+        context.transaction().commit(id);
     }
 
     @Override
     public List<String> getArguments() {
-        return List.of(token);
+        return List.of(String.valueOf(trxID));
     }
 }

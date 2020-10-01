@@ -1,11 +1,10 @@
 package gramat.util;
 
-import gramat.actions.Action;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 abstract public class Store<T> implements Iterable<T> {
 
@@ -31,6 +30,10 @@ abstract public class Store<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return new ArrayList<>(items).iterator();
+    }
+
+    public Stream<T> stream() {
+        return items.stream();
     }
 
     public int size() {

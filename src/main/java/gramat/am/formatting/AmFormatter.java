@@ -1,12 +1,6 @@
 package gramat.am.formatting;
 
-import gramat.symbols.Symbol;
-import gramat.symbols.SymbolChar;
-import gramat.symbols.SymbolRange;
-import gramat.symbols.SymbolWild;
-
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class AmFormatter {
@@ -15,139 +9,93 @@ public class AmFormatter {
 
     private final Appendable output;
 
-    private char lastChar;
-
     public AmFormatter(Appendable output) {
         this.output = output;
     }
 
-    public final void write(char c) {
+    protected final void raw(String... items) {
+        for (var item : items) {
+            raw(item);
+        }
+    }
+
+    protected final void raw(String text) {
         try {
-            output.append(c);
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-        lastChar = c;
-    }
-
-    public void write(String text) {
-        for (var c : text.toCharArray()) {
-            write(c);
-        }
-    }
-
-    public void initial(String id) {
-        write("I ");
-        value(id);
-        end();
-    }
-
-    public void accepted(String id) {
-        write("A ");
-        value(id);
-        end();
-    }
-
-    public void transition(String source, String target) {
-        write("T ");
-        value(source);
-        write(',');
-        value(target);
-    }
-
-    public void action(String name, List<String> args) {
-        write("\n\tR ");
-        value(name);
-        write('(');
-
-        for (var i = 0; i < args.size(); i++) {
-            if (i > 0) {
-                write(", ");
+            for (var c : text.toCharArray()) {
+                output.append(c);
             }
-
-            value(args.get(i));
         }
-
-        write(')');
-    }
-
-    public void symbol(Symbol symbol) {
-        write("\n\tS ");
-
-        if (symbol instanceof SymbolWild) {
-            write('*');
-        }
-        else if (symbol instanceof SymbolRange) {
-            var range = (SymbolRange)symbol;
-
-            value(String.valueOf(range.begin));
-            write(',');
-            value(String.valueOf(range.end));
-        }
-        else if (symbol instanceof SymbolChar) {
-            var chr = (SymbolChar)symbol;
-
-            value(String.valueOf(chr.value));
-        }
-        else {
+        catch (IOException e) {
             throw new RuntimeException();
         }
     }
 
-    private void check_space() {
-        if (!Character.isWhitespace(lastChar)) {
-            write(' ');
+    protected final void sp() {
+        try {
+            output.append(' ');
+        }
+        catch (IOException e) {
+            throw new RuntimeException();
         }
     }
 
-    public void end() {
-        write(";\n");
+    protected final void ln() {
+        try {
+            output.append('\n');
+        }
+        catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 
-    public void value(String value) {
-        if (KEYWORD.matcher(value).matches()) {
-            write(value);
-        }
-        else {
-            write('\"');
+    protected final void str(String value) {
+        try {
+            if (KEYWORD.matcher(value).matches()) {
+                output.append(value);
+            }
+            else {
+                output.append('\"');
 
-            for (var c : value.toCharArray()) {
-                if (c == '\"' || c == '\'' || c == '\\') {
-                    write('\\');
-                    write(c);
-                }
-                else if (c == '\n') {
-                    write("\\n");
-                }
-                else if (c == '\r') {
-                    write("\\r");
-                }
-                else if (c == '\t') {
-                    write("\\t");
-                }
-                else if (c >= 0x20 && c <= 0x7E) {
-                    write(c);
-                }
-                else {
-                    write("\\u");
-                    var hex = Integer.toHexString(c);
-                    if (hex.length() < 4) {
-                        write("0".repeat(4 - hex.length()));
+                for (var c : value.toCharArray()) {
+                    if (c == '\"' || c == '\'' || c == '\\') {
+                        output.append('\\');
+                        output.append(c);
                     }
-                    write(hex);
+                    else if (c == '\n') {
+                        output.append("\\n");
+                    }
+                    else if (c == '\r') {
+                        output.append("\\r");
+                    }
+                    else if (c == '\t') {
+                        output.append("\\t");
+                    }
+                    else if (c >= 0x20 && c <= 0x7E) {
+                        output.append(c);
+                    }
+                    else {
+                        output.append("\\u");
+                        var hex = Integer.toHexString(c);
+                        if (hex.length() < 4) {
+                            output.append("0".repeat(4 - hex.length()));
+                        }
+                        output.append(hex);
+                    }
                 }
-            }
 
-            write('\"');
+                output.append('\"');
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException();
         }
     }
 
-    public void space() {
-        write(' ');
-    }
-
-    public void newLine() {
-        write('\n');
+    protected final void amstr(String str) {
+        raw(str.replace("\\", "\\\\")
+                .replace(",", "\\,")
+                .replace(":", "\\:")
+                .replace("\n", "\\\n"));
     }
 
 }
