@@ -17,8 +17,6 @@ public class ActionStore extends Store<Action> {
 
         items.add(action);
 
-        items.sort(Comparator.comparingInt(a -> a.trxID));
-
         return true;
     }
 

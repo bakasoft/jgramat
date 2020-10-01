@@ -7,12 +7,6 @@ import java.util.List;
 
 abstract public class Action {
 
-    public final int trxID;
-
-    public Action(int trxID) {
-        this.trxID = trxID;
-    }
-
     abstract public boolean stacks(Action other);
 
     abstract public void printAmCode(PrintStream out);
@@ -33,7 +27,7 @@ abstract public class Action {
 
     @Override
     public final String toString() {
-        return getKey() + "(" + String.join(", ", getArguments()) + ")" + trxID;
+        return getKey() + "(" + String.join(", ", getArguments()) + ")";
     }
 
 }

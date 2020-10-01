@@ -2,17 +2,17 @@ package gramat.actions;
 
 public enum ActionKeys {
 
-    ARRAY_KEEP("makeArray", ArrayKeep.class),
+    ARRAY_KEEP("keepArray", ArrayKeep.class),
     ARRAY_HALT("haltArray", ArrayHalt.class),
-    ATTRIBUTE_KEEP("makeAttribute", AttributeKeep.class),
+    ATTRIBUTE_KEEP("keepAttribute", AttributeKeep.class),
     ATTRIBUTE_HALT("haltAttribute", AttributeHalt.class),
-    NAME_KEEP("makeName", NameKeep.class),
+    NAME_KEEP("keepName", NameKeep.class),
     NAME_HALT("haltName", NameHalt.class),
-    OBJECT_KEEP("makeObject", ObjectKeep.class),
+    OBJECT_KEEP("keepObject", ObjectKeep.class),
     OBJECT_HALT("haltObject", ObjectHalt.class),
-    RECURSION_KEEP("makeRecursion", RecursionKeep.class),
-    RECURSION_HALT("haltRecursion", RecursionHalt.class),
-    VALUE_KEEP("makeValue", ValueKeep.class),
+    RECURSION_ENTER("enterRecursion", RecursionEnter.class),
+    RECURSION_EXIT("exitRecursion", RecursionExit.class),
+    VALUE_KEEP("keepValue", ValueKeep.class),
     VALUE_HALT("haltValue", ValueHalt.class),
 
     ;

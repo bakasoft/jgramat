@@ -7,8 +7,10 @@ import java.util.List;
 
 public class ObjectKeep extends Action {
 
-    public ObjectKeep(int order) {
-        super(order);
+    public final int trxID;
+
+    public ObjectKeep(int trxID) {
+        this.trxID = trxID;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class ObjectKeep extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 
 }

@@ -7,8 +7,10 @@ import java.util.List;
 
 public class NameHalt extends Action {
 
-    public NameHalt(int order) {
-        super(order);
+    private final int trxID;
+
+    public NameHalt(int trxID) {
+        this.trxID = trxID;
     }
 
     @Override
@@ -33,6 +35,6 @@ public class NameHalt extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

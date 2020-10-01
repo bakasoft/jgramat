@@ -6,8 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 
 public class ValueKeep extends Action {
+
+    public final int trxID;
+
     public ValueKeep(int trxID) {
-        super(trxID);
+        this.trxID = trxID;
     }
 
     @Override
@@ -39,6 +42,6 @@ public class ValueKeep extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

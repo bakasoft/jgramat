@@ -7,8 +7,10 @@ import java.util.List;
 
 public class AttributeKeep extends Action {
 
-    public AttributeKeep(int order) {
-        super(order);
+    public final int trxID;
+
+    public AttributeKeep(int trxID) {
+        this.trxID = trxID;
     }
 
     @Override
@@ -28,6 +30,6 @@ public class AttributeKeep extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

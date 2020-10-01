@@ -8,10 +8,11 @@ import java.util.List;
 
 public class ObjectHalt extends Action {
 
+    private final int trxID;
     private final Object typeHint;
 
-    public ObjectHalt(int order, Object typeHint) {
-        super(order);
+    public ObjectHalt(int trxID, Object typeHint) {
+        this.trxID = trxID;
         this.typeHint = typeHint;
     }
 
@@ -39,6 +40,6 @@ public class ObjectHalt extends Action {
 //            return List.of(typeHint);
             // TODO serialize typehint
         }
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

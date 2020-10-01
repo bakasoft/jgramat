@@ -130,7 +130,7 @@ public class StateParser extends DefaultComponent {
 
             var token = data.arguments.get(0);
 
-            return new RecursionKeep(next_order(), token);
+            return new RecursionEnter(token);
         }
         else if (Objects.equals(data.name, "exit")) {
             if (data.arguments == null || data.arguments.size() != 1) {
@@ -139,7 +139,7 @@ public class StateParser extends DefaultComponent {
 
             var token = data.arguments.get(0);
 
-            return new RecursionHalt(next_order(), token);
+            return new RecursionExit(token);
         }
         else if (Objects.equals(data.name, "beginObject")) {
             if (data.arguments == null || data.arguments.size() > 0) {

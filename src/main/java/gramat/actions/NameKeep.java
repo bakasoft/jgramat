@@ -7,8 +7,10 @@ import java.util.List;
 
 public class NameKeep extends Action {
 
-    public NameKeep(int order) {
-        super(order);
+    public final int trxID;
+
+    public NameKeep(int trxID) {
+        this.trxID = trxID;
     }
 
     @Override
@@ -28,6 +30,6 @@ public class NameKeep extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

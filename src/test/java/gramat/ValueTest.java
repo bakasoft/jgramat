@@ -9,7 +9,50 @@ import util.StateTool;
 public class ValueTest {
 
     @Test
-    public void simpleRecursive() {
+    public void simpleRecursive1() {
+        var gramat = new Gramat();
+        var factory = new ExpressionFactory();
+        var grammar = new ExpressionMap(gramat);
+
+        grammar.addExpression(
+                "value",
+                factory.alternation(
+                        factory.reference("string"),
+                        factory.reference("object")
+                )
+        );
+
+        grammar.addExpression("string", factory.literal("x"));
+
+        grammar.addExpression(
+                "object",
+                factory.sequence(
+                        factory.literal("("),
+                        factory.reference("value"),
+                        factory.literal(")")
+                )
+        );
+
+        grammar.addExpression("root", factory.sequence(
+                factory.literal("\u0002"),
+                factory.reference("value"),
+                factory.literal("\u0003")
+        ));
+
+        var state = StateCompiler.compileExpression(gramat, "root", grammar);
+
+        StateTool.test(
+                state,
+                "x",
+                "(x)",
+                "((x))",
+                "(((x)))",
+                "((((x))))"
+        );
+    }
+
+    @Test
+    public void simpleRecursive2() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
         var grammar = new ExpressionMap(gramat);

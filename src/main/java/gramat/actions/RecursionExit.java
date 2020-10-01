@@ -6,19 +6,18 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
 
-public class RecursionKeep extends Action {
+public class RecursionExit extends Action {
 
     public final String token;
 
-    public RecursionKeep(int order, String token) {
-        super(order);
+    public RecursionExit(String token) {
         this.token = token;
     }
 
     @Override
     public boolean stacks(Action other) {
-        if (other instanceof RecursionKeep) {
-            var o = (RecursionKeep)other;
+        if (other instanceof RecursionExit) {
+            var o = (RecursionExit)other;
 
             return Objects.equals(token, o.token);
         }
@@ -27,12 +26,12 @@ public class RecursionKeep extends Action {
 
     @Override
     public void printAmCode(PrintStream out) {
-        out.print("ENTER " + token);
+        out.print("EXIT " + token);
     }
 
     @Override
     public void run(Context context) {
-        context.pushCall(token);
+        context.popCall(token);
     }
 
     @Override

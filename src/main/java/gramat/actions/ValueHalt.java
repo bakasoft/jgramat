@@ -8,10 +8,11 @@ import java.util.List;
 
 public class ValueHalt extends Action {
 
+    private final int trxID;
     private final ValueParser parser;
 
-    public ValueHalt(int order, ValueParser parser) {
-        super(order);
+    public ValueHalt(int trxID, ValueParser parser) {
+        this.trxID = trxID;
         this.parser = parser;
     }
 
@@ -40,6 +41,6 @@ public class ValueHalt extends Action {
         if (parser == null || parser.getName() == null) {// TODO
             return List.of();
         }
-        return List.of(parser.getName());
+        return List.of(String.valueOf(trxID), parser.getName());
     }
 }

@@ -7,10 +7,11 @@ import java.util.List;
 
 public class ArrayHalt extends Action {
 
+    private final int trxID;
     private final Object typeHint;
 
-    public ArrayHalt(int order, Object typeHint) {
-        super(order);
+    public ArrayHalt(int trxID, Object typeHint) {
+        this.trxID = trxID;
         this.typeHint = typeHint;
     }
 
@@ -34,6 +35,6 @@ public class ArrayHalt extends Action {
 
     @Override
     public List<String> getArguments() {
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }

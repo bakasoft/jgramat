@@ -1,11 +1,10 @@
 package gramat.compiling;
 
-import gramat.actions.RecursionHalt;
-import gramat.actions.RecursionKeep;
+import gramat.actions.RecursionExit;
+import gramat.actions.RecursionEnter;
 import gramat.proto.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static gramat.util.Validations.isAny;
 import static gramat.util.Validations.requireEquals;
@@ -62,7 +61,7 @@ public class SegmentResolver {
             var vertex = requireEquals(merge.source, merge.target);
 
             for (var edge : root.findEdgesFrom(vertex)) {
-                edge.beforeActions.add(new RecursionKeep(0, token));
+                edge.beforeActions.add(new RecursionEnter(token));
             }
         }
 
@@ -72,7 +71,7 @@ public class SegmentResolver {
             var vertex = requireEquals(merge.source, merge.target);
 
             for (var edge : root.findEdgesFrom(vertex)) {
-                edge.afterActions.add(new RecursionHalt(0, token));
+                edge.afterActions.add(new RecursionExit(token));
             }
         }
 
@@ -107,7 +106,6 @@ public class SegmentResolver {
                 var refOriginal = segments.find(refName);
 
                 if (namedLines.containsKey(refName)) {
-//                    System.out.println("RECURSIVE " + refName);
                     var recursiveLine = namedLines.get(refName);
 
                     mergeEnter.put(new Line(copiedSource, recursiveLine.source), refName);
@@ -116,21 +114,23 @@ public class SegmentResolver {
                 else {
                     map_segment(refName, refOriginal, new Line(copiedSource, copiedTarget));
                     copy_segment(refOriginal, step1, step2);
-
-//                    for (var edge : root.listEdgesFrom(copiedSource)) {
-//                        System.out.println("ENTER " + edge.source.id + " -> " + edge.target.id + " " + refName);
-//                    }
-//                    for (var edge : root.listEdgesTo(copiedTarget)) {
-//                        System.out.println("EXIT " + edge.source.id + " -> " + edge.target.id + " " + refName);
-//                    }
-
                     unmap_segment(refName, refOriginal);
+
+                    // Distribute reference actions
+                    for (var edge : root.listEdgesFrom(copiedSource)) {
+                        edge.beforeActions.addAll(originalEdge.beforeActions);
+                    }
+                    for (var edge : root.listEdgesTo(copiedTarget)) {
+                        edge.afterActions.addAll(originalEdge.afterActions);
+                    }
                 }
             }
             else if (originalEdge instanceof EdgeSymbol) {
                 var symbol = ((EdgeSymbol)originalEdge).symbol;
+                var edge = root.createEdge(copiedSource, copiedTarget, symbol);
 
-                root.createEdge(copiedSource, copiedTarget, symbol);
+                edge.beforeActions.addAll(originalEdge.beforeActions);
+                edge.afterActions.addAll(originalEdge.afterActions);
             }
             else {
                 throw new RuntimeException();

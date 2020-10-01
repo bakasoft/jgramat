@@ -75,8 +75,10 @@ public class Graph {
         return new VertexSet(vertex);
     }
 
-    public void createEdge(Vertex source, Vertex target, Symbol symbol) {
-        edges.add(new EdgeSymbol(source, target, symbol));
+    public Edge createEdge(Vertex source, Vertex target, Symbol symbol) {
+        var edge = new EdgeSymbol(source, target, symbol);
+        edges.add(edge);
+        return edge;
     }
 
     public void createEdges(VertexSet sources, VertexSet targets, Symbol symbol) {

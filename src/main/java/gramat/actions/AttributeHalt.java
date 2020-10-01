@@ -8,10 +8,11 @@ import java.util.Objects;
 
 public class AttributeHalt extends Action {
 
+    private final int trxID;
     private final String defaultName;
 
-    public AttributeHalt(int order, String defaultName) {
-        super(order);
+    public AttributeHalt(int trxID, String defaultName) {
+        this.trxID = trxID;
         this.defaultName = defaultName;
     }
 
@@ -46,8 +47,8 @@ public class AttributeHalt extends Action {
     @Override
     public List<String> getArguments() {
         if (defaultName != null) {
-            return List.of(defaultName);
+            return List.of(String.valueOf(trxID), defaultName);
         }
-        return List.of();
+        return List.of(String.valueOf(trxID));
     }
 }
