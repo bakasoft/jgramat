@@ -8,6 +8,7 @@ import gramat.proto.Graph;
 import gramat.proto.Segment;
 import gramat.proto.NodeSet;
 import gramat.expressions.impl.*;
+import gramat.proto.Token;
 import gramat.util.Count;
 
 import java.util.Objects;
@@ -146,7 +147,7 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment compile_reference(Graph graph, Segment container, ReferenceExpression reference) {
-        graph.createLinks(container.sources, container.targets, reference.name);
+        graph.createLinks(container.sources, container.targets, Token.of(reference.name));
 
         return container;
     }
@@ -154,7 +155,7 @@ public class ExpressionCompiler extends DefaultComponent {
     private Segment compile_range(Graph graph, Segment container, RangeExpression range) {
         var symbol = gramat.symbols.makeRange(range.begin, range.end);
 
-        graph.createLinks(container.sources, container.targets, symbol);
+        graph.createLinks(container.sources, container.targets, Token.of(symbol));
 
         return container;
     }
@@ -164,16 +165,16 @@ public class ExpressionCompiler extends DefaultComponent {
         var last = container.sources;
 
         for (var i = 0; i < chars.length; i++) {
-            var symbol = gramat.symbols.makeChar(chars[i]);
+            var token = Token.of(gramat.symbols.makeChar(chars[i]));
 
             if (i == chars.length - 1) {
-                graph.createLinks(last, container.targets, symbol);
+                graph.createLinks(last, container.targets, token);
                 break;
             }
             else {
                 var current = graph.createNodeSet();
 
-                graph.createLinks(last, current, symbol);
+                graph.createLinks(last, current, token);
 
                 last = current;
             }

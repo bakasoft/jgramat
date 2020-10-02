@@ -26,35 +26,14 @@ public class Graph {
         this.nodes = new ArrayList<>();
     }
 
-    public Node merge(Node left, Node right) {
-        if (left == right) {
-            return left;
-        }
-        var id = String.join("_", left.id, right.id);
-        var result = createNode(id);
-
-        for (var link : links) {
-            if (isAny(link.source, left, right)) {
-                link.source = result;
-            }
-            if (isAny(link.target, left, right)) {
-                link.target = result;
-            }
-        }
-
-        if (!nodes.remove(left)) {
-            throw new RuntimeException();
-        }
-        if (!nodes.remove(right)) {
-            throw new RuntimeException();
-        }
-
-        return result;
-    }
-
     public Node createNode() {
         var id = ids.nextString();
         return createNode(id, false);
+    }
+
+    public Node createNodeFrom(Node original) {
+        var id = ids.nextString();
+        return createNode(original.id + "_" + id, false);
     }
 
     public Node createNode(String id) {
@@ -75,26 +54,16 @@ public class Graph {
         return new NodeSet(node);
     }
 
-    public Link createLink(Node source, Node target, Symbol symbol) {
-        var link = new LinkSymbol(source, target, symbol);
+    public Link createLink(Node source, Node target, Token token) {
+        var link = new Link(source, target, token);
         links.add(link);
         return link;
     }
 
-    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol) {
-        create_links(sources, targets, (source, target) -> new LinkSymbol(source, target, symbol));
-    }
-
-    public void createLinks(NodeSet sources, NodeSet targets, String reference) {
-        create_links(sources, targets, (source, target) -> new LinkReference(source, target, reference));
-    }
-
-    private void create_links(Iterable<Node> sources, Iterable<Node> targets, BiFunction<Node, Node, Link> linkMaker) {
+    public void createLinks(NodeSet sources, NodeSet targets, Token token) {
         for (var source : sources) {
             for (var target : targets) {
-                var link = linkMaker.apply(source, target);
-
-                links.add(link);
+                createLink(source, target, token);
             }
         }
     }
@@ -113,9 +82,8 @@ public class Graph {
 
     public List<Link> findOutgoingLinks(NodeSet sources, Symbol symbol) {
         return links.stream()
-                .filter(e -> sources.contains(e.source))
-                .map(e -> (LinkSymbol)e)  // TODO add validation for this casting
-                .filter(e -> Objects.equals(e.symbol, symbol))
+                .filter(e -> e.token.isSymbol() && sources.contains(e.source))
+                .filter(e -> Objects.equals(e.token.getSymbol(), symbol))
                 .collect(Collectors.toList());
     }
 
@@ -135,8 +103,8 @@ public class Graph {
         var refs = new LinkedHashSet<String>();
 
         for (var link : links) {
-            if (link instanceof LinkReference) {
-                refs.add(((LinkReference)link).name);
+            if (link.token.isReference()) {
+                refs.add(link.token.getReference());
             }
         }
 
@@ -208,6 +176,18 @@ public class Graph {
     }
 
     public Line createLine() {
-        return new Line(createNode(), createNode());
+        return new Line(this, createNode(), createNode());
     }
+
+    public void removeLink(Link link) {
+        links.remove(link);
+    }
+
+    public Link createLinkFrom(Join join, Node newSource, Node newTarget) {
+        var newLink = createLink(newSource, newTarget, join.token);
+        newLink.beforeActions.add(join.beforeActions);
+        newLink.afterActions.add(join.afterActions);
+        return newLink;
+    }
+
 }

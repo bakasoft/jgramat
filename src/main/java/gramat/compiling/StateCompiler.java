@@ -27,13 +27,22 @@ public class StateCompiler extends DefaultComponent {
             segments.register(reference, segment);
         }
 
-        var resolver = new SegmentResolver(segments);
+        var flattener = new SegmentFlattener(segments);
+        var lines = flattener.flatten("root");
+
+        for (var entry : lines.entrySet()) {
+            System.out.println("========== FLAT " + entry.getKey());
+
+            new NodeFormatter(System.out).write(entry.getValue());
+        }
+
+        var resolver = new LineReducer(lines);
         var graph = resolver.getGraph();
         var line = resolver.resolve(name);
 
         System.out.println("========== RESOLVED: " + name);
 
-        new NodeFormatter(System.out).write(graph, line);
+        new NodeFormatter(System.out).write(line);
 
         var stateCompiler = new StateCompiler(parent, graph);
 

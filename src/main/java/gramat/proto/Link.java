@@ -5,19 +5,15 @@ import gramat.actions.ActionStore;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
-abstract public class Link {
+public class Link extends Join {
 
-    public Node source;
-    public Node target;
+    public final Node source;
+    public final Node target;
 
-    public final ActionStore beforeActions;
-    public final ActionStore afterActions;
-
-    public Link(Node source, Node target) {
+    public Link(Node source, Node target, Token token) {
+        super(token, new ActionStore(), new ActionStore());
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        this.beforeActions = new ActionStore();
-        this.afterActions = new ActionStore();
     }
 
     public static NodeSet collectTargets(Iterable<? extends Link> links) {

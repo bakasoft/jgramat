@@ -9,8 +9,8 @@ public class NodeFormatter extends AmFormatter {
         super(output);
     }
 
-    public void write(Graph graph, Line line) {
-        write(graph.segment(line.source, line.target));
+    public void write(Line line) {
+        write(line.graph.segment(line.source, line.target));
     }
 
     public void write(Segment segment) {
@@ -34,9 +34,7 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        if (link instanceof LinkSymbol) {
-            var linkSymbol = (LinkSymbol) link;
-
+        if (link.token.isSymbol()) {
             raw(link.source.id);
             sp();
             raw("->");
@@ -45,12 +43,10 @@ public class NodeFormatter extends AmFormatter {
             sp();
             raw(":");
             sp();
-            amstr(linkSymbol.symbol.toString());
+            amstr(link.token.getSymbol().toString());
             ln();
         }
-        else if (link instanceof LinkReference) {
-            var linkReference = (LinkReference) link;
-
+        else if (link.token.isReference()) {
             raw(link.source.id);
             sp();
             raw("->");
@@ -59,7 +55,7 @@ public class NodeFormatter extends AmFormatter {
             sp();
             raw(":");
             sp();
-            amstr(linkReference.name);
+            amstr(link.token.getReference());
             ln();
         }
         else {

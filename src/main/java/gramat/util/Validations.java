@@ -25,6 +25,13 @@ public class Validations {
         }
     }
 
+    public static <T extends Collection<?>> T requireNotEmpty(T collection) {
+        if (collection == null || collection.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return collection;
+    }
+
     public static <T> T itemAt(List<? extends T> items, int index) {
         if (index < items.size()) {
             return items.get(index);
