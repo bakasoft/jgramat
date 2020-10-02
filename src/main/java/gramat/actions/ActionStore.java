@@ -1,8 +1,25 @@
 package gramat.actions;
 
-import gramat.util.Store;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class ActionStore extends Store<Action> {
+public class ActionStore implements Iterable<Action> {
+
+    private final List<Action> items;
+
+    public ActionStore() {
+        items = new ArrayList<>();
+    }
+
+    public ActionStore(ActionStore base) {
+        if (base != null) {
+            items = new ArrayList<>(base.items);
+        }
+        else {
+            items = new ArrayList<>();
+        }
+    }
 
     public boolean contains(Action action) {
         for (var item : items) {
@@ -13,26 +30,37 @@ public class ActionStore extends Store<Action> {
         return false;
     }
 
-    public boolean add(Action action) {
-        if (contains(action)) {
-            return false;
+    public void append(Action action) {
+        if (!contains(action)) {
+            items.add(action);
         }
-
-        return items.add(action);
     }
 
-    public boolean addTop(Action action) {
-        if (contains(action)) {
-            return false;
-        }
-
-        items.add(0, action);
-        return true;
-    }
-
-    public void add(ActionStore store) {
+    public void append(ActionStore store) {
         for (var action : store) {
-            add(action);
+            append(action);
         }
     }
+
+    public void prepend(Action action) {
+        if (!contains(action)) {
+            items.add(0, action);
+        }
+    }
+
+    public void prepend(ActionStore store) {
+        for (var i = store.items.size() - 1; i >= 0; i--) {
+            prepend(store.items.get(i));
+        }
+    }
+
+    public Action[] toArray() {
+        return items.toArray(Action[]::new);
+    }
+
+    @Override
+    public Iterator<Action> iterator() {
+        return items.iterator();
+    }
+
 }

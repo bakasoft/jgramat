@@ -1,5 +1,7 @@
 package gramat.graph;
 
+import gramat.actions.Action;
+import gramat.actions.ActionStore;
 import gramat.symbols.Symbol;
 import gramat.util.Count;
 
@@ -47,10 +49,8 @@ public class Graph {
         return new NodeSet(node);
     }
 
-    public Link createLink(Node source, Node target, Token token) {
-        var link = new Link(source, target, token);
-        links.add(link);
-        return link;
+    public Link createLinkFrom(Join join, Node newSource, Node newTarget) {
+        return createLink(newSource, newTarget, join.token, join.beforeActions, join.afterActions);
     }
 
     public void createLinks(NodeSet sources, NodeSet targets, Token token) {
@@ -59,6 +59,16 @@ public class Graph {
                 createLink(source, target, token);
             }
         }
+    }
+
+    public Link createLink(Node source, Node target, Token token) {
+        return createLink(source, target, token, null, null);
+    }
+
+    public Link createLink(Node source, Node target, Token token, ActionStore beforeActions, ActionStore afterActions) {
+        var link = new Link(source, target, token, new ActionStore(beforeActions), new ActionStore(afterActions));
+        links.add(link);
+        return link;
     }
 
     public List<Link> findIncomingLinks(NodeSet targets) {
@@ -74,10 +84,13 @@ public class Graph {
     }
 
     public List<Link> findOutgoingLinks(NodeSet sources, Symbol symbol) {
-        return links.stream()
-                .filter(e -> e.token.isSymbol() && sources.contains(e.source))
-                .filter(e -> Objects.equals(e.token.getSymbol(), symbol))
-                .collect(Collectors.toList());
+        var result = new ArrayList<Link>();
+        for (var link : links) {
+            if (sources.contains(link.source) && link.token.isSymbol() && Objects.equals(link.token.getSymbol(), symbol)) {
+                result.add(link);
+            }
+        }
+        return result;
     }
 
     public List<Link> findOutgoingLinks(NodeSet sources) {
@@ -148,13 +161,6 @@ public class Graph {
 
     public void removeLink(Link link) {
         links.remove(link);
-    }
-
-    public Link createLinkFrom(Join join, Node newSource, Node newTarget) {
-        var newLink = createLink(newSource, newTarget, join.token);
-        newLink.beforeActions.add(join.beforeActions);
-        newLink.afterActions.add(join.afterActions);
-        return newLink;
     }
 
 }

@@ -129,11 +129,11 @@ public class LineReducer {
             }
 
             if (beforeActions != null) {
-                link.beforeActions.add(beforeActions);
+                link.beforeActions.prepend(beforeActions);
             }
 
             if (afterActions != null) {
-                link.afterActions.add(afterActions);
+                link.afterActions.append(afterActions);
             }
         }
     }

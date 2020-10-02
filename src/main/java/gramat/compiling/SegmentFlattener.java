@@ -58,8 +58,8 @@ public class SegmentFlattener {
             if (link.token.isSymbol() || recursive.contains(link.token.getReference())) {
                 var linkCopy = graph.createLink(sourceCopy, targetCopy, link.token);
 
-                linkCopy.afterActions.add(link.afterActions);
-                linkCopy.beforeActions.add(link.beforeActions);
+                linkCopy.afterActions.append(link.afterActions);
+                linkCopy.beforeActions.append(link.beforeActions);
             }
             else {
                 var refSegment = segments.find(link.token.getReference());
@@ -82,7 +82,7 @@ public class SegmentFlattener {
                 for (var link : graph.findOutgoingLinks(copy)) {
                     // If the link belongs to the section being copied...
                     if (copies.containsValue(link.target)) {
-                        link.beforeActions.add(beforeActions); // TODO double-check order
+                        link.beforeActions.append(beforeActions); // TODO double-check order
                     }
                 }
             }
@@ -91,7 +91,7 @@ public class SegmentFlattener {
                 for (var link : graph.findIncomingLinks(copy)) {
                     // If the link belongs to the section being copied...
                     if (copies.containsValue(link.source)) {
-                        link.afterActions.add(afterActions); // TODO double-check order
+                        link.afterActions.append(afterActions); // TODO double-check order
                     }
                 }
             }

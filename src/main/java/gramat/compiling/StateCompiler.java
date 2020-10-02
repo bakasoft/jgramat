@@ -1,5 +1,6 @@
 package gramat.compiling;
 
+import gramat.actions.ActionStore;
 import gramat.formatting.StateFormatter;
 import gramat.machine.State;
 import gramat.formatting.NodeFormatter;
@@ -101,18 +102,15 @@ public class StateCompiler extends DefaultComponent {
                         var targets = Link.collectTargets(links);
                         var newSource = make_node(sources);
                         var newTarget = make_node(targets);
-
-                        var transition = newSource.addTransition(symbol, newTarget);
+                        var before = new ActionStore();
+                        var after = new ActionStore();
 
                         for (var link : links) {
-                            for (var action : link.beforeActions) {
-                                transition.addBefore(action);
-                            }
-
-                            for (var action : link.afterActions) {
-                                transition.addAfter(action);
-                            }
+                            before.append(link.beforeActions);
+                            after.append(link.afterActions);
                         }
+
+                        newSource.createTransition(symbol, newTarget, before.toArray(), after.toArray());
 
                         queue.add(targets);
                     }
@@ -144,7 +142,7 @@ public class StateCompiler extends DefaultComponent {
             if (nodes.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
                 var symbol = gramat.symbols.makeWild();
 
-                state.addTransition(symbol, state);
+                state.createTransition(symbol, state, null, null);
             }
 
             idStates.put(id, state);

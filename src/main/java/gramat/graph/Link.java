@@ -10,8 +10,8 @@ public class Link extends Join {
     public final Node source;
     public final Node target;
 
-    public Link(Node source, Node target, Token token) {
-        super(token, new ActionStore(), new ActionStore());
+    public Link(Node source, Node target, Token token, ActionStore beforeActions, ActionStore afterActions) {
+        super(token, beforeActions, afterActions);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
     }

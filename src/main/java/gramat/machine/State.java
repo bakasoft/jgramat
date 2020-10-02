@@ -1,5 +1,6 @@
 package gramat.machine;
 
+import gramat.actions.Action;
 import gramat.eval.Context;
 import gramat.eval.RejectedException;
 import gramat.framework.Logger;
@@ -143,16 +144,14 @@ public class State implements Iterable<Transition> {
         return transitions.iterator();
     }
 
-    public Transition addTransition(Symbol symbol, State state) {
+    public void createTransition(Symbol symbol, State state, Action[] before, Action[] after) {
         if (transitions == null) {
             transitions = new ArrayList<>();
         }
 
-        var link = new Transition(symbol, state);
+        var transition = new Transition(symbol, state, before, after);
 
-        transitions.add(link);
-
-        return link;
+        transitions.add(transition);
     }
 
     public void markAccepted() {

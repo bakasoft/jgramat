@@ -135,11 +135,11 @@ public class ExpressionCompiler extends DefaultComponent {
             var isAfter = afterLinks.contains(link);
 
             if (isBegin) {
-                link.beforeActions.addTop(make);
+                link.beforeActions.prepend(make);
             }
 
             if (isAfter) {
-                link.afterActions.add(halt);
+                link.afterActions.append(halt);
             }
         }
 

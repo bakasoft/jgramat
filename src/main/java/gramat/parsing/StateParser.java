@@ -98,19 +98,22 @@ public class StateParser extends DefaultComponent {
         for (var transition : machine.findTransitionsFrom(state)) {
             var symbol = make_symbol(transition.symbol);
             var target = build_state(machine, transition.target);
-            var link = node.addTransition(symbol, target);
+            var before = new ActionStore();
+            var after = new ActionStore();
 
             if (transition.preActions != null) {
                 for (var action : transition.preActions) {
-                    link.addBefore(make_action(action));
+                    before.append(make_action(action));
                 }
             }
 
             if (transition.postActions != null) {
                 for (var action : transition.postActions) {
-                    link.addAfter(make_action(action));
+                    after.append(make_action(action));
                 }
             }
+
+            node.createTransition(symbol, target, before.toArray(), after.toArray());
         }
 
         return node;
