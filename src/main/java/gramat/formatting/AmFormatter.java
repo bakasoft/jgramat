@@ -1,4 +1,4 @@
-package gramat.am.formatting;
+package gramat.formatting;
 
 import java.io.IOException;
 import java.util.regex.Pattern;

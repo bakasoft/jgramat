@@ -1,6 +1,8 @@
-package gramat.proto;
+package gramat.formatting;
 
-import gramat.am.formatting.AmFormatter;
+import gramat.graph.Line;
+import gramat.graph.Link;
+import gramat.graph.Segment;
 import gramat.util.StringUtils;
 
 public class NodeFormatter extends AmFormatter {
@@ -92,4 +94,5 @@ public class NodeFormatter extends AmFormatter {
             ln();
         }
     }
+
 }

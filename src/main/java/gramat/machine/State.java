@@ -1,5 +1,7 @@
-package gramat.eval;
+package gramat.machine;
 
+import gramat.eval.Context;
+import gramat.eval.RejectedException;
 import gramat.framework.Logger;
 import gramat.input.Tape;
 import gramat.symbols.Symbol;
@@ -12,7 +14,7 @@ import java.util.*;
 
 public class State implements Iterable<Transition> {
 
-    protected final String id;
+    public final String id;
 
     private List<Transition> transitions;
     private boolean accepted;
@@ -64,7 +66,7 @@ public class State implements Iterable<Transition> {
         }
     }
 
-    public State eval(Context context) {
+    public State eval(Context context) {  // TODO move to eval package
         var state = this;
 
         while (true) {
@@ -155,18 +157,6 @@ public class State implements Iterable<Transition> {
 
     public void markAccepted() {
         accepted = true;
-    }
-
-    public Transition searchLink(State target) {
-        if (transitions != null) {
-            for (var link : transitions) {
-                if (link.target == target) {
-                    return link;
-                }
-            }
-        }
-
-        return null;
     }
 
     public boolean isAccepted() {

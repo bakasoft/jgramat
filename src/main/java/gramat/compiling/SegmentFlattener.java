@@ -1,16 +1,16 @@
 package gramat.compiling;
 
 import gramat.actions.ActionStore;
-import gramat.proto.*;
+import gramat.graph.*;
 import gramat.util.NameMap;
 
 import java.util.*;
 
 public class SegmentFlattener {
 
-    private final SegmentMap segments;
+    private final NameMap<Segment> segments;
 
-    public SegmentFlattener(SegmentMap segments) {
+    public SegmentFlattener(NameMap<Segment> segments) {
         this.segments = segments;
     }
 

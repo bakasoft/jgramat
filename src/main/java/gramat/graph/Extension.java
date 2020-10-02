@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 import java.util.List;
 
@@ -11,4 +11,5 @@ public class Extension {
     public Extension(List<Plug> plugs) {
         this.plugs = requireNotEmpty(plugs);
     }
+
 }

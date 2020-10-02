@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 public class Segment {
 
@@ -24,4 +24,5 @@ public class Segment {
         this.sources.add(other.sources);
         this.targets.add(other.targets);
     }
+
 }

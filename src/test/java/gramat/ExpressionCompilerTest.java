@@ -1,7 +1,7 @@
 package gramat;
 
 import gramat.compiling.ExpressionCompiler;
-import gramat.proto.NodeFormatter;
+import gramat.formatting.NodeFormatter;
 import gramat.expressions.ExpressionFactory;
 import gramat.expressions.ExpressionMap;
 import org.junit.Test;

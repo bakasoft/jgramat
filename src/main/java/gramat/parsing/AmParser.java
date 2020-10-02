@@ -1,7 +1,6 @@
-package gramat.am;
+package gramat.parsing;
 
-import gramat.am.parsing.AmBase;
-import gramat.am.parsing.AmValue;
+import gramat.am.*;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;

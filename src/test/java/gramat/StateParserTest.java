@@ -1,8 +1,10 @@
 package gramat;
 
-import gramat.eval.StateParser;
 import org.junit.Test;
+
 import util.Resources;
+
+import gramat.parsing.StateParser;
 
 public class StateParserTest {
 

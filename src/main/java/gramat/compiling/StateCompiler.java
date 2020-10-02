@@ -1,19 +1,21 @@
 package gramat.compiling;
 
-import gramat.eval.StateFormatter;
-import gramat.eval.State;
+import gramat.formatting.StateFormatter;
+import gramat.machine.State;
+import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
-import gramat.proto.*;
+import gramat.graph.*;
 import gramat.expressions.ExpressionMap;
 import gramat.util.Count;
+import gramat.util.NameMap;
 
 import java.util.*;
 
 public class StateCompiler extends DefaultComponent {
 
     public static State compileExpression(Component parent, String name, ExpressionMap expressions) {
-        var segments = new SegmentMap();
+        var segments = new NameMap<Segment>();
         var expressionCompiler = new ExpressionCompiler(parent);
 
         System.out.println("========== EXPRESSIONS");
@@ -24,7 +26,7 @@ public class StateCompiler extends DefaultComponent {
 
             new NodeFormatter(System.out).write(segment);
 
-            segments.register(reference, segment);
+            segments.set(reference, segment);
         }
 
         var flattener = new SegmentFlattener(segments);

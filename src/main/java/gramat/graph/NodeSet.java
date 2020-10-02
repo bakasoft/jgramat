@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 import java.util.*;
 
@@ -72,4 +72,5 @@ public class NodeSet implements Iterable<Node> {
 
         return uid.toString();
     }
+
 }

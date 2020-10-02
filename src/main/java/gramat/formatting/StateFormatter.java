@@ -1,6 +1,7 @@
-package gramat.eval;
+package gramat.formatting;
 
-import gramat.am.formatting.AmFormatter;
+import gramat.machine.State;
+import gramat.machine.Transition;
 import gramat.util.StringUtils;
 
 import java.util.*;

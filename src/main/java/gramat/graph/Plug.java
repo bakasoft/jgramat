@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 import java.util.Objects;
 

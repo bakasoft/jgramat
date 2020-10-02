@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 public class Line {
 
@@ -11,4 +11,5 @@ public class Line {
         this.source = source;
         this.target = target;
     }
+
 }

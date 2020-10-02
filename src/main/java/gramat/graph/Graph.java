@@ -1,13 +1,10 @@
-package gramat.proto;
+package gramat.graph;
 
 import gramat.symbols.Symbol;
 import gramat.util.Count;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import static gramat.util.Validations.isAny;
 
 public class Graph {
 
@@ -34,10 +31,6 @@ public class Graph {
     public Node createNodeFrom(Node original) {
         var id = ids.nextString();
         return createNode(original.id + "_" + id, false);
-    }
-
-    public Node createNode(String id) {
-        return createNode(id, false);
     }
 
     public Node createNode(String id, boolean wild) {
@@ -115,10 +108,6 @@ public class Graph {
         return walkLinksFrom(new NodeSet(source));
     }
 
-    public List<Link> walkLinksTo(Node target) {
-        return walkLinksTo(new NodeSet(target));
-    }
-
     public List<Link> walkLinksFrom(NodeSet sources) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
@@ -131,28 +120,6 @@ public class Graph {
 
             if (control.add(source)) {
                 for (var link : findOutgoingLinks(source)) {
-                    result.add(link);
-
-                    queue.add(link.target);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public List<Link> walkLinksTo(NodeSet targets) {
-        var result = new ArrayList<Link>();
-        var control = new HashSet<Node>();
-        var queue = new LinkedList<Node>();
-
-        queue.addAll(targets.toCollection());
-
-        while (queue.size() > 0) {
-            var target = queue.remove();
-
-            if (control.add(target)) {
-                for (var link : findIncomingLinks(target)) {
                     result.add(link);
 
                     queue.add(link.target);

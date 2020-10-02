@@ -1,4 +1,4 @@
-package gramat.am.parsing;
+package gramat.parsing;
 
 import gramat.data.ListData;
 import gramat.data.MapData;

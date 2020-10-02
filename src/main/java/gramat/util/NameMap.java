@@ -14,4 +14,11 @@ public class NameMap<T> extends LinkedHashMap<String, T> {
         return value;
     }
 
+    public void set(String name, T value) {
+        if (get(name) != null) {
+            throw new RuntimeException("Already exists: " + name);
+        }
+
+        put(name, value);
+    }
 }

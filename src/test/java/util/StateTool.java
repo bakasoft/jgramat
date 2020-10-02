@@ -1,9 +1,7 @@
 package util;
 
 import gramat.Gramat;
-import gramat.eval.Context;
-import gramat.eval.State;
-import gramat.input.Tape;
+import gramat.machine.State;
 
 public class StateTool {
 

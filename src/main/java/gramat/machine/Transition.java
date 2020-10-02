@@ -1,18 +1,16 @@
-package gramat.eval;
+package gramat.machine;
 
 import gramat.actions.Action;
 import gramat.actions.ActionStore;
 import gramat.symbols.Symbol;
 
-import java.io.PrintStream;
-
 public class Transition {
 
-    protected final State target;
-    protected final Symbol symbol;
+    public final State target;
+    public final Symbol symbol;
 
-    protected ActionStore before;
-    protected ActionStore after;
+    public ActionStore before;  // TODO make immutable
+    public ActionStore after;  // TODO make immutable
 
     public Transition(Symbol symbol, State target) {
         this.symbol = symbol;

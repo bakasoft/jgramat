@@ -1,7 +1,7 @@
 package gramat.compiling;
 
 import gramat.actions.ActionStore;
-import gramat.proto.*;
+import gramat.graph.*;
 import gramat.util.NameMap;
 
 import java.util.*;

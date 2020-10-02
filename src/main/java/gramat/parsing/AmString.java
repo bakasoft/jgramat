@@ -1,4 +1,4 @@
-package gramat.am.parsing;
+package gramat.parsing;
 
 import gramat.input.Tape;
 import gramat.input.errors.UnexpectedCharException;

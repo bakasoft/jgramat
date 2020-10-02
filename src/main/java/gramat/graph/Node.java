@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 public class Node {
 
@@ -10,4 +10,5 @@ public class Node {
         this.id = id;
         this.wild = wild;
     }
+
 }

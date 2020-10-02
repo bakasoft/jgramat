@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 import gramat.actions.ActionStore;
 

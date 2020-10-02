@@ -1,4 +1,4 @@
-package gramat.proto;
+package gramat.graph;
 
 import gramat.actions.ActionStore;
 
@@ -15,4 +15,5 @@ public class Join {
         this.beforeActions = beforeActions;
         this.afterActions = afterActions;
     }
+
 }

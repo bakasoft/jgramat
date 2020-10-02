@@ -1,4 +1,4 @@
-package gramat.eval;
+package gramat.parsing;
 
 import gramat.actions.*;
 import gramat.am.*;
@@ -6,6 +6,7 @@ import gramat.data.Comparer;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
+import gramat.machine.State;
 import gramat.parsers.StringParser;
 import gramat.symbols.Symbol;
 import gramat.util.PP;

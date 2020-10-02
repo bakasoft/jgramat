@@ -4,11 +4,11 @@ import gramat.actions.*;
 import gramat.expressions.Expression;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
-import gramat.proto.Graph;
-import gramat.proto.Segment;
-import gramat.proto.NodeSet;
+import gramat.graph.Graph;
+import gramat.graph.Segment;
+import gramat.graph.NodeSet;
 import gramat.expressions.impl.*;
-import gramat.proto.Token;
+import gramat.graph.Token;
 import gramat.util.Count;
 
 import java.util.Objects;
