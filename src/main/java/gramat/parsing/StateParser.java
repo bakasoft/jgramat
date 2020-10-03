@@ -2,12 +2,14 @@ package gramat.parsing;
 
 import gramat.actions.*;
 import gramat.am.*;
+import gramat.am.machine.*;
 import gramat.data.Comparer;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.parsers.StringParser;
+import gramat.parsing.AmParser;
 import gramat.symbols.Symbol;
 import gramat.util.PP;
 
@@ -31,47 +33,45 @@ public class StateParser extends DefaultComponent {
     public State parse(Tape tape, boolean runTests) {
         var parser = new AmParser(this);
 
-        parser.parse(tape);
-
-        var machine = parser.getMachine();
+        var machine = parser.parseMachine(tape);
 
         var node = build_machine(machine);
 
-        if (runTests) {
-            for (var test : machine.tests) {
-                boolean mustPass;
-
-                if (test.type == AmTestType.PASS) {
-                    mustPass = true;
-                }
-                else if (test.type == AmTestType.FAIL) {
-                    mustPass = false;
-                }
-                else {
-                    throw new RuntimeException("unknown test type");
-                }
-
-                logger.debug("testing input: %s", test.input);
-
-                if (test.hasValue) {
-                    var result = node.evalValue(test.input, logger);
-
-                    if (mustPass) {
-                        Comparer.assertEquals(result, test.value);
-                    }
-                    else {
-                        Comparer.assertNotEquals(result, test.value);
-                    }
-                }
-                else {
-                    var result = node.evalMatch(test.input, logger);
-
-                    if (result != mustPass) {
-                        throw new AssertionError("not match");
-                    }
-                }
-            }
-        }
+//        if (runTests) {
+//            for (var test : machine.tests) {
+//                boolean mustPass;
+//
+//                if (test.type == AmTestType.PASS) {
+//                    mustPass = true;
+//                }
+//                else if (test.type == AmTestType.FAIL) {
+//                    mustPass = false;
+//                }
+//                else {
+//                    throw new RuntimeException("unknown test type");
+//                }
+//
+//                logger.debug("testing input: %s", test.input);
+//
+//                if (test.hasValue) {
+//                    var result = node.evalValue(test.input, logger);
+//
+//                    if (mustPass) {
+//                        Comparer.assertEquals(result, test.value);
+//                    }
+//                    else {
+//                        Comparer.assertNotEquals(result, test.value);
+//                    }
+//                }
+//                else {
+//                    var result = node.evalMatch(test.input, logger);
+//
+//                    if (result != mustPass) {
+//                        throw new AssertionError("not match");
+//                    }
+//                }
+//            }
+//        }
 
         return node;
     }

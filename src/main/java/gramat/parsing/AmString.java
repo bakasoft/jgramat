@@ -9,25 +9,28 @@ public interface AmString extends AmBase {
         var value = tryString(tape);
 
         if (value == null) {
-            throw new RuntimeException("unexpected char at " + tape.getLocation());
+            throw new UnexpectedCharException(tape);
         }
 
         return value;
     }
 
-    default String tryString(Tape tape) {
-        if (tape.peek() == '\"') {
+    default String tryQuotedString(Tape tape, char delimiter) {
+        if (tape.peek() == delimiter) {
             var buffer = new StringBuilder();
 
             tape.move();
 
-            while (tape.peek() != '\"') {
+            while (tape.peek() != delimiter) {
                 var chr = tape.read();
 
                 if (chr == '\\') {
                     chr = tape.read();
 
-                    if (chr == 'u') {
+                    if (chr == delimiter) {
+                        buffer.append(delimiter);
+                    }
+                    else if (chr == 'u') {
                         var code = (char)Integer.parseInt(new String(new char[] {
                                 tape.read(), tape.read(), tape.read(), tape.read(),
                         }), 16);
@@ -43,7 +46,7 @@ public interface AmString extends AmBase {
                 }
             }
 
-            if (tape.peek() != '\"') {
+            if (tape.peek() != delimiter) {
                 throw new RuntimeException();
             }
 
@@ -53,7 +56,11 @@ public interface AmString extends AmBase {
 
             return buffer.toString();
         }
-        else if (Character.isLetterOrDigit(tape.peek())) {
+        return null;
+    }
+
+    default String tryKeyword(Tape tape) {
+        if (isKeywordChar(tape.peek())) {
             var buffer = new StringBuilder();
 
             do {
@@ -62,14 +69,29 @@ public interface AmString extends AmBase {
                 tape.move();
 
                 buffer.append(chr);
-            } while (Character.isLetterOrDigit(tape.peek()));
+            } while (isKeywordChar(tape.peek()));
 
             skipVoid(tape);
 
             return buffer.toString();
         }
-
         return null;
+    }
+
+    default String tryString(Tape tape) {
+        var str = tryQuotedString(tape, '\"');
+        if (str != null) {
+            return str;
+        }
+        str = tryQuotedString(tape, '\'');
+        if (str != null) {
+            return str;
+        }
+        return tryKeyword(tape);
+    }
+
+    default boolean isKeywordChar(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-' || c == '+' || c == '.';
     }
 
 }

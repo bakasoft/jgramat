@@ -5,6 +5,8 @@ import gramat.data.MapData;
 import gramat.input.Tape;
 import gramat.input.errors.UnexpectedCharException;
 
+import java.util.ArrayList;
+
 public interface AmValue extends AmString {
 
     default Object readValue(Tape tape) {
@@ -39,11 +41,10 @@ public interface AmValue extends AmString {
         // check for parsed text
         if (tryToken(tape, '(')) {
             var parser = getGramat().parsers.findParser(str);
-            var text = readString(tape);
+            var text = tryString(tape);
             var result = parser.parse(text);
 
             expectToken(tape, ')');
-            skipVoid(tape);
 
             return result;
         }
@@ -111,6 +112,32 @@ public interface AmValue extends AmString {
         }
 
         return list;
+    }
+
+    default Object readArguments(Tape tape) {
+        var values = new ArrayList<>();
+
+        while (true) {
+            var value = tryValue(tape);
+
+            if (value == null) {
+                break;
+            }
+
+            values.add(value);
+
+            if (!tryToken(tape, ',')) {
+                break;
+            }
+        }
+
+        if (values.isEmpty()) {
+            return null;
+        }
+        else if (values.size() == 1) {
+            return values.get(0);
+        }
+        return values;
     }
 
 }

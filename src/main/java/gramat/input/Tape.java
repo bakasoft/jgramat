@@ -2,6 +2,8 @@ package gramat.input;
 
 public class Tape {
 
+    // TODO Add support to load more tapes from a string path
+
     public static final char STX = '\u0002'; // Start of Text
     public static final char ETX = '\u0003'; // End of Text
 

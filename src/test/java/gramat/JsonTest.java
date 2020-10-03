@@ -1,17 +1,19 @@
 package gramat;
 
-import gramat.compiling.StateCompiler;
-import gramat.expressions.ExpressionFactory;
-import gramat.expressions.ExpressionMap;
+import gramat.am.expression.AmExpression;
+import gramat.pipeline.Pipeline;
+import gramat.pipeline.StateCompiler;
+import gramat.am.ExpressionFactory;
+import gramat.util.NameMap;
 import org.junit.Test;
 import util.StateTool;
 
 public class JsonTest {
 
-    public void init(ExpressionMap source) {
+    public void init(NameMap<AmExpression> source) {
         var factory = new ExpressionFactory();
 
-        source.addExpression(
+        source.set(
                 "value",
                 factory.sequence(
                         factory.reference("whitespace"),
@@ -22,7 +24,7 @@ public class JsonTest {
                         factory.reference("whitespace")
                 )
         );
-        source.addExpression(
+        source.set(
                 "whitespace",
                 factory.repetition(
                         factory.alternation(
@@ -33,7 +35,7 @@ public class JsonTest {
                         )
                 )
         );
-        source.addExpression(
+        source.set(
                 "object",
                 factory.object(
                         factory.sequence(
@@ -61,7 +63,7 @@ public class JsonTest {
                         )
                 )
         );
-        source.addExpression(
+        source.set(
                 "string",
                 factory.sequence(
                         factory.literal("\""),
@@ -94,11 +96,11 @@ public class JsonTest {
     @Test
     public void test() {
         var gramat = new Gramat();
-        var grammar = new ExpressionMap(gramat);
+        var grammar = new NameMap<AmExpression>();
 
         init(grammar);
 
-        var state = StateCompiler.compileExpression(gramat, "value", grammar);
+        var state = Pipeline.compile(gramat, "value", grammar);
 
         StateTool.test(state, "\"\"");
         StateTool.test(state, "\"a\"");

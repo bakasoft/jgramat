@@ -1,9 +1,10 @@
 package gramat;
 
-import gramat.compiling.ExpressionCompiler;
+import gramat.am.expression.AmExpression;
+import gramat.pipeline.ExpressionCompiler;
 import gramat.formatting.NodeFormatter;
-import gramat.expressions.ExpressionFactory;
-import gramat.expressions.ExpressionMap;
+import gramat.am.ExpressionFactory;
+import gramat.util.NameMap;
 import org.junit.Test;
 
 public class ExpressionCompilerTest {
@@ -23,9 +24,9 @@ public class ExpressionCompilerTest {
     public void test2() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionMap(gramat);
+        var grammar = new NameMap<AmExpression>();
 
-        grammar.addExpression(
+        grammar.set(
                 "value",
                 factory.alternation(
                         factory.reference("string"),
@@ -33,14 +34,14 @@ public class ExpressionCompilerTest {
                 )
         );
 
-        grammar.addExpression(
+        grammar.set(
                 "string",
                 factory.value(
                         factory.range('a', 'z')
                 )
         );
 
-        grammar.addExpression(
+        grammar.set(
                 "object-impl",
                 factory.object(
                         factory.sequence(
@@ -63,9 +64,9 @@ public class ExpressionCompilerTest {
         );
 
         // Test recursive reference of reference
-        grammar.addExpression("object", factory.reference("object-impl"));
+        grammar.set("object", factory.reference("object-impl"));
 
-        grammar.addExpression("root", factory.sequence(
+        grammar.set("root", factory.sequence(
                 factory.literal("\u0002"),
                 factory.reference("value"),
                 factory.literal("\u0003")
@@ -73,8 +74,8 @@ public class ExpressionCompilerTest {
 
         var compiler = new ExpressionCompiler(gramat);
 
-        for (var name : grammar.getExpressionNames()) {
-            var expr = grammar.findExpression(name);
+        for (var name : grammar.keySet()) {
+            var expr = grammar.find(name);
             var graph1 = compiler.compile(expr);
 
             new NodeFormatter(System.out).write(graph1);

@@ -1,8 +1,10 @@
 package gramat;
 
-import gramat.compiling.StateCompiler;
-import gramat.expressions.ExpressionMap;
-import gramat.expressions.ExpressionFactory;
+import gramat.am.expression.AmExpression;
+import gramat.pipeline.Pipeline;
+import gramat.pipeline.StateCompiler;
+import gramat.am.ExpressionFactory;
+import gramat.util.NameMap;
 import org.junit.Test;
 import util.StateTool;
 
@@ -12,9 +14,9 @@ public class ValueTest {
     public void simpleRecursive1() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionMap(gramat);
+        var grammar = new NameMap<AmExpression>();
 
-        grammar.addExpression(
+        grammar.set(
                 "value",
                 factory.alternation(
                         factory.reference("string"),
@@ -22,9 +24,9 @@ public class ValueTest {
                 )
         );
 
-        grammar.addExpression("string", factory.literal("x"));
+        grammar.set("string", factory.literal("x"));
 
-        grammar.addExpression(
+        grammar.set(
                 "object",
                 factory.sequence(
                         factory.literal("("),
@@ -33,13 +35,13 @@ public class ValueTest {
                 )
         );
 
-        grammar.addExpression("root", factory.sequence(
+        grammar.set("root", factory.sequence(
                 factory.literal("\u0002"),
                 factory.reference("value"),
                 factory.literal("\u0003")
         ));
 
-        var state = StateCompiler.compileExpression(gramat, "root", grammar);
+        var state = Pipeline.compile(gramat, "root", grammar);
 
         StateTool.test(
                 state,
@@ -55,9 +57,9 @@ public class ValueTest {
     public void simpleRecursive2() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionMap(gramat);
+        var grammar = new NameMap<AmExpression>();
 
-        grammar.addExpression(
+        grammar.set(
                 "value",
                 factory.alternation(
                         factory.reference("string"),
@@ -65,14 +67,14 @@ public class ValueTest {
                 )
         );
 
-        grammar.addExpression(
+        grammar.set(
                 "string",
                 factory.value(
                         factory.range('a', 'z')
                 )
         );
 
-        grammar.addExpression(
+        grammar.set(
                 "object-impl",
                 factory.object(
                         factory.sequence(
@@ -95,15 +97,15 @@ public class ValueTest {
         );
 
         // Test recursive reference of reference
-        grammar.addExpression("object", factory.reference("object-impl"));
+        grammar.set("object", factory.reference("object-impl"));
 
-        grammar.addExpression("root", factory.sequence(
+        grammar.set("root", factory.sequence(
                 factory.literal("\u0002"),
                 factory.reference("value"),
                 factory.literal("\u0003")
         ));
 
-        var state = StateCompiler.compileExpression(gramat, "root", grammar);
+        var state = Pipeline.compile(gramat, "root", grammar);
 
         StateTool.test(
                 state,
@@ -120,9 +122,9 @@ public class ValueTest {
     public void simpleRepetition() {
         var gramat = new Gramat();
         var factory = new ExpressionFactory();
-        var grammar = new ExpressionMap(gramat);
+        var grammar = new NameMap<AmExpression>();
 
-        grammar.addExpression(
+        grammar.set(
                 "a",
                 factory.value(
                         factory.repetition(
@@ -131,7 +133,7 @@ public class ValueTest {
                 )
         );
 
-        var state = StateCompiler.compileExpression(gramat, "a", grammar);
+        var state = Pipeline.compile(gramat, "a", grammar);
 
         StateTool.test(
                 state,

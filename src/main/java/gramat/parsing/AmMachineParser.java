@@ -1,0 +1,157 @@
+package gramat.parsing;
+
+import gramat.am.machine.*;
+import gramat.input.Tape;
+import gramat.input.errors.UnexpectedCharException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public interface AmMachineParser extends AmBase, AmValue {
+
+    default AmMachine parseMachine(Tape tape) {
+        var machine = new AmMachine();
+
+        skipVoid(tape);
+
+        while (tape.alive()) {
+            var transition = tryTransition(machine, tape);
+
+            if (transition != null) {
+                machine.transitions.add(transition);
+                continue;
+            }
+
+            if (tryToken(tape, 'I')) {
+                var stateId = readString(tape);
+                var state = machine.mergeState(stateId);
+
+                state.initial = true;
+
+                expectToken(tape, ';');
+
+                continue;
+            }
+
+            if (tryToken(tape, 'A')) {
+                var stateId = readString(tape);
+                var state = machine.mergeState(stateId);
+
+                state.accepted = true;
+
+                expectToken(tape, ';');
+                continue;
+            }
+
+            throw new UnexpectedCharException(tape);
+        }
+
+        return machine;
+    }
+
+    default AmTransition tryTransition(AmMachine machine, Tape tape) {
+        if (!tryToken(tape, 'T')) {
+            return null;
+        }
+
+        var sourceId = readString(tape);
+
+        expectToken(tape, ',');
+
+        var targetId = readString(tape);
+
+        var transition = new AmTransition();
+        transition.source = machine.mergeState(sourceId);
+        transition.target = machine.mergeState(targetId);
+
+        while (true) {
+            if (tryToken(tape, ';')) {
+                break;
+            }
+            else if (tryToken(tape, 'R')) {
+                var action = read_action(tape);
+
+                if (transition.symbol == null) {
+                    transition.preActions.add(action);
+                }
+                else {
+                    transition.postActions.add(action);
+                }
+            }
+            else if (tryToken(tape, 'S')) {
+                var symbol = read_symbol(tape);
+
+                if (transition.symbol != null) {
+                    throw new RuntimeException("symbol already defined");
+                }
+
+                transition.symbol = symbol;
+            }
+            else {
+                throw new UnexpectedCharException(tape);
+            }
+
+        }
+
+        return transition;
+    }
+
+    default AmAction read_action(Tape tape) {
+        var action = new AmAction();
+
+        action.name = readString(tape);
+
+        if (tryToken(tape, '(')) {
+            action.arguments = read_arguments(tape);
+
+            expectToken(tape, ')');
+        }
+
+        return action;
+    }
+
+    default AmSymbol read_symbol(Tape tape) {
+        var symbol = new AmSymbol();
+
+        if (tape.peek() == '*') {
+            tape.move();
+            symbol.type = AmSymbolType.WILD;
+        }
+        else {
+            symbol.arguments = read_arguments(tape);
+
+            if (symbol.arguments.size() == 1) {
+                symbol.type = AmSymbolType.CHAR;
+            }
+            else if (symbol.arguments.size() == 2) {
+                symbol.type = AmSymbolType.RANGE;
+            }
+            else {
+                throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());
+            }
+        }
+
+        return symbol;
+    }
+
+    default List<String> read_arguments(Tape tape) {
+        var arguments = new ArrayList<String>();
+
+        while (true) {
+            var argument = tryString(tape);
+
+            if (argument == null) {
+                break;
+            }
+
+            arguments.add(argument);
+
+            if (!tryToken(tape, ',')) {
+                break;
+            }
+        }
+
+        return arguments;
+    }
+
+}
