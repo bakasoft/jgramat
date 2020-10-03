@@ -204,18 +204,19 @@ public class ExpressionCompiler extends DefaultComponent {
             return segment;
         }
         else if (repetition.separator != null && repetition.minimum == 0) {
-            var segmentFW = compile_expression(graph, container, repetition.content);
+            var segmentFW = compile_expression(
+                    graph, container, repetition.content);
             var segmentSP = compile_expression(
                     graph, graph.segment(segmentFW.targets, graph.createNodeSet()), repetition.separator);
             var segmentBW = compile_expression(
-                    graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
-            var segment = container.shallowCopy();
+                    graph, graph.segment(segmentSP.targets, segmentSP.sources), repetition.content);
 
-            segment.add(segmentFW);
-            segment.targets.add(segmentFW.sources);
-            segment.targets.add(segmentBW.targets);
-
-            return segment;
+            var result = graph.segment();
+            result.sources.add(segmentFW.sources);
+            result.targets.add(segmentFW.targets);
+            result.targets.add(segmentSP.sources);
+            result.targets.add(segmentBW.targets);
+            return result;
         }
         else if (repetition.separator != null && repetition.minimum == 1) {
             var segmentFW = compile_expression(graph, container, repetition.content);
