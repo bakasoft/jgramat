@@ -1,15 +1,11 @@
 package gramat.pipeline;
 
 import gramat.actions.ActionStore;
-import gramat.am.expression.AmExpression;
-import gramat.formatting.StateFormatter;
 import gramat.machine.State;
-import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
 import gramat.util.Count;
-import gramat.util.NameMap;
 
 import java.util.*;
 
@@ -97,7 +93,7 @@ public class StateCompiler extends DefaultComponent {
             state = new State(String.valueOf(nextId.nextString()));
 
             if (nodes.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
-                var symbol = gramat.symbols.makeWild();
+                var symbol = gramat.symbols.wild();
 
                 state.createTransition(symbol, state, null, null);
             }

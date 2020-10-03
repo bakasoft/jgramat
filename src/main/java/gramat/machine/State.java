@@ -129,7 +129,7 @@ public class State implements Iterable<Transition> {
                 if (i > 0) {
                     printer.print(", ");
                 }
-                state.transitions.get(i).symbol.printAmCode(printer);
+                printer.println(state.transitions.get(i).symbol);
             }
         }
 

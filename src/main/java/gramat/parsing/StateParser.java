@@ -1,15 +1,12 @@
 package gramat.parsing;
 
 import gramat.actions.*;
-import gramat.am.*;
 import gramat.am.machine.*;
-import gramat.data.Comparer;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.parsers.StringParser;
-import gramat.parsing.AmParser;
 import gramat.symbols.Symbol;
 import gramat.util.PP;
 
@@ -181,7 +178,7 @@ public class StateParser extends DefaultComponent {
             if (symbol.arguments != null && symbol.arguments.size() > 0) {
                 throw new RuntimeException();
             }
-            return gramat.symbols.makeWild();
+            return gramat.symbols.wild();
         }
         else if (symbol.type == AmSymbolType.CHAR) {
             if (symbol.arguments == null || symbol.arguments.size() != 1) {
@@ -191,7 +188,7 @@ public class StateParser extends DefaultComponent {
             if (chr.length() != 1) {
                 throw new RuntimeException("invalid symbol: " + PP.str(chr));
             }
-            return gramat.symbols.makeChar(chr.charAt(0));
+            return gramat.symbols.character(chr.charAt(0));
         }
         else if (symbol.type == AmSymbolType.RANGE) {
             if (symbol.arguments == null || symbol.arguments.size() != 2) {
@@ -205,7 +202,7 @@ public class StateParser extends DefaultComponent {
             else if (end.length() != 1) {
                 throw new RuntimeException();
             }
-            return gramat.symbols.makeRange(begin.charAt(0), end.charAt(0));
+            return gramat.symbols.range(begin.charAt(0), end.charAt(0));
         }
         else {
             throw new RuntimeException();

@@ -1,33 +1,20 @@
 package gramat.pipeline;
 
 import gramat.actions.ActionStore;
+import gramat.framework.Component;
+import gramat.framework.DefaultComponent;
 import gramat.graph.*;
 import gramat.util.NameMap;
 
 import java.util.*;
 
-public class SegmentFlattener {
+public class SegmentFlattener extends DefaultComponent {
 
     private final NameMap<Segment> segments;
 
-    public SegmentFlattener(NameMap<Segment> segments) {
+    public SegmentFlattener(Component parent, NameMap<Segment> segments) {
+        super(parent);
         this.segments = segments;
-    }
-
-    public LineGraph flatten(String name) {
-        var segment = segments.find(name);
-        var recursive = new LinkedHashSet<String>();
-
-        compute_recursive_dependencies(segment, new Stack<>(), recursive);
-
-        var main = make_line(segment, recursive);
-        var dependencies = new NameMap<Line>();
-
-        dependencies.put(name, main);
-
-        flatten_segment(dependencies, recursive);
-
-        return new LineGraph(main, dependencies);
     }
 
     public LineGraph flatten(Segment segment) {
@@ -40,7 +27,7 @@ public class SegmentFlattener {
 
         flatten_segment(dependencies, recursive);
 
-        return new LineGraph(main, dependencies);
+        return new LineGraph(gramat, main, dependencies);
     }
 
     public void flatten_segment(NameMap<Line> result, Set<String> recursive) {

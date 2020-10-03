@@ -1,9 +1,7 @@
 package gramat.symbols;
 
-import java.io.PrintStream;
+abstract public class Symbol {
 
-public interface Symbol {
-    void printAmCode(PrintStream out);
+    abstract public boolean test(char c);
 
-    boolean test(char c);
 }

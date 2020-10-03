@@ -152,7 +152,7 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment compile_range(Graph graph, Segment container, RangeExpression range) {
-        var symbol = gramat.symbols.makeRange(range.begin, range.end);
+        var symbol = gramat.symbols.range(range.begin, range.end);
 
         graph.createLinks(container.sources, container.targets, Token.of(symbol));
 
@@ -164,7 +164,7 @@ public class ExpressionCompiler extends DefaultComponent {
         var last = container.sources;
 
         for (var i = 0; i < chars.length; i++) {
-            var token = Token.of(gramat.symbols.makeChar(chars[i]));
+            var token = Token.of(gramat.symbols.character(chars[i]));
 
             if (i == chars.length - 1) {
                 graph.createLinks(last, container.targets, token);

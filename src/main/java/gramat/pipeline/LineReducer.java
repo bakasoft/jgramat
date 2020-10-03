@@ -1,17 +1,20 @@
 package gramat.pipeline;
 
 import gramat.actions.ActionStore;
+import gramat.framework.Component;
+import gramat.framework.DefaultComponent;
 import gramat.graph.*;
 import gramat.util.NameMap;
 
 import java.util.*;
 
-public class LineReducer {
+public class LineReducer extends DefaultComponent {
 
     private final Graph graph;
     private final NameMap<Line> lines;
 
-    public LineReducer(NameMap<Line> lines) {
+    public LineReducer(Component parent, NameMap<Line> lines) {
+        super(parent);
         this.lines = lines;
         this.graph = new Graph();
     }
@@ -21,7 +24,7 @@ public class LineReducer {
         var extensions = make_extensions_from(graph, lines);
         var root = graph.createLine();
 
-        connect_extension_to(extension, root.source, root.target, null, null);
+        connect_extension_to(null, extension, root.source, root.target, null, null);
 
         var loop = true;
         while (loop) {
@@ -31,7 +34,7 @@ public class LineReducer {
                     var refName = link.token.getReference();
                     var refExt = extensions.find(refName);
 
-                    connect_extension_to(refExt, link.source, link.target, link.beforeActions, link.afterActions);
+                    connect_extension_to(refName, refExt, link.source, link.target, link.beforeActions, link.afterActions);
 
                     graph.removeLink(link);
                     loop = true;
@@ -102,7 +105,7 @@ public class LineReducer {
         return new Extension(plugs);
     }
 
-    public void connect_extension_to(Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
+    public void connect_extension_to(String path, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
         for (var plug : extension.plugs) {
             Link link;
 

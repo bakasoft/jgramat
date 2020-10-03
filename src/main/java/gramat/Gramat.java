@@ -5,14 +5,14 @@ import gramat.framework.Configuration;
 import gramat.framework.Logger;
 import gramat.framework.SystemLogger;
 import gramat.parsers.ParserSource;
-import gramat.symbols.SymbolStore;
+import gramat.symbols.Alphabet;
 
 public class Gramat implements Component {
 
     public final Configuration config;
 
     public final ParserSource parsers;
-    public final SymbolStore symbols;
+    public final Alphabet symbols;
 
     private final Logger logger;
 
@@ -24,17 +24,17 @@ public class Gramat implements Component {
         this(parsers, null, null);
     }
 
-    public Gramat(ParserSource parsers, SymbolStore symbols) {
+    public Gramat(ParserSource parsers, Alphabet symbols) {
         this(parsers, symbols, null);
     }
 
-    public Gramat(ParserSource parsers, SymbolStore symbols, Logger logger) {
+    public Gramat(ParserSource parsers, Alphabet symbols, Logger logger) {
         this.config = new Configuration();
 
         config.registerAll(GramatConfig.values());
 
         this.parsers = parsers != null ? parsers : new ParserSource();
-        this.symbols = symbols != null ? symbols : new SymbolStore();
+        this.symbols = symbols != null ? symbols : new Alphabet();
         this.logger = logger != null ? logger : new SystemLogger(this);
     }
 

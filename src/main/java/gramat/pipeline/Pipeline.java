@@ -46,11 +46,11 @@ public class Pipeline {
             dependencies.set(name, segment);
         }
 
-        return new SegmentGraph(main, dependencies);
+        return new SegmentGraph(rule.parent, main, dependencies);
     }
 
     public static LineGraph compileStep2(SegmentGraph graph) {
-        var flattener = new SegmentFlattener(graph.dependencies);
+        var flattener = new SegmentFlattener(graph.parent, graph.dependencies);
         var lines = flattener.flatten(graph.main);
 
         for (var entry : lines.dependencies.entrySet()) {
@@ -63,7 +63,7 @@ public class Pipeline {
     }
 
     public static Line compileStep3(LineGraph graph) {
-        var resolver = new LineReducer(graph.dependencies);
+        var resolver = new LineReducer(graph.parent, graph.dependencies);
         var line = resolver.resolve(graph.main);
 
         System.out.println("========== RESOLVED");

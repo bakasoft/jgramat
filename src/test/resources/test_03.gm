@@ -4,9 +4,7 @@ string = @value('a-z');
 
 entry = @set(@name(string) ":" value);
 
-object-impl = @object("{" { entry / "," } "}");
-
-object = object-impl;
+object = @object("{" { entry / "," } "}");
 
 @pass<"a">(value);
 @pass<"{a:b}">(value);

@@ -2,9 +2,7 @@ package gramat.symbols;
 
 import gramat.util.PP;
 
-import java.io.PrintStream;
-
-public class SymbolRange implements Symbol {
+public class SymbolRange extends Symbol {
 
     public final char begin;
     public final char end;
@@ -12,14 +10,6 @@ public class SymbolRange implements Symbol {
     public SymbolRange(char begin, char end) {
         this.begin = begin;
         this.end = end;
-    }
-
-    @Override
-    public void printAmCode(PrintStream out) {
-        // TODO escape chars
-        out.print(begin);
-        out.print('-');
-        out.print(end);
     }
 
     @Override
