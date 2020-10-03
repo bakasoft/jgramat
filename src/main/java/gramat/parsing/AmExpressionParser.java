@@ -1,17 +1,17 @@
 package gramat.parsing;
 
-import gramat.am.ExpressionFactory;
-import gramat.am.expression.AmExpression;
-import gramat.am.source.AmCall;
+import gramat.models.ModelFactory;
+import gramat.models.expressions.ModelExpression;
+import gramat.models.source.ModelCall;
 import gramat.input.Tape;
 
 import java.util.ArrayList;
 
 public interface AmExpressionParser extends AmBase, AmValue {
 
-    default AmExpression readExpression(Tape tape) {
-        var alternation = new ArrayList<AmExpression>();
-        var sequence = new ArrayList<AmExpression>();
+    default ModelExpression readExpression(Tape tape) {
+        var alternation = new ArrayList<ModelExpression>();
+        var sequence = new ArrayList<ModelExpression>();
 
         while (true) {
             var item = tryExpressionItem(tape);
@@ -26,14 +26,14 @@ public interface AmExpressionParser extends AmBase, AmValue {
                 if (sequence.isEmpty()) {
                     throw new RuntimeException();
                 }
-                alternation.add(ExpressionFactory.sequence(sequence));
+                alternation.add(ModelFactory.sequence(sequence));
                 sequence.clear();
             }
         }
 
         // Flush left items
         if (sequence.size() > 0) {
-            alternation.add(ExpressionFactory.sequence(sequence));
+            alternation.add(ModelFactory.sequence(sequence));
         }
 
         if (alternation.isEmpty()) {
@@ -43,11 +43,11 @@ public interface AmExpressionParser extends AmBase, AmValue {
             return alternation.get(0);
         }
         else {
-            return ExpressionFactory.alternation(alternation);
+            return ModelFactory.alternation(alternation);
         }
     }
 
-    default AmExpression tryExpressionItem(Tape tape) {
+    default ModelExpression tryExpressionItem(Tape tape) {
         var optional = tryOptional(tape);
         if (optional != null) {
             return optional;
@@ -65,42 +65,42 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
         var literal = tryQuotedString(tape, '\"');
         if (literal != null) {
-            return ExpressionFactory.literal(literal);
+            return ModelFactory.literal(literal);
         }
 
         var charClass = tryQuotedString(tape, '\'');
         if (charClass != null) {
-            return ExpressionFactory.characterClass(charClass);
+            return ModelFactory.characterClass(charClass);
         }
 
         var reference = tryKeyword(tape);
         if (reference != null) {
-            return ExpressionFactory.reference(reference);
+            return ModelFactory.reference(reference);
         }
 
         var call = tryCall(tape);
         if (call != null) {
-            return ExpressionFactory.call(call);
+            return ModelFactory.call(call);
         }
 
         return null;
     }
 
-    default AmExpression tryOptional(Tape tape) {
+    default ModelExpression tryOptional(Tape tape) {
         if (tryToken(tape, '[')) {
             var expr = readExpression(tape);
 
             expectToken(tape, ']');
 
-            return ExpressionFactory.optional(expr);
+            return ModelFactory.optional(expr);
         }
         return null;
     }
 
-    default AmExpression tryRepetition(Tape tape) {
+    default ModelExpression tryRepetition(Tape tape) {
         if (tryToken(tape, '{')) {
             var content = readExpression(tape);
-            var separator = (AmExpression)null;
+            var separator = (ModelExpression)null;
 
             if (tryToken(tape, '/')) {
                 separator = readExpression(tape);
@@ -108,21 +108,21 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             expectToken(tape, '}');
 
-            return ExpressionFactory.repetition(content, separator);
+            return ModelFactory.repetition(content, separator);
         }
         return null;
     }
 
-    default AmExpression tryWild(Tape tape) {
+    default ModelExpression tryWild(Tape tape) {
         if (tryToken(tape, '*')) {
-            return ExpressionFactory.wild();
+            return ModelFactory.wild();
         }
         return null;
     }
 
-    default AmCall tryCall(Tape tape) {
+    default ModelCall tryCall(Tape tape) {
         if (tryToken(tape, '@')) {
-            var call = new AmCall();
+            var call = new ModelCall();
 
             call.keyword = readString(tape);
 

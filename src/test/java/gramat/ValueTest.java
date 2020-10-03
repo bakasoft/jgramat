@@ -1,8 +1,8 @@
 package gramat;
 
-import gramat.am.expression.AmExpression;
-import gramat.pipeline.Pipeline;
-import gramat.am.ExpressionFactory;
+import gramat.models.expressions.ModelExpression;
+import gramat.compilers.Pipeline;
+import gramat.models.ModelFactory;
 import gramat.util.NameMap;
 import org.junit.Test;
 import util.StateTool;
@@ -12,8 +12,8 @@ public class ValueTest {
     @Test
     public void simpleRecursive1() {
         var gramat = new Gramat();
-        var factory = new ExpressionFactory();
-        var grammar = new NameMap<AmExpression>();
+        var factory = new ModelFactory();
+        var grammar = new NameMap<ModelExpression>();
 
         grammar.set(
                 "value",
@@ -55,8 +55,8 @@ public class ValueTest {
     @Test
     public void simpleRecursive2() {
         var gramat = new Gramat();
-        var factory = new ExpressionFactory();
-        var grammar = new NameMap<AmExpression>();
+        var factory = new ModelFactory();
+        var grammar = new NameMap<ModelExpression>();
 
         grammar.set(
                 "value",
@@ -120,8 +120,8 @@ public class ValueTest {
     @Test
     public void simpleRepetition() {
         var gramat = new Gramat();
-        var factory = new ExpressionFactory();
-        var grammar = new NameMap<AmExpression>();
+        var factory = new ModelFactory();
+        var grammar = new NameMap<ModelExpression>();
 
         grammar.set(
                 "a",

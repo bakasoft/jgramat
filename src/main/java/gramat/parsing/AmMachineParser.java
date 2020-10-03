@@ -1,6 +1,6 @@
 package gramat.parsing;
 
-import gramat.am.machine.*;
+import gramat.models.automata.*;
 import gramat.input.Tape;
 import gramat.input.errors.UnexpectedCharException;
 
@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface AmMachineParser extends AmBase, AmValue {
 
-    default AmMachine parseMachine(Tape tape) {
-        var machine = new AmMachine();
+    default ModelMachine parseMachine(Tape tape) {
+        var machine = new ModelMachine();
 
         skipVoid(tape);
 
@@ -49,7 +49,7 @@ public interface AmMachineParser extends AmBase, AmValue {
         return machine;
     }
 
-    default AmTransition tryTransition(AmMachine machine, Tape tape) {
+    default ModelTransition tryTransition(ModelMachine machine, Tape tape) {
         if (!tryToken(tape, 'T')) {
             return null;
         }
@@ -60,7 +60,7 @@ public interface AmMachineParser extends AmBase, AmValue {
 
         var targetId = readString(tape);
 
-        var transition = new AmTransition();
+        var transition = new ModelTransition();
         transition.source = machine.mergeState(sourceId);
         transition.target = machine.mergeState(targetId);
 
@@ -96,8 +96,8 @@ public interface AmMachineParser extends AmBase, AmValue {
         return transition;
     }
 
-    default AmAction read_action(Tape tape) {
-        var action = new AmAction();
+    default ModelAction read_action(Tape tape) {
+        var action = new ModelAction();
 
         action.name = readString(tape);
 
@@ -110,21 +110,21 @@ public interface AmMachineParser extends AmBase, AmValue {
         return action;
     }
 
-    default AmSymbol read_symbol(Tape tape) {
-        var symbol = new AmSymbol();
+    default ModelSymbol read_symbol(Tape tape) {
+        var symbol = new ModelSymbol();
 
         if (tape.peek() == '*') {
             tape.move();
-            symbol.type = AmSymbolType.WILD;
+            symbol.type = ModelSymbolType.WILD;
         }
         else {
             symbol.arguments = read_arguments(tape);
 
             if (symbol.arguments.size() == 1) {
-                symbol.type = AmSymbolType.CHAR;
+                symbol.type = ModelSymbolType.CHAR;
             }
             else if (symbol.arguments.size() == 2) {
-                symbol.type = AmSymbolType.RANGE;
+                symbol.type = ModelSymbolType.RANGE;
             }
             else {
                 throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());

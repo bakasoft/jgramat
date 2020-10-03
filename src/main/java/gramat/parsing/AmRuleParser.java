@@ -1,14 +1,14 @@
 package gramat.parsing;
 
-import gramat.am.source.AmRule;
+import gramat.models.source.ModelRule;
 import gramat.input.Tape;
 
 public interface AmRuleParser extends AmBase, AmValue, AmExpressionParser {
-    default AmRule tryRule(Tape tape) {
+    default ModelRule tryRule(Tape tape) {
         var keyword = tryString(tape);
 
         if (keyword != null) {
-            var rule = new AmRule();
+            var rule = new ModelRule();
 
             rule.keyword = keyword;
 

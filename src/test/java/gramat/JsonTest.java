@@ -1,16 +1,16 @@
 package gramat;
 
-import gramat.am.expression.AmExpression;
-import gramat.pipeline.Pipeline;
-import gramat.am.ExpressionFactory;
+import gramat.models.expressions.ModelExpression;
+import gramat.compilers.Pipeline;
+import gramat.models.ModelFactory;
 import gramat.util.NameMap;
 import org.junit.Test;
 import util.StateTool;
 
 public class JsonTest {
 
-    public void init(NameMap<AmExpression> source) {
-        var factory = new ExpressionFactory();
+    public void init(NameMap<ModelExpression> source) {
+        var factory = new ModelFactory();
 
         source.set(
                 "value",
@@ -95,7 +95,7 @@ public class JsonTest {
     @Test
     public void test() {
         var gramat = new Gramat();
-        var grammar = new NameMap<AmExpression>();
+        var grammar = new NameMap<ModelExpression>();
 
         init(grammar);
 

@@ -1,7 +1,7 @@
 package gramat.parsing;
 
 import gramat.actions.*;
-import gramat.am.machine.*;
+import gramat.models.automata.*;
 import gramat.badges.Badge;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
@@ -74,13 +74,13 @@ public class StateParser extends DefaultComponent {
         return node;
     }
 
-    private State build_machine(AmMachine machine) {
+    private State build_machine(ModelMachine machine) {
         var initial = machine.findInitialState();
 
         return build_state(machine, initial);
     }
 
-    private State build_state(AmMachine machine, AmState state) {
+    private State build_state(ModelMachine machine, ModelState state) {
         if (idNodes.containsKey(state.id)) {
             return idNodes.get(state.id);
         }
@@ -118,7 +118,7 @@ public class StateParser extends DefaultComponent {
         return node;
     }
 
-    private Action make_action(AmAction data) {
+    private Action make_action(ModelAction data) {
         if (Objects.equals(data.name, "enter")) {
             var token = data.arguments.get(0);
             var badge = gramat.badges.badge(token);
@@ -175,14 +175,14 @@ public class StateParser extends DefaultComponent {
         }
     }
 
-    private Symbol make_symbol(AmSymbol symbol) {
-        if (symbol.type == AmSymbolType.WILD) {
+    private Symbol make_symbol(ModelSymbol symbol) {
+        if (symbol.type == ModelSymbolType.WILD) {
             if (symbol.arguments != null && symbol.arguments.size() > 0) {
                 throw new RuntimeException();
             }
             return gramat.symbols.wild();
         }
-        else if (symbol.type == AmSymbolType.CHAR) {
+        else if (symbol.type == ModelSymbolType.CHAR) {
             if (symbol.arguments == null || symbol.arguments.size() != 1) {
                 throw new RuntimeException();
             }
@@ -192,7 +192,7 @@ public class StateParser extends DefaultComponent {
             }
             return gramat.symbols.character(chr.charAt(0));
         }
-        else if (symbol.type == AmSymbolType.RANGE) {
+        else if (symbol.type == ModelSymbolType.RANGE) {
             if (symbol.arguments == null || symbol.arguments.size() != 2) {
                 throw new RuntimeException();
             }
@@ -211,7 +211,7 @@ public class StateParser extends DefaultComponent {
         }
     }
 
-    private Badge make_badge(AmBadge badge) {
+    private Badge make_badge(ModelBadge badge) {
         if (badge == null) {
             return gramat.badges.empty();
         }

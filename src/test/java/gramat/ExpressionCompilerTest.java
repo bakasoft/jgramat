@@ -1,9 +1,9 @@
 package gramat;
 
-import gramat.am.expression.AmExpression;
-import gramat.pipeline.Step1Compiler;
+import gramat.models.expressions.ModelExpression;
+import gramat.compilers.GeneralGraphCompiler;
 import gramat.formatting.NodeFormatter;
-import gramat.am.ExpressionFactory;
+import gramat.models.ModelFactory;
 import gramat.util.NameMap;
 import org.junit.Test;
 
@@ -12,8 +12,8 @@ public class ExpressionCompilerTest {
     @Test
     public void test1() {
         var gramat = new Gramat();
-        var exf = new ExpressionFactory();
-        var compiler = new Step1Compiler(gramat);
+        var exf = new ModelFactory();
+        var compiler = new GeneralGraphCompiler(gramat);
 
         var graph1 = compiler.compile(exf.value(exf.literal("a")));
 
@@ -23,8 +23,8 @@ public class ExpressionCompilerTest {
     @Test
     public void test2() {
         var gramat = new Gramat();
-        var factory = new ExpressionFactory();
-        var grammar = new NameMap<AmExpression>();
+        var factory = new ModelFactory();
+        var grammar = new NameMap<ModelExpression>();
 
         grammar.set(
                 "value",
@@ -72,7 +72,7 @@ public class ExpressionCompilerTest {
                 factory.literal("\u0003")
         ));
 
-        var compiler = new Step1Compiler(gramat);
+        var compiler = new GeneralGraphCompiler(gramat);
 
         for (var name : grammar.keySet()) {
             var expr = grammar.find(name);

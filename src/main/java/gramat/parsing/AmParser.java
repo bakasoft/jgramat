@@ -1,8 +1,6 @@
 package gramat.parsing;
 
-import gramat.am.source.AmCall;
-import gramat.am.source.AmFile;
-import gramat.am.source.AmRule;
+import gramat.models.source.ModelFile;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
@@ -15,8 +13,8 @@ public class AmParser extends DefaultComponent implements AmMachineParser, AmExp
         super(parent);
     }
 
-    public AmFile parseFile(Tape tape) {
-        var file = new AmFile();
+    public ModelFile parseFile(Tape tape) {
+        var file = new ModelFile();
         file.rules = new ArrayList<>();
         file.calls = new ArrayList<>();
 
