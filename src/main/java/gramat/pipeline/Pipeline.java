@@ -6,52 +6,39 @@ import gramat.formatting.NodeFormatter;
 import gramat.formatting.StateFormatter;
 import gramat.framework.Component;
 import gramat.graph.Line;
-import gramat.graph.Segment;
 import gramat.machine.State;
 import gramat.util.NameMap;
 
 public class Pipeline {
 
     public static State compile(Component component, String name, NameMap<AmExpression> grammar) {
-        var rule = new RuleExpression(component, ExpressionFactory.reference(name), grammar);
+        var rule = new Step1Input(component, ExpressionFactory.reference(name), grammar);
 
         return compile(rule);
     }
 
     public static State compile(Component component, AmExpression expression, NameMap<AmExpression> grammar) {
-        var rule = new RuleExpression(component, expression, grammar);
+        var rule = new Step1Input(component, expression, grammar);
 
         return compile(rule);
     }
 
-    public static State compile(RuleExpression rule) {
+    public static State compile(Step1Input rule) {
         var step1 = compileStep1(rule);
         var step2 = compileStep2(step1);
         var step3 = compileStep3(step2);
         return compileStep4(rule.parent, step3);
     }
 
-    public static SegmentGraph compileStep1(RuleExpression rule) {
-        var dependencies = new NameMap<Segment>();
-        var compiler = new ExpressionCompiler(rule.parent);
-        var main = compiler.compile(rule.main);
+    public static Step2Input compileStep1(Step1Input input) {
+        var compiler = new Step1Compiler(input.parent);
 
-        for (var name : rule.dependencies.keySet()) {
-            var expr = rule.dependencies.find(name);
-            var segment = compiler.compile(expr);
-
-            System.out.println("========== SEGMENT " + name);
-            new NodeFormatter(System.out).write(segment);
-
-            dependencies.set(name, segment);
-        }
-
-        return new SegmentGraph(rule.parent, main, dependencies);
+        return compiler.compile(input);
     }
 
-    public static LineGraph compileStep2(SegmentGraph graph) {
-        var flattener = new SegmentFlattener(graph.parent, graph.dependencies);
-        var lines = flattener.flatten(graph.main);
+    public static Step3Input compileStep2(Step2Input input) {
+        var compiler = new Step2Compiler(input.parent, input.dependencies);
+        var lines = compiler.compile(input.main);
 
         for (var entry : lines.dependencies.entrySet()) {
             System.out.println("========== LINE " + entry.getKey());
@@ -62,8 +49,8 @@ public class Pipeline {
         return lines;
     }
 
-    public static Line compileStep3(LineGraph graph) {
-        var resolver = new LineReducer(graph.parent, graph.dependencies);
+    public static Line compileStep3(Step3Input graph) {
+        var resolver = new Step3Compiler(graph.parent, graph.dependencies);
         var line = resolver.resolve(graph.main);
 
         System.out.println("========== RESOLVED");
@@ -73,7 +60,7 @@ public class Pipeline {
     }
 
     public static State compileStep4(Component parent, Line line) {
-        var stateCompiler = new StateCompiler(parent, line.graph);
+        var stateCompiler = new Step4Compiler(parent, line.graph);
         var state = stateCompiler.compile(line.graph.segment(line.source, line.target));
 
         System.out.println("========== STATE");

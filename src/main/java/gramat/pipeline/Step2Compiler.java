@@ -6,18 +6,19 @@ import gramat.framework.DefaultComponent;
 import gramat.graph.*;
 import gramat.util.NameMap;
 
+import javax.naming.LinkRef;
 import java.util.*;
 
-public class SegmentFlattener extends DefaultComponent {
+public class Step2Compiler extends DefaultComponent {
 
     private final NameMap<Segment> segments;
 
-    public SegmentFlattener(Component parent, NameMap<Segment> segments) {
+    public Step2Compiler(Component parent, NameMap<Segment> segments) {
         super(parent);
         this.segments = segments;
     }
 
-    public LineGraph flatten(Segment segment) {
+    public Step3Input compile(Segment segment) {
         var recursive = new LinkedHashSet<String>();
 
         compute_recursive_dependencies(segment, new Stack<>(), recursive);
@@ -27,7 +28,7 @@ public class SegmentFlattener extends DefaultComponent {
 
         flatten_segment(dependencies, recursive);
 
-        return new LineGraph(gramat, main, dependencies);
+        return new Step3Input(gramat, main, dependencies);
     }
 
     public void flatten_segment(NameMap<Line> result, Set<String> recursive) {
@@ -64,20 +65,33 @@ public class SegmentFlattener extends DefaultComponent {
             var sourceCopy = copies.computeIfAbsent(link.source, graph::createNodeFrom);
             var targetCopy = copies.computeIfAbsent(link.target, graph::createNodeFrom);
 
-            if (link.token.isSymbol() || recursive.contains(link.token.getReference())) {
-                var linkCopy = graph.createLink(sourceCopy, targetCopy, link.token);
+            if (link instanceof LinkSymbol) {
+                var linkSymbol = (LinkSymbol)link;
 
-                linkCopy.afterActions.append(link.afterActions);
-                linkCopy.beforeActions.append(link.beforeActions);
+                graph.createLink(
+                        sourceCopy, targetCopy,
+                        link.beforeActions, link.afterActions,
+                        linkSymbol.symbol, linkSymbol.badge);
+            }
+            else if (link instanceof LinkReference) {
+                var linkRef = (LinkReference)link;
+                if (recursive.contains(linkRef.reference)) {
+                    graph.createLink(
+                            sourceCopy, targetCopy,
+                            link.beforeActions, link.afterActions,
+                            linkRef.reference);
+                } else {
+                    var refSegment = segments.find(linkRef.reference);
+
+                    copy_segment(
+                            graph,
+                            refSegment,
+                            sourceCopy, targetCopy,
+                            link.beforeActions, link.afterActions, recursive);
+                }
             }
             else {
-                var refSegment = segments.find(link.token.getReference());
-
-                copy_segment(
-                        graph,
-                        refSegment,
-                        sourceCopy, targetCopy,
-                        link.beforeActions, link.afterActions, recursive);
+                throw new RuntimeException();
             }
         }
 
@@ -117,16 +131,17 @@ public class SegmentFlattener extends DefaultComponent {
 
     private void compute_recursive_dependencies(Segment segment, Stack<String> stack, Set<String> result) {
         for (var link : segment.graph.walkLinksFrom(segment.sources)) {
-            if (link.token.isReference()) {
-                var refName = link.token.getReference();
+            if (link instanceof LinkReference) {
+                var linkRef = (LinkReference)link;
+                var nameRef = linkRef.reference;
 
-                if (stack.contains(refName)) {
-                    result.add(refName);
+                if (stack.contains(nameRef)) {
+                    result.add(nameRef);
                 }
                 else {
-                    var refSegment = segments.find(refName);
+                    var refSegment = segments.find(nameRef);
 
-                    compute_recursive_dependencies(refName, refSegment, stack, result);
+                    compute_recursive_dependencies(nameRef, refSegment, stack, result);
                 }
             }
         }

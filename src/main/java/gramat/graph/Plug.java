@@ -1,8 +1,6 @@
 package gramat.graph;
 
-import java.util.Objects;
-
-public class Plug extends Join {
+public class Plug {
 
     public static final int FROM_SOURCE_TO_TARGET = 1;
     public static final int FROM_SOURCE_TO_NODE = 2;
@@ -36,16 +34,13 @@ public class Plug extends Join {
     }
 
     public final int type;
-    private final Node node;
+    public final Node node;
+    public final Link link;
 
     private Plug(int type, Link link, Node node) {
-        super(link.token, link.beforeActions, link.afterActions);
         this.type = type;
+        this.link = link;
         this.node = node;
-    }
-
-    public Node getNode() {
-        return Objects.requireNonNull(node);
     }
 
 }

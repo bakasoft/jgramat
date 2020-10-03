@@ -1,7 +1,7 @@
 package gramat;
 
 import gramat.am.expression.AmExpression;
-import gramat.pipeline.ExpressionCompiler;
+import gramat.pipeline.Step1Compiler;
 import gramat.formatting.NodeFormatter;
 import gramat.am.ExpressionFactory;
 import gramat.util.NameMap;
@@ -13,7 +13,7 @@ public class ExpressionCompilerTest {
     public void test1() {
         var gramat = new Gramat();
         var exf = new ExpressionFactory();
-        var compiler = new ExpressionCompiler(gramat);
+        var compiler = new Step1Compiler(gramat);
 
         var graph1 = compiler.compile(exf.value(exf.literal("a")));
 
@@ -72,7 +72,7 @@ public class ExpressionCompilerTest {
                 factory.literal("\u0003")
         ));
 
-        var compiler = new ExpressionCompiler(gramat);
+        var compiler = new Step1Compiler(gramat);
 
         for (var name : grammar.keySet()) {
             var expr = grammar.find(name);

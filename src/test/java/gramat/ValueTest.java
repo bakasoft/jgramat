@@ -2,7 +2,6 @@ package gramat;
 
 import gramat.am.expression.AmExpression;
 import gramat.pipeline.Pipeline;
-import gramat.pipeline.StateCompiler;
 import gramat.am.ExpressionFactory;
 import gramat.util.NameMap;
 import org.junit.Test;

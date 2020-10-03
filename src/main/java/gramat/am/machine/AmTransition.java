@@ -9,6 +9,7 @@ public class AmTransition {
     public AmState target;
 
     public AmSymbol symbol;
+    public AmBadge badge;
 
     public List<AmAction> preActions;
     public List<AmAction> postActions;

@@ -2,25 +2,43 @@ package gramat.pipeline;
 
 import gramat.actions.*;
 import gramat.am.expression.*;
+import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.Graph;
 import gramat.graph.Segment;
 import gramat.graph.NodeSet;
-import gramat.graph.Token;
 import gramat.util.Count;
+import gramat.util.NameMap;
 
 import java.util.Objects;
 
-public class ExpressionCompiler extends DefaultComponent {
+public class Step1Compiler extends DefaultComponent {
 
     private final Count node_ids;
     private final Count trx_ids;
 
-    public ExpressionCompiler(Component parent) {
+    public Step1Compiler(Component parent) {
         super(parent);
         this.node_ids = new Count();
         this.trx_ids = new Count();
+    }
+
+    public Step2Input compile(Step1Input input) {
+        var dependencies = new NameMap<Segment>();
+        var main = compile(input.main);
+
+        for (var name : input.dependencies.keySet()) {
+            var expr = input.dependencies.find(name);
+            var segment = compile(expr);
+
+            System.out.println("========== SEGMENT " + name);
+            new NodeFormatter(System.out).write(segment);
+
+            dependencies.set(name, segment);
+        }
+
+        return new Step2Input(input.parent, main, dependencies);
     }
 
     public Segment compile(AmExpression expression) {
@@ -146,7 +164,7 @@ public class ExpressionCompiler extends DefaultComponent {
     }
 
     private Segment compile_reference(Graph graph, Segment container, ReferenceExpression reference) {
-        graph.createLinks(container.sources, container.targets, Token.of(reference.name));
+        graph.createLinks(container.sources, container.targets, reference.name);
 
         return container;
     }
@@ -154,7 +172,7 @@ public class ExpressionCompiler extends DefaultComponent {
     private Segment compile_range(Graph graph, Segment container, RangeExpression range) {
         var symbol = gramat.symbols.range(range.begin, range.end);
 
-        graph.createLinks(container.sources, container.targets, Token.of(symbol));
+        graph.createLinks(container.sources, container.targets, symbol, gramat.badges.empty());
 
         return container;
     }
@@ -162,18 +180,19 @@ public class ExpressionCompiler extends DefaultComponent {
     private Segment compile_literal(Graph graph, Segment container, LiteralExpression literal) {
         var chars = literal.value.toCharArray();
         var last = container.sources;
+        var badge = gramat.badges.empty();
 
         for (var i = 0; i < chars.length; i++) {
-            var token = Token.of(gramat.symbols.character(chars[i]));
+            var symbol = gramat.symbols.character(chars[i]);
 
             if (i == chars.length - 1) {
-                graph.createLinks(last, container.targets, token);
+                graph.createLinks(last, container.targets, symbol, badge);
                 break;
             }
             else {
                 var current = graph.createNodeSet();
 
-                graph.createLinks(last, current, token);
+                graph.createLinks(last, current, symbol, badge);
 
                 last = current;
             }

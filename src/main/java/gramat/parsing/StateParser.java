@@ -2,6 +2,7 @@ package gramat.parsing;
 
 import gramat.actions.*;
 import gramat.am.machine.*;
+import gramat.badges.Badge;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
@@ -94,6 +95,7 @@ public class StateParser extends DefaultComponent {
 
         for (var transition : machine.findTransitionsFrom(state)) {
             var symbol = make_symbol(transition.symbol);
+            var badge = make_badge(transition.badge);
             var target = build_state(machine, transition.target);
             var before = new ActionStore();
             var after = new ActionStore();
@@ -110,7 +112,7 @@ public class StateParser extends DefaultComponent {
                 }
             }
 
-            node.createTransition(symbol, target, before.toArray(), after.toArray());
+            node.createTransition(symbol, badge, target, before.toArray(), after.toArray());
         }
 
         return node;
@@ -119,13 +121,13 @@ public class StateParser extends DefaultComponent {
     private Action make_action(AmAction data) {
         if (Objects.equals(data.name, "enter")) {
             var token = data.arguments.get(0);
-
-            return new RecursionEnter(token);
+            var badge = gramat.badges.badge(token);
+            return new RecursionEnter(badge);
         }
         else if (Objects.equals(data.name, "exit")) {
             var token = data.arguments.get(0);
-
-            return new RecursionExit(token);
+            var badge = gramat.badges.badge(token);
+            return new RecursionExit(badge);
         }
         else if (Objects.equals(data.name, "beginObject")) {
             var trxID = Integer.parseInt(data.arguments.get(0));
@@ -207,6 +209,14 @@ public class StateParser extends DefaultComponent {
         else {
             throw new RuntimeException();
         }
+    }
+
+    private Badge make_badge(AmBadge badge) {
+        if (badge == null) {
+            return gramat.badges.empty();
+        }
+
+        return gramat.badges.badge(badge.token);
     }
 
 }

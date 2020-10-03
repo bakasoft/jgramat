@@ -1,8 +1,6 @@
 package gramat.formatting;
 
-import gramat.graph.Line;
-import gramat.graph.Link;
-import gramat.graph.Segment;
+import gramat.graph.*;
 import gramat.util.StringUtils;
 
 public class NodeFormatter extends AmFormatter {
@@ -36,7 +34,8 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        if (link.token.isSymbol()) {
+        if (link instanceof LinkSymbol) {
+            var linkSymbol = (LinkSymbol)link;
             raw(link.source.id);
             sp();
             raw("->");
@@ -45,10 +44,13 @@ public class NodeFormatter extends AmFormatter {
             sp();
             raw(":");
             sp();
-            amstr(link.token.getSymbol().toString());
+            amstr(linkSymbol.symbol.toString());
+            raw("/");
+            amstr(linkSymbol.badge.toString());
             ln();
         }
-        else if (link.token.isReference()) {
+        else if (link instanceof LinkReference) {
+            var linkRef = (LinkReference)link;
             raw(link.source.id);
             sp();
             raw("->");
@@ -57,7 +59,7 @@ public class NodeFormatter extends AmFormatter {
             sp();
             raw(":");
             sp();
-            amstr(link.token.getReference());
+            amstr(linkRef.reference);
             ln();
         }
         else {

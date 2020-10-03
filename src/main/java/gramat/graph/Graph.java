@@ -2,9 +2,11 @@ package gramat.graph;
 
 import gramat.actions.Action;
 import gramat.actions.ActionStore;
+import gramat.badges.Badge;
 import gramat.symbols.Symbol;
 import gramat.util.Count;
 
+import javax.naming.LinkRef;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,24 +51,38 @@ public class Graph {
         return new NodeSet(node);
     }
 
-    public Link createLinkFrom(Join join, Node newSource, Node newTarget) {
-        return createLink(newSource, newTarget, join.token, join.beforeActions, join.afterActions);
-    }
-
-    public void createLinks(NodeSet sources, NodeSet targets, Token token) {
+    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol, Badge badge) {
         for (var source : sources) {
             for (var target : targets) {
-                createLink(source, target, token);
+                createLink(source, target, symbol, badge);
             }
         }
     }
 
-    public Link createLink(Node source, Node target, Token token) {
-        return createLink(source, target, token, null, null);
+    public void createLinks(NodeSet sources, NodeSet targets, String reference) {
+        for (var source : sources) {
+            for (var target : targets) {
+                createLink(source, target, reference);
+            }
+        }
     }
 
-    public Link createLink(Node source, Node target, Token token, ActionStore beforeActions, ActionStore afterActions) {
-        var link = new Link(source, target, token, new ActionStore(beforeActions), new ActionStore(afterActions));
+    public Link createLink(Node source, Node target, Symbol symbol, Badge badge) {
+        return createLink(source, target, null, null, symbol, badge);
+    }
+
+    public Link createLink(Node source, Node target, String reference) {
+        return createLink(source, target, null, null, reference);
+    }
+
+    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, Symbol symbol, Badge badge) {
+        var link = new LinkSymbol(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge);
+        links.add(link);
+        return link;
+    }
+
+    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, String reference) {
+        var link = new LinkReference(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), reference);
         links.add(link);
         return link;
     }
@@ -83,11 +99,19 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findOutgoingLinks(NodeSet sources, Symbol symbol) {
+    public List<Link> findTransitions(NodeSet sources, Symbol symbol, Badge badge) {
         var result = new ArrayList<Link>();
         for (var link : links) {
-            if (sources.contains(link.source) && link.token.isSymbol() && Objects.equals(link.token.getSymbol(), symbol)) {
-                result.add(link);
+            if (link instanceof LinkSymbol) {
+                if (sources.contains(link.source)) {
+                    var linkSymbol = (LinkSymbol) link;
+                    if (Objects.equals(linkSymbol.symbol, symbol) && Objects.equals(linkSymbol.badge, badge)) {
+                        result.add(link);
+                    }
+                }
+            }
+            else {
+                throw new RuntimeException("only symbol links allowed: " + link);
             }
         }
         return result;
@@ -103,18 +127,6 @@ public class Graph {
         return links.stream()
                 .filter(t -> t.source == source)
                 .collect(Collectors.toList());
-    }
-
-    public Set<String> findReferences() {
-        var refs = new LinkedHashSet<String>();
-
-        for (var link : links) {
-            if (link.token.isReference()) {
-                refs.add(link.token.getReference());
-            }
-        }
-
-        return refs;
     }
 
     public List<Link> walkLinksFrom(Node source) {

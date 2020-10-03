@@ -9,7 +9,7 @@ import gramat.util.Count;
 
 import java.util.*;
 
-public class StateCompiler extends DefaultComponent {
+public class Step4Compiler extends DefaultComponent {
 
     private final Graph graph;
 
@@ -17,7 +17,7 @@ public class StateCompiler extends DefaultComponent {
     private final Map<String, NodeSet> idNodes;
     private final Count nextId;
 
-    public StateCompiler(Component parent, Graph graph) {
+    public Step4Compiler(Component parent, Graph graph) {
         super(parent);
         this.graph = graph;
         this.idStates = new HashMap<>();
@@ -49,23 +49,25 @@ public class StateCompiler extends DefaultComponent {
                 idNodes.put(sourcesID, sources);
 
                 for (var symbol : gramat.symbols) {
-                    var links = graph.findOutgoingLinks(sources, symbol);
+                    for (var badge : gramat.badges) {
+                        var links = graph.findTransitions(sources, symbol, badge);
 
-                    if (links.size() > 0) {
-                        var targets = Link.collectTargets(links);
-                        var newSource = make_node(sources);
-                        var newTarget = make_node(targets);
-                        var before = new ActionStore();
-                        var after = new ActionStore();
+                        if (links.size() > 0) {
+                            var targets = Link.collectTargets(links);
+                            var newSource = make_node(sources);
+                            var newTarget = make_node(targets);
+                            var before = new ActionStore();
+                            var after = new ActionStore();
 
-                        for (var link : links) {
-                            before.append(link.beforeActions);
-                            after.append(link.afterActions);
+                            for (var link : links) {
+                                before.append(link.beforeActions);
+                                after.append(link.afterActions);
+                            }
+
+                            newSource.createTransition(symbol, badge, newTarget, before.toArray(), after.toArray());
+
+                            queue.add(targets);
                         }
-
-                        newSource.createTransition(symbol, newTarget, before.toArray(), after.toArray());
-
-                        queue.add(targets);
                     }
                 }
             }
@@ -95,7 +97,8 @@ public class StateCompiler extends DefaultComponent {
             if (nodes.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
                 var symbol = gramat.symbols.wild();
 
-                state.createTransition(symbol, state, null, null);
+                // TODO what badge should it use?
+                state.createTransition(symbol, gramat.badges.empty(), state, null, null);
             }
 
             idStates.put(id, state);

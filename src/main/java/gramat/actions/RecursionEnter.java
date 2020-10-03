@@ -1,5 +1,6 @@
 package gramat.actions;
 
+import gramat.badges.Badge;
 import gramat.eval.Context;
 
 import java.io.PrintStream;
@@ -10,10 +11,10 @@ import static gramat.util.Validations.tryCastAndTest;
 
 public class RecursionEnter extends Action {
 
-    public final String token;
+    public final Badge badge;
 
-    public RecursionEnter(String token) {
-        this.token = token;
+    public RecursionEnter(Badge badge) {
+        this.badge = badge;
     }
 
     @Override
@@ -21,17 +22,17 @@ public class RecursionEnter extends Action {
         return tryCastAndTest(
                 RecursionEnter.class,
                 other,
-                a -> Objects.equals(this.token, a.token)
+                a -> Objects.equals(this.badge, a.badge)
         );
     }
 
     @Override
     public void run(Context context) {
-        context.pushCall(token);
+//        context.pushCall(token);
     }
 
     @Override
     public List<String> getArguments() {
-        return List.of(token);
+        return List.of(badge.token);
     }
 }

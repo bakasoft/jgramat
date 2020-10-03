@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class GrammarCompiler extends DefaultComponent {
+public class Step0Compiler extends DefaultComponent {
 
     public final NameMap<AmExpression> rules;
 
     public final List<AmTest> tests;
 
-    public GrammarCompiler(Gramat gramat) {
+    public Step0Compiler(Gramat gramat) {
         super(gramat);
         rules = new NameMap<>();
         tests = new ArrayList<>();

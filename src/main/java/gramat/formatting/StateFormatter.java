@@ -21,11 +21,12 @@ public class StateFormatter extends AmFormatter {
                 ln();
             }
 
-            for (var link : list_links(source)) {
-                var target = link.target;
-                var symbol = link.symbol.toString();
-                var before = StringUtils.join("\n", link.before);
-                var after = StringUtils.join("\n", link.after);
+            for (var transition : list_transitions(source)) {
+                var target = transition.target;
+                var symbol = transition.symbol.toString();
+                var badge = transition.badge.toString();
+                var before = StringUtils.join("\n", transition.before);
+                var after = StringUtils.join("\n", transition.after);
 
                 if (before.length() > 0) {
                     raw(source.id);
@@ -49,6 +50,8 @@ public class StateFormatter extends AmFormatter {
                 raw(":");
                 sp();
                 amstr(symbol);
+                raw("/");
+                amstr(badge);
                 ln();
 
                 if (after.length() > 0) {
@@ -74,7 +77,7 @@ public class StateFormatter extends AmFormatter {
         }
     }
 
-    private static List<Transition> list_links(State state) {
+    private static List<Transition> list_transitions(State state) {
         var hashLink = new HashMap<String, Transition>();
 
         for (var link : state) {
