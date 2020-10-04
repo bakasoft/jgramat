@@ -99,6 +99,12 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
     default ModelExpression tryRepetition(Tape tape) {
         if (tryToken(tape, '{')) {
+            var minimum = 0;
+
+            if (tryToken(tape, '+')) {
+                minimum = 1;
+            }
+
             var content = readExpression(tape);
             var separator = (ModelExpression)null;
 
@@ -108,7 +114,7 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             expectToken(tape, '}');
 
-            return ModelFactory.repetition(content, separator);
+            return ModelFactory.repetition(content, separator, minimum);
         }
         return null;
     }

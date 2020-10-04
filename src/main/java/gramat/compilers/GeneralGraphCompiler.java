@@ -203,52 +203,69 @@ public class GeneralGraphCompiler extends DefaultComponent {
 
     private Segment compile_repetition(Graph graph, Segment container, ModelRepetition repetition) {
         if (repetition.separator == null && repetition.minimum == 0) {
+            var result = container.shallowCopy();
+
             var segmentFW = compile_expression(graph, container, repetition.content);
+
+            result.add(segmentFW);
+
             var segmentBW = compile_expression(graph, container.shallowCopyInverse(), repetition.content);
-            var segment = container.shallowCopy();
 
-            segment.add(segmentFW);
-            segment.add(segmentBW);
+            result.add(segmentBW);
 
-            return segment;
+            return result;
         }
         else if (repetition.separator == null && repetition.minimum == 1) {
+            var result = container.shallowCopy();
+
             var segmentOne = compile_expression(graph, container, repetition.content);
-            var segmentLoop = compile_expression(graph, graph.segment(container.targets, container.targets), repetition.content);
-            var segment = container.shallowCopy();
 
-            segment.add(segmentOne);
-            segment.targets.add(segmentLoop.targets);
+            result.add(segmentOne);
 
-            return segment;
+            var segmentLoop = compile_expression(graph, graph.segment(segmentOne.targets, segmentOne.targets), repetition.content);
+
+            result.targets.add(segmentLoop.targets);
+
+            return result;
         }
         else if (repetition.separator != null && repetition.minimum == 0) {
+            var result = container.shallowCopy();
+
             var segmentFW = compile_expression(
                     graph, container, repetition.content);
+
+            result.targets.add(segmentFW.sources);
+            result.targets.add(segmentFW.targets);
+
             var segmentSP = compile_expression(
                     graph, graph.segment(segmentFW.targets, graph.createNodeSet()), repetition.separator);
+
+            result.targets.add(segmentSP.sources);
+
             var segmentBW = compile_expression(
                     graph, graph.segment(segmentSP.targets, segmentSP.sources), repetition.content);
 
-            var result = graph.segment();
-            result.sources.add(segmentFW.sources);
-            result.targets.add(segmentFW.targets);
-            result.targets.add(segmentSP.sources);
             result.targets.add(segmentBW.targets);
             return result;
         }
         else if (repetition.separator != null && repetition.minimum == 1) {
-            var segmentFW = compile_expression(graph, container, repetition.content);
+            var result = container.shallowCopy();
+
+            var segmentFW = compile_expression(
+                    graph, container, repetition.content);
+
+            result.targets.add(segmentFW.targets);
+
             var segmentSP = compile_expression(
                     graph, graph.segment(segmentFW.targets, graph.createNodeSet()), repetition.separator);
+
+            result.targets.add(segmentSP.sources);
+
             var segmentBW = compile_expression(
-                    graph, graph.segment(segmentSP.targets, segmentFW.targets), repetition.content);
-            var segment = container.shallowCopy();
+                    graph, graph.segment(segmentSP.targets, segmentSP.sources), repetition.content);
 
-            segment.add(segmentFW);
-            segment.targets.add(segmentBW.targets);
-
-            return segment;
+            result.targets.add(segmentBW.targets);
+            return result;
         }
         else {
             throw new RuntimeException();

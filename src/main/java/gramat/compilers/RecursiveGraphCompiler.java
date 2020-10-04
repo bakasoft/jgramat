@@ -184,10 +184,10 @@ public class RecursiveGraphCompiler extends DefaultComponent {
             if (plug.link instanceof LinkSymbol) {
                 var linkSym = (LinkSymbol)plug.link;
 
-                newLinks.add(graph.createLink(
-                        newSource, newTarget,
-                        linkSym.beforeActions, linkSym.afterActions,
-                        linkSym.symbol, linkSym.badge));
+//                newLinks.add(graph.createLink(
+//                        newSource, newTarget,
+//                        linkSym.beforeActions, linkSym.afterActions,
+//                        linkSym.symbol, linkSym.badge));
 
                 newLinks.add(graph.createLink(
                         newSource, newTarget,
