@@ -4,6 +4,7 @@ import gramat.actions.Action;
 import gramat.actions.ActionStore;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
+import gramat.badges.BadgeMode;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
@@ -111,7 +112,7 @@ public class RecursiveGraphCompiler extends DefaultComponent {
                     graph.createLink(
                             newSource, newTarget,
                             linkSymbol.beforeActions, linkSymbol.afterActions,
-                            linkSymbol.symbol, linkSymbol.badge);
+                            linkSymbol.symbol, linkSymbol.badge, linkSymbol.mode);
                 }
                 else if (link instanceof LinkReference) {
                     var linkRef = (LinkReference)link;
@@ -136,44 +137,37 @@ public class RecursiveGraphCompiler extends DefaultComponent {
         for (var plug : extension.plugs) {
             Node newSource;
             Node newTarget;
-            Action enterAction;
-            Action exitAction;
+            BadgeMode mode;
 
             if (plug.type == Plug.FROM_SOURCE_TO_TARGET) {
                 newSource = source;
                 newTarget = target;
-                enterAction = newBadge != null ? new RecursionEnter(newBadge) : null;
-                exitAction = newBadge != null ? new RecursionExit(newBadge) : null;
+                mode = BadgeMode.NONE;
             }
             else if (plug.type == Plug.FROM_SOURCE_TO_NODE) {
                 newSource = source;
                 newTarget = plug.node;
-                enterAction = newBadge != null ? new RecursionEnter(newBadge) : null;
-                exitAction = null;
+                mode = BadgeMode.PUSH;
             }
             else if (plug.type == Plug.FROM_NODE_TO_SOURCE) {
                 newSource = plug.node;
                 newTarget = source;
-                enterAction = null;
-                exitAction = null;
+                mode = BadgeMode.POP;
             }
             else if (plug.type == Plug.FROM_NODE_TO_TARGET) {
                 newSource = plug.node;
                 newTarget = target;
-                enterAction = null;
-                exitAction = newBadge != null ? new RecursionExit(newBadge) : null;
+                mode = BadgeMode.POP;
             }
             else if (plug.type == Plug.FROM_TARGET_TO_NODE) {
                 newSource = target;
                 newTarget = plug.node;
-                enterAction = null;
-                exitAction = null;
+                mode = BadgeMode.PUSH;
             }
             else if (plug.type == Plug.FROM_TARGET_TO_SOURCE) {
                 newSource = target;
                 newTarget = source;
-                enterAction = null;
-                exitAction = null;
+                mode = BadgeMode.NONE;
             }
             else {
                 throw new RuntimeException();
@@ -184,15 +178,16 @@ public class RecursiveGraphCompiler extends DefaultComponent {
             if (plug.link instanceof LinkSymbol) {
                 var linkSym = (LinkSymbol)plug.link;
 
-//                newLinks.add(graph.createLink(
-//                        newSource, newTarget,
-//                        linkSym.beforeActions, linkSym.afterActions,
-//                        linkSym.symbol, linkSym.badge));
+                // TODO this probably is required for non-empty badges
+                // newLinks.add(graph.createLink(
+                //         newSource, newTarget,
+                //         linkSym.beforeActions, linkSym.afterActions,
+                //         linkSym.symbol, linkSym.badge));
 
                 newLinks.add(graph.createLink(
                         newSource, newTarget,
                         linkSym.beforeActions, linkSym.afterActions,
-                        linkSym.symbol, newBadge));
+                        linkSym.symbol, newBadge, mode));
             }
             else if (plug.link instanceof LinkReference) {
                 var linkRef = (LinkReference)plug.link;
@@ -215,14 +210,6 @@ public class RecursiveGraphCompiler extends DefaultComponent {
 
                 if (afterActions != null) {
                     newLink.afterActions.append(afterActions);
-                }
-
-                if (enterAction != null) {
-                    newLink.beforeActions.prepend(enterAction);
-                }
-
-                if (exitAction != null) {
-                    newLink.afterActions.append(exitAction);
                 }
             }
         }

@@ -47,6 +47,9 @@ public class NodeFormatter extends AmFormatter {
             amstr(linkSymbol.symbol.toString());
             raw("/");
             amstr(linkSymbol.badge.toString());
+            raw("(");
+            amstr(linkSymbol.mode.name());
+            raw(")");
             ln();
         }
         else if (link instanceof LinkReference) {

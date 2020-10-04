@@ -3,6 +3,7 @@ package gramat.graph;
 import gramat.actions.Action;
 import gramat.actions.ActionStore;
 import gramat.badges.Badge;
+import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
 import gramat.util.Count;
 
@@ -51,10 +52,10 @@ public class Graph {
         return new NodeSet(node);
     }
 
-    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol, Badge badge) {
+    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol, Badge badge, BadgeMode mode) {
         for (var source : sources) {
             for (var target : targets) {
-                createLink(source, target, symbol, badge);
+                createLink(source, target, symbol, badge, mode);
             }
         }
     }
@@ -67,16 +68,16 @@ public class Graph {
         }
     }
 
-    public Link createLink(Node source, Node target, Symbol symbol, Badge badge) {
-        return createLink(source, target, null, null, symbol, badge);
+    public Link createLink(Node source, Node target, Symbol symbol, Badge badge, BadgeMode mode) {
+        return createLink(source, target, null, null, symbol, badge, mode);
     }
 
     public Link createLink(Node source, Node target, String reference) {
         return createLink(source, target, null, null, reference);
     }
 
-    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, Symbol symbol, Badge badge) {
-        var link = new LinkSymbol(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge);
+    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, Symbol symbol, Badge badge, BadgeMode mode) {
+        var link = new LinkSymbol(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge, mode);
         links.add(link);
         return link;
     }
@@ -99,20 +100,32 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findTransitions(NodeSet sources, Symbol symbol, Badge badge) {
-        var result = new ArrayList<Link>();
+    public List<LinkSymbol> findTransitions(NodeSet sources, Symbol symbol, Badge badge) {
+        var result = new ArrayList<LinkSymbol>();
         for (var link : links) {
-            if (link instanceof LinkSymbol) {
-                if (sources.contains(link.source)) {
-                    var linkSymbol = (LinkSymbol) link;
-                    if (Objects.equals(linkSymbol.symbol, symbol) && Objects.equals(linkSymbol.badge, badge)) {
-                        result.add(link);
-                    }
-                }
-            }
-            else {
+            // Check for only links with symbols
+            if (!(link instanceof LinkSymbol)) {
                 throw new RuntimeException("only symbol links allowed: " + link);
             }
+
+            var linkSymbol = (LinkSymbol) link;
+
+            // Skip not matching symbols
+            if (linkSymbol.symbol != symbol) {
+                continue;
+            }
+
+            // Skip links from other source
+            if (!sources.contains(link.source)) {
+                continue;
+            }
+
+            // Skip not maching badges
+            if (linkSymbol.badge != badge) {
+                continue;
+            }
+
+            result.add(linkSymbol);
         }
         return result;
     }

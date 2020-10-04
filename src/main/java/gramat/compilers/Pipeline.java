@@ -40,11 +40,11 @@ public class Pipeline {
         var compiler = new LinearGraphCompiler(input.parent, input.dependencies);
         var lines = compiler.compile(input.main);
 
-        for (var entry : lines.dependencies.entrySet()) {
-            System.out.println("========== LINE " + entry.getKey());
-
-            new NodeFormatter(System.out).write(entry.getValue());
-        }
+//        for (var entry : lines.dependencies.entrySet()) {
+//            System.out.println("========== LINE " + entry.getKey());
+//
+//            new NodeFormatter(System.out).write(entry.getValue());
+//        }
 
         return lines;
     }
@@ -53,8 +53,8 @@ public class Pipeline {
         var resolver = new RecursiveGraphCompiler(graph.parent, graph.dependencies);
         var line = resolver.resolve(graph.main);
 
-        System.out.println("========== RESOLVED");
-        new NodeFormatter(System.out).write(line);
+//        System.out.println("========== RESOLVED");
+//        new NodeFormatter(System.out).write(line);
 
         return line;
     }
@@ -65,6 +65,7 @@ public class Pipeline {
 
         System.out.println("========== STATE");
         new StateFormatter(System.out).write(state);
+        System.out.println("==========");
 
         return state;
     }

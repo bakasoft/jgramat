@@ -25,6 +25,7 @@ public class StateFormatter extends AmFormatter {
                 var target = transition.target;
                 var symbol = transition.symbol.toString();
                 var badge = transition.badge.toString();
+                var mode = transition.mode.name();
                 var before = StringUtils.join("\n", transition.before);
                 var after = StringUtils.join("\n", transition.after);
 
@@ -52,6 +53,9 @@ public class StateFormatter extends AmFormatter {
                 amstr(symbol);
                 raw("/");
                 amstr(badge);
+                raw("(");
+                amstr(mode);
+                raw(")");
                 ln();
 
                 if (after.length() > 0) {

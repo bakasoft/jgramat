@@ -1,6 +1,7 @@
 package gramat.compilers;
 
 import gramat.actions.ActionStore;
+import gramat.badges.BadgeMode;
 import gramat.machine.State;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
@@ -58,13 +59,14 @@ public class StateCompiler extends DefaultComponent {
                             var newTarget = make_node(targets);
                             var before = new ActionStore();
                             var after = new ActionStore();
+                            var mode = compute_mode(links);
 
                             for (var link : links) {
                                 before.append(link.beforeActions);
                                 after.append(link.afterActions);
                             }
 
-                            newSource.createTransition(symbol, badge, newTarget, before.toArray(), after.toArray());
+                            newSource.createTransition(symbol, badge, mode, newTarget, before.toArray(), after.toArray());
 
                             queue.add(targets);
                         }
@@ -72,6 +74,21 @@ public class StateCompiler extends DefaultComponent {
                 }
             }
         }
+    }
+
+    private BadgeMode compute_mode(List<LinkSymbol> links) {
+        BadgeMode mode = null;
+
+        for (var link : links) {
+            if (mode == null) {
+                mode = link.mode;
+            }
+            else if (mode != link.mode) {
+                throw new RuntimeException("ambiguous mode: " + mode + "/" + link.mode);
+            }
+        }
+
+        return mode;
     }
 
     private void mark_accepted_nodes(NodeSet targets) {
@@ -98,7 +115,7 @@ public class StateCompiler extends DefaultComponent {
                 var symbol = gramat.symbols.wild();
 
                 // TODO what badge should it use?
-                state.createTransition(symbol, gramat.badges.empty(), state, null, null);
+                state.createTransition(symbol, gramat.badges.empty(), BadgeMode.NONE, state, null, null);
             }
 
             idStates.put(id, state);

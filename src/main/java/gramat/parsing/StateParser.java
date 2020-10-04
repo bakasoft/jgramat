@@ -1,6 +1,7 @@
 package gramat.parsing;
 
 import gramat.actions.*;
+import gramat.badges.BadgeMode;
 import gramat.models.automata.*;
 import gramat.badges.Badge;
 import gramat.framework.Component;
@@ -96,6 +97,7 @@ public class StateParser extends DefaultComponent {
         for (var transition : machine.findTransitionsFrom(state)) {
             var symbol = make_symbol(transition.symbol);
             var badge = make_badge(transition.badge);
+            var mode = BadgeMode.NONE; // TODO how to parse the mode?
             var target = build_state(machine, transition.target);
             var before = new ActionStore();
             var after = new ActionStore();
@@ -112,7 +114,7 @@ public class StateParser extends DefaultComponent {
                 }
             }
 
-            node.createTransition(symbol, badge, target, before.toArray(), after.toArray());
+            node.createTransition(symbol, badge, mode, target, before.toArray(), after.toArray());
         }
 
         return node;

@@ -2,6 +2,7 @@ package gramat.machine;
 
 import gramat.actions.Action;
 import gramat.badges.Badge;
+import gramat.badges.BadgeMode;
 import gramat.eval.Context;
 import gramat.eval.RejectedException;
 import gramat.framework.Logger;
@@ -145,12 +146,12 @@ public class State implements Iterable<Transition> {
         return transitions.iterator();
     }
 
-    public void createTransition(Symbol symbol, Badge badge, State state, Action[] before, Action[] after) {
+    public void createTransition(Symbol symbol, Badge badge, BadgeMode mode, State state, Action[] before, Action[] after) {
         if (transitions == null) {
             transitions = new ArrayList<>();
         }
 
-        var transition = new Transition(symbol, badge, state, before, after);
+        var transition = new Transition(symbol, badge, mode, state, before, after);
 
         transitions.add(transition);
     }

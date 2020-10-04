@@ -1,6 +1,7 @@
 package gramat.compilers;
 
 import gramat.actions.*;
+import gramat.badges.BadgeMode;
 import gramat.models.expressions.*;
 import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
@@ -32,8 +33,8 @@ public class GeneralGraphCompiler extends DefaultComponent {
             var expr = input.dependencies.find(name);
             var segment = compile(expr);
 
-            System.out.println("========== SEGMENT " + name);
-            new NodeFormatter(System.out).write(segment);
+//            System.out.println("========== SEGMENT " + name);
+//            new NodeFormatter(System.out).write(segment);
 
             dependencies.set(name, segment);
         }
@@ -172,7 +173,7 @@ public class GeneralGraphCompiler extends DefaultComponent {
     private Segment compile_range(Graph graph, Segment container, ModelRange range) {
         var symbol = gramat.symbols.range(range.begin, range.end);
 
-        graph.createLinks(container.sources, container.targets, symbol, gramat.badges.empty());
+        graph.createLinks(container.sources, container.targets, symbol, gramat.badges.empty(), BadgeMode.NONE);
 
         return container;
     }
@@ -186,13 +187,13 @@ public class GeneralGraphCompiler extends DefaultComponent {
             var symbol = gramat.symbols.character(chars[i]);
 
             if (i == chars.length - 1) {
-                graph.createLinks(last, container.targets, symbol, badge);
+                graph.createLinks(last, container.targets, symbol, badge, BadgeMode.NONE);
                 break;
             }
             else {
                 var current = graph.createNodeSet();
 
-                graph.createLinks(last, current, symbol, badge);
+                graph.createLinks(last, current, symbol, badge, BadgeMode.NONE);
 
                 last = current;
             }

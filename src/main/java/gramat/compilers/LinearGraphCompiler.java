@@ -69,15 +69,15 @@ public class LinearGraphCompiler extends DefaultComponent {
 
                 graph.createLink(
                         sourceCopy, targetCopy,
-                        link.beforeActions, link.afterActions,
-                        linkSymbol.symbol, linkSymbol.badge);
+                        linkSymbol.beforeActions, linkSymbol.afterActions,
+                        linkSymbol.symbol, linkSymbol.badge, linkSymbol.mode);
             }
             else if (link instanceof LinkReference) {
                 var linkRef = (LinkReference)link;
                 if (recursive.contains(linkRef.reference)) {
                     graph.createLink(
                             sourceCopy, targetCopy,
-                            link.beforeActions, link.afterActions,
+                            linkRef.beforeActions, linkRef.afterActions,
                             linkRef.reference);
                 } else {
                     var refSegment = segments.find(linkRef.reference);
@@ -86,7 +86,7 @@ public class LinearGraphCompiler extends DefaultComponent {
                             graph,
                             refSegment,
                             sourceCopy, targetCopy,
-                            link.beforeActions, link.afterActions, recursive);
+                            linkRef.beforeActions, linkRef.afterActions, recursive);
                 }
             }
             else {
