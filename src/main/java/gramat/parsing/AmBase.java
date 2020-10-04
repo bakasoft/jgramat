@@ -2,7 +2,7 @@ package gramat.parsing;
 
 import gramat.framework.Component;
 import gramat.input.Tape;
-import gramat.input.errors.UnexpectedCharException;
+import gramat.exceptions.UnexpectedCharException;
 
 public interface AmBase extends Component {
 

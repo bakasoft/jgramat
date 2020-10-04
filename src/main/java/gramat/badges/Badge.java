@@ -8,10 +8,6 @@ public class Badge {
         this.token = token;
     }
 
-    public boolean isEmpty() {
-        return token == null;
-    }
-
     @Override
     public String toString() {
         return String.valueOf(token);

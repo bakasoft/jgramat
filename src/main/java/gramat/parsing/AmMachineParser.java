@@ -2,7 +2,7 @@ package gramat.parsing;
 
 import gramat.models.automata.*;
 import gramat.input.Tape;
-import gramat.input.errors.UnexpectedCharException;
+import gramat.exceptions.UnexpectedCharException;
 
 import java.util.ArrayList;
 import java.util.List;

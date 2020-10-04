@@ -1,8 +1,8 @@
-package gramat.input.errors;
+package gramat.exceptions;
 
 import gramat.input.Location;
 
-public class ParseException extends RuntimeException {
+public class ParseException extends GramatException {
     private final Location location;
 
     public ParseException(String message, Location location) {

@@ -51,4 +51,17 @@ public class PP {
         return output.toString();
     }
 
+    public static Object typeOf(Object value) {
+        if (value == null) {
+            return "null";
+        }
+        return type(value.getClass());
+    }
+
+    public static String type(Class<?> type) {
+        if (type == null) {
+            return "null";
+        }
+        return type.getName();
+    }
 }

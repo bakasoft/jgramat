@@ -3,7 +3,7 @@ package gramat.parsing;
 import gramat.data.ListData;
 import gramat.data.MapData;
 import gramat.input.Tape;
-import gramat.input.errors.UnexpectedCharException;
+import gramat.exceptions.UnexpectedCharException;
 
 import java.util.ArrayList;
 

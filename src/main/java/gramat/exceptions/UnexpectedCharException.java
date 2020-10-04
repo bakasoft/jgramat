@@ -1,4 +1,4 @@
-package gramat.input.errors;
+package gramat.exceptions;
 
 import gramat.input.Tape;
 import gramat.util.PP;

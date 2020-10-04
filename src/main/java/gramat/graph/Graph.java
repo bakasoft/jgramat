@@ -168,6 +168,42 @@ public class Graph {
         return result;
     }
 
+    public List<LinkReference> findReferences(Node source, Node target) {
+        var result = new ArrayList<LinkReference>();
+        var control = new HashSet<Node>();
+        var queue = new LinkedList<Node>();
+
+        queue.add(source);
+
+        while (queue.size() > 0) {
+            var node = queue.remove();
+
+            if (control.add(node)) {
+                for (var link : findOutgoingLinks(node)) {
+                    if (link instanceof LinkReference) {
+                        result.add((LinkReference)link);
+                    }
+
+                    // We should not find outgoing links from target here
+                    //   because we don't know all the nodes from the source yet
+                    if (link.target != target) {
+                        queue.add(link.target);
+                    }
+                }
+            }
+        }
+
+        // At this point it is safe to check outgoing links from target
+        //   and filter those which go back to the nodes from source
+        for (var link : findOutgoingLinks(target)) {
+            if (link instanceof LinkReference && control.contains(link.target)) {
+                result.add((LinkReference)link);
+            }
+        }
+
+        return result;
+    }
+
     public Segment segment() {
         return new Segment(this, createNodeSet(), createNodeSet());
     }
