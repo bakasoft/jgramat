@@ -11,7 +11,7 @@ public class MapData extends LinkedHashMap<String, Object> {
         this.typeHint = typeHint;
     }
 
-    public MapData(String typeHint, Map<String, Object> map) {
+    public MapData(String typeHint, Map<String, ?> map) {
         this(typeHint);
         this.putAll(map);
     }

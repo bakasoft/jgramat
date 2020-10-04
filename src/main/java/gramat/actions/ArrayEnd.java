@@ -28,7 +28,9 @@ public class ArrayEnd extends Action {
 
     @Override
     public void run(Context context) {
-        context.transaction().commit(context.transactionID(trxID));
+        var array = context.popArray();
+
+        context.addValue(array);
     }
 
     @Override

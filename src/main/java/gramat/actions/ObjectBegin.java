@@ -26,20 +26,7 @@ public class ObjectBegin extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
-
-        if (context.transaction().contains(id)) {
-            context.transaction().keep(id);
-        }
-        else {
-            context.pushContainer();
-            context.transaction().begin(id, () -> {
-                var container = context.popContainer();
-                var attributes = container.getAttributes();
-
-                context.pushValue(new MapData(null, attributes)); // TODO typehint
-            });
-        }
+        context.pushContainer();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package util;
 
 import gramat.Gramat;
+import gramat.eval.Evaluator;
+import gramat.input.Tape;
 import gramat.machine.State;
 
 public class StateTool {
@@ -10,9 +12,13 @@ public class StateTool {
         var logger = gramat.getLogger();
 
         for (var input : inputs) {
+            var evalutaor = new Evaluator(gramat, new Tape(input), logger);
+
             logger.debug("evaluating %s", input);
 
-            state.evalValue(input, logger);
+            var result = evalutaor.evalValue(state);
+
+            logger.debug("result: %s", result);
         }
     }
 }

@@ -25,19 +25,7 @@ public class ArrayBegin extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
-        if (context.transaction().contains(id)) {
-            context.transaction().keep(id);
-        }
-        else {
-            context.pushContainer();
-            context.transaction().begin(id, () -> {
-                var container = context.popContainer();
-                var array = container.popArray();
-
-                context.pushValue(array);
-            });
-        }
+        context.pushContainer();
     }
 
     @Override

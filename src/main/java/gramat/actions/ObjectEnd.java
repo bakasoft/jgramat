@@ -1,5 +1,6 @@
 package gramat.actions;
 
+import gramat.data.MapData;
 import gramat.eval.Context;
 
 import java.util.List;
@@ -28,9 +29,9 @@ public class ObjectEnd extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
+        var attributes = context.popAttributes();
 
-        context.transaction().commit(id);
+        context.addValue(new MapData(null, attributes)); // TODO typehint
     }
 
     @Override

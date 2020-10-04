@@ -1,6 +1,7 @@
 package gramat.actions;
 
 import gramat.eval.Context;
+import gramat.eval.RejectedException;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,9 +29,22 @@ public class AttributeEnd extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
+        var name = context.getName();
+        var value = context.popValue();
 
-        context.transaction().commit(id);
+        if (name == null) {
+            if (defaultName == null) {
+                throw new RejectedException("missing name");
+            }
+            else {
+                name = defaultName;
+            }
+        }
+        else if (defaultName != null) {
+            throw new RejectedException("conflicted name");
+        }
+
+        context.setAttribute(name, value);
     }
 
     @Override

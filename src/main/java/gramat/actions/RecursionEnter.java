@@ -3,7 +3,6 @@ package gramat.actions;
 import gramat.badges.Badge;
 import gramat.eval.Context;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +27,7 @@ public class RecursionEnter extends Action {
 
     @Override
     public void run(Context context) {
-//        context.pushCall(token);
+
     }
 
     @Override

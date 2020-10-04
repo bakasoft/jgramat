@@ -1,6 +1,7 @@
 package gramat.compilers;
 
 import gramat.Gramat;
+import gramat.eval.Evaluator;
 import gramat.models.expressions.ModelExpression;
 import gramat.models.test.ModelTest;
 import gramat.framework.DefaultComponent;
@@ -56,14 +57,12 @@ public class ExpressionCompiler extends DefaultComponent {
 
     private void process_pass(NameMap<ModelExpression> grammar, Args args, ModelExpression expression) {
         var input = args.pullAs(String.class);
+        var tape = new Tape(input);
         var state = Pipeline.compile(gramat, expression, grammar);
+        var evaluator = new Evaluator(gramat, tape, logger);
+        var result = evaluator.evalValue(state);
 
-        if (state.evalMatch(input, logger)) {
-            logger.debug("pass");
-        }
-        else {
-            logger.debug("fail");
-        }
+        logger.debug("result: %s", result);
     }
 
     private void process_fail(NameMap<ModelExpression> grammar, Args args, ModelExpression expression) {

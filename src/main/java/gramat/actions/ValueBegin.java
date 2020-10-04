@@ -25,19 +25,9 @@ public class ValueBegin extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
-        if (context.transaction().contains(id)) {
-            context.transaction().keep(id);
-        }
-        else {
-            var begin = context.tape.getPosition();
+        var begin = context.tape.getPosition();
 
-            context.transaction().begin(id, () -> {
-                var end = context.tape.getPosition();
-                var text = context.tape.extract(begin, end);
-                context.peekContainer().pushValue(text); // TODO parser?
-            });
-        }
+        context.pushPosition(begin);
     }
 
     @Override

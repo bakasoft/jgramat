@@ -28,9 +28,12 @@ public class ValueEnd extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
+        var begin = context.popPosition();
+        var end = context.tape.getPosition();
+        var text = context.tape.extract(begin, end);
+        var value = parser.parse(text);
 
-        context.transaction().commit(id);
+        context.addValue(value);
     }
 
     @Override

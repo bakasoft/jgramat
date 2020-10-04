@@ -25,9 +25,9 @@ public class NameEnd extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
+        var name = context.popValue();
 
-        context.transaction().commit(id);
+        context.setName(String.valueOf(name));
     }
 
     @Override

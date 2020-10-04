@@ -132,7 +132,7 @@ public class RecursiveGraphCompiler extends DefaultComponent {
     }
 
     public void connect_extension_to(String name, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
-        var newBadge = name != null ? gramat.badges.badge(name + "-" + callCount.nextString()) : null;
+        var newBadge = name != null ? gramat.badges.badge(name + "-" + callCount.nextString()) : gramat.badges.empty();
 
         for (var plug : extension.plugs) {
             Node newSource;

@@ -29,25 +29,7 @@ public class AttributeBegin extends Action {
 
     @Override
     public void run(Context context) {
-        var id = context.transactionID(trxID);
-
-        if (context.transaction().contains(id)) {
-            context.transaction().keep(id);
-        }
-        else {
-            context.pushContainer();
-            context.transaction().begin(id, () -> {
-                var container = context.popContainer();
-
-                var name = container.popName(defaultName);
-
-                var value = container.popValue();
-
-                container.expectEmptyValues();
-
-                context.peekContainer().setAttribute(name, value);
-            });
-        }
+        context.pushContainer();
     }
 
     @Override
