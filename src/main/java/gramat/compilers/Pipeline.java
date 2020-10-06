@@ -40,11 +40,11 @@ public class Pipeline {
         var compiler = new LinearGraphCompiler(input.parent, input.dependencies);
         var lines = compiler.compile(input.main);
 
-//        for (var entry : lines.dependencies.entrySet()) {
-//            System.out.println("========== LINE " + entry.getKey());
-//
-//            new NodeFormatter(System.out).write(entry.getValue());
-//        }
+        for (var entry : lines.dependencies.entrySet()) {
+            System.out.println("========== LINE " + entry.getKey());
+
+            new NodeFormatter(System.out).write(entry.getValue());
+        }
 
         return lines;
     }

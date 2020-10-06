@@ -168,8 +168,8 @@ public class Graph {
         return result;
     }
 
-    public List<LinkReference> findReferences(Node source, Node target) {
-        var result = new ArrayList<LinkReference>();
+    public List<Link> findLinksBetween(Node source, Node target) {
+        var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
 
@@ -180,9 +180,7 @@ public class Graph {
 
             if (control.add(node)) {
                 for (var link : findOutgoingLinks(node)) {
-                    if (link instanceof LinkReference) {
-                        result.add((LinkReference)link);
-                    }
+                    result.add(link);
 
                     // We should not find outgoing links from target here
                     //   because we don't know all the nodes from the source yet
@@ -197,11 +195,18 @@ public class Graph {
         //   and filter those which go back to the nodes from source
         for (var link : findOutgoingLinks(target)) {
             if (link instanceof LinkReference && control.contains(link.target)) {
-                result.add((LinkReference)link);
+                result.add(link);
             }
         }
 
         return result;
+    }
+
+    public List<LinkReference> findReferencesBetween(Node source, Node target) {
+        // TODO optimize this filter
+        return findLinksBetween(source, target).stream()
+                .filter(l -> l instanceof LinkReference)
+                .map(l -> (LinkReference)l).collect(Collectors.toList());
     }
 
     public Segment segment() {

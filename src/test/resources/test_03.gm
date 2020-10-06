@@ -8,9 +8,9 @@ object = @object("{" { entry / "," } "}");
 
 root = "\u0002" value "\u0003";
 
-#@pass<"a">(root);
-#@pass<"{a:b}">(root);
-#@pass<"{a:b,c:d}">(root);
+@pass<"a">(root);
+@pass<"{a:b}">(root);
+@pass<"{a:b,c:d}">(root);
 @pass<"{a:{}}">(root);
-#@pass<"{a:{},b:{}}">(root);
-#@pass<"{a:{b:c},d:{e:f}}">(root);
+@pass<"{a:{},b:{}}">(root);
+@pass<"{a:{b:c},d:{e:f}}">(root);

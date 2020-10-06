@@ -12,4 +12,8 @@ public class Line {
         this.target = target;
     }
 
+    @Override
+    public String toString() {
+        return source.id + " -> " + target.id;
+    }
 }

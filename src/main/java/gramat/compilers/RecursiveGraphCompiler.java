@@ -2,15 +2,14 @@ package gramat.compilers;
 
 import gramat.actions.ActionStore;
 import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
+import gramat.graph.plugs.*;
 import gramat.util.Count;
 import gramat.util.NameMap;
 
-import java.beans.Expression;
 import java.util.*;
 
 public class RecursiveGraphCompiler extends DefaultComponent {
@@ -74,36 +73,11 @@ public class RecursiveGraphCompiler extends DefaultComponent {
         var newNodes = new HashMap<Node, Node>();
         var plugs = new ArrayList<Plug>();
 
-        for (var oldLink : oldLine.graph.walkLinksFrom(oldLine.source)) {
-            if (oldLink.source == oldLine.source) {
-                if (oldLink.target == oldLine.target) {
-                    plugs.add(Plug.createFromSourceToTarget(oldLink));
-                }
-                else {
-                    var newTarget = newNodes.computeIfAbsent(oldLink.target, graph::createNodeFrom);
+        for (var oldLink : oldLine.graph.findLinksBetween(oldLine.source, oldLine.target)) {
+            var plug = tryMakePlug(oldLink, oldLine, newNodes);
 
-                    plugs.add(Plug.createFromSourceToNode(oldLink, newTarget));
-                }
-            }
-            else if (oldLink.source == oldLine.target) {
-                if (oldLink.target == oldLine.source) {
-                    plugs.add(Plug.createFromTargetToSource(oldLink));
-                }
-                else {
-                    var newTarget = newNodes.computeIfAbsent(oldLink.target, graph::createNodeFrom);
-
-                    plugs.add(Plug.createFromTargetToNode(oldLink, newTarget));
-                }
-            }
-            else if (oldLink.target == oldLine.source) {
-                var newSource = newNodes.computeIfAbsent(oldLink.source, graph::createNodeFrom);
-
-                plugs.add(Plug.createFromNodeToSource(oldLink, newSource));
-            }
-            else if (oldLink.target == oldLine.target) {
-                var newSource = newNodes.computeIfAbsent(oldLink.source, graph::createNodeFrom);
-
-                plugs.add(Plug.createFromNodeToTarget(oldLink, newSource));
+            if (plug != null) {
+                plugs.add(plug);
             }
             else {
                 makeDirectCopy(graph, oldLink, newNodes);
@@ -111,6 +85,45 @@ public class RecursiveGraphCompiler extends DefaultComponent {
         }
 
         return new Extension(plugs);
+    }
+
+    private Plug tryMakePlug(Link oldLink, Line oldLine, Map<Node, Node> newNodes) {
+        if (oldLink instanceof LinkSymbol) {
+            var oldLinkSym = (LinkSymbol)oldLink;
+            if (oldLink.source == oldLine.source) {
+                // From source
+                if (oldLink.target == oldLine.target) {
+                    // To target
+                    return new PlugSymbolSourceToTarget(oldLinkSym);
+                } else {
+                    // To Node
+                    var newTarget = newNodes.computeIfAbsent(oldLink.target, graph::createNodeFrom);
+
+                    return new PlugSymbolSourceToNode(oldLinkSym, newTarget);
+                }
+            }
+            else if (oldLink.source == oldLine.target) {
+                if (oldLink.target == oldLine.source) {
+                    return new PlugSymbolTargetToSource(oldLinkSym);
+                } else {
+                    var newTarget = newNodes.computeIfAbsent(oldLink.target, graph::createNodeFrom);
+
+                    return new PlugSymbolTargetToNode(oldLinkSym, newTarget);
+                }
+            }
+            else if (oldLink.target == oldLine.source) {
+                var newSource = newNodes.computeIfAbsent(oldLink.source, graph::createNodeFrom);
+
+                return new PlugSymbolNodeToSource(oldLinkSym, newSource);
+            }
+            else if (oldLink.target == oldLine.target) {
+                var newSource = newNodes.computeIfAbsent(oldLink.source, graph::createNodeFrom);
+
+                return new PlugSymbolNodeToTarget(oldLinkSym, newSource);
+            }
+        }
+
+        return null;
     }
 
     private static Link makeDirectCopy(Graph graph, Link oldLink, Map<Node, Node> newNodes) {
@@ -140,31 +153,16 @@ public class RecursiveGraphCompiler extends DefaultComponent {
 
     private void connectExtensionTo(Badge newBadge, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
         for (var plug : extension.plugs) {
-            if (plug.link instanceof LinkSymbol) {
-                var oldLink = (LinkSymbol)plug.link;
-                var newLine = computeLineFromPlug(plug, source, target);
-                var newMode = computeBadgeModeFromPlug(plug, newBadge);
-                var newLink = graph.createLink(
-                        newLine.source, newLine.target,
-                        oldLink.beforeActions, oldLink.afterActions,
-                        oldLink.symbol, newBadge, newMode);
-
-                // Apply wrapping actions
-                if (beforeActions != null) {
-                    newLink.beforeActions.prepend(beforeActions);
-                }
-
-                if (afterActions != null) {
-                    newLink.afterActions.append(afterActions);
-                }
+            if (plug instanceof PlugSymbol) {
+                plug.connectTo(graph, source, target, newBadge, beforeActions, afterActions);
             }
             else {
-                throw new UnsupportedValueException(plug.link);
+                throw new UnsupportedValueException(plug);
             }
         }
 
         // Resolve connected references
-        for (var linkRef : graph.findReferences(source, target)) {
+        for (var linkRef : graph.findReferencesBetween(source, target)) {
             resolveReference(linkRef);
         }
     }
@@ -190,58 +188,6 @@ public class RecursiveGraphCompiler extends DefaultComponent {
         connectExtensionTo(newBadge, extension, linkRef.source, linkRef.target, linkRef.beforeActions, linkRef.afterActions);
 
         stackRef.pop();
-    }
-
-    private Line computeLineFromPlug(Plug plug, Node source, Node target) {
-        if (plug.type == Plug.FROM_SOURCE_TO_TARGET) {
-            return new Line(graph, source, target);
-        }
-        else if (plug.type == Plug.FROM_SOURCE_TO_NODE) {
-            return new Line(graph, source, plug.node);
-        }
-        else if (plug.type == Plug.FROM_NODE_TO_SOURCE) {
-            return new Line(graph, plug.node, source);
-        }
-        else if (plug.type == Plug.FROM_NODE_TO_TARGET) {
-            return new Line(graph, plug.node, target);
-        }
-        else if (plug.type == Plug.FROM_TARGET_TO_NODE) {
-            return new Line(graph, target, plug.node);
-        }
-        else if (plug.type == Plug.FROM_TARGET_TO_SOURCE) {
-            return new Line(graph, target, source);
-        }
-        else {
-            throw new UnsupportedValueException(plug.type, "plug type");
-        }
-    }
-
-    private BadgeMode computeBadgeModeFromPlug(Plug plug, Badge badge) {
-        if (badge == gramat.badges.empty()) {
-            // If the badge is the empty, there is no point to have a badge mode
-            return BadgeMode.NONE;
-        }
-        else if (plug.type == Plug.FROM_SOURCE_TO_TARGET) {
-            return BadgeMode.NONE;
-        }
-        else if (plug.type == Plug.FROM_SOURCE_TO_NODE) {
-            return BadgeMode.PUSH;
-        }
-        else if (plug.type == Plug.FROM_NODE_TO_SOURCE) {
-            return BadgeMode.POP;
-        }
-        else if (plug.type == Plug.FROM_NODE_TO_TARGET) {
-            return BadgeMode.POP;
-        }
-        else if (plug.type == Plug.FROM_TARGET_TO_NODE) {
-            return BadgeMode.PUSH;
-        }
-        else if (plug.type == Plug.FROM_TARGET_TO_SOURCE) {
-            return BadgeMode.NONE;
-        }
-        else {
-            throw new UnsupportedValueException(plug.type, "plug type");
-        }
     }
 
     public Graph getGraph() {

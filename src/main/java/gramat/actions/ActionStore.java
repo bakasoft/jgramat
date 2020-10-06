@@ -63,4 +63,11 @@ public class ActionStore implements Iterable<Action> {
         return items.iterator();
     }
 
+    public static ActionStore join(ActionStore before, ActionStore after) {
+        var result = new ActionStore();
+        result.append(before);
+        result.append(after);
+        return result;
+    }
+
 }

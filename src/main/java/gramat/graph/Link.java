@@ -5,7 +5,7 @@ import gramat.actions.ActionStore;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
-abstract public class Link {
+public abstract class Link {
 
     public final Node source;
     public final Node target;
@@ -30,4 +30,6 @@ abstract public class Link {
         return new NodeSet(targets);
     }
 
+    @Override
+    public abstract String toString();
 }

@@ -8,4 +8,8 @@ public class LinkReference extends Link {
         super(source, target, beforeActions, afterActions);
         this.reference = reference;
     }
+    @Override
+    public String toString() {
+        return source.id + "->" + target.id + " : " + reference;
+    }
 }

@@ -17,4 +17,8 @@ public class LinkSymbol extends Link {
         this.badge = Objects.requireNonNull(badge);
         this.mode = Objects.requireNonNull(mode);
     }
+    @Override
+    public String toString() {
+        return source.id + "->" + target.id + " : " + symbol;
+    }
 }
