@@ -2,6 +2,8 @@ package gramat.parsing;
 
 import gramat.actions.*;
 import gramat.badges.BadgeMode;
+import gramat.exceptions.UnsupportedValueException;
+import gramat.machine.Effect;
 import gramat.models.automata.*;
 import gramat.badges.Badge;
 import gramat.framework.Component;
@@ -89,7 +91,7 @@ public class StateParser extends DefaultComponent {
         var node = new State(state.id);
 
         if (state.accepted != null && state.accepted) {
-            node.markAccepted();
+            node.accepted = true;
         }
 
         idNodes.put(state.id, node);
@@ -114,7 +116,7 @@ public class StateParser extends DefaultComponent {
                 }
             }
 
-            node.createTransition(symbol, badge, mode, target, before.toArray(), after.toArray());
+            node.transition.add(badge, symbol, new Effect(target, before.toArray(), after.toArray()));
         }
 
         return node;

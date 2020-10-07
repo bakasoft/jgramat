@@ -14,7 +14,7 @@ public class BadgeSource implements Iterable<Badge> {
     public BadgeSource() {
         badges = new ArrayList<>();
 
-        emptyBadge = new Badge(null);
+        emptyBadge = new BadgeWild();
 
         badges.add(emptyBadge);
     }
@@ -25,12 +25,15 @@ public class BadgeSource implements Iterable<Badge> {
 
     public Badge badge(String token) {
         for (var badge : badges) {
-            if (Objects.equals(badge.token, token)) {
-                return badge;
+            if (badge instanceof BadgeToken) {
+                var badgeToken = (BadgeToken)badge;
+                if (Objects.equals(badgeToken.token, token)) {
+                    return badge;
+                }
             }
         }
 
-        var badge = new Badge(token);
+        var badge = new BadgeToken(token);
         badges.add(badge);
         return badge;
     }

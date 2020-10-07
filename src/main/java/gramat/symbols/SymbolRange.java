@@ -1,5 +1,6 @@
 package gramat.symbols;
 
+import gramat.exceptions.UnsupportedValueException;
 import gramat.util.PP;
 
 public class SymbolRange extends Symbol {
@@ -15,6 +16,26 @@ public class SymbolRange extends Symbol {
     @Override
     public boolean test(char c) {
         return c >= begin && c <= end;
+    }
+
+    @Override
+    public boolean intersects(Symbol other) {
+        if (other instanceof SymbolChar) {
+            var o = (SymbolChar)other;
+
+            return o.value >= this.begin && o.value <= end;
+        }
+        else if (other instanceof SymbolRange) {
+            var o = (SymbolRange)other;
+
+            return this.begin <= o.end && this.end >= o.begin;
+        }
+        else if (other instanceof SymbolWild) {
+            return false;
+        }
+        else {
+            throw new UnsupportedValueException(other);
+        }
     }
 
     @Override

@@ -10,17 +10,18 @@ import java.util.Stack;
 public class Context {
 
     public final Tape tape;
+    public final Heap heap;
     public final Logger logger;
 
     private final Stack<Container> containers;
 
     private Integer position;
 
-    public Context(Logger logger, Tape tape) {
+    public Context(Logger logger, Tape tape, Heap heap) {
         this.logger = logger;
         this.tape = tape;
-
-        containers = new Stack<>();
+        this.heap = heap;
+        this.containers = new Stack<>();
     }
 
     public void pushContainer() {

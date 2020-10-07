@@ -1,35 +1,74 @@
 package gramat.machine;
 
-import gramat.actions.Action;
 import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
+import gramat.symbols.SymbolMatcher;
 
-import java.util.Objects;
+import java.util.*;
 
 public class Transition {
 
-    public final State target;
-    public final Symbol symbol;
-    public final Badge badge;
-    public final BadgeMode mode;
-    public final Action[] before;
-    public final Action[] after;
+    private final Map<Badge, SymbolMatcher<Effect>> badges;
 
-    public Transition(Symbol symbol, Badge badge, BadgeMode mode, State target, Action[] before, Action[] after) {
-        this.symbol = Objects.requireNonNull(symbol);
-        this.badge = Objects.requireNonNull(badge);
-        this.mode = Objects.requireNonNull(mode);
-        this.target = Objects.requireNonNull(target);
-        this.before = before;
-        this.after = after;
+    public Transition() {
+        badges = new HashMap<>();
     }
 
-    public Symbol getSymbol() {
-        return symbol;
+    public Set<Badge> getBadges() {
+        return badges.keySet();
     }
 
-    public State getTarget() {
-        return target;
+    public Set<Symbol> getSymbols(Badge badge) {
+        var symbols = badges.get(badge);
+
+        if (symbols == null) {
+            return Set.of();
+        }
+
+        return symbols.getSymbols();
     }
+
+    public Effect getEffect(Badge badge, Symbol symbol) {
+        var symbols = badges.get(badge);
+
+        if (symbols == null) {
+            return null;
+        }
+
+        return symbols.get(symbol);
+    }
+
+    public void add(Badge badge, Symbol symbol, Effect effect) {
+        var symbolMap = badges.computeIfAbsent(badge, k -> new SymbolMatcher<>());
+
+        symbolMap.add(symbol, effect);
+    }
+
+    public Effect match(Badge badge, char chr) {
+        var fallback = (SymbolMatcher<Effect>)null;
+
+        for (var entry : badges.entrySet()) {
+            var entryBadge = entry.getKey();
+            var entryTransition = entry.getValue();
+
+            if (entryBadge.isWild()) {
+                fallback = entryTransition;
+            }
+            else if (entryBadge == badge) {
+                var effect = entryTransition.match(chr);
+
+                if (effect != null) {
+                    return effect;
+                }
+            }
+        }
+
+        if (fallback == null) {
+            return null;
+        }
+
+        return fallback.match(chr);
+    }
+
+
 }

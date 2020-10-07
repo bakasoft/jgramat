@@ -1,13 +1,10 @@
 package gramat.eval;
 
-import gramat.badges.Badge;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.framework.Logger;
 import gramat.input.Tape;
 import gramat.machine.State;
-import gramat.machine.Transition;
-import gramat.symbols.SymbolWild;
 import gramat.util.PP;
 import gramat.util.StringUtils;
 
@@ -25,7 +22,8 @@ public class Evaluator extends DefaultComponent {
     }
 
     public Object evalValue(State initial) {
-        var context = new Context(logger, tape);
+        var heap = new Heap(gramat.badges.empty());
+        var context = new Context(logger, tape, heap);
 
         context.pushContainer();
 
@@ -35,11 +33,9 @@ public class Evaluator extends DefaultComponent {
     }
 
     private void eval_state(State initial, Context context) {
-        var heap = new Heap(gramat.badges.empty());
+        var result = run_state(initial, context);
 
-        var result = run_state(initial, context, heap);
-
-        if (heap.notEmpty()) {
+        if (context.heap.notEmpty()) {
             throw new RejectedException("heap is not empty");
         }
 
@@ -48,46 +44,32 @@ public class Evaluator extends DefaultComponent {
             throw new RejectedException("unexpected char: " + PP.str(tape.peek()) + ", options: " + list_options(result));
         }
 
-        if (!result.isAccepted()) {
+        if (!result.accepted) {
             throw new RejectedException("not accepted state");
         }
     }
 
-    private State run_state(State initial, Context context, Heap heap) {
+    private State run_state(State initial, Context context) {
         var state = initial;
 
         while (true) {
             logger.debug("evaluating state %s", state.id);
 
             // Find matching transition
-            var chr = tape.peek();
-            var badge = heap.peek();
-            var transition = (Transition) null;
-            var wild = (Transition) null;
-            for (var t : state) {
-                if (t.symbol instanceof SymbolWild) {
-                    wild = t;
-                }
-                else if (enter_transition(t, chr, badge, heap)) {
-                    transition = t;
-                    break;
-                }
-            }
-
-            // Fallback in wild transition (if available)
-            if (transition == null && wild != null) {
-                transition = wild;
-            }
+            var badge = context.heap.peek();
+            var chr = context.tape.peek();
+            var effect = state.transition.match(badge, chr);
 
             // This is the end of the run
-            if (transition == null) {
+            if (effect == null) {
+                logger.debug("missing transition from %s with %s / %s", state.id, PP.str(chr), PP.str(badge.toString()));
                 break;
             }
 
-            logger.debug("transition %s -> %s with %s", state.id, transition.target.id, transition.symbol);
+            logger.debug("transition %s -> %s with %s / %s", state.id, effect.target.id, PP.str(chr), PP.str(badge.toString()));
 
-            if (context != null && transition.before != null) {
-                for (var action : transition.before) {
+            if (context != null && effect.before != null) {
+                for (var action : effect.before) {
                     logger.debug("running action %s", action);
                     action.run(context);
                 }
@@ -96,46 +78,25 @@ public class Evaluator extends DefaultComponent {
             tape.move();
             logger.debug("tape moved to position: %s", tape.getPosition());
 
-            if (context != null && transition.after != null) {
-                for (var action : transition.after) {
+            if (context != null && effect.after != null) {
+                for (var action : effect.after) {
                     logger.debug("running action %s", action);
                     action.run(context);
                 }
             }
 
             // Go for next state!
-            state = transition.target;
+            state = effect.target;
         }
 
         return state;
     }
 
-    private boolean enter_transition(Transition t, char chr, Badge badge, Heap heap) {
-        if (t.symbol.test(chr)) {
-            switch (t.mode) {
-                case NONE:
-                    return true;
-                case PUSH:
-                    logger.debug("heap push " + t.badge);
-                    return heap.push(t.badge);
-                case PEEK:
-                    return t.badge == badge;
-                case POP:
-                    if (t.badge != badge) {
-                        return false;
-                    }
-                    logger.debug("heap pop " + t.badge);
-                    return heap.pop(t.badge);
-            }
-        }
-        return false;
-    }
-
     private static String list_options(State state) {
         var symbols = new LinkedHashSet<>();
 
-        for (var transition : state) {
-            symbols.add(transition.symbol);
+        for (var badge : state.transition.getBadges()) {
+            symbols.addAll(state.transition.getSymbols(badge));
         }
 
         return StringUtils.join(",", symbols);

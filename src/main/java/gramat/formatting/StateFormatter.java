@@ -1,7 +1,8 @@
 package gramat.formatting;
 
+import gramat.badges.Badge;
 import gramat.machine.State;
-import gramat.machine.Transition;
+import gramat.symbols.Symbol;
 import gramat.util.StringUtils;
 
 import java.util.*;
@@ -13,7 +14,7 @@ public class StateFormatter extends AmFormatter {
     }
 
     public void write(State initial) {
-        for (var source : list_nodes(initial)) {
+        for (var source : listStates(initial)) {
             if (source == initial) {
                 raw("->");
                 sp();
@@ -21,58 +22,55 @@ public class StateFormatter extends AmFormatter {
                 ln();
             }
 
-            for (var transition : list_transitions(source)) {
-                var target = transition.target;
-                var symbol = transition.symbol.toString();
-                var badge = transition.badge.toString();
-                var mode = transition.mode.name();
-                var before = StringUtils.join("\n", transition.before);
-                var after = StringUtils.join("\n", transition.after);
+            for (var badge : listBadges(source)) {
+                for (var symbol : listSymbols(source, badge)) {
+                    var effect = source.transition.getEffect(badge, symbol);
+                    var target = effect.target;
+                    var before = StringUtils.join("\n", effect.before);
+                    var after = StringUtils.join("\n", effect.after);
 
-                if (before.length() > 0) {
+                    if (before.length() > 0) {
+                        raw(source.id);
+                        sp();
+                        raw("->");
+                        sp();
+                        raw(target.id);
+                        sp();
+                        raw("!<");
+                        sp();
+                        amstr(before);
+                        ln();
+                    }
+
                     raw(source.id);
                     sp();
                     raw("->");
                     sp();
                     raw(target.id);
                     sp();
-                    raw("!<");
+                    raw(":");
                     sp();
-                    amstr(before);
+                    amstr(symbol.toString());
+                    raw("/");
+                    amstr(badge.toString());
                     ln();
-                }
 
-                raw(source.id);
-                sp();
-                raw("->");
-                sp();
-                raw(target.id);
-                sp();
-                raw(":");
-                sp();
-                amstr(symbol);
-                raw("/");
-                amstr(badge);
-                raw("(");
-                amstr(mode);
-                raw(")");
-                ln();
-
-                if (after.length() > 0) {
-                    raw(source.id);
-                    sp();
-                    raw("->");
-                    sp();
-                    raw(target.id);
-                    sp();
-                    raw("!>");
-                    sp();
-                    amstr(after);
-                    ln();
+                    if (after.length() > 0) {
+                        raw(source.id);
+                        sp();
+                        raw("->");
+                        sp();
+                        raw(target.id);
+                        sp();
+                        raw("!>");
+                        sp();
+                        amstr(after);
+                        ln();
+                    }
                 }
             }
 
-            if (source.isAccepted()) {
+            if (source.accepted) {
                 raw(source.id);
                 sp();
                 raw("<=");
@@ -81,30 +79,23 @@ public class StateFormatter extends AmFormatter {
         }
     }
 
-    private static List<Transition> list_transitions(State state) {
-        var hashLink = new HashMap<String, Transition>();
+    private static List<Badge> listBadges(State state) {
+        var badges = new ArrayList<>(state.transition.getBadges());
 
-        for (var link : state) {
-            var hash = link.target.id + "/" + link.symbol + "/" + link.hashCode();
-            hashLink.put(hash, link);
-        }
+        badges.sort(Comparator.comparing(Object::toString));
 
-        var hashes = new ArrayList<>(hashLink.keySet());
-
-        Collections.sort(hashes);
-
-        var result = new ArrayList<Transition>();
-
-        for (var hash : hashes) {
-            var link = hashLink.get(hash);
-
-            result.add(link);
-        }
-
-        return result;
+        return badges;
     }
 
-    private static List<State> list_nodes(State root) {
+    private static List<Symbol> listSymbols(State state, Badge badge) {
+        var symbols = new ArrayList<>(state.transition.getSymbols(badge));
+
+        symbols.sort(Comparator.comparing(Object::toString));
+
+        return symbols;
+    }
+
+    private static List<State> listStates(State root) {
         var control = new HashSet<State>();
         var queue = new LinkedList<State>();
         var idNodes = new HashMap<String, State>();
@@ -112,17 +103,21 @@ public class StateFormatter extends AmFormatter {
         queue.add(root);
 
         while (queue.size() > 0) {
-            var node = queue.remove();
+            var state = queue.remove();
 
-            if (control.add(node)) {
-                if (idNodes.containsKey(node.id)) {
+            if (control.add(state)) {
+                if (idNodes.containsKey(state.id)) {
                     throw new RuntimeException();
                 }
 
-                idNodes.put(node.id, node);
+                idNodes.put(state.id, state);
 
-                for (var link : node) {
-                    queue.add(link.target);
+                for (var badge : state.transition.getBadges()) {
+                    for (var symbol : state.transition.getSymbols(badge)) {
+                        var effect = state.transition.getEffect(badge, symbol);
+
+                        queue.add(effect.target);
+                    }
                 }
             }
         }

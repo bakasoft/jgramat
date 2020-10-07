@@ -27,11 +27,11 @@ public class RecursionExit extends Action {
 
     @Override
     public void run(Context context) {
-
+        context.heap.pop(badge);
     }
 
     @Override
     public List<String> getArguments() {
-        return List.of(badge.token);
+        return List.of(badge.toString());
     }
 }

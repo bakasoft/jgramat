@@ -1,15 +1,7 @@
 package gramat.badges;
 
-public class Badge {
+public abstract class Badge {
 
-    public final String token;
+    public abstract boolean isWild();
 
-    public Badge(String token) {
-        this.token = token;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(token);
-    }
 }
