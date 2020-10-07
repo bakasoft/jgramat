@@ -33,9 +33,6 @@ public class GeneralGraphCompiler extends DefaultComponent {
             var expr = input.dependencies.find(name);
             var segment = compile(expr);
 
-//            System.out.println("========== SEGMENT " + name);
-//            new NodeFormatter(System.out).write(segment);
-
             dependencies.set(name, segment);
         }
 

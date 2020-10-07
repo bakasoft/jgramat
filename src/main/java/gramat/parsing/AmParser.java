@@ -18,8 +18,6 @@ public class AmParser extends DefaultComponent implements AmMachineParser, AmExp
         file.rules = new ArrayList<>();
         file.calls = new ArrayList<>();
 
-        expectToken(tape, Tape.STX);
-
         skipVoid(tape);
 
         while (true) {
@@ -41,8 +39,6 @@ public class AmParser extends DefaultComponent implements AmMachineParser, AmExp
 
             expectToken(tape, ';');
         }
-
-        expectToken(tape, Tape.ETX);
 
         return file;
     }

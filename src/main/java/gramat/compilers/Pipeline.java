@@ -32,29 +32,44 @@ public class Pipeline {
 
     public static SegmentInput compileStep1(ExpressionInput input) {
         var compiler = new GeneralGraphCompiler(input.parent);
+        var result = compiler.compile(input);
 
-        return compiler.compile(input);
+        System.out.println("========== SEGMENT");
+        new NodeFormatter(System.out).write(result.main);
+
+        for (var name : result.dependencies.keySet()) {
+            var segment = result.dependencies.find(name);
+
+            System.out.println("========== SEGMENT " + name);
+            new NodeFormatter(System.out).write(segment);
+        }
+
+
+        return result;
     }
 
     public static LineInput compileStep2(SegmentInput input) {
         var compiler = new LinearGraphCompiler(input.parent, input.dependencies);
-        var lines = compiler.compile(input.main);
+        var result = compiler.compile(input.main);
 
-        for (var entry : lines.dependencies.entrySet()) {
+        System.out.println("========== LINE");
+        new NodeFormatter(System.out).write(result.main);
+
+        for (var entry : result.dependencies.entrySet()) {
             System.out.println("========== LINE " + entry.getKey());
 
             new NodeFormatter(System.out).write(entry.getValue());
         }
 
-        return lines;
+        return result;
     }
 
     public static Line compileStep3(LineInput graph) {
         var resolver = new RecursiveGraphCompiler(graph.parent, graph.dependencies);
         var line = resolver.resolve(graph.main);
 
-//        System.out.println("========== RESOLVED");
-//        new NodeFormatter(System.out).write(line);
+        System.out.println("========== RESOLVED");
+        new NodeFormatter(System.out).write(line);
 
         return line;
     }

@@ -45,7 +45,7 @@ public class Evaluator extends DefaultComponent {
         }
 
         if (!result.accepted) {
-            throw new RejectedException("not accepted state");
+            throw new RejectedException("not matched: " + PP.str(tape.peek()) + ", options: " + list_options(result));
         }
     }
 

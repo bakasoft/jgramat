@@ -1,0 +1,6 @@
+Test-1 = @value({"a"});
+
+@pass<"">(Test-1);
+#@pass<"a">(Test-1);
+#@pass<"aa">(Test-1);
+#@pass<"aaa">(Test-1);

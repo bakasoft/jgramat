@@ -4,9 +4,6 @@ public class Tape {
 
     // TODO Add support to load more tapes from a string path
 
-    public static final char STX = '\u0002'; // Start of Text
-    public static final char ETX = '\u0003'; // End of Text
-
     private final String source;
     private final String content;
 
@@ -19,15 +16,12 @@ public class Tape {
     public Tape(String content, String source) {
         this.content = content;
         this.source = source;
-        this.position = -1;
+        this.position = 0;
     }
 
     public char peek() {
-        if (position < 0) {
-            return STX;
-        }
-        else if (position >= content.length()) {
-            return ETX;
+        if (position < 0 || position >= content.length()) {
+            return '\0';
         }
         return content.charAt(position);
     }

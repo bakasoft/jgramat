@@ -6,11 +6,9 @@ entry = @set(@name(string) ":" value);
 
 object = @object("{" { entry / "," } "}");
 
-root = "\u0002" value "\u0003";
-
-@pass<"a">(root);
-@pass<"{a:b}">(root);
-@pass<"{a:b,c:d}">(root);
-@pass<"{a:{}}">(root);
-@pass<"{a:{},b:{}}">(root);
-@pass<"{a:{b:c},d:{e:f}}">(root);
+@pass<"a">(value);
+@pass<"{a:b}">(value);
+@pass<"{a:b,c:d}">(value);
+@pass<"{a:{}}">(value);
+@pass<"{a:{},b:{}}">(value);
+@pass<"{a:{b:c},d:{e:f}}">(value);
