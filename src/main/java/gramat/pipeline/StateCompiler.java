@@ -1,4 +1,4 @@
-package gramat.compilers;
+package gramat.pipeline;
 
 import gramat.actions.Action;
 import gramat.actions.ActionStore;
@@ -12,34 +12,41 @@ import gramat.machine.State;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
+import gramat.util.Chain;
 import gramat.util.Count;
 
 import java.util.*;
 
 public class StateCompiler extends DefaultComponent {
 
+    public static State compile(Component parent, Machine machine) {
+        var compiler = new StateCompiler(parent, machine.graph);
+
+        return compiler.compile(machine.root);
+    }
+
     private final Graph graph;
 
     private final Map<String, State> idStates;
     private final Count nextId;
 
-    public StateCompiler(Component parent, Graph graph) {
+    private StateCompiler(Component parent, Graph graph) {
         super(parent);
         this.graph = graph;
         this.idStates = new HashMap<>();
         this.nextId = new Count();
     }
 
-    public State compile(Segment segment) {
-        var initial = makeState(segment.sources, segment.targets);
-        var queue = new LinkedList<NodeSet>();
+    private State compile(Root root) {
+        var initial = makeState(Chain.of(root.source), root.targets);
+        var queue = new LinkedList<Chain<Node>>();
         var control = new HashSet<String>();
 
-        queue.add(segment.sources);
+        queue.add(Chain.of(root.source));
 
         while (queue.size() > 0) {
             var sources = queue.remove();
-            var sourcesID = sources.computeID();
+            var sourcesID = Node.computeID(sources);
 
             if (control.add(sourcesID)) {
                 for (var symbol : gramat.symbols) {
@@ -48,8 +55,8 @@ public class StateCompiler extends DefaultComponent {
 
                         if (links.size() > 0) {
                             var targets = Link.collectTargets(links);
-                            var newSource = makeState(sources, segment.targets);
-                            var newTarget = makeState(targets, segment.targets);
+                            var newSource = makeState(sources, root.targets);
+                            var newTarget = makeState(targets, root.targets);
                             var before = new ActionStore();
                             var after = new ActionStore();
                             var mode = collapseMode(links);
@@ -122,8 +129,8 @@ public class StateCompiler extends DefaultComponent {
         return mode;
     }
 
-    private State makeState(NodeSet nodes, NodeSet accepted) {
-        var id = nodes.computeID();
+    private State makeState(Chain<Node> nodes, Chain<Node> accepted) {
+        var id = Node.computeID(nodes);
         var state = idStates.get(id);
 
         if (state == null) {
@@ -131,7 +138,7 @@ public class StateCompiler extends DefaultComponent {
             state = new State(String.valueOf(nextId.nextString()));
             state.accepted = nodes.containsAny(accepted);
 
-            if (nodes.toCollection().stream().anyMatch(n -> n.wild)) { // TODO improve this operation
+            if (nodes.anyMatch(n -> n.wild)) { // TODO improve this operation
                 var symbol = gramat.symbols.wild();
                 var badge = gramat.badges.empty();
                 // TODO what badge should it use?

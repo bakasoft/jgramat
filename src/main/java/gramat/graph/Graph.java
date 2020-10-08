@@ -5,7 +5,9 @@ import gramat.actions.ActionStore;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
+import gramat.util.Chain;
 import gramat.util.Count;
+import gramat.util.TokenGenerator;
 
 import javax.naming.LinkRef;
 import java.util.*;
@@ -13,29 +15,24 @@ import java.util.stream.Collectors;
 
 public class Graph {
 
-    private final Count ids;
+    private final TokenGenerator ids;
 
     public final List<Link> links;
     public final List<Node> nodes;
 
     public Graph() {
-        this(new Count());
-    }
-
-    public Graph(Count ids) {
-        this.ids = ids;
+        this.ids = new TokenGenerator("_");
         this.links = new ArrayList<>();
         this.nodes = new ArrayList<>();
     }
 
     public Node createNode() {
-        var id = ids.nextString();
+        var id = ids.next();
         return createNode(id, false);
     }
 
     public Node createNodeFrom(Node original) {
-        var id = ids.nextString();
-        return createNode(original.id + "_" + id, false);
+        return createNode(ids.next(original.id), false);
     }
 
     public Node createNode(String id, boolean wild) {
@@ -46,13 +43,7 @@ public class Graph {
         return node;
     }
 
-    public NodeSet createNodeSet() {
-        var node = createNode();
-
-        return new NodeSet(node);
-    }
-
-    public void createLinks(NodeSet sources, NodeSet targets, Symbol symbol, Badge badge, BadgeMode mode) {
+    public void createLinks(Chain<Node> sources, Chain<Node> targets, Symbol symbol, Badge badge, BadgeMode mode) {
         for (var source : sources) {
             for (var target : targets) {
                 createLink(source, target, symbol, badge, mode);
@@ -60,7 +51,7 @@ public class Graph {
         }
     }
 
-    public void createLinks(NodeSet sources, NodeSet targets, String reference) {
+    public void createLinks(Chain<Node> sources, Chain<Node> targets, String reference) {
         for (var source : sources) {
             for (var target : targets) {
                 createLink(source, target, reference);
@@ -88,7 +79,7 @@ public class Graph {
         return link;
     }
 
-    public List<Link> findIncomingLinks(NodeSet targets) {
+    public List<Link> findIncomingLinks(Chain<Node> targets) {
         return links.stream()
                 .filter(t -> targets.contains(t.target))
                 .collect(Collectors.toList());
@@ -100,7 +91,7 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<LinkSymbol> findTransitions(NodeSet sources, Symbol symbol, Badge badge) {
+    public List<LinkSymbol> findTransitions(Chain<Node> sources, Symbol symbol, Badge badge) {
         var result = new ArrayList<LinkSymbol>();
         for (var link : links) {
             // Check for only links with symbols
@@ -130,7 +121,7 @@ public class Graph {
         return result;
     }
 
-    public List<Link> findOutgoingLinks(NodeSet sources) {
+    public List<Link> findOutgoingLinks(Chain<Node> sources) {
         return links.stream()
                 .filter(t -> sources.contains(t.source))
                 .collect(Collectors.toList());
@@ -143,15 +134,15 @@ public class Graph {
     }
 
     public List<Link> walkLinksFrom(Node source) {
-        return walkLinksFrom(new NodeSet(source));
+        return walkLinksFrom(Chain.of(source));
     }
 
-    public List<Link> walkLinksFrom(NodeSet sources) {
+    public List<Link> walkLinksFrom(Chain<Node> sources) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
 
-        queue.addAll(sources.toCollection());
+        queue.addAll(sources.toList());
 
         while (queue.size() > 0) {
             var source = queue.remove();
@@ -169,6 +160,14 @@ public class Graph {
     }
 
     public List<Link> findLinksBetween(Node source, Node target) {
+        return findLinksBetween(source, Chain.of(target));
+    }
+
+    public List<Link> findLinksBetween(Root root) {
+        return findLinksBetween(root.source, root.targets);
+    }
+
+    public List<Link> findLinksBetween(Node source, Chain<Node> targets) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
@@ -184,7 +183,7 @@ public class Graph {
 
                     // We should not find outgoing links from target here
                     //   because we don't know all the nodes from the source yet
-                    if (link.target != target) {
+                    if (!targets.contains(link.target)) {
                         queue.add(link.target);
                     }
                 }
@@ -193,7 +192,7 @@ public class Graph {
 
         // At this point it is safe to check outgoing links from target
         //   and filter those which go back to the nodes from source
-        for (var link : findOutgoingLinks(target)) {
+        for (var link : findOutgoingLinks(targets)) {
             if (link instanceof LinkReference && control.contains(link.target)) {
                 result.add(link);
             }
@@ -202,27 +201,17 @@ public class Graph {
         return result;
     }
 
-    public List<LinkReference> findReferencesBetween(Node source, Node target) {
+    public List<LinkReference> findReferencesBetween(Node source, Chain<Node> target) {
         // TODO optimize this filter
         return findLinksBetween(source, target).stream()
                 .filter(l -> l instanceof LinkReference)
                 .map(l -> (LinkReference)l).collect(Collectors.toList());
     }
 
-    public Segment segment() {
-        return new Segment(this, createNodeSet(), createNodeSet());
-    }
-
-    public Segment segment(Node source, Node target) {
-        return new Segment(this, new NodeSet(source), new NodeSet(target));
-    }
-
-    public Segment segment(NodeSet sources, NodeSet targets) {
-        return new Segment(this, sources, targets);
-    }
-
-    public Line createLine() {
-        return new Line(this, createNode(), createNode());
+    public Root createRoot() {
+        var initial = createNode();
+        var accepted = createNode();
+        return new Root(initial, Chain.of(accepted));
     }
 
     public void removeLink(Link link) {

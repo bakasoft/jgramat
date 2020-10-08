@@ -1,8 +1,11 @@
 package gramat.graph;
 
 import gramat.actions.ActionStore;
+import gramat.util.Chain;
+import gramat.util.DataUtils;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Link {
@@ -20,14 +23,8 @@ public abstract class Link {
         this.afterActions = Objects.requireNonNull(afterActions);
     }
 
-    public static NodeSet collectTargets(Iterable<? extends Link> links) {
-        var targets = new LinkedHashSet<Node>();
-
-        for (var link : links) {
-            targets.add(link.target);
-        }
-
-        return new NodeSet(targets);
+    public static Chain<Node> collectTargets(List<? extends Link> links) {
+        return Chain.of(DataUtils.map(links, link -> link.target));
     }
 
     @Override

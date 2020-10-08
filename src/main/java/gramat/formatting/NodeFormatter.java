@@ -9,23 +9,17 @@ public class NodeFormatter extends AmFormatter {
         super(output);
     }
 
-    public void write(Line line) {
-        write(line.graph.segment(line.source, line.target));
-    }
+    public void write(Graph graph, Root root) {
+        raw("->");
+        sp();
+        raw(root.source.id);
+        ln();
 
-    public void write(Segment segment) {
-        for (var source : segment.sources) {
-            raw("->");
-            sp();
-            raw(source.id);
-            ln();
-        }
-
-        for (var link : segment.graph.links) {
+        for (var link : graph.findLinksBetween(root)) {
             write(link);
         }
 
-        for (var target : segment.targets) {
+        for (var target : root.targets) {
             raw(target.id);
             sp();
             raw("<=");

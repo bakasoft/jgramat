@@ -1,28 +1,34 @@
 package gramat;
 
-import gramat.compilers.ExpressionCompiler;
+import gramat.pipeline.Pipeline;
+import org.junit.Assert;
 import org.junit.Test;
 
 import util.Resources;
 
 public class GramatTest {
 
+    private int runTests(String resource) {
+        var tape = Resources.loadTape(resource);
+        var gramat = new Gramat();
+        var source = Pipeline.toSource(gramat, tape);
+
+        return source.runTests(gramat);
+    }
+
     @Test
     public void test03() {
-        var tape = Resources.loadTape("test_03.gm");
-        var gramat = new Gramat();
-        var compiler = new ExpressionCompiler(gramat);
-
-        compiler.compile(tape);
+        Assert.assertTrue(runTests("test03.gm") > 0);
     }
 
     @Test
     public void test04() {
-        var tape = Resources.loadTape("test_04.gm");
-        var gramat = new Gramat();
-        var compiler = new ExpressionCompiler(gramat);
+        Assert.assertTrue(runTests("test04.gm") > 0);
+    }
 
-        compiler.compile(tape);
+    @Test
+    public void test05() {
+        Assert.assertTrue(runTests("test05.gm") > 0);
     }
 
 }
