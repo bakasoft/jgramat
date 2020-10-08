@@ -1,8 +1,7 @@
 package gramat.pipeline;
 
-import gramat.actions.ActionStore;
+import gramat.actions.Action;
 import gramat.badges.Badge;
-import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
@@ -10,6 +9,7 @@ import gramat.graph.plugs.*;
 import gramat.graph.util.NodeMapper;
 import gramat.symbols.Symbol;
 import gramat.symbols.SymbolReference;
+import gramat.util.Chain;
 import gramat.util.NameMap;
 import gramat.util.TokenGenerator;
 
@@ -73,7 +73,7 @@ public class MachineCompiler extends DefaultComponent {
         return root;
     }
 
-    private void copyRoot(NodeMapper mapper, Root baseRoot, ActionStore beforeActions, ActionStore afterActions) {
+    private void copyRoot(NodeMapper mapper, Root baseRoot, Chain<Action> beforeActions, Chain<Action> afterActions) {
         var newLinks = new ArrayList<Link>();
 
         // Direct copy
@@ -105,7 +105,7 @@ public class MachineCompiler extends DefaultComponent {
         localMapper.set(rootRef.source, newLink.source);
         localMapper.set(rootRef.targets, newLink.target);
 
-        copyRoot(localMapper, rootRef, newLink.beforeActions, newLink.afterActions);
+        copyRoot(localMapper, rootRef, newLink.preActions, newLink.postActions);
 
         graph.removeLink(newLink);
     }
@@ -116,7 +116,7 @@ public class MachineCompiler extends DefaultComponent {
 
         return graph.createLink(
                     newSource, newTarget,
-                    oldLink.beforeActions, oldLink.afterActions,
+                    oldLink.preActions, oldLink.preActions,
                     oldLink.symbol, oldLink.badge, oldLink.mode);
     }
 
@@ -146,7 +146,7 @@ public class MachineCompiler extends DefaultComponent {
 
         var extension = extensions.find(reference);
 
-        connectExtensionTo(mapper, newBadge, extension, newSource, newTarget, newLink.beforeActions, newLink.afterActions);
+        connectExtensionTo(mapper, newBadge, extension, newSource, newTarget, newLink.preActions, newLink.postActions);
 
         stackRef.pop();
     }
@@ -176,49 +176,44 @@ public class MachineCompiler extends DefaultComponent {
             // From source
             if (oldRoot.targets.contains(oldLink.target)) {
                 // To target
-                return new PlugSymbolSourceToTarget(oldLink);
+                return new PlugSourceToTarget(oldLink);
             } else {
                 // To Node
                 var newTarget = mapper.make(oldLink.target);
 
-                return new PlugSymbolSourceToNode(oldLink, newTarget);
+                return new PlugSourceToNode(oldLink, newTarget);
             }
         }
         else if (oldRoot.targets.contains(oldLink.source)) {
             if (oldLink.target == oldRoot.source) {
-                return new PlugSymbolTargetToSource(oldLink);
+                return new PlugTargetToSource(oldLink);
             } else {
                 var newTarget = mapper.make(oldLink.target);
 
-                return new PlugSymbolTargetToNode(oldLink, newTarget);
+                return new PlugTargetToNode(oldLink, newTarget);
             }
         }
         else if (oldLink.target == oldRoot.source) {
             var newSource = mapper.make(oldLink.source);
 
-            return new PlugSymbolNodeToSource(oldLink, newSource);
+            return new PlugNodeToSource(oldLink, newSource);
         }
         else if (oldRoot.targets.contains(oldLink.target)) {
             var newSource = mapper.make(oldLink.source);
 
-            return new PlugSymbolNodeToTarget(oldLink, newSource);
+            return new PlugNodeToTarget(oldLink, newSource);
         }
 
         return null;
     }
 
-    private void connectExtensionTo(NodeMapper mapper, Badge newBadge, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
+    private void connectExtensionTo(NodeMapper mapper, Badge newBadge, Extension extension, Node source, Node target, Chain<Action> beforeActions, Chain<Action> afterActions) {
         var newLinks = new ArrayList<Link>();
 
         for (var plug : extension.plugs) {
-            if (plug instanceof PlugSymbol) {
-                var newLink = plug.connectTo(graph, source, target, newBadge, beforeActions, afterActions);
+            var newLink = plug.connectTo(graph, source, target, newBadge, beforeActions, afterActions);
 
-                newLinks.add(newLink);
-            }
-            else {
-                throw new UnsupportedValueException(plug);
-            }
+            newLinks.add(newLink);
         }
 
         resolveFlatReferences(mapper, newLinks);

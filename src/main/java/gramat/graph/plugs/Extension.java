@@ -1,4 +1,4 @@
-package gramat.graph;
+package gramat.graph.plugs;
 
 import gramat.graph.plugs.Plug;
 

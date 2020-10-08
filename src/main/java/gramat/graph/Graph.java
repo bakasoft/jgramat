@@ -1,15 +1,12 @@
 package gramat.graph;
 
 import gramat.actions.Action;
-import gramat.actions.ActionStore;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
 import gramat.util.Chain;
-import gramat.util.Count;
 import gramat.util.TokenGenerator;
 
-import javax.naming.LinkRef;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,8 +44,8 @@ public class Graph {
         return createLink(source, target, null, null, symbol, badge, mode);
     }
 
-    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, Symbol symbol, Badge badge, BadgeMode mode) {
-        var link = new Link(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge, mode);
+    public Link createLink(Node source, Node target, Chain<Action> preActions, Chain<Action> postActions, Symbol symbol, Badge badge, BadgeMode mode) {
+        var link = new Link(source, target, preActions, postActions, symbol, badge, mode);
         links.add(link);
         return link;
     }

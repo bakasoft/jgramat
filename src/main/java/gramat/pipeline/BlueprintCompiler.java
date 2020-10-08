@@ -190,15 +190,15 @@ public class BlueprintCompiler extends DefaultComponent {
         }
 
         for (var link : graph.findLinksBetween(source, targets)) {
-            var isBegin = beginLinks.contains(link);
-            var isAfter = afterLinks.contains(link);
+            var isPre = beginLinks.contains(link);
+            var isPost = afterLinks.contains(link);
 
-            if (isBegin) {
-                link.beforeActions.prepend(make);
+            if (isPre) {
+                link.preActions = Chain.merge(link.preActions, make);
             }
 
-            if (isAfter) {
-                link.afterActions.append(halt);
+            if (isPost) {
+                link.postActions = Chain.merge(link.postActions, halt);
             }
         }
 

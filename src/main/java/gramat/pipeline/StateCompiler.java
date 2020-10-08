@@ -1,7 +1,6 @@
 package gramat.pipeline;
 
 import gramat.actions.Action;
-import gramat.actions.ActionStore;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
@@ -57,9 +56,10 @@ public class StateCompiler extends DefaultComponent {
                             var targets = Link.collectTargets(links);
                             var newSource = makeState(sources, root.targets);
                             var newTarget = makeState(targets, root.targets);
-                            var before = new ActionStore();
-                            var after = new ActionStore();
                             var mode = collapseMode(links);
+
+                            Chain<Action> before = null;
+                            Chain<Action> after = null;
 
                             Badge newBadge;
                             Action beforeAction;
@@ -90,19 +90,19 @@ public class StateCompiler extends DefaultComponent {
                             }
 
                             if (beforeAction != null) {
-                                before.append(beforeAction);
+                                before = Chain.merge(before, beforeAction);
                             }
 
                             for (var link : links) {
-                                before.append(link.beforeActions);
-                                after.append(link.afterActions);
+                                before = Chain.merge(before, link.preActions);
+                                after = Chain.merge(before, link.postActions);
                             }
 
                             if (afterAction != null) {
-                                after.append(afterAction);
+                                after = Chain.merge(after, afterAction);
                             }
 
-                            newSource.transition.add(newBadge, symbol, new Effect(newTarget, before.toArray(), after.toArray()));
+                            newSource.transition.add(newBadge, symbol, new Effect(newTarget, before, after));
 
                             queue.add(targets);
                         }

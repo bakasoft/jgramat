@@ -20,6 +20,20 @@ public class Chain<T> implements Iterable<T> {
         return new Chain<>(values.toArray());
     }
 
+    public static <T> Chain<T> merge(Chain<T> chain, T item) {
+        if (chain != null) {
+            return chain.merge(item);
+        }
+        return Chain.of(item);
+    }
+
+    public static <T> Chain<T> merge(Chain<T> chain1, Chain<T> chain2) {
+        if (chain1 != null) {
+            return chain1.merge(chain2);
+        }
+        return chain2;
+    }
+
     private final Object[] items;
 
     private Chain(Object[] items) {
@@ -52,6 +66,10 @@ public class Chain<T> implements Iterable<T> {
     }
 
     public Chain<T> merge(Chain<T> chain) {
+        if (chain == null) {
+            return null;
+        }
+
         var newItems = new ArrayList<T>();
         for (var newItem : chain) {
             if (!contains(newItem)) {

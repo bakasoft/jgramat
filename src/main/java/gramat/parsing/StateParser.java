@@ -12,6 +12,7 @@ import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.parsers.StringParser;
 import gramat.symbols.Symbol;
+import gramat.util.Chain;
 import gramat.util.PP;
 
 import java.util.HashMap;
@@ -101,22 +102,22 @@ public class StateParser extends DefaultComponent {
             var badge = make_badge(transition.badge);
             var mode = BadgeMode.NONE; // TODO how to parse the mode?
             var target = build_state(machine, transition.target);
-            var before = new ActionStore();
-            var after = new ActionStore();
+            Chain<Action> before = null;
+            Chain<Action> after = null;
 
             if (transition.preActions != null) {
                 for (var action : transition.preActions) {
-                    before.append(make_action(action));
+                    before = Chain.merge(before, make_action(action));
                 }
             }
 
             if (transition.postActions != null) {
                 for (var action : transition.postActions) {
-                    after.append(make_action(action));
+                    after = Chain.merge(after, make_action(action));
                 }
             }
 
-            node.transition.add(badge, symbol, new Effect(target, before.toArray(), after.toArray()));
+            node.transition.add(badge, symbol, new Effect(target, before, after));
         }
 
         return node;

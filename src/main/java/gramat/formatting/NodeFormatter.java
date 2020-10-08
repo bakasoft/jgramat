@@ -50,7 +50,7 @@ public class NodeFormatter extends AmFormatter {
         raw(")");
         ln();
 
-        var beforeActions = StringUtils.join("\n", link.beforeActions);
+        var beforeActions = StringUtils.join("\n", link.preActions);
 
         if (beforeActions.length() > 0) {
             raw(link.source.id);
@@ -65,7 +65,7 @@ public class NodeFormatter extends AmFormatter {
             ln();
         }
 
-        var afterActions = StringUtils.join("\n", link.afterActions);
+        var afterActions = StringUtils.join("\n", link.postActions);
 
         if (afterActions.length() > 0) {
             raw(link.source.id);
