@@ -9,6 +9,12 @@ public class NodeFormatter extends AmFormatter {
         super(output);
     }
 
+    public void write(Graph graph) {
+        for (var link : graph.links) {
+            write(link);
+        }
+    }
+
     public void write(Graph graph, Root root) {
         raw("->");
         sp();
@@ -28,40 +34,21 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        if (link instanceof LinkSymbol) {
-            var linkSymbol = (LinkSymbol)link;
-            raw(link.source.id);
-            sp();
-            raw("->");
-            sp();
-            raw(link.target.id);
-            sp();
-            raw(":");
-            sp();
-            amstr(linkSymbol.symbol.toString());
-            raw("/");
-            amstr(linkSymbol.badge.toString());
-            raw("(");
-            amstr(linkSymbol.mode.name());
-            raw(")");
-            ln();
-        }
-        else if (link instanceof LinkReference) {
-            var linkRef = (LinkReference)link;
-            raw(link.source.id);
-            sp();
-            raw("->");
-            sp();
-            raw(link.target.id);
-            sp();
-            raw(":");
-            sp();
-            amstr(linkRef.reference);
-            ln();
-        }
-        else {
-            throw new RuntimeException();
-        }
+        raw(link.source.id);
+        sp();
+        raw("->");
+        sp();
+        raw(link.target.id);
+        sp();
+        raw(":");
+        sp();
+        amstr(link.symbol.toString());
+        raw("/");
+        amstr(link.badge.toString());
+        raw("(");
+        amstr(link.mode.name());
+        raw(")");
+        ln();
 
         var beforeActions = StringUtils.join("\n", link.beforeActions);
 

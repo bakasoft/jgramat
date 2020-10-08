@@ -3,7 +3,7 @@ package gramat.symbols;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.util.PP;
 
-public class SymbolRange extends Symbol {
+public class SymbolRange implements Symbol {
 
     public final char begin;
     public final char end;

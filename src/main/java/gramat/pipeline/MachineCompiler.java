@@ -8,6 +8,8 @@ import gramat.framework.DefaultComponent;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
 import gramat.graph.util.NodeMapper;
+import gramat.symbols.Symbol;
+import gramat.symbols.SymbolReference;
 import gramat.util.NameMap;
 import gramat.util.TokenGenerator;
 
@@ -57,85 +59,101 @@ public class MachineCompiler extends DefaultComponent {
 
         var root = mapper.find(blueprint.root);
 
-        for (var linkRef : graph.findReferencesBetween(root.source, root.targets)) {
-            resolveReference(mapper, linkRef);
+        // Resolve recursive references
+        for (var link : graph.findLinksBetween(root)) {
+            if (link.symbol instanceof SymbolReference) {
+                var reference = ((SymbolReference) link.symbol).reference;
 
-            graph.removeLink(linkRef);
+                resolveRecursion(mapper, link, reference);
+
+                graph.removeLink(link);
+            }
         }
 
         return root;
     }
 
     private void copyRoot(NodeMapper mapper, Root baseRoot, ActionStore beforeActions, ActionStore afterActions) {
+        var newLinks = new ArrayList<Link>();
+
         // Direct copy
         for (var oldLink : blueprint.graph.findLinksBetween(baseRoot)) {
-            copyLink(mapper, oldLink);
+            var newLink = copyLink(mapper, oldLink);
+
+            newLinks.add(newLink);
         }
 
         // TODO apply wrapping actions
+        resolveFlatReferences(mapper, newLinks);
     }
 
-    private void copyLink(NodeMapper mapper, Link oldLink) {
+    private void resolveFlatReferences(NodeMapper mapper, ArrayList<Link> newLinks) {
+        for (var newLink : newLinks) {
+            var reference = tryReferenceOf(newLink.symbol);
+
+            if (reference != null && !recursiveReferences.contains(reference)) {
+                resolveFlatReference(mapper, reference, newLink);
+            }
+        }
+    }
+
+    private void resolveFlatReference(NodeMapper mapper, String reference, Link newLink) {
+        var rootRef = blueprint.dependencies.find(reference);
+        var localMapper = new NodeMapper(mapper);
+
+        // Map the root to be copied to the existing link
+        localMapper.set(rootRef.source, newLink.source);
+        localMapper.set(rootRef.targets, newLink.target);
+
+        copyRoot(localMapper, rootRef, newLink.beforeActions, newLink.afterActions);
+
+        graph.removeLink(newLink);
+    }
+
+    private Link copyLink(NodeMapper mapper, Link oldLink) {
         var newSource = mapper.make(oldLink.source);
         var newTarget = mapper.make(oldLink.target);
 
-        if (oldLink instanceof LinkSymbol) {
-            var oldLinkSym = (LinkSymbol)oldLink;
-
-            graph.createLink(
+        return graph.createLink(
                     newSource, newTarget,
-                    oldLinkSym.beforeActions, oldLinkSym.afterActions,
-                    oldLinkSym.symbol, oldLinkSym.badge, oldLinkSym.mode);
-        }
-        else if (oldLink instanceof LinkReference) {
-            var oldLinkRef = (LinkReference)oldLink;
-
-            graph.createLink(
-                    newSource, newTarget,
-                    oldLinkRef.beforeActions, oldLinkRef.afterActions,
-                    oldLinkRef.reference);
-        }
-        else {
-            throw new UnsupportedValueException(oldLink);
-        }
+                    oldLink.beforeActions, oldLink.afterActions,
+                    oldLink.symbol, oldLink.badge, oldLink.mode);
     }
 
-    private void resolveReference(NodeMapper mapper, LinkReference newRef) {
-        var reference = newRef.reference;
-        var newSource = newRef.source;
-        var newTarget = newRef.target;
-        if (recursiveReferences.contains(reference)) {
-            Badge newBadge;
+    private String tryReferenceOf(Symbol symbol) {
+        if (symbol instanceof SymbolReference) {
+            return ((SymbolReference)symbol).reference;
+        }
+        return null;
+    }
 
-            if (stackRef.contains(reference)) {
-                newBadge = gramat.badges.badge(callTokens.next(reference));
-            }
-            else {
-                newBadge = gramat.badges.empty();
-            }
+    private void resolveRecursion(NodeMapper mapper, Link newLink, String reference) {
+        var newSource = newLink.source;
+        var newTarget = newLink.target;
+        if (!recursiveReferences.contains(reference)) {
+            throw new RuntimeException("this reference must be already resolved: " + reference);
+        }
+        Badge newBadge;
 
-            stackRef.push(reference);
-
-            var extension = extensions.find(reference);
-
-            connectExtensionTo(newBadge, extension, newSource, newTarget, newRef.beforeActions, newRef.afterActions);
-
-            stackRef.pop();
+        if (stackRef.contains(reference)) {
+            newBadge = gramat.badges.badge(callTokens.next(reference));
         }
         else {
-            var baseRoot = blueprint.dependencies.find(reference);
-            var localMapper = new NodeMapper(mapper);
-
-            // Map the root to be copied to the existing link
-            localMapper.set(baseRoot.source, newSource);
-            localMapper.set(baseRoot.targets, newTarget);
-
-            copyRoot(localMapper, baseRoot, newRef.beforeActions, newRef.afterActions);
+            newBadge = gramat.badges.empty();
         }
+
+        stackRef.push(reference);
+
+        var extension = extensions.find(reference);
+
+        connectExtensionTo(mapper, newBadge, extension, newSource, newTarget, newLink.beforeActions, newLink.afterActions);
+
+        stackRef.pop();
     }
 
     private Extension makeExtension(NodeMapper mapper, Root oldRoot) {
         var plugs = new ArrayList<Plug>();
+        var newLinks = new ArrayList<Link>();
 
         for (var oldLink : blueprint.graph.findLinksBetween(oldRoot)) {
             var plug = tryMakePlug(mapper, oldLink, oldRoot);
@@ -144,68 +162,66 @@ public class MachineCompiler extends DefaultComponent {
                 plugs.add(plug);
             }
             else {
-                copyLink(mapper, oldLink);
+                newLinks.add(copyLink(mapper, oldLink));
             }
         }
+
+        resolveFlatReferences(mapper, newLinks);
 
         return new Extension(plugs);
     }
 
     private Plug tryMakePlug(NodeMapper mapper, Link oldLink, Root oldRoot) {
-        if (oldLink instanceof LinkSymbol) {
-            var oldLinkSym = (LinkSymbol)oldLink;
-            if (oldLink.source == oldRoot.source) {
-                // From source
-                if (oldRoot.targets.contains(oldLink.target)) {
-                    // To target
-                    return new PlugSymbolSourceToTarget(oldLinkSym);
-                } else {
-                    // To Node
-                    var newTarget = mapper.make(oldLink.target);
+        if (oldLink.source == oldRoot.source) {
+            // From source
+            if (oldRoot.targets.contains(oldLink.target)) {
+                // To target
+                return new PlugSymbolSourceToTarget(oldLink);
+            } else {
+                // To Node
+                var newTarget = mapper.make(oldLink.target);
 
-                    return new PlugSymbolSourceToNode(oldLinkSym, newTarget);
-                }
+                return new PlugSymbolSourceToNode(oldLink, newTarget);
             }
-            else if (oldRoot.targets.contains(oldLink.source)) {
-                if (oldLink.target == oldRoot.source) {
-                    return new PlugSymbolTargetToSource(oldLinkSym);
-                } else {
-                    var newTarget = mapper.make(oldLink.target);
-
-                    return new PlugSymbolTargetToNode(oldLinkSym, newTarget);
-                }
-            }
-            else if (oldLink.target == oldRoot.source) {
-                var newSource = mapper.make(oldLink.source);
-
-                return new PlugSymbolNodeToSource(oldLinkSym, newSource);
-            }
-            else if (oldRoot.targets.contains(oldLink.target)) {
-                var newSource = mapper.make(oldLink.source);
-
-                return new PlugSymbolNodeToTarget(oldLinkSym, newSource);
-            }
-
-            return null;
         }
-        else if (oldLink instanceof LinkReference) {
-            // TODO This part is missing....
-            throw new RuntimeException();
+        else if (oldRoot.targets.contains(oldLink.source)) {
+            if (oldLink.target == oldRoot.source) {
+                return new PlugSymbolTargetToSource(oldLink);
+            } else {
+                var newTarget = mapper.make(oldLink.target);
+
+                return new PlugSymbolTargetToNode(oldLink, newTarget);
+            }
         }
-        else {
-            throw new UnsupportedValueException(oldLink);
+        else if (oldLink.target == oldRoot.source) {
+            var newSource = mapper.make(oldLink.source);
+
+            return new PlugSymbolNodeToSource(oldLink, newSource);
         }
+        else if (oldRoot.targets.contains(oldLink.target)) {
+            var newSource = mapper.make(oldLink.source);
+
+            return new PlugSymbolNodeToTarget(oldLink, newSource);
+        }
+
+        return null;
     }
 
-    private void connectExtensionTo(Badge newBadge, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
+    private void connectExtensionTo(NodeMapper mapper, Badge newBadge, Extension extension, Node source, Node target, ActionStore beforeActions, ActionStore afterActions) {
+        var newLinks = new ArrayList<Link>();
+
         for (var plug : extension.plugs) {
             if (plug instanceof PlugSymbol) {
-                plug.connectTo(graph, source, target, newBadge, beforeActions, afterActions);
+                var newLink = plug.connectTo(graph, source, target, newBadge, beforeActions, afterActions);
+
+                newLinks.add(newLink);
             }
             else {
                 throw new UnsupportedValueException(plug);
             }
         }
+
+        resolveFlatReferences(mapper, newLinks);
     }
 
     private Set<String> computeRecursiveReferences() {
@@ -227,17 +243,16 @@ public class MachineCompiler extends DefaultComponent {
 
     private void computeRecursiveReferences(Root root, Deque<String> stack, Set<String> result) {
         for (var link : blueprint.graph.findLinksBetween(root)) {
-            if (link instanceof LinkReference) {
-                var linkRef = (LinkReference)link;
-                var nameRef = linkRef.reference;
+            if (link.symbol instanceof SymbolReference) {
+                var reference = ((SymbolReference)link.symbol).reference;
 
-                if (stack.contains(nameRef)) {
-                    result.add(nameRef);
+                if (stack.contains(reference)) {
+                    result.add(reference);
                 }
                 else {
-                    var refRoot = blueprint.dependencies.find(nameRef);
+                    var refRoot = blueprint.dependencies.find(reference);
 
-                    computeRecursiveReferences(refRoot, stack, result, nameRef);
+                    computeRecursiveReferences(refRoot, stack, result, reference);
                 }
             }
         }

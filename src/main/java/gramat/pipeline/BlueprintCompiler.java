@@ -206,7 +206,10 @@ public class BlueprintCompiler extends DefaultComponent {
     }
 
     private Chain<Node> compileReference(Graph graph, Node source, Node target, ModelReference reference) {
-        graph.createLink(source, target, reference.name);
+        var symbol = gramat.symbols.reference(reference.name);
+        var badge = gramat.badges.empty();
+
+        graph.createLink(source, target, symbol, badge, BadgeMode.NONE);
 
         if (!dependencyQueue.contains(reference.name)) {
             dependencyQueue.add(reference.name);

@@ -43,38 +43,12 @@ public class Graph {
         return node;
     }
 
-    public void createLinks(Chain<Node> sources, Chain<Node> targets, Symbol symbol, Badge badge, BadgeMode mode) {
-        for (var source : sources) {
-            for (var target : targets) {
-                createLink(source, target, symbol, badge, mode);
-            }
-        }
-    }
-
-    public void createLinks(Chain<Node> sources, Chain<Node> targets, String reference) {
-        for (var source : sources) {
-            for (var target : targets) {
-                createLink(source, target, reference);
-            }
-        }
-    }
-
     public Link createLink(Node source, Node target, Symbol symbol, Badge badge, BadgeMode mode) {
         return createLink(source, target, null, null, symbol, badge, mode);
     }
 
-    public Link createLink(Node source, Node target, String reference) {
-        return createLink(source, target, null, null, reference);
-    }
-
     public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, Symbol symbol, Badge badge, BadgeMode mode) {
-        var link = new LinkSymbol(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge, mode);
-        links.add(link);
-        return link;
-    }
-
-    public Link createLink(Node source, Node target, ActionStore beforeActions, ActionStore afterActions, String reference) {
-        var link = new LinkReference(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), reference);
+        var link = new Link(source, target, new ActionStore(beforeActions), new ActionStore(afterActions), symbol, badge, mode);
         links.add(link);
         return link;
     }
@@ -91,18 +65,11 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<LinkSymbol> findTransitions(Chain<Node> sources, Symbol symbol, Badge badge) {
-        var result = new ArrayList<LinkSymbol>();
+    public List<Link> findTransitions(Chain<Node> sources, Symbol symbol, Badge badge) {
+        var result = new ArrayList<Link>();
         for (var link : links) {
-            // Check for only links with symbols
-            if (!(link instanceof LinkSymbol)) {
-                throw new RuntimeException("only symbol links allowed: " + link);
-            }
-
-            var linkSymbol = (LinkSymbol) link;
-
             // Skip not matching symbols
-            if (linkSymbol.symbol != symbol) {
+            if (link.symbol != symbol) {
                 continue;
             }
 
@@ -112,11 +79,11 @@ public class Graph {
             }
 
             // Skip not maching badges
-            if (linkSymbol.badge != badge) {
+            if (link.badge != badge) {
                 continue;
             }
 
-            result.add(linkSymbol);
+            result.add(link);
         }
         return result;
     }
@@ -193,19 +160,12 @@ public class Graph {
         // At this point it is safe to check outgoing links from target
         //   and filter those which go back to the nodes from source
         for (var link : findOutgoingLinks(targets)) {
-            if (link instanceof LinkReference && control.contains(link.target)) {
+            if (control.contains(link.target)) {
                 result.add(link);
             }
         }
 
         return result;
-    }
-
-    public List<LinkReference> findReferencesBetween(Node source, Chain<Node> target) {
-        // TODO optimize this filter
-        return findLinksBetween(source, target).stream()
-                .filter(l -> l instanceof LinkReference)
-                .map(l -> (LinkReference)l).collect(Collectors.toList());
     }
 
     public Root createRoot() {

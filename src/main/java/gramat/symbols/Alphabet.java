@@ -2,6 +2,7 @@ package gramat.symbols;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class Alphabet implements Iterable<Symbol> {
 
@@ -50,6 +51,22 @@ public class Alphabet implements Iterable<Symbol> {
             }
         }
         var s = new SymbolWild();
+        symbols.add(s);
+        return s;
+    }
+
+    public Symbol reference(String reference) {
+        for (var s : symbols) {
+            if (s instanceof SymbolReference) {
+                var ref = (SymbolReference)s;
+
+                if (Objects.equals(ref.reference, reference)) {
+                    return s;
+                }
+            }
+        }
+
+        var s = new SymbolReference(reference);
         symbols.add(s);
         return s;
     }

@@ -114,7 +114,7 @@ public class StateCompiler extends DefaultComponent {
         return initial;
     }
 
-    private BadgeMode collapseMode(List<LinkSymbol> links) {
+    private BadgeMode collapseMode(List<Link> links) {
         BadgeMode mode = null;
 
         for (var link : links) {

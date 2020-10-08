@@ -5,12 +5,11 @@ import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.graph.Graph;
 import gramat.graph.Link;
-import gramat.graph.LinkSymbol;
 import gramat.graph.Node;
 
 public class PlugSymbolSourceToTarget extends PlugSymbol {
 
-    public PlugSymbolSourceToTarget(LinkSymbol link) {
+    public PlugSymbolSourceToTarget(Link link) {
         super(link.symbol, link.beforeActions, link.afterActions);
     }
 

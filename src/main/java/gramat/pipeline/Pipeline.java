@@ -17,11 +17,13 @@ public class Pipeline {
 
         System.out.println("########## BLUEPRINT");
         new NodeFormatter(System.out).write(blueprint.graph, blueprint.root);
+        System.out.println("##########");
 
         for (var name : blueprint.dependencies.keySet()) {
             System.out.println("########## BLUEPRINT " + name);
             var root = blueprint.dependencies.find(name);
             new NodeFormatter(System.out).write(blueprint.graph, root);
+            System.out.println("##########");
         }
 
         return blueprint;
@@ -32,6 +34,7 @@ public class Pipeline {
 
         System.out.println("########## MACHINE");
         new NodeFormatter(System.out).write(machine.graph, machine.root);
+        System.out.println("##########");
 
         return machine;
     }

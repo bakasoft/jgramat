@@ -1,9 +1,9 @@
 package gramat.symbols;
 
-public abstract class Symbol {
+public interface Symbol {
 
-    public abstract boolean test(char c);
+    boolean test(char c);
 
-    public abstract boolean intersects(Symbol other);
+    boolean intersects(Symbol other);
 
 }

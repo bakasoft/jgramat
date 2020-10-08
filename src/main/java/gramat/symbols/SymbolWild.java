@@ -1,6 +1,6 @@
 package gramat.symbols;
 
-public class SymbolWild extends Symbol {
+public class SymbolWild implements Symbol {
 
     @Override
     public boolean test(char c) {
