@@ -95,7 +95,7 @@ public class StateCompiler extends DefaultComponent {
 
                             for (var link : links) {
                                 before = Chain.merge(before, link.preActions);
-                                after = Chain.merge(before, link.postActions);
+                                after = Chain.merge(after, link.postActions);
                             }
 
                             if (afterAction != null) {

@@ -102,13 +102,17 @@ public class Graph {
     }
 
     public List<Link> walkLinksFrom(Chain<Node> sources) {
+        if (sources == null) {
+            return List.of();
+        }
+
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
 
         queue.addAll(sources.toList());
 
-        while (queue.size() > 0) {
+        while (!queue.isEmpty()) {
             var source = queue.remove();
 
             if (control.add(source)) {

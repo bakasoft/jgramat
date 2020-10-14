@@ -1,6 +1,7 @@
 package gramat.graph.util;
 
 import gramat.graph.Graph;
+import gramat.graph.Link;
 import gramat.graph.Node;
 import gramat.graph.Root;
 import gramat.util.Chain;
@@ -44,7 +45,7 @@ public class NodeMapper {
         }
     }
 
-    public Node make(Node oldNode) {
+    public Node copy(Node oldNode) {
         return nodes.computeIfAbsent(oldNode, newGraph::createNodeFrom);
     }
 
@@ -78,5 +79,15 @@ public class NodeMapper {
         var newSource = find(oldRoot.source);
         var newTargets = find(oldRoot.targets);
         return new Root(newSource, newTargets);
+    }
+
+    public Link copy(Link oldLink) {
+        var newSource = copy(oldLink.source);
+        var newTarget = copy(oldLink.target);
+
+        return newGraph.createLink(
+                newSource, newTarget,
+                oldLink.preActions, oldLink.preActions,
+                oldLink.symbol, oldLink.badge, oldLink.mode);
     }
 }

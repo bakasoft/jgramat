@@ -1,7 +1,16 @@
 package gramat.formatting;
 
+import gramat.actions.Action;
+import gramat.badges.Badge;
+import gramat.badges.BadgeMode;
+import gramat.exceptions.UnsupportedValueException;
 import gramat.graph.*;
+import gramat.graph.plugs.*;
+import gramat.symbols.Symbol;
+import gramat.util.Chain;
 import gramat.util.StringUtils;
+
+import java.util.HashSet;
 
 public class NodeFormatter extends AmFormatter {
 
@@ -16,48 +25,121 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Graph graph, Root root) {
-        raw("->");
-        sp();
-        raw(root.source.id);
-        ln();
+        writeInitial(root.source.id);
 
         for (var link : graph.findLinksBetween(root)) {
             write(link);
         }
 
         for (var target : root.targets) {
-            raw(target.id);
-            sp();
-            raw("<=");
-            ln();
+            writeAccepted(target.id);
+        }
+    }
+
+    public void write(Graph graph, Extension ext) {
+        var plugSource = "E" + ext.id + "S";
+        var plugTarget = "E" + ext.id + "T";
+
+        Chain<Node> nodes = null;
+
+        writeInitial(plugSource);
+        writeAccepted(plugTarget);
+
+        for (var plug : ext.plugs) {
+            String source;
+            String target;
+
+            if (plug.getType() == PlugType.N2S) {
+                source = plug.getSource().id;
+                target = plugSource;
+
+                nodes = Chain.merge(nodes, plug.getSource());
+            }
+            else if (plug.getType() == PlugType.N2T) {
+                source = plug.getSource().id;
+                target = plugTarget;
+
+                nodes = Chain.merge(nodes, plug.getSource());
+            }
+            else if (plug.getType() == PlugType.S2N) {
+                source = plugSource;
+                target = plug.getTarget().id;
+
+                nodes = Chain.merge(nodes, plug.getTarget());
+            }
+            else if (plug.getType() == PlugType.S2T) {
+                source = plugSource;
+                target = plugTarget;
+            }
+            else if (plug.getType() == PlugType.T2N) {
+                source = plugTarget;
+                target = plug.getTarget().id;
+
+                nodes = Chain.merge(nodes, plug.getTarget());
+            }
+            else if (plug.getType() == PlugType.T2S) {
+                source = plugTarget;
+                target = plugSource;
+            }
+            else {
+                throw new UnsupportedValueException(plug);
+            }
+
+            writeLink(source, target, plug.getSymbol(), null, null, plug.getBegin(), plug.getEnd());
+        }
+
+        for (var link : graph.walkLinksFrom(nodes)) {
+            write(link);
         }
     }
 
     public void write(Link link) {
-        raw(link.source.id);
+        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.preActions, link.postActions);
+    }
+
+    private void writeInitial(String id) {
+        raw("->");
+        sp();
+        raw(id);
+        ln();
+    }
+
+    private void writeAccepted(String id) {
+        raw(id);
+        sp();
+        raw("<=");
+        ln();
+    }
+
+    private void writeLink(String source, String target, Symbol symbol, Badge badge, BadgeMode mode, Chain<Action> preActions, Chain<Action> postActions) {
+        raw(source);
         sp();
         raw("->");
         sp();
-        raw(link.target.id);
+        raw(target);
         sp();
         raw(":");
         sp();
-        amstr(link.symbol.toString());
-        raw("/");
-        amstr(link.badge.toString());
-        raw("(");
-        amstr(link.mode.name());
-        raw(")");
+        amstr(symbol.toString());
+        if (badge != null) {
+            raw("/");
+            amstr(badge.toString());
+        }
+        if (mode != null) {
+            raw("(");
+            amstr(mode.name());
+            raw(")");
+        }
         ln();
 
-        var beforeActions = StringUtils.join("\n", link.preActions);
+        var beforeActions = StringUtils.join("\n", preActions);
 
         if (beforeActions.length() > 0) {
-            raw(link.source.id);
+            raw(source);
             sp();
             raw("->");
             sp();
-            raw(link.target.id);
+            raw(target);
             sp();
             raw("!<");
             sp();
@@ -65,14 +147,14 @@ public class NodeFormatter extends AmFormatter {
             ln();
         }
 
-        var afterActions = StringUtils.join("\n", link.postActions);
+        var afterActions = StringUtils.join("\n", postActions);
 
         if (afterActions.length() > 0) {
-            raw(link.source.id);
+            raw(source);
             sp();
             raw("->");
             sp();
-            raw(link.target.id);
+            raw(target);
             sp();
             raw("!>");
             sp();

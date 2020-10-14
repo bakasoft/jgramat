@@ -1,8 +1,10 @@
 package gramat.pipeline;
 
+import gramat.Gramat;
 import gramat.formatting.NodeFormatter;
 import gramat.formatting.StateFormatter;
 import gramat.framework.Component;
+import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
 
@@ -29,8 +31,27 @@ public class Pipeline {
         return blueprint;
     }
 
-    public static Machine toMachine(Component parent, Blueprint blueprint) {
-        var machine = MachineCompiler.compile(parent, blueprint);
+    public static Template toTemplate(Component parent, Blueprint blueprint) {
+        var graph = new Graph();
+        var template = TemplateCompiler.compile(parent, blueprint, graph);
+
+        System.out.println("########## TEMPLATE");
+        new NodeFormatter(System.out).write(graph, template.main);
+        System.out.println("##########");
+
+        for (var entry : template.extensions.entrySet()) {
+            System.out.println("########## EXTENSION " + entry.getKey());
+            new NodeFormatter(System.out).write(graph, entry.getValue());
+            System.out.println("##########");
+        }
+
+        return template;
+    }
+
+    public static Machine toMachine(Component parent, Template template) {
+        var machine = MachineCompiler.compile(parent, template);
+
+        machine.validate();
 
         System.out.println("########## MACHINE");
         new NodeFormatter(System.out).write(machine.graph, machine.root);
@@ -41,8 +62,9 @@ public class Pipeline {
 
     public static State toState(Component parent, Sentence sentence) {
         var blueprint = toBlueprint(parent, sentence);
-        var step3 = toMachine(parent, blueprint);
-        return toState(parent, step3);
+        var template = toTemplate(parent, blueprint);
+        var machine = toMachine(parent, template);
+        return toState(parent, machine);
     }
 
     public static State toState(Component parent, Machine machine) {
