@@ -1,6 +1,7 @@
 package gramat.pipeline;
 
 import gramat.actions.Action;
+import gramat.actions.Event;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
@@ -58,51 +59,33 @@ public class StateCompiler extends DefaultComponent {
                             var newTarget = makeState(targets, root.targets);
                             var mode = collapseMode(links);
 
-                            Chain<Action> before = null;
-                            Chain<Action> after = null;
-
                             Badge newBadge;
-                            Action beforeAction;
-                            Action afterAction;
+
+                            var event = Event.of();
+
+                            for (var link : links) {
+                                event = Event.of(link.event, event);
+                            }
 
                             if (mode == BadgeMode.NONE || badge == gramat.badges.empty()) {
                                 newBadge = gramat.badges.empty();
-                                beforeAction = null;
-                                afterAction = null;
                             }
                             else if (mode == BadgeMode.PUSH) {
                                 newBadge = gramat.badges.empty();
-                                beforeAction = new RecursionEnter(badge);
-                                afterAction = null;
+                                event = Event.of(new RecursionEnter(badge), event, null);
                             }
                             else if (mode == BadgeMode.PEEK) {
                                 newBadge = badge;
-                                beforeAction = null;
-                                afterAction = null;
                             }
                             else if (mode == BadgeMode.POP) {
                                 newBadge = badge;
-                                beforeAction = null;
-                                afterAction = new RecursionExit(badge);
+                                event = Event.of(null, event, new RecursionExit(badge));
                             }
                             else {
                                 throw new UnsupportedValueException(mode);
                             }
 
-                            if (beforeAction != null) {
-                                before = Chain.merge(before, beforeAction);
-                            }
-
-                            for (var link : links) {
-                                before = Chain.merge(before, link.preActions);
-                                after = Chain.merge(after, link.postActions);
-                            }
-
-                            if (afterAction != null) {
-                                after = Chain.merge(after, afterAction);
-                            }
-
-                            newSource.transition.add(newBadge, symbol, new Effect(newTarget, before, after));
+                            newSource.transition.add(newBadge, symbol, new Effect(newTarget, event));
 
                             queue.add(targets);
                         }

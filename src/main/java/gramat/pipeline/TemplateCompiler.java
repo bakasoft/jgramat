@@ -1,8 +1,7 @@
 package gramat.pipeline;
 
-import gramat.actions.ActionWrapper;
+import gramat.actions.Event;
 import gramat.badges.Badge;
-import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.graph.Graph;
 import gramat.graph.Link;
@@ -55,7 +54,7 @@ public class TemplateCompiler {
         return mapper.find(oldRoot);
     }
 
-    private void copyRoot(Root oldRoot, NodeMapper mapper, Badge badge, ActionWrapper wrapper) {
+    private void copyRoot(Root oldRoot, NodeMapper mapper, Badge badge, Event event) {
         for (var oldLink : oldGraph.findLinksBetween(oldRoot)) {
             if (oldLink.badge != badge) {
                 throw new RuntimeException("unexpected badge: " + badge);
@@ -85,25 +84,24 @@ public class TemplateCompiler {
             }
         }
 
-        if (wrapper != null) {
-            distributeActions(mapper, oldRoot, wrapper);
+        if (event != null) {
+            distributeActions(mapper, oldRoot, event);
         }
     }
 
-    private void distributeActions(NodeMapper mapper, Root oldRoot, ActionWrapper wrapper) {
+    private void distributeActions(NodeMapper mapper, Root oldRoot, Event event) {
         var newRoot = mapper.find(oldRoot);
         for (var newLink : newGraph.findLinksBetween(newRoot)) {
             var type = PlugType.compute(newRoot, newLink);
 
             if (type == PlugType.S2T) {
-                newLink.preActions = Chain.merge(newLink.preActions, wrapper.getBegin());
-                newLink.postActions = Chain.merge(newLink.postActions, wrapper.getEnd());
+                newLink.event = Event.of(newLink.event, event);
             }
             else if (type == PlugType.S2N) {
-                newLink.preActions = Chain.merge(newLink.preActions, wrapper.getBegin());
+                newLink.event = Event.of(event.before, newLink.event, null);
             }
             else if (type == PlugType.N2T) {
-                newLink.postActions = Chain.merge(newLink.postActions, wrapper.getEnd());
+                newLink.event = Event.of(null, newLink.event, event.after);
             }
         }
     }
@@ -116,7 +114,7 @@ public class TemplateCompiler {
         localMapper.set(oldRoot.source, newSource);
         localMapper.set(oldRoot.targets, newTarget);
 
-        copyRoot(oldRoot, localMapper, oldLink.badge, oldLink);
+        copyRoot(oldRoot, localMapper, oldLink.badge, oldLink.event);
     }
 
     private NameMap<Extension> makeExtensions() {

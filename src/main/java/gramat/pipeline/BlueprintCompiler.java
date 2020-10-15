@@ -181,7 +181,7 @@ public class BlueprintCompiler extends DefaultComponent {
         return wrapActions(graph, source, content, begin, end);
     }
 
-    private Chain<Node> wrapActions(Graph graph, Node source, Chain<Node> targets, Action make, Action halt) {
+    private Chain<Node> wrapActions(Graph graph, Node source, Chain<Node> targets, Action beforeAction, Action afterAction) {
         var beginLinks = graph.findOutgoingLinks(source);
         var afterLinks = graph.findIncomingLinks(targets);
 
@@ -190,15 +190,22 @@ public class BlueprintCompiler extends DefaultComponent {
         }
 
         for (var link : graph.findLinksBetween(source, targets)) {
-            var isPre = beginLinks.contains(link);
-            var isPost = afterLinks.contains(link);
+            var isBefore = beginLinks.contains(link);
+            var isAfter = afterLinks.contains(link);
 
-            if (isPre) {
-                link.preActions = Chain.merge(link.preActions, make);
-            }
+            if (isBefore || isAfter) {
+                var before = link.event.before;
+                var after = link.event.after;
 
-            if (isPost) {
-                link.postActions = Chain.merge(link.postActions, halt);
+                if (isBefore) {
+                    before = Chain.merge(beforeAction, link.event.before);
+                }
+
+                if (isAfter) {
+                    after = Chain.merge(link.event.after, afterAction);
+                }
+
+                link.event = Event.of(before, after);
             }
         }
 

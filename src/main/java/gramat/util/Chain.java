@@ -1,5 +1,6 @@
 package gramat.util;
 
+import gramat.actions.Action;
 import gramat.graph.Node;
 
 import java.util.*;
@@ -25,6 +26,10 @@ public class Chain<T> implements Iterable<T> {
             return chain.merge(item);
         }
         return Chain.of(item);
+    }
+
+    public static <T> Chain<T> merge(T item, Chain<T> chain) {
+        return of(item).merge(chain);
     }
 
     public static <T> Chain<T> merge(Chain<T> chain1, Chain<T> chain2) {

@@ -1,6 +1,7 @@
 package gramat.graph;
 
 import gramat.actions.Action;
+import gramat.actions.Event;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
@@ -41,11 +42,11 @@ public class Graph {
     }
 
     public Link createLink(Node source, Node target, Symbol symbol, Badge badge, BadgeMode mode) {
-        return createLink(source, target, null, null, symbol, badge, mode);
+        return createLink(source, target, Event.of(), symbol, badge, mode);
     }
 
-    public Link createLink(Node source, Node target, Chain<Action> preActions, Chain<Action> postActions, Symbol symbol, Badge badge, BadgeMode mode) {
-        var link = new Link(source, target, preActions, postActions, symbol, badge, mode);
+    public Link createLink(Node source, Node target, Event event, Symbol symbol, Badge badge, BadgeMode mode) {
+        var link = new Link(source, target, event, symbol, badge, mode);
         links.add(link);
         return link;
     }

@@ -1,7 +1,7 @@
 package gramat.graph;
 
 import gramat.actions.Action;
-import gramat.actions.ActionWrapper;
+import gramat.actions.Event;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
@@ -11,7 +11,7 @@ import gramat.util.DataUtils;
 import java.util.List;
 import java.util.Objects;
 
-public class Link implements ActionWrapper {
+public class Link {
 
     public final Node source;
     public final Node target;
@@ -20,17 +20,15 @@ public class Link implements ActionWrapper {
     public final Badge badge;
     public final BadgeMode mode;
 
-    public Chain<Action> preActions;
-    public Chain<Action> postActions;
+    public Event event;
 
-    public Link(Node source, Node target, Chain<Action> preActions, Chain<Action> postActions, Symbol symbol, Badge badge, BadgeMode mode) {
+    public Link(Node source, Node target, Event event, Symbol symbol, Badge badge, BadgeMode mode) {
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
         this.symbol = Objects.requireNonNull(symbol);
         this.badge = Objects.requireNonNull(badge);
         this.mode = Objects.requireNonNull(mode);
-        this.preActions = preActions;
-        this.postActions = postActions;
+        this.event = Objects.requireNonNull(event);
     }
 
     public static Chain<Node> collectTargets(List<? extends Link> links) {
@@ -42,13 +40,4 @@ public class Link implements ActionWrapper {
         return source.id + "->" + target.id + " : " + symbol;
     }
 
-    @Override
-    public Chain<Action> getBegin() {
-        return preActions;
-    }
-
-    @Override
-    public Chain<Action> getEnd() {
-        return postActions;
-    }
 }

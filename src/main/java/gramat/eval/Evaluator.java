@@ -68,8 +68,8 @@ public class Evaluator extends DefaultComponent {
 
             logger.debug("transition %s -> %s with %s / %s", state.id, effect.target.id, PP.str(chr), PP.str(badge.toString()));
 
-            if (context != null && effect.before != null) {
-                for (var action : effect.before) {
+            if (effect.event.before != null) {
+                for (var action : effect.event.before) {
                     logger.debug("running action %s", action);
                     action.run(context);
                 }
@@ -78,8 +78,8 @@ public class Evaluator extends DefaultComponent {
             tape.move();
             logger.debug("tape moved to position: %s", tape.getPosition());
 
-            if (context != null && effect.after != null) {
-                for (var action : effect.after) {
+            if (effect.event.after != null) {
+                for (var action : effect.event.after) {
                     logger.debug("running action %s", action);
                     action.run(context);
                 }

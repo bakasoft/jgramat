@@ -63,7 +63,7 @@ public class MachineCompiler extends DefaultComponent {
         stackRef.push(reference);
 
         for (var plug : extension.plugs) {
-            plug.connectTo(graph, link.source, link.target, newBadge, link);
+            plug.connectTo(graph, link.source, link.target, newBadge, link.event);
         }
 
         graph.removeLink(link);

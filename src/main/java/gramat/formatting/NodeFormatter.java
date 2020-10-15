@@ -1,6 +1,6 @@
 package gramat.formatting;
 
-import gramat.actions.Action;
+import gramat.actions.Event;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
@@ -9,8 +9,6 @@ import gramat.graph.plugs.*;
 import gramat.symbols.Symbol;
 import gramat.util.Chain;
 import gramat.util.StringUtils;
-
-import java.util.HashSet;
 
 public class NodeFormatter extends AmFormatter {
 
@@ -85,7 +83,7 @@ public class NodeFormatter extends AmFormatter {
                 throw new UnsupportedValueException(plug);
             }
 
-            writeLink(source, target, plug.getSymbol(), null, null, plug.getBegin(), plug.getEnd());
+            writeLink(source, target, plug.getSymbol(), null, null, plug.getEvent());
         }
 
         for (var link : graph.walkLinksFrom(nodes)) {
@@ -94,7 +92,7 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.preActions, link.postActions);
+        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.event);
     }
 
     private void writeInitial(String id) {
@@ -111,7 +109,7 @@ public class NodeFormatter extends AmFormatter {
         ln();
     }
 
-    private void writeLink(String source, String target, Symbol symbol, Badge badge, BadgeMode mode, Chain<Action> preActions, Chain<Action> postActions) {
+    private void writeLink(String source, String target, Symbol symbol, Badge badge, BadgeMode mode, Event event) {
         raw(source);
         sp();
         raw("->");
@@ -132,7 +130,7 @@ public class NodeFormatter extends AmFormatter {
         }
         ln();
 
-        var beforeActions = StringUtils.join("\n", preActions);
+        var beforeActions = StringUtils.join("\n", event.before);
 
         if (beforeActions.length() > 0) {
             raw(source);
@@ -147,7 +145,7 @@ public class NodeFormatter extends AmFormatter {
             ln();
         }
 
-        var afterActions = StringUtils.join("\n", postActions);
+        var afterActions = StringUtils.join("\n", event.after);
 
         if (afterActions.length() > 0) {
             raw(source);
