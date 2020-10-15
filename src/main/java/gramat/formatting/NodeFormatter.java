@@ -83,7 +83,7 @@ public class NodeFormatter extends AmFormatter {
                 throw new UnsupportedValueException(plug);
             }
 
-            writeLink(source, target, plug.getSymbol(), null, null, plug.getEvent());
+            writeLink(source, target, plug.getSymbol(), null, plug.event);
         }
 
         for (var link : graph.walkLinksFrom(nodes)) {
@@ -92,7 +92,7 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.getEvent());
+        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.event);
     }
 
     private void writeInitial(String id) {
@@ -109,7 +109,7 @@ public class NodeFormatter extends AmFormatter {
         ln();
     }
 
-    private void writeLink(String source, String target, Symbol symbol, Badge badge, BadgeMode mode, Event event) {
+    private void writeLink(String source, String target, Symbol symbol, Badge badge, Event event) {
         raw(source);
         sp();
         raw("->");
@@ -122,11 +122,6 @@ public class NodeFormatter extends AmFormatter {
         if (badge != null) {
             raw("/");
             amstr(badge.toString());
-        }
-        if (mode != null) {
-            raw("(");
-            amstr(mode.name());
-            raw(")");
         }
         ln();
 

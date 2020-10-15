@@ -4,6 +4,7 @@ import gramat.eval.Context;
 import gramat.parsers.ValueParser;
 
 import java.util.List;
+import java.util.Objects;
 
 import static gramat.util.Validations.tryCastAndTest;
 
@@ -14,7 +15,7 @@ public class ValueEnd extends Action {
 
     public ValueEnd(int trxID, ValueParser parser) {
         this.trxID = trxID;
-        this.parser = parser;
+        this.parser = Objects.requireNonNull(parser);
     }
 
     @Override

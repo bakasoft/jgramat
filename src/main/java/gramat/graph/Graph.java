@@ -41,12 +41,16 @@ public class Graph {
         return node;
     }
 
-    public Link createLink(Node source, Node target, Symbol symbol, Badge badge, BadgeMode mode) {
-        return createLink(source, target, Event.of(), symbol, badge, mode);
+    public Link createLink(Node source, Node target, Symbol symbol, Badge badge) {
+        return createLink(source, target, Event.empty(), symbol, badge);
     }
 
-    public Link createLink(Node source, Node target, Event event, Symbol symbol, Badge badge, BadgeMode mode) {
-        var link = new Link(source, target, event, symbol, badge, mode);
+    public Link createLink(Node source, Node target, Event event, Symbol symbol) {
+        return createLink(source, target, event, symbol, null);
+    }
+
+    public Link createLink(Node source, Node target, Event event, Symbol symbol, Badge badge) {
+        var link = new Link(source, target, event, symbol, badge);
         links.add(link);
         return link;
     }

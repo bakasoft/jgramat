@@ -51,13 +51,13 @@ public interface SpecialFactory extends BaseFactory {
         for (var link : graph.findLinksBetween(source, targets)) {
             switch(PlugType.compute(source, targets, link)) {
                 case S2N:
-                    link.eventPrepend(beforeAction);
+                    link.event.prepend(beforeAction);
                     break;
                 case S2T:
-                    link.eventWrap(beforeAction, afterAction);
+                    link.event.wrap(beforeAction, afterAction);
                     break;
                 case N2T:
-                    link.eventAppend(afterAction);
+                    link.event.append(afterAction);
                     break;
                 default:
                     break;

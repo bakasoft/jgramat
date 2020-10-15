@@ -92,6 +92,6 @@ public class BlueprintCompiler extends DefaultComponent implements ExpressionFac
 
     @Override
     public ValueParser findParser(String parser) {
-        return null;
+        return gramat.parsers.findParser(parser);
     }
 }

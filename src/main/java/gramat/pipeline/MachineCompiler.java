@@ -1,6 +1,11 @@
 package gramat.pipeline;
 
+import gramat.actions.Event;
+import gramat.actions.RecursionEnter;
+import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
+import gramat.badges.BadgeMode;
+import gramat.exceptions.UnsupportedValueException;
 import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
@@ -63,7 +68,7 @@ public class MachineCompiler extends DefaultComponent {
         stackRef.push(reference);
 
         for (var plug : extension.plugs) {
-            plug.connectTo(graph, link.source, link.target, newBadge, link.getEvent());
+            connectPlug(plug, graph, link.source, link.target, newBadge, link.event);
         }
 
         graph.removeLink(link);
@@ -71,6 +76,73 @@ public class MachineCompiler extends DefaultComponent {
         connectBetween(link.source, Chain.of(link.target));
 
         stackRef.pop();
+    }
+
+    private void connectPlug(Plug plug, Graph graph, Node newSource, Node newTarget, Badge newBadge, Event wrapper) {
+        var type = plug.getType();
+
+        Node linkSource;
+        Node linkTarget;
+        Badge linkBadge;
+        Event linkEvent = Event.copy(plug.event);
+
+        // Recursion not affected:
+        if (type == PlugType.S2T) {
+            linkSource = newSource;
+            linkTarget = newTarget;
+            linkBadge = gramat.badges.empty();
+            linkEvent.wrap(wrapper);
+        }
+        else if (type == PlugType.T2S) {
+            linkSource = newTarget;
+            linkTarget = newSource;
+            linkBadge = gramat.badges.empty();
+            // TODO test ignored wrapping actions
+        }
+
+        // Entering to recursion:
+        else if (type == PlugType.S2N) {
+            linkSource = newSource;
+            linkTarget = plug.getTarget();
+            linkBadge = gramat.badges.empty();
+            linkEvent.prepend(wrapper.before);
+            if (newBadge != gramat.badges.empty()) {
+                linkEvent.prepend(new RecursionEnter(newBadge));
+            }
+        }
+        else if (type == PlugType.T2N) {
+            linkSource = newTarget;
+            linkTarget = plug.getTarget();
+            linkBadge = gramat.badges.empty();
+            if (newBadge != gramat.badges.empty()) {
+                linkEvent.prepend(new RecursionEnter(newBadge));
+            }
+            // TODO test ignored wrapping actions
+        }
+
+        // Exiting from recursion:
+        else if (type == PlugType.N2S) {
+            linkSource = plug.getSource();
+            linkTarget = newSource;
+            linkBadge = newBadge;
+            if (newBadge != gramat.badges.empty()) {
+                linkEvent.append(new RecursionExit(newBadge));
+            }
+        }
+        else if (type == PlugType.N2T) {
+            linkSource = plug.getSource();
+            linkTarget = newTarget;
+            linkBadge = newBadge;
+            linkEvent.append(wrapper.after);
+            if (newBadge != gramat.badges.empty()) {
+                linkEvent.append(new RecursionExit(newBadge));
+            }
+        }
+        else {
+            throw new UnsupportedValueException(type);
+        }
+
+        graph.createLink(linkSource, linkTarget, linkEvent, plug.getSymbol(), linkBadge);
     }
 
 }

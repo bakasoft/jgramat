@@ -102,21 +102,21 @@ public class StateParser extends DefaultComponent {
             var badge = make_badge(transition.badge);
             var mode = BadgeMode.NONE; // TODO how to parse the mode?
             var target = build_state(machine, transition.target);
-            var event = Event.of();
+            var event = Event.empty();
 
             if (transition.preActions != null) {
                 for (var action : transition.preActions) {
-                    event = Event.of(make_action(action), event, null);
+                    event.prepend(make_action(action));
                 }
             }
 
             if (transition.postActions != null) {
                 for (var action : transition.postActions) {
-                    event = Event.of(null, event, make_action(action));
+                    event.append(make_action(action));
                 }
             }
 
-            node.transition.add(badge, symbol, new Effect(target, event));
+            node.transition.add(badge, symbol, new Effect(target, event.before.toArray(), event.after.toArray()));
         }
 
         return node;

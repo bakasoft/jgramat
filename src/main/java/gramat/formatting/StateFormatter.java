@@ -26,8 +26,8 @@ public class StateFormatter extends AmFormatter {
                 for (var symbol : listSymbols(source, badge)) {
                     var effect = source.transition.getEffect(badge, symbol);
                     var target = effect.target;
-                    var before = StringUtils.join("\n", effect.event.before);
-                    var after = StringUtils.join("\n", effect.event.after);
+                    var before = StringUtils.join("\n", effect.before);
+                    var after = StringUtils.join("\n", effect.after);
 
                     if (before.length() > 0) {
                         raw(source.id);

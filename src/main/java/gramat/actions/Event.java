@@ -1,52 +1,61 @@
 package gramat.actions;
 
-import gramat.util.Chain;
-
 public class Event {
 
-    public static Event of() {
-        return new Event(null, null);
+    public static Event empty() {
+        return new Event(ActionList.empty(), ActionList.empty());
     }
 
-    public static Event of(Chain<Action> before, Chain<Action> after) {
-        return new Event(before, after);
-    }
+    public static Event collect(Iterable<? extends Event> events) {
+        var result = empty();
 
-    public static Event of(Event event) {
-        if (event == null) {
-            return of();
+        for (var event : events) {
+            result.wrap(event);
         }
-        return event;
+
+        return result;
     }
 
-    public static Event of(Event outside, Event inside) {
-        if (outside == null) {
-            return of(inside);
-        }
-        else if (inside == null) {
-            return of(outside);
-        }
-        return new Event(
-                Chain.merge(outside.before, inside.before),
-                Chain.merge(inside.after, outside.after));
+    public static Event copy(Event event) {
+        return new Event(ActionList.copy(event.before), ActionList.copy(event.after));
     }
 
-    public static Event of(Chain<Action> before, Event event, Chain<Action> after) {
-        return new Event(Chain.merge(before, event.before), Chain.merge(event.after, after));
-    }
+    public final ActionList before;
 
-    public static Event of(Action before, Event event, Action after) {
-        return new Event(Chain.merge(before, event.before), Chain.merge(event.after, after));
-    }
+    public final ActionList after;
 
-    public final Chain<Action> before;
-
-    public final Chain<Action> after;
-
-    private Event(Chain<Action> before, Chain<Action> after) {
+    private Event(ActionList before, ActionList after) {
         this.before = before;
         this.after = after;
     }
 
+    public void wrap(Action beforeAction, Action afterAction) {
+        before.prepend(beforeAction);
+        after.append(afterAction);
+    }
 
+    public void prepend(Action beforeAction) {
+        before.prepend(beforeAction);
+    }
+
+    public void prepend(ActionList actions) {
+        before.prepend(actions);
+    }
+
+    public void append(Action afterAction) {
+        after.append(afterAction);
+    }
+
+    public void append(ActionList actions) {
+        after.append(actions);
+    }
+
+    public void wrap(Event event) {
+        wrap(event.before, event.after);
+    }
+
+    private void wrap(ActionList beforeActions, ActionList afterActions) {
+        before.prepend(beforeActions);
+        after.append(afterActions);
+    }
 }

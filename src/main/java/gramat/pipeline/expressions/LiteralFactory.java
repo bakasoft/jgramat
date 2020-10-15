@@ -35,7 +35,7 @@ public interface LiteralFactory extends BaseFactory {
 
             var symbol = getAlphabet().character(chars[i]);
 
-            graph.createLink(itemSource, itemTarget, symbol, badge, BadgeMode.NONE);
+            graph.createLink(itemSource, itemTarget, symbol, badge);
 
             last = itemTarget;
         }

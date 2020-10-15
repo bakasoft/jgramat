@@ -29,6 +29,9 @@ public class Chain<T> implements Iterable<T> {
     }
 
     public static <T> Chain<T> merge(T item, Chain<T> chain) {
+        if (item == null) {
+            return chain;
+        }
         return of(item).merge(chain);
     }
 

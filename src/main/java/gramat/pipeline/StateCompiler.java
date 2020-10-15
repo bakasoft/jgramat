@@ -1,9 +1,6 @@
 package gramat.pipeline;
 
-import gramat.actions.Action;
-import gramat.actions.Event;
-import gramat.actions.RecursionEnter;
-import gramat.actions.RecursionExit;
+import gramat.actions.*;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
@@ -16,6 +13,8 @@ import gramat.util.Chain;
 import gramat.util.Count;
 
 import java.util.*;
+
+import static gramat.util.DataUtils.map;
 
 public class StateCompiler extends DefaultComponent {
 
@@ -57,35 +56,9 @@ public class StateCompiler extends DefaultComponent {
                             var targets = Link.collectTargets(links);
                             var newSource = makeState(sources, root.targets);
                             var newTarget = makeState(targets, root.targets);
-                            var mode = collapseMode(links);
+                            var event = Event.collect(map(links, link -> link.event));
 
-                            Badge newBadge;
-
-                            var event = Event.of();
-
-                            for (var link : links) {
-                                event = Event.of(link.getEvent(), event);
-                            }
-
-                            if (mode == BadgeMode.NONE || badge == gramat.badges.empty()) {
-                                newBadge = gramat.badges.empty();
-                            }
-                            else if (mode == BadgeMode.PUSH) {
-                                newBadge = gramat.badges.empty();
-                                event = Event.of(new RecursionEnter(badge), event, null);
-                            }
-                            else if (mode == BadgeMode.PEEK) {
-                                newBadge = badge;
-                            }
-                            else if (mode == BadgeMode.POP) {
-                                newBadge = badge;
-                                event = Event.of(null, event, new RecursionExit(badge));
-                            }
-                            else {
-                                throw new UnsupportedValueException(mode);
-                            }
-
-                            newSource.transition.add(newBadge, symbol, new Effect(newTarget, event));
+                            newSource.transition.add(badge, symbol, new Effect(newTarget, event.before.toArray(), event.after.toArray()));
 
                             queue.add(targets);
                         }
@@ -95,21 +68,6 @@ public class StateCompiler extends DefaultComponent {
         }
 
         return initial;
-    }
-
-    private BadgeMode collapseMode(List<Link> links) {
-        BadgeMode mode = null;
-
-        for (var link : links) {
-            if (mode == null) {
-                mode = link.mode;
-            }
-            else if (mode != link.mode) {
-                throw new RuntimeException("ambiguous mode: " + mode + "/" + link.mode);
-            }
-        }
-
-        return mode;
     }
 
     private State makeState(Chain<Node> nodes, Chain<Node> accepted) {

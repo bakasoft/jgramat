@@ -1,5 +1,6 @@
 package gramat.graph.util;
 
+import gramat.actions.Event;
 import gramat.graph.Graph;
 import gramat.graph.Link;
 import gramat.graph.Node;
@@ -87,9 +88,8 @@ public class NodeMapper {
 
         return newGraph.createLink(
                 newSource, newTarget,
-                oldLink.getEvent(),
+                Event.copy(oldLink.event),
                 oldLink.symbol,
-                oldLink.badge,
-                oldLink.mode);
+                oldLink.badge);
     }
 }

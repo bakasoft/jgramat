@@ -12,7 +12,7 @@ public interface RangeFactory extends BaseFactory {
     default Chain<Node> compileRange(Graph graph, Node source, Node target, ModelRange range) {
         var symbol = getAlphabet().range(range.begin, range.end);
 
-        graph.createLink(source, target, symbol, getEmptyBadge(), BadgeMode.NONE);
+        graph.createLink(source, target, symbol, getEmptyBadge());
 
         return Chain.of(target);
     }

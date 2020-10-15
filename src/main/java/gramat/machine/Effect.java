@@ -1,18 +1,20 @@
 package gramat.machine;
 
-import gramat.actions.Event;
+import gramat.actions.Action;
 
 public class Effect {
 
     public final State target;
-    public final Event event;
+    public final Action[] before;
+    public final Action[] after;
 
     public Effect(State target) {
-        this(target, null);
+        this(target, null, null);
     }
 
-    public Effect(State target, Event event) {
+    public Effect(State target, Action[] before, Action[] after) {
         this.target = target;
-        this.event = Event.of(event);
+        this.before = before;
+        this.after = after;
     }
 }

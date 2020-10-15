@@ -13,7 +13,7 @@ public interface ReferenceFactory extends BaseFactory {
         var symbol = getAlphabet().reference(reference.name);
         var badge = getEmptyBadge();
 
-        graph.createLink(source, target, symbol, badge, BadgeMode.NONE);
+        graph.createLink(source, target, symbol, badge);
 
         registerDependency(reference.name);
 
