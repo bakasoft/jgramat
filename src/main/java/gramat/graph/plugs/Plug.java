@@ -19,13 +19,13 @@ public class Plug {
         switch(dir) {
             case S2T:
             case T2S:
-                return new Plug(dir, link.symbol, link.event, null, null);
+                return new Plug(dir, link.symbol, link.getEvent(), null, null);
             case S2N:
             case T2N:
-                return new Plug(dir, link.symbol, link.event, null, link.target);
+                return new Plug(dir, link.symbol, link.getEvent(), null, link.target);
             case N2S:
             case N2T:
-                return new Plug(dir, link.symbol, link.event, link.source, null);
+                return new Plug(dir, link.symbol, link.getEvent(), link.source, null);
             default:
                 throw new UnsupportedValueException(dir, "link direction");
         }

@@ -53,7 +53,7 @@ public class StateCompiler extends DefaultComponent {
                     for (var badge : gramat.badges) {
                         var links = graph.findTransitions(sources, symbol, badge);
 
-                        if (links.size() > 0) {
+                        if (!links.isEmpty()) {
                             var targets = Link.collectTargets(links);
                             var newSource = makeState(sources, root.targets);
                             var newTarget = makeState(targets, root.targets);
@@ -64,7 +64,7 @@ public class StateCompiler extends DefaultComponent {
                             var event = Event.of();
 
                             for (var link : links) {
-                                event = Event.of(link.event, event);
+                                event = Event.of(link.getEvent(), event);
                             }
 
                             if (mode == BadgeMode.NONE || badge == gramat.badges.empty()) {

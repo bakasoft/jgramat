@@ -2,6 +2,7 @@ package gramat.graph;
 
 import gramat.actions.Action;
 import gramat.actions.Event;
+import gramat.actions.EventEditor;
 import gramat.badges.Badge;
 import gramat.badges.BadgeMode;
 import gramat.symbols.Symbol;
@@ -11,7 +12,7 @@ import gramat.util.DataUtils;
 import java.util.List;
 import java.util.Objects;
 
-public class Link {
+public class Link implements EventEditor {
 
     public final Node source;
     public final Node target;
@@ -20,7 +21,7 @@ public class Link {
     public final Badge badge;
     public final BadgeMode mode;
 
-    public Event event;
+    private Event event;
 
     public Link(Node source, Node target, Event event, Symbol symbol, Badge badge, BadgeMode mode) {
         this.source = Objects.requireNonNull(source);
@@ -40,4 +41,13 @@ public class Link {
         return source.id + "->" + target.id + " : " + symbol;
     }
 
+    @Override
+    public Event getEvent() {
+        return event;
+    }
+
+    @Override
+    public void setEvent(Event event) {
+        this.event = Objects.requireNonNull(event);
+    }
 }

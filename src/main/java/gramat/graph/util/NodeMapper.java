@@ -87,7 +87,7 @@ public class NodeMapper {
 
         return newGraph.createLink(
                 newSource, newTarget,
-                oldLink.event,
+                oldLink.getEvent(),
                 oldLink.symbol,
                 oldLink.badge,
                 oldLink.mode);

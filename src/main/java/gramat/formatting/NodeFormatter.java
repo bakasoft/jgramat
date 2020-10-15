@@ -92,7 +92,7 @@ public class NodeFormatter extends AmFormatter {
     }
 
     public void write(Link link) {
-        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.event);
+        writeLink(link.source.id, link.target.id, link.symbol, link.badge, link.mode, link.getEvent());
     }
 
     private void writeInitial(String id) {

@@ -95,13 +95,13 @@ public class TemplateCompiler {
             var type = PlugType.compute(newRoot, newLink);
 
             if (type == PlugType.S2T) {
-                newLink.event = Event.of(newLink.event, event);
+                newLink.eventWrap(event);
             }
             else if (type == PlugType.S2N) {
-                newLink.event = Event.of(event.before, newLink.event, null);
+                newLink.eventPrepend(event.before);
             }
             else if (type == PlugType.N2T) {
-                newLink.event = Event.of(null, newLink.event, event.after);
+                newLink.eventAppend(event.after);
             }
         }
     }
@@ -114,7 +114,7 @@ public class TemplateCompiler {
         localMapper.set(oldRoot.source, newSource);
         localMapper.set(oldRoot.targets, newTarget);
 
-        copyRoot(oldRoot, localMapper, oldLink.badge, oldLink.event);
+        copyRoot(oldRoot, localMapper, oldLink.badge, oldLink.getEvent());
     }
 
     private NameMap<Extension> makeExtensions() {

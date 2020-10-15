@@ -1,7 +1,9 @@
 package gramat.graph.plugs;
 
 import gramat.graph.Link;
+import gramat.graph.Node;
 import gramat.graph.Root;
+import gramat.util.Chain;
 
 public enum PlugType {
     N2N,
@@ -11,6 +13,10 @@ public enum PlugType {
     T2N,
     N2S,
     N2T;
+
+    public static PlugType compute(Node source, Chain<Node> targets, Link link) {
+        return compute(new Root(source, targets), link);
+    }
 
     public static PlugType compute(Root root, Link link) {
         if (link.source == root.source) {
