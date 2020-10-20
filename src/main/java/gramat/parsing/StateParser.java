@@ -1,6 +1,7 @@
 package gramat.parsing;
 
 import gramat.actions.*;
+import gramat.actions.transactions.*;
 import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.machine.Effect;
@@ -10,9 +11,8 @@ import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
 import gramat.machine.State;
-import gramat.parsers.StringParser;
 import gramat.symbols.Symbol;
-import gramat.util.Chain;
+import gramat.util.Args;
 import gramat.util.PP;
 
 import java.util.HashMap;
@@ -123,56 +123,44 @@ public class StateParser extends DefaultComponent {
     }
 
     private Action make_action(ModelAction data) {
+        var args = Args.of(data.arguments);
         if (Objects.equals(data.name, "enter")) {
-            var token = data.arguments.get(0);
+            var token = args.pullAs(String.class);
             var badge = gramat.badges.badge(token);
             return new RecursionEnter(badge);
         }
         else if (Objects.equals(data.name, "exit")) {
-            var token = data.arguments.get(0);
+            var token = args.pullAs(String.class);
             var badge = gramat.badges.badge(token);
             return new RecursionExit(badge);
         }
-        else if (Objects.equals(data.name, "beginObject")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
+        else if (Objects.equals(data.name, "begin")) {
+            var type = args.pullAs(String.class);
+            var trxID = Integer.parseInt(args.pullAs(String.class));
 
-            return new ObjectBegin(trxID);
+            if (Objects.equals(type, "Object")) {
+                return new BeginAction(new ObjectTransaction(trxID));
+            }
+            else if (Objects.equals(type, "Value")) {
+                return new BeginAction(new ValueTransaction(trxID, null));
+            }
+            else if (Objects.equals(type, "Name")) {
+                return new BeginAction(new NameTransaction(trxID));
+            }
+            else if (Objects.equals(type, "Attribute")) {
+                return new BeginAction(new AttributeTransaction(trxID, null));
+            }
+            else if (Objects.equals(type, "Array")) {
+                return new BeginAction(new ArrayTransaction(trxID, null));
+            }
+            else {
+                throw new UnsupportedValueException(type);
+            }
         }
-        else if (Objects.equals(data.name, "beginValue")) {
+        else if (Objects.equals(data.name, "end")) {
             var trxID = Integer.parseInt(data.arguments.get(0));
-
-            return new ValueBegin(trxID);
-        }
-        else if (Objects.equals(data.name, "beginName")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-
-            return new NameBegin(trxID);
-        }
-        else if (Objects.equals(data.name, "beginAttribute")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-
-            return new AttributeBegin(trxID, null);
-        }
-        else if (Objects.equals(data.name, "endObject")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-
-            var token = data.arguments.isEmpty() ? null : data.arguments.get(0);
-
-            return new ObjectEnd(trxID, token);
-        }
-        else if (Objects.equals(data.name, "endValue")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-            var token = (String)null;// TODO data.arguments.get(1);
-            var parser = token != null ? gramat.parsers.findParser(token) : new StringParser("string"); // TODO???
-            return new ValueEnd(trxID, parser);
-        }
-        else if (Objects.equals(data.name, "endAttribute")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-            return new AttributeEnd(trxID, null);
-        }
-        else if (Objects.equals(data.name, "endName")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-            return new NameEnd(trxID);
+            // TODO find transaction by ID
+            return new EndAction(null);
         }
         else {
             throw new RuntimeException("Unsupported action: " + data.name);

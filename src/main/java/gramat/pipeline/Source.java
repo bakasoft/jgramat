@@ -30,6 +30,9 @@ public class Source {
                 var pass = (ModelEvalPass)test;
                 var state = Pipeline.toState(parent, new Sentence(pass.expression, rules));
                 var tape = new Tape(pass.input);
+
+                logger.debug("evaluating: %s", pass.input);
+
                 var evaluator = new Evaluator(parent, tape, logger);
                 var result = evaluator.evalValue(state);
 

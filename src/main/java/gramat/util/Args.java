@@ -4,36 +4,50 @@ import java.util.*;
 
 public class Args {
 
+    public static Args of(Object any) {
+        if (any instanceof Collection) {
+            return of((Collection<?>)any);
+        }
+        else if (any instanceof Map) {
+            return of((Map<?,?>)any);
+        }
+        else {
+            var args = new Args();
+            args.args.add(new Arg(null, any));
+            return args;
+        }
+    }
+
+    public static Args of(Collection<?> items) {
+        var args = new Args();
+
+        for (var item : items) {
+            args.args.add(new Arg(null, item));
+        }
+
+        return args;
+    }
+
+    public static Args of(Map<?, ?> map) {
+        var args = new Args();
+        for (var entry : map.entrySet()) {
+            var name = String.valueOf(entry.getKey());
+            var value = entry.getValue();
+
+            args.args.add(new Arg(name, value));
+        }
+        return args;
+    }
+
     private final Object MANDATORY = new Object();
 
     private final List<Arg> args;
 
     private int currentIndex;
 
-    public Args(Object source) {
+    private Args() {
         args = new ArrayList<>();
         currentIndex = 0;
-
-        if (source instanceof Collection) {
-            var items = (Collection<?>)source;
-
-            for (var item : items) {
-                args.add(new Arg(null, item));
-            }
-        }
-        else if (source instanceof Map) {
-            var map = (Map<?,?>)source;
-
-            for (var entry : map.entrySet()) {
-                var name = String.valueOf(entry.getKey());
-                var value = entry.getValue();
-
-                args.add(new Arg(name, value));
-            }
-        }
-        else {
-            args.add(new Arg(null, source));
-        }
     }
 
     public <T> T pullAs(T defaultValue, Class<T> type) {
@@ -48,7 +62,7 @@ public class Args {
         return pull(currentIndex, defaultValue);
     }
 
-    public Object pull(int index, Object defaultValue) {
+    private Object pull(int index, Object defaultValue) {
         if (index >= 0 && index < args.size()) {
             currentIndex = index + 1;
 
@@ -91,7 +105,6 @@ public class Args {
     }
 
     private static class Arg {
-
         public final String name;
         public final Object value;
         private Arg(String name, Object value) {

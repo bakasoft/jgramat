@@ -48,7 +48,7 @@ public class SourceParser {
 
         if (file.calls != null) {
             for (var call : file.calls) {
-                var args = new Args(call.arguments);
+                var args = Args.of(call.arguments);
                 if (Objects.equals(call.keyword, "pass")) {
                     tests.add(makePass(args, call.expression));
                 }

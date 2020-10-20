@@ -1,5 +1,6 @@
 package gramat.eval;
 
+import gramat.eval.transactions.TransactionManager;
 import gramat.framework.Logger;
 import gramat.input.Tape;
 
@@ -17,11 +18,14 @@ public class Context {
 
     private Integer position;
 
+    public final TransactionManager manager;
+
     public Context(Logger logger, Tape tape, Heap heap) {
         this.logger = logger;
         this.tape = tape;
         this.heap = heap;
         this.containers = new Stack<>();
+        this.manager = new TransactionManager(this);
     }
 
     public void pushContainer() {

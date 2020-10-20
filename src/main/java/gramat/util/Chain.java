@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// TODO Create specialized NodeSet
 public class Chain<T> implements Iterable<T> {
 
     public static <T> Chain<T> of(T value) {

@@ -87,7 +87,11 @@ public class Evaluator extends DefaultComponent {
 
             // Go for next state!
             state = effect.target;
+
+            context.manager.commit();
         }
+
+        context.manager.flush();
 
         return state;
     }
