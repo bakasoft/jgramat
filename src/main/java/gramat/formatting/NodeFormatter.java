@@ -25,7 +25,7 @@ public class NodeFormatter extends AmFormatter {
     public void write(Graph graph, Root root) {
         writeInitial(root.source.id);
 
-        for (var link : graph.findLinksBetween(root)) {
+        for (var link : graph.links) {
             write(link);
         }
 

@@ -18,7 +18,7 @@ public class Chain<T> implements Iterable<T> {
         return new Chain<>(new Object[] {value1, value2});
     }
 
-    public static <T> Chain<T> of(List<T> values) {
+    public static <T> Chain<T> of(Collection<T> values) {
         return new Chain<>(values.toArray());
     }
 

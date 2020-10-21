@@ -141,11 +141,15 @@ public class Graph {
     }
 
     public List<Link> findLinksBetween(Node source, Chain<Node> targets) {
+        return findLinksBetween(Chain.of(source), targets);
+    }
+
+    public List<Link> findLinksBetween(Chain<Node> sources, Chain<Node> targets) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
 
-        queue.add(source);
+        queue.addAll(sources.toList());
 
         while (queue.size() > 0) {
             var node = queue.remove();

@@ -1,6 +1,7 @@
 package gramat.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -14,6 +15,10 @@ public class DataUtils {
         }
 
         return result;
+    }
+
+    public static boolean isEmpty(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
     }
 
 }
