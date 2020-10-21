@@ -42,7 +42,7 @@ public class TransactionManager {
     public void cancel(int id, Badge badge) {
         var hash = computeHash(id, badge);
 
-        if (!pending.removeIf(trx -> trx.hash == hash)) {
+        if (!complete.removeIf(trx -> trx.hash == hash)) {
             throw new RuntimeException();
         }
     }

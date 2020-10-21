@@ -109,12 +109,20 @@ public class TemplateCompiler {
     private void copyLink(Link oldLink, Root oldRoot, NodeMapper mapper) {
         var newSource = mapper.copy(oldLink.source);
         var newTarget = mapper.copy(oldLink.target);
+        var oldSource = oldRoot.source;
 
-        var localMapper = new NodeMapper(mapper);
-        localMapper.set(oldRoot.source, newSource);
-        localMapper.set(oldRoot.targets, newTarget);
+        for (var oldTarget : oldRoot.targets) {
+            if (oldSource != oldTarget) {
+                var localMapper = new NodeMapper(mapper);
+                localMapper.set(oldSource, newSource);
+                localMapper.set(oldTarget, newTarget);
 
-        copyRoot(oldRoot, localMapper, oldLink.badge, oldLink.event);
+                copyRoot(oldRoot, localMapper, oldLink.badge, oldLink.event);
+            }
+            else {
+                // TODO how to tell that source is also target? :/
+            }
+        }
     }
 
     private NameMap<Extension> makeExtensions() {

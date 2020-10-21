@@ -40,12 +40,6 @@ public class NodeMapper {
         nodes.put(oldNode, newNode);
     }
 
-    public void set(Chain<Node> oldNodes, Node newNode) {
-        for (var oldNode : oldNodes) {
-            set(oldNode, newNode);
-        }
-    }
-
     public Node copy(Node oldNode) {
         return nodes.computeIfAbsent(oldNode, newGraph::createNodeFrom);
     }
