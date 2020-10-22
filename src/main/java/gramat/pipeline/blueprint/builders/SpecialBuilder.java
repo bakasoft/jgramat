@@ -1,15 +1,18 @@
-package gramat.pipeline.expressions;
+package gramat.pipeline.blueprint.builders;
 
 import gramat.actions.*;
 import gramat.eval.transactions.Transaction;
 import gramat.actions.transactions.*;
+import gramat.exceptions.UnsupportedValueException;
 import gramat.graph.Graph;
 import gramat.graph.Node;
-import gramat.graph.plugs.PlugType;
+import gramat.graph.util.DirType;
 import gramat.models.expressions.*;
 import gramat.util.Chain;
 
-public interface SpecialFactory extends BaseFactory {
+import java.util.ArrayList;
+
+public interface SpecialBuilder extends BaseBuilder {
 
     default Chain<Node> compileArray(Graph graph, Node source, Node target, ModelArray array) {
         var id = nextTransactionID();
@@ -43,36 +46,36 @@ public interface SpecialFactory extends BaseFactory {
     }
 
     private Chain<Node> wrapActions(Graph graph, Node source, Node target, ModelExpression expression, Transaction transaction) {
+        graph.capturings.push(new ArrayList<>());
+
         var targets = compileExpression(graph, source, target, expression);
+
+        var links = graph.capturings.pop();
+
         var begin = new BeginAction(transaction);
-        var prevent = new PreventAction(transaction.getID());
-        var cancel = new CancelAction(transaction.getID());
+        var notBegin = new NotBeginAction(transaction.getID());
+        var notEnd = new NotEndAction(transaction);
         var end = new EndAction(transaction);
 
-        for (var link : graph.findLinksBetween(source, targets)) {
+        for (var link : links) {
             // TODO what about Inner Node to Outside Node?
-            switch(PlugType.compute(source, targets, link)) {
-                case S2T:
-                    link.event.wrap(begin, end);
-                    break;
-                case S2N:
-                    link.event.prepend(begin);
-                    break;
-                case T2S:
-                    link.event.prepend(prevent);
-                    link.event.append(cancel);
-                    break;
-                case T2N:
-                    link.event.append(cancel);
-                    break;
-                case N2S:
-                    link.event.prepend(prevent);
-                    break;
-                case N2T:
-                    link.event.append(end);
-                    break;
-                default:
-                    break;
+            for (var dir : DirType.compute(source, targets, link)) {
+                switch (dir) {
+                    case FROM_SOURCE:
+                        link.event.prepend(begin);
+                        break;
+                    case TO_TARGET:
+                        link.event.append(end);
+                        break;
+                    case FROM_TARGET:
+                        link.event.prepend(notEnd);
+                        break;
+                    case TO_SOURCE:
+                        link.event.append(notBegin);
+                        break;
+                    default:
+                        throw new UnsupportedValueException(dir);
+                }
             }
         }
 

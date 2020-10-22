@@ -2,11 +2,11 @@ package gramat.actions;
 
 import gramat.eval.Context;
 
-public class CancelAction extends Action {
+public class NotBeginAction extends Action {
 
     private final int trxID;
 
-    public CancelAction(int trxID) {
+    public NotBeginAction(int trxID) {
         this.trxID = trxID;
     }
 
@@ -14,12 +14,12 @@ public class CancelAction extends Action {
     public void run(Context context) {
         var badge = context.heap.peek();
 
-        context.manager.cancel(trxID, badge);
+        context.manager.notBegin(trxID, badge);
     }
 
     @Override
     public String toString() {
-        return String.format("cancel(%s)", trxID);
+        return String.format("not-begin(%s)", trxID);
     }
 
 }

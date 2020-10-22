@@ -1,11 +1,11 @@
-package gramat.pipeline.expressions;
+package gramat.pipeline.blueprint.builders;
 
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelAlternation;
 import gramat.util.Chain;
 
-public interface AlternationFactory extends BaseFactory {
+public interface AlternationBuilder extends BaseBuilder {
 
     default Chain<Node> compileAlternation(Graph graph, Node source, Node target, ModelAlternation alternation) {
         var targets = Chain.of(target);

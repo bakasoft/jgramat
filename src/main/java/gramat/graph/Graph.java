@@ -18,10 +18,13 @@ public class Graph {
     public final List<Link> links;
     public final List<Node> nodes;
 
+    public final Deque<List<Link>> capturings;
+
     public Graph() {
         this.ids = new TokenGenerator("_");
         this.links = new ArrayList<>();
         this.nodes = new ArrayList<>();
+        this.capturings = new ArrayDeque<>();
     }
 
     public Node createNode() {
@@ -52,6 +55,11 @@ public class Graph {
     public Link createLink(Node source, Node target, Event event, Symbol symbol, Badge badge) {
         var link = new Link(source, target, event, symbol, badge);
         links.add(link);
+
+        for (var capturing : capturings) {
+            capturing.add(link);
+        }
+
         return link;
     }
 

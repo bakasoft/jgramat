@@ -31,20 +31,18 @@ public class TransactionManager {
         transaction.begin(context);
     }
 
-    public void prevent(int id, Badge badge) {
+    public void notBegin(int id, Badge badge) {
         var hash = computeHash(id, badge);
 
-        if (!skip.add(hash)) {
-            throw new RuntimeException("Action2 was already ignored.");
-        }
+        skip.add(hash);
+        // TODO validate status
     }
 
-    public void cancel(int id, Badge badge) {
-        var hash = computeHash(id, badge);
+    public void notEnd(Transaction transaction, Badge badge) {
+        var hash = computeHash(transaction.getID(), badge);
 
-        if (!complete.removeIf(trx -> trx.hash == hash)) {
-            throw new RuntimeException();
-        }
+        complete.removeIf(trx -> trx.hash == hash);
+        // TODO validate status
     }
 
     public void end(Transaction transaction, Badge badge) {

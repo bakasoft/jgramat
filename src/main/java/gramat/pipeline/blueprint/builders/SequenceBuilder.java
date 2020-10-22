@@ -1,11 +1,11 @@
-package gramat.pipeline.expressions;
+package gramat.pipeline.blueprint.builders;
 
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelSequence;
 import gramat.util.Chain;
 
-public interface SequenceFactory extends BaseFactory {
+public interface SequenceBuilder extends BaseBuilder {
 
     default Chain<Node> compileSequence(Graph graph, Node source, Node target, ModelSequence sequence) {
         Chain<Node> last = null;

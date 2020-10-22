@@ -1,0 +1,43 @@
+package gramat.graph.util;
+
+import gramat.graph.Link;
+import gramat.graph.Node;
+import gramat.graph.Root;
+import gramat.util.Chain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public enum DirType {
+
+    FROM_SOURCE,
+    FROM_TARGET,
+    TO_SOURCE,
+    TO_TARGET;
+
+    public static List<DirType> compute(Root root, Link link) {
+        return compute(root.source, root.targets, link);
+    }
+
+    public static List<DirType> compute(Node source, Chain<Node> targets, Link link) {
+        return compute(Chain.of(source), targets, link);
+    }
+
+    public static List<DirType> compute(Chain<Node> sources, Chain<Node> targets, Link link) {
+        var result = new ArrayList<DirType>(4);
+        if (sources.contains(link.source)) {
+            result.add(FROM_SOURCE);
+        }
+        if (targets.contains(link.source)) {
+            result.add(FROM_TARGET);
+        }
+        if (sources.contains(link.target)) {
+            result.add(TO_SOURCE);
+        }
+        if (targets.contains(link.target)) {
+            result.add(TO_TARGET);
+        }
+        return result;
+    }
+}
+

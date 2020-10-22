@@ -1,8 +1,8 @@
 Test-1 = @value({"a"});
 
-# TODO @pass<"">(Test-1);
+@pass<"">(Test-1);
 @pass<"a">(Test-1);
-# TODO @pass<"aa">(Test-1);
+@pass<"aa">(Test-1);
 @pass<"aaa">(Test-1);
-# TODO @pass<"aaaa">(Test-1);
+@pass<"aaaa">(Test-1);
 @pass<"aaaaa">(Test-1);

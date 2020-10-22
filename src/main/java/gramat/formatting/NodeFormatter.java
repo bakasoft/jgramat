@@ -2,7 +2,6 @@ package gramat.formatting;
 
 import gramat.actions.Event;
 import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
@@ -47,35 +46,35 @@ public class NodeFormatter extends AmFormatter {
             String source;
             String target;
 
-            if (plug.getType() == PlugType.N2S) {
+            if (plug.getType() == PlugType.NODE_TO_SOURCE) {
                 source = plug.getSource().id;
                 target = plugSource;
 
                 nodes = Chain.merge(nodes, plug.getSource());
             }
-            else if (plug.getType() == PlugType.N2T) {
+            else if (plug.getType() == PlugType.NODE_TO_TARGET) {
                 source = plug.getSource().id;
                 target = plugTarget;
 
                 nodes = Chain.merge(nodes, plug.getSource());
             }
-            else if (plug.getType() == PlugType.S2N) {
+            else if (plug.getType() == PlugType.SOURCE_TO_NODE) {
                 source = plugSource;
                 target = plug.getTarget().id;
 
                 nodes = Chain.merge(nodes, plug.getTarget());
             }
-            else if (plug.getType() == PlugType.S2T) {
+            else if (plug.getType() == PlugType.SOURCE_TO_TARGET) {
                 source = plugSource;
                 target = plugTarget;
             }
-            else if (plug.getType() == PlugType.T2N) {
+            else if (plug.getType() == PlugType.TARGET_TO_NODE) {
                 source = plugTarget;
                 target = plug.getTarget().id;
 
                 nodes = Chain.merge(nodes, plug.getTarget());
             }
-            else if (plug.getType() == PlugType.T2S) {
+            else if (plug.getType() == PlugType.TARGET_TO_SOURCE) {
                 source = plugTarget;
                 target = plugSource;
             }

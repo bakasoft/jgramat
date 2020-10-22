@@ -4,9 +4,7 @@ import gramat.actions.Event;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.formatting.NodeFormatter;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
@@ -87,13 +85,13 @@ public class MachineCompiler extends DefaultComponent {
         Event linkEvent = Event.copy(plug.event);
 
         // Recursion not affected:
-        if (type == PlugType.S2T) {
+        if (type == PlugType.SOURCE_TO_TARGET) {
             linkSource = newSource;
             linkTarget = newTarget;
             linkBadge = gramat.badges.empty();
             linkEvent.wrap(wrapper);
         }
-        else if (type == PlugType.T2S) {
+        else if (type == PlugType.TARGET_TO_SOURCE) {
             linkSource = newTarget;
             linkTarget = newSource;
             linkBadge = gramat.badges.empty();
@@ -101,7 +99,7 @@ public class MachineCompiler extends DefaultComponent {
         }
 
         // Entering to recursion:
-        else if (type == PlugType.S2N) {
+        else if (type == PlugType.SOURCE_TO_NODE) {
             linkSource = newSource;
             linkTarget = plug.getTarget();
             linkBadge = gramat.badges.empty();
@@ -110,7 +108,7 @@ public class MachineCompiler extends DefaultComponent {
                 linkEvent.prepend(new RecursionEnter(newBadge));
             }
         }
-        else if (type == PlugType.T2N) {
+        else if (type == PlugType.TARGET_TO_NODE) {
             linkSource = newTarget;
             linkTarget = plug.getTarget();
             linkBadge = gramat.badges.empty();
@@ -121,7 +119,7 @@ public class MachineCompiler extends DefaultComponent {
         }
 
         // Exiting from recursion:
-        else if (type == PlugType.N2S) {
+        else if (type == PlugType.NODE_TO_SOURCE) {
             linkSource = plug.getSource();
             linkTarget = newSource;
             linkBadge = newBadge;
@@ -129,7 +127,7 @@ public class MachineCompiler extends DefaultComponent {
                 linkEvent.append(new RecursionExit(newBadge));
             }
         }
-        else if (type == PlugType.N2T) {
+        else if (type == PlugType.NODE_TO_TARGET) {
             linkSource = plug.getSource();
             linkTarget = newTarget;
             linkBadge = newBadge;

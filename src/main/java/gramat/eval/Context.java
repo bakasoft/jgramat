@@ -103,7 +103,10 @@ public class Context {
 
         container.expectEmpty();
 
-        if (values.size() != 1) {
+        if (values.isEmpty()) {
+            return null;  // TODO should this be validated to only return null once?
+        }
+        else if (values.size() != 1) {
             throw new RejectedException("expected one value");
         }
 

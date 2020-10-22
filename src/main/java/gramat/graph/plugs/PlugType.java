@@ -1,48 +1,53 @@
 package gramat.graph.plugs;
 
 import gramat.graph.Link;
-import gramat.graph.Node;
 import gramat.graph.Root;
-import gramat.util.Chain;
 
 public enum PlugType {
-    N2N,
-    S2T,
-    S2N,
-    T2S,
-    T2N,
-    N2S,
-    N2T;
+
+    SOURCE_TO_SOURCE,
+    SOURCE_TO_NODE,
+    SOURCE_TO_TARGET,
+    NODE_TO_SOURCE,
+    NODE_TO_NODE,
+    NODE_TO_TARGET,
+    TARGET_TO_SOURCE,
+    TARGET_TO_NODE,
+    TARGET_TO_TARGET;
 
     public static PlugType compute(Root root, Link link) {
-        return compute(root.source, root.targets, link);
-    }
-
-    public static PlugType compute(Node source, Chain<Node> targets, Link link) {
-        return compute(Chain.of(source), targets, link);
-    }
-
-    public static PlugType compute(Chain<Node> sources, Chain<Node> targets, Link link) {
-        if (sources.contains(link.source)) {
-            if (targets.contains(link.target)) {
-                return PlugType.S2T;
-            } else {
-                return PlugType.S2N;
+        if (link.source == root.source) {  // From Source
+            if (link.target == root.source) {  // To Source
+                return SOURCE_TO_SOURCE;
+            }
+            else if (root.targets.contains(link.target)) {  // To Target
+                return SOURCE_TO_TARGET;
+            }
+            else {  // To Node
+                return SOURCE_TO_NODE;
             }
         }
-        else if (targets.contains(link.source)) {
-            if (sources.contains(link.target)) {
-                return PlugType.T2S;
-            } else {
-                return PlugType.T2N;
+        else if (root.targets.contains(link.source)) {  // From Target
+            if (link.target == root.source) {  // To Source
+                return TARGET_TO_SOURCE;
+            }
+            else if (root.targets.contains(link.target)) {  // To Target
+                return TARGET_TO_TARGET;
+            }
+            else {  // To Node
+                return TARGET_TO_NODE;
             }
         }
-        else if (sources.contains(link.target)) {
-            return PlugType.N2S;
+        else {  // From Node
+            if (link.target == root.source) {  // To Source
+                return NODE_TO_SOURCE;
+            }
+            else if (root.targets.contains(link.target)) {  // To Target
+                return NODE_TO_TARGET;
+            }
+            else {  // To Node
+                return NODE_TO_NODE;
+            }
         }
-        else if (targets.contains(link.target)) {
-            return PlugType.N2T;
-        }
-        return PlugType.N2N;
     }
 }

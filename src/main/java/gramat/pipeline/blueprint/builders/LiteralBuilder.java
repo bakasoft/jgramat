@@ -1,13 +1,11 @@
-package gramat.pipeline.expressions;
+package gramat.pipeline.blueprint.builders;
 
-import gramat.badges.BadgeMode;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelLiteral;
-import gramat.symbols.Symbol;
 import gramat.util.Chain;
 
-public interface LiteralFactory extends BaseFactory {
+public interface LiteralBuilder extends BaseBuilder {
 
     default Chain<Node> compileLiteral(Graph graph, Node source, Node target, ModelLiteral literal) {
         var chars = literal.value.toCharArray();

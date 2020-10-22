@@ -1,11 +1,11 @@
-package gramat.pipeline.expressions;
+package gramat.pipeline.blueprint.builders;
 
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelRepetition;
 import gramat.util.Chain;
 
-public interface RepetitionFactory extends BaseFactory {
+public interface RepetitionBuilder extends BaseBuilder {
 
     default Chain<Node> compileRepetition(Graph graph, Node source, Node target, ModelRepetition repetition) {
         if (repetition.separator == null && repetition.minimum == 0) {
