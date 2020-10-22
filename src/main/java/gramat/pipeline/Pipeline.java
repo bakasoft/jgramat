@@ -18,14 +18,14 @@ public class Pipeline {
         var graph = new Graph();
         var template = ExpressionBuilder.build(parent, graph, sentence.expression, sentence.dependencies);
 
-        System.out.println("########## TEMPLATE");
-        new NodeFormatter(System.out).write(graph, template.main);
-        System.out.println("##########");
+//        System.out.println("########## TEMPLATE");
+//        new NodeFormatter(System.out).write(graph, template.main);
+//        System.out.println("##########");
 
         for (var entry : template.extensions.entrySet()) {
-            System.out.println("########## EXTENSION " + entry.getKey());
-            new NodeFormatter(System.out).write(graph, entry.getValue());
-            System.out.println("##########");
+//            System.out.println("########## EXTENSION " + entry.getKey());
+//            new NodeFormatter(System.out).write(graph, entry.getValue());
+//            System.out.println("##########");
         }
 
         return template;
@@ -36,9 +36,9 @@ public class Pipeline {
 
         machine.validate();
 
-        System.out.println("########## MACHINE");
-        new NodeFormatter(System.out).write(machine.graph, machine.root);
-        System.out.println("##########");
+//        System.out.println("########## MACHINE");
+//        new NodeFormatter(System.out).write(machine.graph, machine.root);
+//        System.out.println("##########");
 
         return machine;
     }

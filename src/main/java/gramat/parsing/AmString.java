@@ -37,8 +37,20 @@ public interface AmString extends AmBase {
 
                         buffer.append(code);
                     }
+                    else if (chr == 's') {
+                        buffer.append(' ');
+                    }
+                    else if (chr == 't') {
+                        buffer.append('\t');
+                    }
+                    else if (chr == 'n') {
+                        buffer.append('\n');
+                    }
+                    else if (chr == 'r') {
+                        buffer.append('\r');
+                    }
                     else {
-                        throw new UnexpectedCharException(tape);
+                        throw new UnexpectedCharException(tape, -1);
                     }
                 }
                 else {

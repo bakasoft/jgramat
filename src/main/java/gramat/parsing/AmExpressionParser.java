@@ -48,6 +48,10 @@ public interface AmExpressionParser extends AmBase, AmValue {
     }
 
     default ModelExpression tryExpressionItem(Tape tape) {
+        var group = tryGroup(tape);
+        if (group != null) {
+            return group;
+        }
         var optional = tryOptional(tape);
         if (optional != null) {
             return optional;
@@ -93,6 +97,17 @@ public interface AmExpressionParser extends AmBase, AmValue {
             expectToken(tape, ']');
 
             return ModelFactory.optional(expr);
+        }
+        return null;
+    }
+
+    default ModelExpression tryGroup(Tape tape) {
+        if (tryToken(tape, '(')) {
+            var expr = readExpression(tape);
+
+            expectToken(tape, ')');
+
+            return expr;
         }
         return null;
     }

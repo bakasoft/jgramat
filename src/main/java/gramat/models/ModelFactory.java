@@ -2,6 +2,7 @@ package gramat.models;
 
 import gramat.models.expressions.*;
 import gramat.models.source.ModelCall;
+import gramat.util.PP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,7 @@ public class ModelFactory {
     }
 
     public static ModelExpression characterClass(String charClass) {
+        // TODO how to accept spaces?
         var options = new ArrayList<ModelExpression>();
 
         for (var item : charClass.split(" +")) {
@@ -121,8 +123,12 @@ public class ModelFactory {
                 var end = item.charAt(2);
                 options.add(range(begin, end));
             }
+            else if (item.length() == 1) {
+                var chr = item.charAt(0);
+                options.add(literal(String.valueOf(chr)));
+            }
             else {
-                throw new RuntimeException("invalid character class: " + charClass);
+                throw new RuntimeException("invalid character class: " + PP.str(charClass));
             }
         }
 

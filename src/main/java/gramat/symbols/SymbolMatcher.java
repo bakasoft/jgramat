@@ -21,12 +21,13 @@ public class SymbolMatcher<T> {
             throw new RuntimeException();
         }
 
-        // Check if intersects other symbol
-        for (var s : map.keySet()) {
-            if (s.intersects(symbol)) {
-                throw new RuntimeException();
-            }
-        }
+        // TODO this validation must be moved to the states (not here)
+//        // Check if intersects other symbol
+//        for (var s : map.keySet()) {
+//            if (s.intersects(symbol)) {
+//                throw new RuntimeException(s + " intersets " + symbol);
+//            }
+//        }
 
         map.put(symbol, value);
     }
