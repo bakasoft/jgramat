@@ -27,4 +27,6 @@ ws = {" " | '\t \n \r'};
 #@pass<"[1, 2]">(Value);
 #@pass<"{\"a\": null}">(Value);
 #@pass<"{\"a\": [1, {}]}">(Value);
-@pass<@readFile<"testJson.case0.json">>(Value);
+#@pass<@readFile<"testJson.case0.json">>(Value);
+#@pass<@readFile<"testJson.case1.json">>(Value);
+@pass<@readFile<"testJson.case2.json">>(Value);
