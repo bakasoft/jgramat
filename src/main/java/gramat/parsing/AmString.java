@@ -37,6 +37,9 @@ public interface AmString extends AmBase {
 
                         buffer.append(code);
                     }
+                    else if (chr == '\\') {
+                        buffer.append(chr);
+                    }
                     else if (chr == 's') {
                         buffer.append(' ');
                     }

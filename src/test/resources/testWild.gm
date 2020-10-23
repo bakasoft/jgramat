@@ -27,3 +27,13 @@ Wild-4 = {"x"} * {"z"};
 @pass<"">(Wild-4);
 @pass<"xz">(Wild-4);
 @pass<"xxxzzz">(Wild-4);
+
+Wild-5 = "[" { * "--" } "]";
+
+@pass<"[]">(Wild-5);
+@pass<"[--]">(Wild-5);
+@pass<"[----]">(Wild-5);
+@pass<"[.----]">(Wild-5);
+@pass<"[.--.--]">(Wild-5);
+@pass<"[.--.--.]">(Wild-5);
+@pass<"[.--..--...]">(Wild-5);

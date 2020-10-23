@@ -73,6 +73,7 @@ public class Alphabet implements Iterable<Symbol> {
 
     @Override
     public Iterator<Symbol> iterator() {
-        return symbols.iterator();
+        // TODO check for concurrent modification
+        return new ArrayList<>(symbols).iterator();
     }
 }

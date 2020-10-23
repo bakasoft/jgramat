@@ -194,7 +194,7 @@ public class Graph {
         links.remove(link);
     }
 
-    public void replaceNodesBy(NodeSet oldNodes, Node newNode) {
+    public void mergeNodesInto(NodeSet oldNodes, Node newNode) {
         for (var link : links) {
             if (oldNodes.contains(link.source)) {
                 link.source = newNode;
@@ -207,6 +207,8 @@ public class Graph {
         for (var node : oldNodes) {
             this.nodes.remove(node);
         }
+
+        newNode.wild |= oldNodes.anyMatch(n -> n.wild);
     }
 
 }

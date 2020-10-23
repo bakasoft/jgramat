@@ -27,18 +27,18 @@ public class GramatTest {
     }
 
     @Test
-    public void test05() {
-        Assert.assertTrue(runTests("test05.gm") > 0);
-    }
-
-    @Test
     public void test06() {
         Assert.assertTrue(runTests("test06.gm") > 0);
     }
 
     @Test
-    public void test07() {
-        Assert.assertTrue(runTests("test07.gm") > 0);
+    public void testJson() {
+        Assert.assertTrue(runTests("testJson.gm") > 0);
+    }
+
+    @Test
+    public void testWild() {
+        Assert.assertTrue(runTests("testWild.gm") > 0);
     }
 
 }

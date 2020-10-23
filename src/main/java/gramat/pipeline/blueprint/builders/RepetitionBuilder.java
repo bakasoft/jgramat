@@ -30,10 +30,10 @@ public interface RepetitionBuilder extends BaseBuilder {
     private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content) {
         var accepted = graph.createNode();
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, source, content), accepted);
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, accepted, content), accepted);
 
         return NodeSet.of(source, accepted);
@@ -42,13 +42,13 @@ public interface RepetitionBuilder extends BaseBuilder {
     private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
         var accepted = graph.createNode();
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, source, content),
                 accepted);
 
         var acceptedSeparator = compileExpression(graph, accepted, separator);
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, acceptedSeparator, content),
                 accepted);
 
@@ -58,12 +58,12 @@ public interface RepetitionBuilder extends BaseBuilder {
     private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content) {
         var accepted = graph.createNode();
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, source, content),
                 accepted
         );
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, accepted, content),
                 accepted
         );
@@ -74,13 +74,13 @@ public interface RepetitionBuilder extends BaseBuilder {
     private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
         var accepted = graph.createNode();
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, source, content),
                 accepted);
 
         var acceptedSeparator = compileExpression(graph, accepted, separator);
 
-        graph.replaceNodesBy(
+        graph.mergeNodesInto(
                 compileExpression(graph, acceptedSeparator, content),
                 accepted);
 
