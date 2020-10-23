@@ -3,8 +3,11 @@ package gramat.parsing;
 import gramat.framework.Component;
 import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
+import gramat.models.source.ModelCall;
 
 public interface AmBase extends Component {
+
+    ModelCall tryCall(Tape tape);
 
     default boolean tryToken(Tape tape, char chr) {
         if (tape.peek() == chr) {

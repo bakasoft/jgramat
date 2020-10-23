@@ -4,7 +4,7 @@ import gramat.pipeline.Pipeline;
 import org.junit.Assert;
 import org.junit.Test;
 
-import util.Resources;
+import gramat.util.Resources;
 
 public class GramatTest {
 

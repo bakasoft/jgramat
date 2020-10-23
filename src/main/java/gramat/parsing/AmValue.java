@@ -4,6 +4,7 @@ import gramat.data.ListData;
 import gramat.data.MapData;
 import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
+import gramat.util.Args;
 
 import java.util.ArrayList;
 
@@ -32,6 +33,17 @@ public interface AmValue extends AmString {
 
         if (list != null) {
             return list;
+        }
+
+        var call = tryCall(tape);
+
+        if (call != null) {
+            if (call.expression != null) {
+                throw new RuntimeException("unexepcted expression");
+            }
+            var parser = getGramat().parsers.findParser(str);
+            var text = getGramat().loadValue(call.keyword, Args.of(call.arguments));
+            return parser.parse(text);
         }
 
         if (str == null) {

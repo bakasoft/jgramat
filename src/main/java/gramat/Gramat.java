@@ -7,6 +7,10 @@ import gramat.framework.Logger;
 import gramat.framework.SystemLogger;
 import gramat.parsers.ParserSource;
 import gramat.symbols.Alphabet;
+import gramat.util.Args;
+import gramat.util.Resources;
+
+import java.util.Objects;
 
 public class Gramat implements Component {
 
@@ -55,4 +59,14 @@ public class Gramat implements Component {
         return this;
     }
 
+    public String loadValue(String valueDirective, Args args) {
+        if (Objects.equals(valueDirective, "readFile")) {
+            var path = args.pullAs(String.class);
+
+            return Resources.loadText(path);
+        }
+        else {
+            throw new RuntimeException("unsupported value directive: " + valueDirective);
+        }
+    }
 }

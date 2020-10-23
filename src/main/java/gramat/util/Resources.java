@@ -1,4 +1,4 @@
-package util;
+package gramat.util;
 
 import gramat.input.Tape;
 
