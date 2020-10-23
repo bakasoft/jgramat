@@ -3,10 +3,11 @@ package gramat.pipeline.blueprint.builders;
 import gramat.badges.Badge;
 import gramat.graph.Graph;
 import gramat.graph.Node;
+import gramat.graph.sets.NodeSetMutable;
 import gramat.models.expressions.*;
 import gramat.parsers.ValueParser;
 import gramat.symbols.Alphabet;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public interface BaseBuilder {
 
     void registerDependency(String reference);
 
-    int nextTransactionID();
+    int nextTransactionID(ModelExpression expression);
 
     Badge getEmptyBadge();
 
@@ -26,26 +27,16 @@ public interface BaseBuilder {
 
     Set<String> getRecursiveReferences();
 
-    Chain<Node> compileExpression(Graph graph, Node source, Node target, ModelExpression expression);
+    NodeSet compileExpression(Graph graph, Node source, ModelExpression expression);
 
-    default Chain<Node> compileExpression(Graph graph, Chain<Node> sources, Node target, ModelExpression expression) {
-        var targets = Chain.of(target);
+    default NodeSet compileExpression(Graph graph, NodeSet sources, ModelExpression expression) {
+        var targets = new NodeSetMutable();
 
         for (var initial : sources) {
-            targets = targets.merge(compileExpression(graph, initial, target, expression));
+            targets.addAll(compileExpression(graph, initial, expression));
         }
 
-        return targets;
-    }
-
-    default Chain<Node> compileExpression(Graph graph, Chain<Node> sources, Chain<Node> targets, ModelExpression expression) {
-        for (var initial : sources) {
-            for (var accepted : targets) {
-                targets = targets.merge(compileExpression(graph, initial, accepted, expression));
-            }
-        }
-
-        return targets;
+        return targets.build();
     }
 
 }

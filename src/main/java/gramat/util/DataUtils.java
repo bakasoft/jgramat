@@ -10,8 +10,18 @@ import java.util.function.Function;
 
 public class DataUtils {
 
-    public static <T, R> List<R> map(List<T> items, Function<T, R> mapper) {
+    public static <T, R> List<R> map(Collection<T> items, Function<T, R> mapper) {
         var result = new ArrayList<R>(items.size());
+
+        for (var item : items) {
+            result.add(mapper.apply(item));
+        }
+
+        return result;
+    }
+
+    public static <T, R> List<R> map(Iterable<T> items, Function<T, R> mapper) {
+        var result = new ArrayList<R>();
 
         for (var item : items) {
             result.add(mapper.apply(item));

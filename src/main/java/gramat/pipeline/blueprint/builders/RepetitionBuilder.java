@@ -2,37 +2,85 @@ package gramat.pipeline.blueprint.builders;
 
 import gramat.graph.Graph;
 import gramat.graph.Node;
+import gramat.models.expressions.ModelExpression;
 import gramat.models.expressions.ModelRepetition;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public interface RepetitionBuilder extends BaseBuilder {
 
-    default Chain<Node> compileRepetition(Graph graph, Node source, Node target, ModelRepetition repetition) {
-        if (repetition.separator == null && repetition.minimum == 0) {
-            var acceptedOne = compileExpression(graph, source, target, repetition.content);
-            var acceptedBack = compileExpression(graph, acceptedOne, source, repetition.content);
-            return acceptedOne.merge(acceptedBack);
+    default NodeSet compileRepetition(Graph graph, Node source, ModelRepetition repetition) {
+        if (repetition.separator != null) {
+            if (repetition.minimum == 0) {
+                return compileZeroOrMany(graph, source, repetition.content, repetition.separator);
+            }
+            else if (repetition.minimum == 1) {
+                return compileOneOrMany(graph, source, repetition.content, repetition.separator);
+            }
         }
-        else if (repetition.separator == null && repetition.minimum == 1) {
-            var acceptedOne = compileExpression(graph, source, target, repetition.content);
-            var acceptedLoop = compileExpression(graph, acceptedOne, acceptedOne, repetition.content);
-            return acceptedOne.merge(acceptedLoop);
+        else if (repetition.minimum == 0) {
+            return compileZeroOrMany(graph, source, repetition.content);
         }
-        else if (repetition.separator != null && repetition.minimum == 0) {
-            var acceptedOne = compileExpression(graph, source, target, repetition.content);
-            var acceptedSep = compileExpression(graph, acceptedOne, graph.createNode(), repetition.separator);
-            var acceptedLoop = compileExpression(graph, acceptedSep, acceptedOne, repetition.content);
-            return acceptedOne.merge(acceptedLoop).merge(source);
+        else if (repetition.minimum == 1) {
+            return compileOneOrMany(graph, source, repetition.content);
         }
-        else if (repetition.separator != null && repetition.minimum == 1) {
-            var acceptedOne = compileExpression(graph, source, target, repetition.content);
-            var acceptedSep = compileExpression(graph, acceptedOne, graph.createNode(), repetition.separator);
-            var acceptedLoop = compileExpression(graph, acceptedSep, acceptedOne, repetition.content);
-            return acceptedOne.merge(acceptedLoop);
-        }
-        else {
-            throw new RuntimeException();
-        }
+
+        throw new RuntimeException();
+    }
+
+    private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content) {
+        var accepted = compileExpression(graph, source, content);
+
+        graph.replaceNodesBy(accepted, source);
+
+        return NodeSet.of(source);
+    }
+
+    private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
+        var accepted = graph.createNode();
+
+        graph.replaceNodesBy(
+                compileExpression(graph, source, content),
+                accepted);
+
+        var acceptedSeparator = compileExpression(graph, accepted, separator);
+
+        graph.replaceNodesBy(
+                compileExpression(graph, acceptedSeparator, content),
+                accepted);
+
+        return NodeSet.of(source, accepted);
+    }
+
+    private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content) {
+        var accepted = graph.createNode();
+
+        graph.replaceNodesBy(
+                compileExpression(graph, source, content),
+                accepted
+        );
+
+        graph.replaceNodesBy(
+                compileExpression(graph, accepted, content),
+                accepted
+        );
+
+        return NodeSet.of(accepted);
+    }
+
+    private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
+        var accepted = graph.createNode();
+
+        graph.replaceNodesBy(
+                compileExpression(graph, source, content),
+                accepted);
+
+        var acceptedSeparator = compileExpression(graph, accepted, separator);
+
+        graph.replaceNodesBy(
+                compileExpression(graph, acceptedSeparator, content),
+                accepted);
+
+        return NodeSet.of(accepted);
     }
 
 }

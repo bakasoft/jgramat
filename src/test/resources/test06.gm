@@ -1,0 +1,22 @@
+Array = @array("[" ws { Number ws / "," ws } "]");
+Number = @value({+'0-9'});
+
+ws = {" "};
+
+@pass<"[]">(Array);
+@pass<"[1]">(Array);
+@pass<"[1,2]">(Array);
+@pass<"[1,2,3]">(Array);
+@pass<"[1,2,3,4]">(Array);
+
+@pass<"[ ]">(Array);
+@pass<"[ 1 ]">(Array);
+@pass<"[ 1 , 2 ]">(Array);
+@pass<"[ 1 , 2 , 3 ]">(Array);
+@pass<"[ 1 , 2 , 3 , 4 ]">(Array);
+
+@pass<"[  ]">(Array);
+@pass<"[  1  ]">(Array);
+@pass<"[  1  ,  2  ]">(Array);
+@pass<"[  1  ,  2  ,  3  ]">(Array);
+@pass<"[  1  ,  2  ,  3  ,  4  ]">(Array);

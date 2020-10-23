@@ -1,13 +1,13 @@
 package gramat.graph;
 
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public class Root {
 
     public final Node source;
-    public final Chain<Node> targets;
+    public final NodeSet targets;
 
-    public Root(Node source, Chain<Node> targets) {
+    public Root(Node source, NodeSet targets) {
         this.source = source;
         this.targets = targets;
     }

@@ -3,6 +3,7 @@ package gramat.actions;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ActionList implements Iterable<Action> {
 
@@ -71,5 +72,18 @@ public class ActionList implements Iterable<Action> {
 
     public Action[] toArray() {
         return items.toArray(Action[]::new);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ActionList actions = (ActionList) o;
+        return Objects.equals(items, actions.items);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items);
     }
 }

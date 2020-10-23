@@ -36,7 +36,7 @@ public class Evaluator extends DefaultComponent {
         var result = run_state(initial, context);
 
         if (context.heap.notEmpty()) {
-            throw new RejectedException("heap is not empty");
+            throw new RejectedException("heap is not empty: " + context.heap);
         }
 
         if (tape.alive()) {
@@ -45,7 +45,7 @@ public class Evaluator extends DefaultComponent {
         }
 
         if (!result.accepted) {
-            throw new RejectedException("not matched: " + PP.str(tape.peek()) + ", options: " + list_options(result));
+            throw new RejectedException("not matched: " + PP.str(tape.peek()) + ", options: " + list_options(result), tape.getLocation());
         }
     }
 

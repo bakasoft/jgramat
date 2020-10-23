@@ -1,11 +1,9 @@
 package gramat.graph;
 
-import gramat.actions.Action;
 import gramat.actions.Event;
 import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
+import gramat.graph.sets.NodeSet;
 import gramat.symbols.Symbol;
-import gramat.util.Chain;
 import gramat.util.TokenGenerator;
 
 import java.util.*;
@@ -33,7 +31,7 @@ public class Graph {
     }
 
     public Node createNodeFrom(Node original) {
-        return createNode(ids.next(original.id), false);
+        return createNode(ids.next(), false);
     }
 
     public Node createNode(String id, boolean wild) {
@@ -63,7 +61,7 @@ public class Graph {
         return link;
     }
 
-    public List<Link> findIncomingLinks(Chain<Node> targets) {
+    public List<Link> findIncomingLinks(NodeSet targets) {
         return links.stream()
                 .filter(t -> targets.contains(t.target))
                 .collect(Collectors.toList());
@@ -75,7 +73,7 @@ public class Graph {
                 .collect(Collectors.toList());
     }
 
-    public List<Link> findTransitions(Chain<Node> sources, Symbol symbol, Badge badge) {
+    public List<Link> findTransitions(NodeSet sources, Symbol symbol, Badge badge) {
         var result = new ArrayList<Link>();
         for (var link : links) {
             // Skip not matching symbols
@@ -98,7 +96,7 @@ public class Graph {
         return result;
     }
 
-    public List<Link> findOutgoingLinks(Chain<Node> sources) {
+    public List<Link> findOutgoingLinks(NodeSet sources) {
         return links.stream()
                 .filter(t -> sources.contains(t.source))
                 .collect(Collectors.toList());
@@ -111,10 +109,10 @@ public class Graph {
     }
 
     public List<Link> walkLinksFrom(Node source) {
-        return walkLinksFrom(Chain.of(source));
+        return walkLinksFrom(NodeSet.of(source));
     }
 
-    public List<Link> walkLinksFrom(Chain<Node> sources) {
+    public List<Link> walkLinksFrom(NodeSet sources) {
         if (sources == null) {
             return List.of();
         }
@@ -141,18 +139,18 @@ public class Graph {
     }
 
     public List<Link> findLinksBetween(Node source, Node target) {
-        return findLinksBetween(source, Chain.of(target));
+        return findLinksBetween(source, NodeSet.of(target));
     }
 
     public List<Link> findLinksBetween(Root root) {
         return findLinksBetween(root.source, root.targets);
     }
 
-    public List<Link> findLinksBetween(Node source, Chain<Node> targets) {
-        return findLinksBetween(Chain.of(source), targets);
+    public List<Link> findLinksBetween(Node source, NodeSet targets) {
+        return findLinksBetween(NodeSet.of(source), targets);
     }
 
-    public List<Link> findLinksBetween(Chain<Node> sources, Chain<Node> targets) {
+    public List<Link> findLinksBetween(NodeSet sources, NodeSet targets) {
         var result = new ArrayList<Link>();
         var control = new HashSet<Node>();
         var queue = new LinkedList<Node>();
@@ -189,11 +187,26 @@ public class Graph {
     public Root createRoot() {
         var initial = createNode();
         var accepted = createNode();
-        return new Root(initial, Chain.of(accepted));
+        return new Root(initial, NodeSet.of(accepted));
     }
 
     public void removeLink(Link link) {
         links.remove(link);
+    }
+
+    public void replaceNodesBy(NodeSet oldNodes, Node newNode) {
+        for (var link : links) {
+            if (oldNodes.contains(link.source)) {
+                link.source = newNode;
+            }
+            if (oldNodes.contains(link.target)) {
+                link.target = newNode;
+            }
+        }
+
+        for (var node : oldNodes) {
+            this.nodes.remove(node);
+        }
     }
 
 }

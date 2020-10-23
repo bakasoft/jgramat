@@ -3,7 +3,7 @@ package gramat.graph.util;
 import gramat.graph.Link;
 import gramat.graph.Node;
 import gramat.graph.Root;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +19,11 @@ public enum DirType {
         return compute(root.source, root.targets, link);
     }
 
-    public static List<DirType> compute(Node source, Chain<Node> targets, Link link) {
-        return compute(Chain.of(source), targets, link);
+    public static List<DirType> compute(Node source, NodeSet targets, Link link) {
+        return compute(NodeSet.of(source), targets, link);
     }
 
-    public static List<DirType> compute(Chain<Node> sources, Chain<Node> targets, Link link) {
+    public static List<DirType> compute(NodeSet sources, NodeSet targets, Link link) {
         var result = new ArrayList<DirType>(4);
         if (sources.contains(link.source)) {
             result.add(FROM_SOURCE);

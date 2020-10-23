@@ -4,6 +4,7 @@ import gramat.badges.Badge;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
+import gramat.framework.Progress;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.graph.Root;
@@ -13,13 +14,10 @@ import gramat.parsers.ValueParser;
 import gramat.pipeline.Template;
 import gramat.pipeline.blueprint.builders.*;
 import gramat.symbols.Alphabet;
-import gramat.util.Chain;
-import gramat.util.Count;
 import gramat.util.NameMap;
+import gramat.graph.sets.NodeSet;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
         AlternationBuilder,
@@ -33,81 +31,101 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
         SpecialBuilder {
 
     public static Template build(Component parent, Graph graph, ModelExpression main, NameMap<ModelExpression> expressions) {
-        var recursiveReferences = RecursiveReferences.compute(main, expressions);
-        var builder = new ExpressionBuilder(parent, graph, main, expressions, recursiveReferences);
-        var root = builder.build(graph, main);
-        var extensions = new NameMap<Extension>();
+        try (var progress = new Progress("Building Expression")) {
 
-        for (var reference : recursiveReferences) {
-            var refExpr = expressions.find(reference);
-            var refRoot = builder.build(graph, refExpr);
-            var refExt = ExtensionMaker.make(graph, refRoot, extensions.size());
+            progress.log("Analyzing expression...");
 
-            extensions.set(reference, refExt);
+            var stats = Stats.compute(main, expressions);
+
+            progress.log(0, stats.count, "Building main expression...");
+
+            var builder = new ExpressionBuilder(parent, progress, expressions, stats);
+            var root = builder.build(graph, main);
+            var extensions = new NameMap<Extension>();
+
+            for (var reference : stats.recursiveReferences) {
+                progress.log("Building %s expression...", reference);
+
+                var refExpr = expressions.find(reference);
+                var refRoot = builder.build(graph, refExpr);
+                var refExt = ExtensionMaker.make(graph, refRoot, extensions.size());
+
+                extensions.set(reference, refExt);
+            }
+
+            return new Template(graph, root, extensions);
         }
-
-        return new Template(graph, root, extensions);
     }
 
+    private final Progress progress;
     private final NameMap<ModelExpression> expressions;
-    private final Count trxIds;
     private final Queue<String> dependencyQueue;
-    private final Set<String> recursiveReferences;
+    private final Stats stats;
 
-    private ExpressionBuilder(Component parent, Graph graph, ModelExpression main, NameMap<ModelExpression> expressions, Set<String> recursiveReferences) {
+    private final Set<ModelExpression> buildCount;
+
+    private final HashMap<ModelExpression, Integer> trxIds;
+
+    private ExpressionBuilder(Component parent, Progress progress, NameMap<ModelExpression> expressions, Stats stats) {
         super(parent);
+        this.progress = progress;
         this.expressions = expressions;
-        this.trxIds = new Count();
+        this.trxIds = new HashMap<>();
         this.dependencyQueue = new LinkedList<>();
-        this.recursiveReferences = recursiveReferences;
+        this.stats = stats;
+        this.buildCount = new HashSet<>();
     }
 
     public Root build(Graph graph, ModelExpression expression) {
         var initial = graph.createNode();
-        var accepted = compileExpression(graph, initial, graph.createNode(), expression);
+        var accepted = compileExpression(graph, initial, expression);
         return new Root(initial, accepted);
     }
 
     @Override
-    public Chain<Node> compileExpression(Graph graph, Node source, Node target, ModelExpression expression) {
-        if (expression instanceof ModelLiteral) {
-            return compileLiteral(graph, source, target, (ModelLiteral)expression);
-        }
-        else if (expression instanceof ModelOptional) {
-            return compileOptional(graph, source, target, (ModelOptional)expression);
+    public NodeSet compileExpression(Graph graph, Node source, ModelExpression expression) {
+        buildCount.add(expression);
+
+        progress.log(buildCount.size());
+
+        if (expression instanceof ModelOptional) {
+            return compileOptional(graph, source, (ModelOptional)expression);
         }
         else if (expression instanceof ModelRepetition) {
-            return compileRepetition(graph, source, target, (ModelRepetition)expression);
-        }
-        else if (expression instanceof ModelValue) {
-            return compileValue(graph, source, target, (ModelValue)expression);
-        }
-        else if (expression instanceof ModelReference) {
-            return compileReference(graph, source, target, (ModelReference)expression);
+            return compileRepetition(graph, source, (ModelRepetition)expression);
         }
         else if (expression instanceof ModelSequence) {
-            return compileSequence(graph, source, target, (ModelSequence)expression);
+            return compileSequence(graph, source, (ModelSequence)expression);
         }
         else if (expression instanceof ModelAlternation) {
-            return compileAlternation(graph, source, target, (ModelAlternation)expression);
-        }
-        else if (expression instanceof ModelWild) {
-            return compileWild(graph, source, target, (ModelWild)expression);
-        }
-        else if (expression instanceof ModelArray) {
-            return compileArray(graph, source, target, (ModelArray)expression);
-        }
-        else if (expression instanceof ModelObject) {
-            return compileObject(graph, source, target, (ModelObject)expression);
-        }
-        else if (expression instanceof ModelAttribute) {
-            return compileAttribute(graph, source, target, (ModelAttribute)expression);
-        }
-        else if (expression instanceof ModelName) {
-            return compileName(graph, source, target, (ModelName)expression);
+            return compileAlternation(graph, source, (ModelAlternation)expression);
         }
         else if (expression instanceof ModelRange) {
-            return compileRange(graph, source, target, (ModelRange)expression);
+            return compileRange(graph, source, (ModelRange)expression);
+        }
+        else if (expression instanceof ModelLiteral) {
+            return compileLiteral(graph, source, (ModelLiteral)expression);
+        }
+        else if (expression instanceof ModelReference) {
+            return compileReference(graph, source, (ModelReference)expression);
+        }
+        else if (expression instanceof ModelWild) {
+            return compileWild(graph, source, (ModelWild)expression);
+        }
+        else if (expression instanceof ModelValue) {
+            return compileValue(graph, source, (ModelValue)expression);
+        }
+        else if (expression instanceof ModelArray) {
+            return compileArray(graph, source, (ModelArray)expression);
+        }
+        else if (expression instanceof ModelObject) {
+            return compileObject(graph, source, (ModelObject)expression);
+        }
+        else if (expression instanceof ModelAttribute) {
+            return compileAttribute(graph, source, (ModelAttribute)expression);
+        }
+        else if (expression instanceof ModelName) {
+            return compileName(graph, source, (ModelName)expression);
         }
         else {
             throw new UnsupportedValueException(expression);
@@ -122,8 +140,8 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
     }
 
     @Override
-    public int nextTransactionID() {
-        return trxIds.next();
+    public int nextTransactionID(ModelExpression expression) {
+        return trxIds.computeIfAbsent(expression, k -> trxIds.size());
     }
 
     @Override
@@ -148,6 +166,6 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
 
     @Override
     public Set<String> getRecursiveReferences() {
-        return recursiveReferences;
+        return stats.recursiveReferences;
     }
 }

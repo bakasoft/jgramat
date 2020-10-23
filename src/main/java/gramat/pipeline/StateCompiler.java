@@ -1,16 +1,14 @@
 package gramat.pipeline;
 
 import gramat.actions.*;
-import gramat.badges.Badge;
-import gramat.badges.BadgeMode;
-import gramat.exceptions.UnsupportedValueException;
+import gramat.framework.Progress;
 import gramat.machine.Effect;
 import gramat.machine.State;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
 import gramat.graph.*;
-import gramat.util.Chain;
 import gramat.util.Count;
+import gramat.graph.sets.NodeSet;
 
 import java.util.*;
 
@@ -19,33 +17,44 @@ import static gramat.util.DataUtils.map;
 public class StateCompiler extends DefaultComponent {
 
     public static State compile(Component parent, Machine machine) {
-        var compiler = new StateCompiler(parent, machine.graph);
+        try (var progress = new Progress("Compiling State Machine")) {
+            var compiler = new StateCompiler(parent, progress, machine.graph);
 
-        return compiler.compile(machine.root);
+            return compiler.compile(machine.root);
+        }
     }
 
+    private final Progress progress;
     private final Graph graph;
-
     private final Map<String, State> idStates;
     private final Count nextId;
 
-    private StateCompiler(Component parent, Graph graph) {
+    private StateCompiler(Component parent, Progress progress, Graph graph) {
         super(parent);
+        this.progress = progress;
         this.graph = graph;
         this.idStates = new HashMap<>();
         this.nextId = new Count();
     }
 
     private State compile(Root root) {
-        var initial = makeState(Chain.of(root.source), root.targets);
-        var queue = new LinkedList<Chain<Node>>();
+        var initial = makeState(NodeSet.of(root.source), root.targets);
+        var queue = new LinkedList<NodeSet>();
         var control = new HashSet<String>();
+        var pValue = 0;
+        var pTotal = 0;
 
-        queue.add(Chain.of(root.source));
+        progress.log("Converting to deterministic machine...");
+
+        queue.add(NodeSet.of(root.source));
+        pTotal++;
 
         while (queue.size() > 0) {
             var sources = queue.remove();
-            var sourcesID = Node.computeID(sources);
+            var sourcesID = sources.computeID();
+
+            progress.log(pValue, pTotal, "Processing %s...", sourcesID);
+            pValue++;
 
             if (control.add(sourcesID)) {
                 for (var symbol : gramat.symbols) {
@@ -61,6 +70,7 @@ public class StateCompiler extends DefaultComponent {
                             newSource.transition.add(badge, symbol, new Effect(newTarget, event.before.toArray(), event.after.toArray()));
 
                             queue.add(targets);
+                            pTotal++;
                         }
                     }
                 }
@@ -70,8 +80,8 @@ public class StateCompiler extends DefaultComponent {
         return initial;
     }
 
-    private State makeState(Chain<Node> nodes, Chain<Node> accepted) {
-        var id = Node.computeID(nodes);
+    private State makeState(NodeSet nodes, NodeSet accepted) {
+        var id =  nodes.computeID();
         var state = idStates.get(id);
 
         if (state == null) {

@@ -1,5 +1,7 @@
 package gramat.actions;
 
+import java.util.Objects;
+
 public class Event {
 
     public static Event empty() {
@@ -57,5 +59,19 @@ public class Event {
     private void wrap(ActionList beforeActions, ActionList afterActions) {
         before.prepend(beforeActions);
         after.append(afterActions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(before, event.before) &&
+                Objects.equals(after, event.after);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(before, after);
     }
 }

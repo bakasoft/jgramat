@@ -3,6 +3,7 @@ package gramat.pipeline;
 import gramat.formatting.NodeFormatter;
 import gramat.formatting.StateFormatter;
 import gramat.framework.Component;
+import gramat.framework.Progress;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
@@ -32,15 +33,17 @@ public class Pipeline {
     }
 
     public static Machine toMachine(Component parent, Template template) {
-        var machine = MachineCompiler.compile(parent, template);
+        try (var progress = new Progress("Assembling State Machine")) {
+            var machine = MachineCompiler.compile(parent, progress, template);
 
-        machine.validate();
+            machine.validate();
 
 //        System.out.println("########## MACHINE");
 //        new NodeFormatter(System.out).write(machine.graph, machine.root);
 //        System.out.println("##########");
 
-        return machine;
+            return machine;
+        }
     }
 
     public static State toState(Component parent, Sentence sentence) {

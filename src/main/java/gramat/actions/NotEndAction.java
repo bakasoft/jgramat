@@ -3,7 +3,9 @@ package gramat.actions;
 import gramat.eval.Context;
 import gramat.eval.transactions.Transaction;
 
-public class NotEndAction extends Action {
+import java.util.Objects;
+
+public class NotEndAction implements Action {
 
     private final Transaction transaction;
 
@@ -23,4 +25,16 @@ public class NotEndAction extends Action {
         return String.format("not-end(%s)", transaction.getID());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotEndAction that = (NotEndAction) o;
+        return Objects.equals(transaction.getID(), that.transaction.getID());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transaction.getID());
+    }
 }

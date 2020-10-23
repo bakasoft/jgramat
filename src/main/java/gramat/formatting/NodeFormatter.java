@@ -5,8 +5,9 @@ import gramat.badges.Badge;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
+import gramat.graph.sets.NodeSetMutable;
 import gramat.symbols.Symbol;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 import gramat.util.StringUtils;
 
 public class NodeFormatter extends AmFormatter {
@@ -37,7 +38,7 @@ public class NodeFormatter extends AmFormatter {
         var plugSource = "E" + ext.id + "S";
         var plugTarget = "E" + ext.id + "T";
 
-        Chain<Node> nodes = null;
+        var nodes = new NodeSetMutable();
 
         writeInitial(plugSource);
         writeAccepted(plugTarget);
@@ -50,19 +51,19 @@ public class NodeFormatter extends AmFormatter {
                 source = plug.getSource().id;
                 target = plugSource;
 
-                nodes = Chain.merge(nodes, plug.getSource());
+                nodes.add(plug.getSource());
             }
             else if (plug.getType() == PlugType.NODE_TO_TARGET) {
                 source = plug.getSource().id;
                 target = plugTarget;
 
-                nodes = Chain.merge(nodes, plug.getSource());
+                nodes.add(plug.getSource());
             }
             else if (plug.getType() == PlugType.SOURCE_TO_NODE) {
                 source = plugSource;
                 target = plug.getTarget().id;
 
-                nodes = Chain.merge(nodes, plug.getTarget());
+                nodes.add(plug.getTarget());
             }
             else if (plug.getType() == PlugType.SOURCE_TO_TARGET) {
                 source = plugSource;
@@ -72,7 +73,7 @@ public class NodeFormatter extends AmFormatter {
                 source = plugTarget;
                 target = plug.getTarget().id;
 
-                nodes = Chain.merge(nodes, plug.getTarget());
+                nodes.add(plug.getTarget());
             }
             else if (plug.getType() == PlugType.TARGET_TO_SOURCE) {
                 source = plugTarget;
@@ -85,7 +86,7 @@ public class NodeFormatter extends AmFormatter {
             writeLink(source, target, plug.getSymbol(), null, plug.event);
         }
 
-        for (var link : graph.walkLinksFrom(nodes)) {
+        for (var link : graph.walkLinksFrom(nodes.build())) {
             write(link);
         }
     }

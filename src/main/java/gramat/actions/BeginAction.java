@@ -5,7 +5,9 @@ import gramat.eval.transactions.Transaction;
 import gramat.eval.Context;
 import gramat.exceptions.UnsupportedValueException;
 
-public class BeginAction extends Action {
+import java.util.Objects;
+
+public class BeginAction implements Action {
 
     private final Transaction transaction;
 
@@ -40,5 +42,18 @@ public class BeginAction extends Action {
         else {
             throw new UnsupportedValueException(transaction);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BeginAction that = (BeginAction) o;
+        return Objects.equals(transaction.getID(), that.transaction.getID());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transaction.getID());
     }
 }

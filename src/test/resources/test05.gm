@@ -3,7 +3,7 @@ Digit = '0-9';
 
 Value = ws (String | Number | Boolean | Null | Array | Object) ws;
 
-String = @value(Alpha { Alpha | Digit });
+String = @value("\"" {'a-z'} "\"");
 
 Number = @value(['+ -'] {+ Digit });
 
@@ -13,16 +13,13 @@ Boolean = True | False;
 
 Null = @value("null");
 
-Array = "[" { Value / "," } ws "]";
+Array = @array("[" { Value / "," } ws "]");
 
 Object = @object("{" { ws @set(@name(String) ws ":" Value) / "," } ws "}");
 
-ws = {" " | '\t \n \r'};
+ws = [" "];#{" " | '\t \n \r'};
 
-#@pass<"a">(String);
-#@pass<"ab">(String);
-#@pass<"ab_">(String);
-#@pass<"ab_x">(String);
+#@pass<"\"\"">(String);
 
 #@pass<"0">(Number);
 #@pass<"10">(Number);
@@ -34,4 +31,7 @@ ws = {" " | '\t \n \r'};
 
 #@pass<"null">(Null);
 
-@pass<"[]">(Array);
+#@pass<"[]">(Value);
+@pass<"[1, 2]">(Value);
+@pass<"{\"a\": null}">(Value);
+@pass<"{\"a\": [1, {}]}">(Value);

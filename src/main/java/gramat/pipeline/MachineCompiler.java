@@ -7,29 +7,32 @@ import gramat.badges.Badge;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
+import gramat.framework.Progress;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
 import gramat.symbols.SymbolReference;
-import gramat.util.Chain;
 import gramat.util.NameMap;
+import gramat.graph.sets.NodeSet;
 import gramat.util.TokenGenerator;
 
 import java.util.*;
 
 public class MachineCompiler extends DefaultComponent {
 
-    public static Machine compile(Component parent, Template template) {
-        return new MachineCompiler(parent, template.graph, template.extensions).compileRoot(template.main);
+    public static Machine compile(Component parent, Progress progress, Template template) {
+        return new MachineCompiler(parent, progress, template.graph, template.extensions).compileRoot(template.main);
     }
 
+    private final Progress progress;
     private final Graph graph;
     private final TokenGenerator callTokens;
 
     private final Deque<String> stackRef;
     private final NameMap<Extension> extensions;
 
-    private MachineCompiler(Component parent, Graph graph, NameMap<Extension> extensions) {
+    private MachineCompiler(Component parent, Progress progress, Graph graph, NameMap<Extension> extensions) {
         super(parent);
+        this.progress = progress;
         this.graph = graph;
         this.extensions = extensions;
         this.callTokens = new TokenGenerator();
@@ -37,12 +40,16 @@ public class MachineCompiler extends DefaultComponent {
     }
 
     private Machine compileRoot(Root root) {
+        int count = countReferences(root);
+
+        progress.log(0, count);
+
         connectBetween(root.source, root.targets);
 
         return new Machine(graph, root);
     }
 
-    private void connectBetween(Node source, Chain<Node> targets) {
+    private void connectBetween(Node source, NodeSet targets) {
         for (var link : graph.findLinksBetween(source, targets)) {
             if (link.symbol instanceof SymbolReference) {
                 var reference = ((SymbolReference) link.symbol).reference;
@@ -54,10 +61,14 @@ public class MachineCompiler extends DefaultComponent {
     }
 
     private void connectLink(Extension extension, String reference, Link link) {
+        progress.add(1, "Connecting %s...", reference);
+
         Badge newBadge;
 
         if (stackRef.contains(reference)) {
-            newBadge = gramat.badges.badge(callTokens.next(reference));
+            var uid = Objects.hash(extension.id, link.source.id, link.target.id);
+
+            newBadge = gramat.badges.badge(reference + "-" + uid);
         }
         else {
             newBadge = gramat.badges.empty();
@@ -71,7 +82,7 @@ public class MachineCompiler extends DefaultComponent {
 
         graph.removeLink(link);
 
-        connectBetween(link.source, Chain.of(link.target));
+        connectBetween(link.source, NodeSet.of(link.target));
 
         stackRef.pop();
     }
@@ -141,6 +152,16 @@ public class MachineCompiler extends DefaultComponent {
         }
 
         graph.createLink(linkSource, linkTarget, linkEvent, plug.getSymbol(), linkBadge);
+    }
+
+    public int countReferences(Root root) {
+        int count = 0;
+        for (var link : graph.links) {
+            if (link.symbol instanceof SymbolReference) {
+                count++;
+            }
+        }
+        return count;
     }
 
 }

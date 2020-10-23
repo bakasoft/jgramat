@@ -8,47 +8,47 @@ import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.graph.util.DirType;
 import gramat.models.expressions.*;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 import java.util.ArrayList;
 
 public interface SpecialBuilder extends BaseBuilder {
 
-    default Chain<Node> compileArray(Graph graph, Node source, Node target, ModelArray array) {
-        var id = nextTransactionID();
+    default NodeSet compileArray(Graph graph, Node source, ModelArray array) {
+        var id = nextTransactionID(array);
         var trx = new ArrayTransaction(id, array.type);
-        return wrapActions(graph, source, target, array.content, trx);
+        return wrapActions(graph, source, array.content, trx);
     }
 
-    default Chain<Node> compileAttribute(Graph graph, Node source, Node target, ModelAttribute attribute) {
-        var id = nextTransactionID();
+    default NodeSet compileAttribute(Graph graph, Node source, ModelAttribute attribute) {
+        var id = nextTransactionID(attribute);
         var trx = new AttributeTransaction(id, attribute.name);
-        return wrapActions(graph, source, target, attribute.content, trx);
+        return wrapActions(graph, source, attribute.content, trx);
     }
 
-    default Chain<Node> compileName(Graph graph, Node source, Node target, ModelName name) {
-        var id = nextTransactionID();
+    default NodeSet compileName(Graph graph, Node source, ModelName name) {
+        var id = nextTransactionID(name);
         var trx = new NameTransaction(id);
-        return wrapActions(graph, source, target, name.content, trx);
+        return wrapActions(graph, source, name.content, trx);
     }
 
-    default Chain<Node> compileObject(Graph graph, Node source, Node target, ModelObject object) {
-        var id = nextTransactionID();
+    default NodeSet compileObject(Graph graph, Node source, ModelObject object) {
+        var id = nextTransactionID(object);
         var trx = new ObjectTransaction(id);
-        return wrapActions(graph, source, target, object.content, trx);
+        return wrapActions(graph, source, object.content, trx);
     }
 
-    default Chain<Node> compileValue(Graph graph, Node source, Node target, ModelValue value) {
+    default NodeSet compileValue(Graph graph, Node source, ModelValue value) {
         var parser = findParser(value.parser);
-        var id = nextTransactionID();
+        var id = nextTransactionID(value);
         var trx = new ValueTransaction(id, parser);
-        return wrapActions(graph, source, target, value.content, trx);
+        return wrapActions(graph, source, value.content, trx);
     }
 
-    private Chain<Node> wrapActions(Graph graph, Node source, Node target, ModelExpression expression, Transaction transaction) {
+    private NodeSet wrapActions(Graph graph, Node source, ModelExpression expression, Transaction transaction) {
         graph.capturings.push(new ArrayList<>());
 
-        var targets = compileExpression(graph, source, target, expression);
+        var targets = compileExpression(graph, source, expression);
 
         var links = graph.capturings.pop();
 

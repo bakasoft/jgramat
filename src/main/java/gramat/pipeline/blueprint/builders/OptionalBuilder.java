@@ -3,14 +3,12 @@ package gramat.pipeline.blueprint.builders;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelOptional;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public interface OptionalBuilder extends BaseBuilder {
 
-    default Chain<Node> compileOptional(Graph graph, Node source, Node target, ModelOptional optional) {
-        var contentAccepted = compileExpression(graph, source, target, optional.content);
-
-        return contentAccepted.merge(source);
+    default NodeSet compileOptional(Graph graph, Node source, ModelOptional optional) {
+        return NodeSet.of(source, compileExpression(graph, source, optional.content));
     }
 
 }

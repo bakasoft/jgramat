@@ -57,4 +57,20 @@ public class Plug {
         return Objects.requireNonNull(target);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Plug plug = (Plug) o;
+        return type == plug.type &&
+                Objects.equals(symbol, plug.symbol) &&
+                Objects.equals(source, plug.source) &&
+                Objects.equals(target, plug.target) &&
+                Objects.equals(event, plug.event);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, symbol, source, target, event);
+    }
 }

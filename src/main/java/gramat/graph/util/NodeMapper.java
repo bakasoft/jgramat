@@ -5,7 +5,8 @@ import gramat.graph.Graph;
 import gramat.graph.Link;
 import gramat.graph.Node;
 import gramat.graph.Root;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
+import gramat.graph.sets.NodeSetMutable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,8 +59,8 @@ public class NodeMapper {
         return newNode;
     }
 
-    private Chain<Node> find(Chain<Node> oldNodes) {
-        var newNodes = new ArrayList<Node>(oldNodes.size());
+    private NodeSet find(NodeSet oldNodes) {
+        var newNodes = new NodeSetMutable();
 
         for (var oldNode : oldNodes) {
             var newNode = find(oldNode);
@@ -67,7 +68,7 @@ public class NodeMapper {
             newNodes.add(newNode);
         }
 
-        return Chain.of(newNodes);
+        return newNodes.build();
     }
 
     public Root find(Root oldRoot) {

@@ -2,8 +2,8 @@ package gramat.graph;
 
 import gramat.actions.Event;
 import gramat.badges.Badge;
+import gramat.graph.sets.NodeSet;
 import gramat.symbols.Symbol;
-import gramat.util.Chain;
 import gramat.util.DataUtils;
 
 import java.util.List;
@@ -11,8 +11,8 @@ import java.util.Objects;
 
 public class Link {
 
-    public final Node source;
-    public final Node target;
+    public Node source;
+    public Node target;
 
     public final Symbol symbol;
     public final Badge badge;
@@ -27,8 +27,8 @@ public class Link {
         this.event = Objects.requireNonNull(event);
     }
 
-    public static Chain<Node> collectTargets(List<? extends Link> links) {
-        return Chain.of(DataUtils.map(links, link -> link.target));
+    public static NodeSet collectTargets(List<? extends Link> links) {
+        return NodeSet.of(DataUtils.map(links, link -> link.target));
     }
 
     @Override

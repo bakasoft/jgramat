@@ -2,21 +2,22 @@ package gramat.pipeline.blueprint.builders;
 
 import gramat.graph.Graph;
 import gramat.graph.Node;
+import gramat.graph.sets.NodeSetMutable;
 import gramat.models.expressions.ModelAlternation;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public interface AlternationBuilder extends BaseBuilder {
 
-    default Chain<Node> compileAlternation(Graph graph, Node source, Node target, ModelAlternation alternation) {
-        var targets = Chain.of(target);
+    default NodeSet compileAlternation(Graph graph, Node source, ModelAlternation alternation) {
+        var targets = new NodeSetMutable();
 
         for (var option : alternation.options) {
-            var optionAccepted = compileExpression(graph, source, target, option);
-
-            targets = targets.merge(optionAccepted);
+            targets.addAll(
+                    compileExpression(graph, source, option)
+            );
         }
 
-        return targets;
+        return targets.build();
     }
 
 }

@@ -3,46 +3,24 @@ package gramat.pipeline.blueprint.builders;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelLiteral;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public interface LiteralBuilder extends BaseBuilder {
 
-    default Chain<Node> compileLiteral(Graph graph, Node source, Node target, ModelLiteral literal) {
-        var chars = literal.value.toCharArray();
+    default NodeSet compileLiteral(Graph graph, Node source, ModelLiteral literal) {
         var badge = getEmptyBadge();
-        Node last = null;
+        Node last = source;
 
-        for (var i = 0; i < chars.length; i++) {
-            Node itemSource;
-            Node itemTarget;
+        for (var chr : literal.value.toCharArray()) {
+            var current = graph.createNode();
+            var symbol = getAlphabet().character(chr);
 
-            if (i == 0) {
-                itemSource = source;
-            }
-            else {
-                itemSource = last;
-            }
+            graph.createLink(last, current, symbol, badge);
 
-            if (i == chars.length - 1) {
-                // only for last item
-                itemTarget = target;
-            }
-            else {
-                itemTarget = graph.createNode();
-            }
-
-            var symbol = getAlphabet().character(chars[i]);
-
-            graph.createLink(itemSource, itemTarget, symbol, badge);
-
-            last = itemTarget;
+            last = current;
         }
 
-        if (last == null) {
-            return Chain.of(source, target);
-        }
-
-        return Chain.of(last);
+        return NodeSet.of(last);
     }
 
 }

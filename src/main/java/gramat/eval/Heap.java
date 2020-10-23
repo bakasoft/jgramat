@@ -1,6 +1,7 @@
 package gramat.eval;
 
 import gramat.badges.Badge;
+import gramat.util.StringUtils;
 
 import java.util.Stack;
 
@@ -38,5 +39,10 @@ public class Heap {
 
     public boolean notEmpty() {
         return stack.size() > 0;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + StringUtils.join(", ", stack) + "]";
     }
 }

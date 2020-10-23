@@ -3,7 +3,9 @@ package gramat.actions;
 import gramat.eval.Context;
 import gramat.eval.transactions.Transaction;
 
-public class EndAction extends Action {
+import java.util.Objects;
+
+public class EndAction implements Action {
 
     private final Transaction transaction;
 
@@ -22,5 +24,18 @@ public class EndAction extends Action {
     @Override
     public String toString() {
         return String.format("end(%s)", transaction.getID());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EndAction endAction = (EndAction) o;
+        return Objects.equals(transaction.getID(), endAction.transaction.getID());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transaction.getID());
     }
 }

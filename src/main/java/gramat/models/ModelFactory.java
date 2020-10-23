@@ -50,8 +50,19 @@ public class ModelFactory {
         return object(content, null);
     }
 
+    public static ModelArray array(ModelExpression content) {
+        return array(content, null);
+    }
+
     public static ModelObject object(ModelExpression content, String type) {
         var obj = new ModelObject();
+        obj.type = type;
+        obj.content = content;
+        return obj;
+    }
+
+    public static ModelArray array(ModelExpression content, String type) {
+        var obj = new ModelArray();
         obj.type = type;
         obj.content = content;
         return obj;
@@ -155,6 +166,9 @@ public class ModelFactory {
         }
         else if (Objects.equals(call.keyword, "name")) {
             return name(call.expression);
+        }
+        else if (Objects.equals(call.keyword, "array")) {
+            return array(call.expression);
         }
         else {
             throw new RuntimeException("not supported call: " + call.keyword);

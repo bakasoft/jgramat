@@ -2,7 +2,9 @@ package gramat.actions;
 
 import gramat.eval.Context;
 
-public class NotBeginAction extends Action {
+import java.util.Objects;
+
+public class NotBeginAction implements Action {
 
     private final int trxID;
 
@@ -22,4 +24,16 @@ public class NotBeginAction extends Action {
         return String.format("not-begin(%s)", trxID);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotBeginAction that = (NotBeginAction) o;
+        return trxID == that.trxID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(trxID);
+    }
 }

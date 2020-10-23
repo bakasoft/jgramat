@@ -7,11 +7,12 @@ import gramat.graph.plugs.Plug;
 import gramat.graph.plugs.PlugType;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public class ExtensionMaker {
 
     public static Extension make(Graph graph, Root root, int id) {
-        var plugs = new ArrayList<Plug>();
+        var plugs = new LinkedHashSet<Plug>();
 
         for (var link : graph.findLinksBetween(root)) {
             var type = PlugType.compute(root, link);

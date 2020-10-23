@@ -3,16 +3,17 @@ package gramat.pipeline.blueprint.builders;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.models.expressions.ModelRange;
-import gramat.util.Chain;
+import gramat.graph.sets.NodeSet;
 
 public interface RangeBuilder extends BaseBuilder {
 
-    default Chain<Node> compileRange(Graph graph, Node source, Node target, ModelRange range) {
+    default NodeSet compileRange(Graph graph, Node source, ModelRange range) {
         var symbol = getAlphabet().range(range.begin, range.end);
+        var target = graph.createNode();
 
         graph.createLink(source, target, symbol, getEmptyBadge());
 
-        return Chain.of(target);
+        return NodeSet.of(target);
     }
 
 }

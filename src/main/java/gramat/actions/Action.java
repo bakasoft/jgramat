@@ -2,11 +2,8 @@ package gramat.actions;
 
 import gramat.eval.Context;
 
-public abstract class Action {  // TODO make it interface
+public interface Action {
 
-    abstract public void run(Context context);
-
-    @Override
-    abstract public String toString();
+    void run(Context context);
 
 }

@@ -31,4 +31,9 @@ public class GramatTest {
         Assert.assertTrue(runTests("test05.gm") > 0);
     }
 
+    @Test
+    public void test06() {
+        Assert.assertTrue(runTests("test06.gm") > 0);
+    }
+
 }
