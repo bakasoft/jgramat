@@ -11,22 +11,38 @@ escaped-char = "\\" ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t" | "u" hex-d
 hex-digit = 'a-f A-F 0-9';
 ws = {" " | '\t \n \r'};
 
-#@pass<"\"\"">(String);
+@pass<"\"\"">(Value);
 
-#@pass<"0">(Number);
-#@pass<"10">(Number);
-#@pass<"+100">(Number);
-#@pass<"-200">(Number);
+@pass<"0">(Value);
+@pass<"0.0">(Value);
+@pass<"0.10">(Value);
+@pass<"1">(Value);
+@pass<"1.0">(Value);
+@pass<"1.10">(Value);
+@pass<"-1">(Value);
+@pass<"-1.0">(Value);
+@pass<"-1.10">(Value);
+@pass<"10">(Value);
+@pass<"10.0">(Value);
+@pass<"10.10">(Value);
+@pass<"-10">(Value);
+@pass<"-10.0">(Value);
+@pass<"-10.10">(Value);
+@pass<"0e0">(Value);
+@pass<"0.0E0">(Value);
+@pass<"0.10e-0">(Value);
+@pass<"1E-0">(Value);
+@pass<"1.0e+0">(Value);
+@pass<"1.10E+0">(Value);
+@pass<"-1e10">(Value);
+@pass<"-1.0E10">(Value);
+@pass<"-1.10e-10">(Value);
+@pass<"10E+10">(Value);
 
-#@pass<"true">(Boolean);
-#@pass<"false">(Boolean);
-
-#@pass<"null">(Null);
-
-#@pass<"[]">(Value);
-#@pass<"[1, 2]">(Value);
-#@pass<"{\"a\": null}">(Value);
-#@pass<"{\"a\": [1, {}]}">(Value);
-#@pass<@readFile<"testJson.case0.json">>(Value);
-#@pass<@readFile<"testJson.case1.json">>(Value);
+@pass<"[]">(Value);
+@pass<"[1, 2]">(Value);
+@pass<"{\"a\": null}">(Value);
+@pass<"{\"a\": [1, {}]}">(Value);
+@pass<@readFile<"testJson.case0.json">>(Value);
+@pass<@readFile<"testJson.case1.json">>(Value);
 @pass<@readFile<"testJson.case2.json">>(Value);

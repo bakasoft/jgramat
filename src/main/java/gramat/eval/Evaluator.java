@@ -41,7 +41,7 @@ public class Evaluator extends DefaultComponent {
 
         if (tape.alive()) {
             // TODO not always should be alive
-            throw new RejectedException("unexpected char: " + PP.str(tape.peek()) + ", options: " + list_options(result));
+            throw new RejectedException("unexpected char: " + PP.str(tape.peek()) + ", options: " + list_options(result), tape.getLocation());
         }
 
         if (!result.accepted) {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DataUtils {
@@ -60,6 +61,19 @@ public class DataUtils {
         }
         else {
             return List.of();
+        }
+    }
+
+    public static <T> void iterate(Iterable<T> items, Consumer<T> content, Runnable separator) {
+        if (items != null) {
+            var count = 0;
+
+            for (var item : items) {
+                if (count > 0) {
+                    separator.run();
+                }
+                content.accept(item);
+            }
         }
     }
 }
