@@ -19,7 +19,7 @@ public class UnsupportedValueException extends GramatException {
         }
 
         var type = value.getClass();
-        var nameStr = name != null ? name : PP.type(type);
+        var nameStr = name != null ? name : type.getSimpleName();
         var valueStrDefault = value.toString();
 
         if (valueStrDefault.startsWith(type.getName() + "@")) {

@@ -109,6 +109,14 @@ public class MachineCompiler extends DefaultComponent {
             // TODO test ignored wrapping actions
         }
 
+        // Loops:
+        else if (type == PlugType.SOURCE_TO_SOURCE) {
+            linkSource = newSource;
+            linkTarget = newSource;
+            linkBadge = gramat.badges.empty();
+            linkEvent.prepend(wrapper.before);  // TODO really?
+        }
+
         // Entering to recursion:
         else if (type == PlugType.SOURCE_TO_NODE) {
             linkSource = newSource;

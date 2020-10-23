@@ -14,6 +14,8 @@ public class Plug {
         switch(dir) {
             case SOURCE_TO_TARGET:
             case TARGET_TO_SOURCE:
+            case SOURCE_TO_SOURCE:
+            case TARGET_TO_TARGET:
                 return new Plug(dir, link.symbol, link.event, null, null);
             case SOURCE_TO_NODE:
             case TARGET_TO_NODE:
