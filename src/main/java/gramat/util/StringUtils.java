@@ -5,6 +5,9 @@ import java.util.List;
 public class StringUtils {
 
     public static <T> String join(String separator, T[] items) {
+        if (items == null) {
+            return "";
+        }
         return join(separator, List.of(items));
     }
 

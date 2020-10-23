@@ -46,6 +46,10 @@ public class Tape {
         return position < content.length();
     }
 
+    public boolean completed() {
+        return position >= content.length();
+    }
+
     public Location getLocation() {
         return locationOf(position);
     }

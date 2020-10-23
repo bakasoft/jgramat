@@ -53,6 +53,10 @@ public class Evaluator extends DefaultComponent {
         var state = initial;
 
         while (true) {
+            if (context.tape.completed()) {
+                break;
+            }
+
             logger.debug("evaluating state %s", state.id);
 
             // Find matching transition

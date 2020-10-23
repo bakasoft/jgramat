@@ -1,0 +1,29 @@
+Wild-1 = *;
+
+@pass<"">(Wild-1);
+@pass<"1">(Wild-1);
+@pass<"v4">(Wild-1);
+@pass<"?h9">(Wild-1);
+@pass<"8CV">(Wild-1);
+@pass<"mA8#b">(Wild-1);
+
+Wild-2 = "<" * ">";
+
+@pass<"<>">(Wild-2);
+@pass<"<a>">(Wild-2);
+@pass<"<ab>">(Wild-2);
+@pass<"<abc>">(Wild-2);
+
+Wild-3 = ["a"] * ["b"];
+
+@pass<"ab">(Wild-3);
+@pass<"axb">(Wild-3);
+@pass<"aab">(Wild-3);
+@pass<"aaa">(Wild-3);
+@pass<"xxx">(Wild-3);
+
+Wild-4 = {"x"} * {"z"};
+
+@pass<"">(Wild-4);
+@pass<"xz">(Wild-4);
+@pass<"xxxzzz">(Wild-4);
