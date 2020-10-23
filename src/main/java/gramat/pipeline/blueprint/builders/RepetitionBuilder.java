@@ -28,11 +28,15 @@ public interface RepetitionBuilder extends BaseBuilder {
     }
 
     private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content) {
-        var accepted = compileExpression(graph, source, content);
+        var accepted = graph.createNode();
 
-        graph.replaceNodesBy(accepted, source);
+        graph.replaceNodesBy(
+                compileExpression(graph, source, content), accepted);
 
-        return NodeSet.of(source);
+        graph.replaceNodesBy(
+                compileExpression(graph, accepted, content), accepted);
+
+        return NodeSet.of(source, accepted);
     }
 
     private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {

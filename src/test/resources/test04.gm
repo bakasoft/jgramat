@@ -6,3 +6,22 @@ Test-1 = @value({"a"});
 @pass<"aaa">(Test-1);
 @pass<"aaaa">(Test-1);
 @pass<"aaaaa">(Test-1);
+
+Test-2 = {"x"} {"y"} {"z"};
+
+@pass<"">(Test-2);
+@pass<"x">(Test-2);
+@pass<"xx">(Test-2);
+@pass<"xxx">(Test-2);
+@pass<"xy">(Test-2);
+@pass<"xyy">(Test-2);
+@pass<"xz">(Test-2);
+@pass<"xzz">(Test-2);
+@pass<"xxy">(Test-2);
+@pass<"xxz">(Test-2);
+@pass<"y">(Test-2);
+@pass<"yy">(Test-2);
+@pass<"yyy">(Test-2);
+@pass<"yz">(Test-2);
+@pass<"yyz">(Test-2);
+@pass<"z">(Test-2);
