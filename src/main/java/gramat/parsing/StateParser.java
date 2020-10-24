@@ -3,6 +3,7 @@ package gramat.parsing;
 import gramat.actions.*;
 import gramat.actions.transactions.*;
 import gramat.badges.BadgeMode;
+import gramat.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.machine.Effect;
 import gramat.models.automata.*;
@@ -79,7 +80,7 @@ public class StateParser extends DefaultComponent {
     }
 
     private State build_machine(ModelMachine machine) {
-        var initial = machine.findInitialState();
+        var initial = machine.initial;
 
         return build_state(machine, initial);
     }
@@ -91,7 +92,7 @@ public class StateParser extends DefaultComponent {
 
         var node = new State(state.id);
 
-        if (state.accepted != null && state.accepted) {
+        if (state.accepted) {
             node.accepted = true;
         }
 
@@ -127,12 +128,12 @@ public class StateParser extends DefaultComponent {
         if (Objects.equals(data.name, "enter")) {
             var token = args.pullAs(String.class);
             var badge = gramat.badges.badge(token);
-            return new RecursionEnter(badge);
+            return new RecursionEnter((BadgeToken)badge);
         }
         else if (Objects.equals(data.name, "exit")) {
             var token = args.pullAs(String.class);
             var badge = gramat.badges.badge(token);
-            return new RecursionExit(badge);
+            return new RecursionExit((BadgeToken)badge);
         }
         else if (Objects.equals(data.name, "begin")) {
             var type = args.pullAs(String.class);
@@ -168,35 +169,16 @@ public class StateParser extends DefaultComponent {
     }
 
     private Symbol make_symbol(ModelSymbol symbol) {
-        if (symbol.type == ModelSymbolType.WILD) {
-            if (symbol.arguments != null && symbol.arguments.size() > 0) {
-                throw new RuntimeException();
-            }
+        if (symbol instanceof ModelSymbolWild) {
             return gramat.symbols.wild();
         }
-        else if (symbol.type == ModelSymbolType.CHAR) {
-            if (symbol.arguments == null || symbol.arguments.size() != 1) {
-                throw new RuntimeException();
-            }
-            var chr = symbol.arguments.get(0);
-            if (chr.length() != 1) {
-                throw new RuntimeException("invalid symbol: " + PP.str(chr));
-            }
-            return gramat.symbols.character(chr.charAt(0));
+        else if (symbol instanceof ModelSymbolChar) {
+            var s = (ModelSymbolChar)symbol;
+            return gramat.symbols.character(s.value);
         }
-        else if (symbol.type == ModelSymbolType.RANGE) {
-            if (symbol.arguments == null || symbol.arguments.size() != 2) {
-                throw new RuntimeException();
-            }
-            var begin = symbol.arguments.get(0);
-            var end = symbol.arguments.get(1);
-            if (begin.length() != 1) {
-                throw new RuntimeException();
-            }
-            else if (end.length() != 1) {
-                throw new RuntimeException();
-            }
-            return gramat.symbols.range(begin.charAt(0), end.charAt(0));
+        else if (symbol instanceof ModelSymbolRange) {
+            var s = (ModelSymbolRange)symbol;
+            return gramat.symbols.range(s.begin, s.end);
         }
         else {
             throw new RuntimeException();

@@ -40,4 +40,9 @@ public class AttributeTransaction extends DefaultTransaction {
             context.setAttribute(name, value);
         };
     }
+
+    @Override
+    public String getName() {
+        return "attribute";
+    }
 }

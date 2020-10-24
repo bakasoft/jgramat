@@ -10,4 +10,6 @@ public interface Transaction {
 
     Runnable prepareCommit(Context context);
 
+    String getName();
+
 }

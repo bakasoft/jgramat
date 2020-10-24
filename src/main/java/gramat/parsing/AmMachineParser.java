@@ -26,7 +26,7 @@ public interface AmMachineParser extends AmBase, AmValue {
                 var stateId = readString(tape);
                 var state = machine.mergeState(stateId);
 
-                state.initial = true;
+                machine.initial = state;
 
                 expectToken(tape, ';');
 
@@ -111,20 +111,23 @@ public interface AmMachineParser extends AmBase, AmValue {
     }
 
     default ModelSymbol read_symbol(Tape tape) {
-        var symbol = new ModelSymbol();
+        ModelSymbol symbol;
 
         if (tape.peek() == '*') {
             tape.move();
-            symbol.type = ModelSymbolType.WILD;
+            symbol = new ModelSymbolWild();
         }
         else {
-            symbol.arguments = read_arguments(tape);
+            var arguments = read_arguments(tape);
 
-            if (symbol.arguments.size() == 1) {
-                symbol.type = ModelSymbolType.CHAR;
+            if (arguments.size() == 1) {
+                symbol = new ModelSymbolChar();
+                ((ModelSymbolChar)symbol).value = arguments.get(0).charAt(0);
             }
-            else if (symbol.arguments.size() == 2) {
-                symbol.type = ModelSymbolType.RANGE;
+            else if (arguments.size() == 2) {
+                symbol = new ModelSymbolRange();
+                ((ModelSymbolRange)symbol).begin = arguments.get(0).charAt(0);
+                ((ModelSymbolRange)symbol).end = arguments.get(1).charAt(0);
             }
             else {
                 throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());

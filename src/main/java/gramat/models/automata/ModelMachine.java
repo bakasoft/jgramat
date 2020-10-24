@@ -8,15 +8,11 @@ import java.util.Objects;
 
 public class ModelMachine {
 
-    public final List<ModelState> states;
-    public final List<ModelTransition> transitions;
-    public final List<ModelTest> tests;
+    public List<ModelState> states;
+    public List<ModelTransition> transitions;
+    public List<ModelTest> tests;
 
-    public ModelMachine() {
-        states = new ArrayList<>();
-        transitions = new ArrayList<>();
-        tests = new ArrayList<>();
-    }
+    public ModelState initial;
 
     public List<ModelTransition> findTransitionsFrom(ModelState source) {
         var result = new ArrayList<ModelTransition>();
@@ -28,25 +24,6 @@ public class ModelMachine {
         }
 
         return result;
-    }
-
-    public ModelState findInitialState() {
-        var result = new ArrayList<ModelState>();
-
-        for (var state : states) {
-            if (state.initial != null && state.initial) {
-                result.add(state);
-            }
-        }
-
-        if (result.isEmpty()) {
-            return null;
-        }
-        else if (result.size() != 1) {
-            throw new RuntimeException("Too many initial states");
-        }
-
-        return result.get(0);
     }
 
     public ModelState searchState(String id) {

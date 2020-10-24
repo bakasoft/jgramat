@@ -4,6 +4,7 @@ import gramat.actions.Event;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
+import gramat.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Component;
 import gramat.framework.DefaultComponent;
@@ -124,7 +125,7 @@ public class MachineCompiler extends DefaultComponent {
             linkBadge = gramat.badges.empty();
             linkEvent.prepend(wrapper.before);
             if (newBadge != gramat.badges.empty()) {
-                linkEvent.prepend(new RecursionEnter(newBadge));
+                linkEvent.prepend(new RecursionEnter((BadgeToken)newBadge));
             }
         }
         else if (type == PlugType.TARGET_TO_NODE) {
@@ -132,7 +133,7 @@ public class MachineCompiler extends DefaultComponent {
             linkTarget = plug.getTarget();
             linkBadge = gramat.badges.empty();
             if (newBadge != gramat.badges.empty()) {
-                linkEvent.prepend(new RecursionEnter(newBadge));
+                linkEvent.prepend(new RecursionEnter((BadgeToken)newBadge));
             }
             // TODO test ignored wrapping actions
         }
@@ -143,7 +144,7 @@ public class MachineCompiler extends DefaultComponent {
             linkTarget = newSource;
             linkBadge = newBadge;
             if (newBadge != gramat.badges.empty()) {
-                linkEvent.append(new RecursionExit(newBadge));
+                linkEvent.append(new RecursionExit((BadgeToken)newBadge));
             }
         }
         else if (type == PlugType.NODE_TO_TARGET) {
@@ -152,7 +153,7 @@ public class MachineCompiler extends DefaultComponent {
             linkBadge = newBadge;
             linkEvent.append(wrapper.after);
             if (newBadge != gramat.badges.empty()) {
-                linkEvent.append(new RecursionExit(newBadge));
+                linkEvent.append(new RecursionExit((BadgeToken)newBadge));
             }
         }
         else {

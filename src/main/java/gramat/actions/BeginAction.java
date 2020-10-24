@@ -5,6 +5,7 @@ import gramat.eval.transactions.Transaction;
 import gramat.eval.Context;
 import gramat.exceptions.UnsupportedValueException;
 
+import java.util.List;
 import java.util.Objects;
 
 public class BeginAction implements Action {
@@ -23,7 +24,18 @@ public class BeginAction implements Action {
     }
 
     @Override
+    public String getName() {
+        return "begin";
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
+    }
+
+    @Override
     public String toString() {
+        // TODO refactor this with name and arguments
         if (transaction instanceof ArrayTransaction) {
             return String.format("begin(array, %s)", transaction.getID());
         }

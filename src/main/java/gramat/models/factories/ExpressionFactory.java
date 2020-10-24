@@ -1,4 +1,4 @@
-package gramat.models;
+package gramat.models.factories;
 
 import gramat.models.expressions.*;
 import gramat.models.source.ModelCall;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ModelFactory {
+public class ExpressionFactory {
 
     public static ModelWild wild() {
         return new ModelWild();

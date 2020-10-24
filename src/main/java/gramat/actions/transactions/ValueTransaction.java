@@ -35,4 +35,9 @@ public class ValueTransaction extends DefaultTransaction {
         };
     }
 
+    @Override
+    public String getName() {
+        return "value";
+    }
+
 }

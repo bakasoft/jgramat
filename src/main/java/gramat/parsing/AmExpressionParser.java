@@ -1,8 +1,7 @@
 package gramat.parsing;
 
-import gramat.models.ModelFactory;
+import gramat.models.factories.ExpressionFactory;
 import gramat.models.expressions.ModelExpression;
-import gramat.models.source.ModelCall;
 import gramat.input.Tape;
 
 import java.util.ArrayList;
@@ -26,14 +25,14 @@ public interface AmExpressionParser extends AmBase, AmValue {
                 if (sequence.isEmpty()) {
                     throw new RuntimeException();
                 }
-                alternation.add(ModelFactory.sequence(sequence));
+                alternation.add(ExpressionFactory.sequence(sequence));
                 sequence.clear();
             }
         }
 
         // Flush left items
         if (sequence.size() > 0) {
-            alternation.add(ModelFactory.sequence(sequence));
+            alternation.add(ExpressionFactory.sequence(sequence));
         }
 
         if (alternation.isEmpty()) {
@@ -43,7 +42,7 @@ public interface AmExpressionParser extends AmBase, AmValue {
             return alternation.get(0);
         }
         else {
-            return ModelFactory.alternation(alternation);
+            return ExpressionFactory.alternation(alternation);
         }
     }
 
@@ -69,22 +68,22 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
         var literal = tryQuotedString(tape, '\"');
         if (literal != null) {
-            return ModelFactory.literal(literal);
+            return ExpressionFactory.literal(literal);
         }
 
         var charClass = tryQuotedString(tape, '\'');
         if (charClass != null) {
-            return ModelFactory.characterClass(charClass);
+            return ExpressionFactory.characterClass(charClass);
         }
 
         var reference = tryKeyword(tape);
         if (reference != null) {
-            return ModelFactory.reference(reference);
+            return ExpressionFactory.reference(reference);
         }
 
         var call = tryCall(tape);
         if (call != null) {
-            return ModelFactory.call(call);
+            return ExpressionFactory.call(call);
         }
 
         return null;
@@ -96,7 +95,7 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             expectToken(tape, ']');
 
-            return ModelFactory.optional(expr);
+            return ExpressionFactory.optional(expr);
         }
         return null;
     }
@@ -129,14 +128,14 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             expectToken(tape, '}');
 
-            return ModelFactory.repetition(content, separator, minimum);
+            return ExpressionFactory.repetition(content, separator, minimum);
         }
         return null;
     }
 
     default ModelExpression tryWild(Tape tape) {
         if (tryToken(tape, '*')) {
-            return ModelFactory.wild();
+            return ExpressionFactory.wild();
         }
         return null;
     }

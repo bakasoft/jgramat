@@ -3,6 +3,7 @@ package gramat.actions;
 import gramat.eval.Context;
 import gramat.eval.transactions.Transaction;
 
+import java.util.List;
 import java.util.Objects;
 
 public class EndAction implements Action {
@@ -19,6 +20,16 @@ public class EndAction implements Action {
         var badge = context.heap.peek();
 
         context.manager.end(transaction, badge);
+    }
+
+    @Override
+    public String getName() {
+        return "end";
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
     }
 
     @Override

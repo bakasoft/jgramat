@@ -7,7 +7,10 @@ import gramat.framework.Progress;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
+import gramat.models.expressions.ModelExpression;
+import gramat.parsing.AmParser;
 import gramat.pipeline.blueprint.ExpressionBuilder;
+import gramat.util.NameMap;
 
 public class Pipeline {
 
@@ -44,6 +47,17 @@ public class Pipeline {
 
             return machine;
         }
+    }
+
+    public static Sentence toSentence(Component parent, Tape tape) {
+        var parser = new AmParser(parent);
+        var expression = parser.readExpression(tape);
+        return new Sentence(expression, new NameMap<>());
+    }
+
+    public static State toState(Component parent, Tape tape) {
+        var sentence = toSentence(parent, tape);
+        return toState(parent, sentence);
     }
 
     public static State toState(Component parent, Sentence sentence) {

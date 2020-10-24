@@ -23,4 +23,9 @@ public class NameTransaction extends DefaultTransaction {
         };
     }
 
+    @Override
+    public String getName() {
+        return "name";
+    }
+
 }

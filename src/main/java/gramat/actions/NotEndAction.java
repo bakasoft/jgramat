@@ -3,6 +3,7 @@ package gramat.actions;
 import gramat.eval.Context;
 import gramat.eval.transactions.Transaction;
 
+import java.util.List;
 import java.util.Objects;
 
 public class NotEndAction implements Action {
@@ -18,6 +19,16 @@ public class NotEndAction implements Action {
         var badge = context.heap.peek();
 
         context.manager.notEnd(transaction, badge);
+    }
+
+    @Override
+    public String getName() {
+        return "not-end";
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
     }
 
     @Override

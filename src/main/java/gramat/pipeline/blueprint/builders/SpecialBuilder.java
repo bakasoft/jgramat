@@ -53,7 +53,7 @@ public interface SpecialBuilder extends BaseBuilder {
         var links = graph.capturings.pop();
 
         var begin = new BeginAction(transaction);
-        var notBegin = new NotBeginAction(transaction.getID());
+        var notBegin = new NotBeginAction(transaction);
         var notEnd = new NotEndAction(transaction);
         var end = new EndAction(transaction);
 

@@ -1,21 +1,33 @@
 package gramat.actions;
 
 import gramat.badges.Badge;
+import gramat.badges.BadgeToken;
 import gramat.eval.Context;
 
+import java.util.List;
 import java.util.Objects;
 
 public class RecursionEnter implements Action {
 
-    public final Badge badge;
+    public final BadgeToken badge;
 
-    public RecursionEnter(Badge badge) {
+    public RecursionEnter(BadgeToken badge) {
         this.badge = badge;
     }
 
     @Override
     public void run(Context context) {
         context.heap.push(badge);
+    }
+
+    @Override
+    public String getName() {
+        return "enter";
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of(badge.token);
     }
 
     @Override
