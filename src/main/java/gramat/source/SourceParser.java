@@ -1,4 +1,4 @@
-package gramat.pipeline;
+package gramat.source;
 
 import gramat.framework.Context;
 import gramat.input.Tape;
@@ -8,68 +8,58 @@ import gramat.models.test.ModelEvalFail;
 import gramat.models.test.ModelEvalPass;
 import gramat.models.test.ModelTest;
 import gramat.parsers.ParserSource;
-import gramat.parsing.AmParser;
-import gramat.parsing.Parser;
+import gramat.parsers.ValueParser;
 import gramat.util.Args;
 import gramat.util.NameMap;
+import gramat.util.Resources;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SourceParser {
+public class SourceParser implements AmParser {
 
-    public static ModelSource parse(Context ctx, Tape tape, ParserSource parsers) {
-        var parser = new SourceParser(ctx, tape, parsers);
-        var source = new ModelSource();
-        source.rules = parser.rules;
-        source.tests = parser.tests;
-        source.main = parser.main;
-        return source;
-    }
-
-    private final NameMap<ModelExpression> rules;
-    private final List<ModelTest> tests;
     private final Context ctx;
     private final Tape tape;
-    private ModelExpression main;
+    private final ParserSource parsers;
 
-    private SourceParser(Context ctx, Tape tape, ParserSource parsers) {
+    public SourceParser(Context ctx, Tape tape, ParserSource parsers) {
         this.ctx = ctx;
         this.tape = tape;
-        this.rules = new NameMap<>();
-        this.tests = new ArrayList<>();
-
-        parse(parsers);
+        this.parsers = parsers;
     }
 
-    private void parse(ParserSource parsers) {
-        var parser = new AmParser(ctx);
-        var p = new Parser(tape, parsers);
-        var file = parser.parseFile(p);
+    public ModelSource parseSource() {
+        var model = new ModelSource();
+        model.rules = new NameMap<>();
+        model.tests = new ArrayList<>();
+
+        var file = parseFile();
 
         if (file.rules != null) {
             for (var rule : file.rules) {
-                rules.set(rule.keyword, rule.expression);
+                model.rules.set(rule.keyword, rule.expression);
             }
         }
 
         if (file.calls != null) {
             for (var call : file.calls) {
                 if (Objects.equals(call.keyword, "pass")) {
-                    tests.add(makePass(call.arguments, call.expression));
+                    model.tests.add(makePass(call.arguments, call.expression));
                 }
                 else if (Objects.equals(call.keyword, "fail")) {
-                    tests.add(makeFail(call.arguments, call.expression));
+                    model.tests.add(makeFail(call.arguments, call.expression));
                 }
                 else if (Objects.equals(call.keyword, "main")) {
-                    main = call.expression;
+                    model.main = call.expression;
                 }
                 else {
                     throw new RuntimeException("unknown call: " + call.keyword);
                 }
             }
         }
+
+        return model;
     }
 
     private ModelTest makePass(List<Object> arguments, ModelExpression expression) {
@@ -86,6 +76,28 @@ public class SourceParser {
         test.input = args.getString("input");
         test.expression = expression;
         return test;
+    }
+
+    public String loadValue(String valueDirective, List<Object> arguments) {
+        if (Objects.equals(valueDirective, "readFile")) {
+            var args = Args.of(arguments, List.of("path"));
+            var path = args.getString("path");
+
+            return Resources.loadText(path);
+        }
+        else {
+            throw new RuntimeException("unsupported value directive: " + valueDirective);
+        }
+    }
+
+    @Override
+    public ValueParser findParser(String name) {
+        return parsers.findParser(name);
+    }
+
+    @Override
+    public Tape getTape() {
+        return tape;
     }
 
 }

@@ -1,18 +1,16 @@
-package gramat.parsing;
+package gramat.source;
 
 import gramat.data.ListData;
 import gramat.data.MapData;
-import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
-import gramat.util.Args;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public interface AmValue extends AmString {
 
-    default Object readValue(Parser parser) {
-        var value = tryValue(parser);
+    default Object readValue() {
+        var value = tryValue();
 
         if (value == null) { // TODO what about null values?
             throw new RuntimeException();
@@ -21,29 +19,29 @@ public interface AmValue extends AmString {
         return value;
     }
 
-    default Object tryValue(Parser parser) {
-        var str = tryString(parser);
+    default Object tryValue() {
+        var str = tryString();
 
-        var map = tryMap(parser, str);
+        var map = tryMap(str);
 
         if (map != null) {
             return map;
         }
 
-        var list = tryList(parser, str);
+        var list = tryList(str);
 
         if (list != null) {
             return list;
         }
 
-        var call = tryCall(parser);
+        var call = tryCall();
 
         if (call != null) {
             if (call.expression != null) {
                 throw new RuntimeException("unexepcted expression");
             }
-            var valueParser = parser.parsers.findParser(str);
-            var text = parser.loadValue(call.keyword, call.arguments);
+            var valueParser = findParser(str);
+            var text = loadValue(call.keyword, call.arguments);
             return valueParser.parse(text);
         }
 
@@ -52,12 +50,12 @@ public interface AmValue extends AmString {
         }
 
         // check for parsed text
-        if (tryToken(parser, '(')) {
-            var valueParser = parser.parsers.findParser(str);
-            var text = tryString(parser);
+        if (tryToken('(')) {
+            var valueParser = findParser(str);
+            var text = tryString();
             var result = valueParser.parse(text);
 
-            expectToken(parser, ')');
+            expectToken(')');
 
             return result;
         }
@@ -65,23 +63,23 @@ public interface AmValue extends AmString {
         return str;
     }
 
-    default MapData tryMap(Parser parser, String typeHint) {
-        if (!tryToken(parser, '{')) {
+    default MapData tryMap(String typeHint) {
+        if (!tryToken('{')) {
             return null;
         }
 
-        if (tryToken(parser, '}')) {
+        if (tryToken('}')) {
             return new MapData(typeHint);
         }
 
         var map = new MapData(typeHint);
 
         while (true) {
-            var key = readString(parser);
+            var key = readString();
 
-            expectToken(parser, ':');
+            expectToken(':');
 
-            var value = readValue(parser);
+            var value = readValue();
 
             if (map.containsKey(key)) {
                 throw new RuntimeException();
@@ -89,37 +87,37 @@ public interface AmValue extends AmString {
 
             map.put(key, value);
 
-            if (tryToken(parser, '}')) {
+            if (tryToken('}')) {
                 break;
             }
-            else if (!tryToken(parser, ',')) {
-                throw new UnexpectedCharException(parser.tape);
+            else if (!tryToken(',')) {
+                throw new UnexpectedCharException(getTape());
             }
         }
 
         return map;
     }
 
-    default ListData tryList(Parser parser, String typeHint) {
-        if (!tryToken(parser, '[')) {
+    default ListData tryList(String typeHint) {
+        if (!tryToken('[')) {
             return null;
         }
 
-        if (tryToken(parser, ']')) {
+        if (tryToken(']')) {
             return new ListData(typeHint);
         }
 
         var list = new ListData(typeHint);
 
         while (true) {
-            var value = readValue(parser);
+            var value = readValue();
 
             list.add(value);
 
-            if (tryToken(parser, ']')) {
+            if (tryToken(']')) {
                 break;
             }
-            else if (!tryToken(parser, ',')) {
+            else if (!tryToken(',')) {
                 throw new RuntimeException();
             }
         }
@@ -127,11 +125,11 @@ public interface AmValue extends AmString {
         return list;
     }
 
-    default List<Object> readArguments(Parser parser) {
+    default List<Object> readArguments() {
         var values = new ArrayList<>();
 
         while (true) {
-            var value = tryValue(parser);
+            var value = tryValue();
 
             if (value == null) {
                 break;
@@ -139,7 +137,7 @@ public interface AmValue extends AmString {
 
             values.add(value);
 
-            if (!tryToken(parser, ',')) {
+            if (!tryToken(',')) {
                 break;
             }
         }

@@ -7,8 +7,8 @@ import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.models.source.ModelSource;
 import gramat.parsers.ParserSource;
-import gramat.parsing.AmParser;
-import gramat.parsing.Parser;
+import gramat.source.AmParser;
+import gramat.source.SourceParser;
 import gramat.pipeline.blueprint.ExpressionBuilder;
 import gramat.symbols.Alphabet;
 import gramat.util.NameMap;
@@ -16,7 +16,9 @@ import gramat.util.NameMap;
 public class Pipeline {
 
     public static ModelSource toSource(Context ctx, Tape tape, ParserSource parsers) {
-        return SourceParser.parse(ctx, tape, parsers);
+        var parser = new SourceParser(ctx, tape, parsers);
+
+        return parser.parseSource();
     }
 
     public static Template toTemplate(Context ctx, Sentence sentence, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
@@ -51,9 +53,8 @@ public class Pipeline {
     }
 
     public static Sentence toSentence(Context ctx, Tape tape, ParserSource parsers) {
-        var parser = new AmParser(ctx);
-        var p = new Parser(tape, parsers);
-        var expression = parser.readExpression(p);
+        var parser = new SourceParser(ctx, tape, parsers);
+        var expression = parser.readExpression();
         return new Sentence(expression, new NameMap<>());
     }
 

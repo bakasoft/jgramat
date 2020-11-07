@@ -1,7 +1,6 @@
-package gramat.parsing;
+package gramat.source;
 
 import gramat.models.automata.*;
-import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
 
 import java.util.ArrayList;
@@ -9,67 +8,68 @@ import java.util.List;
 
 public interface AmMachineParser extends AmBase, AmValue {
 
-    default ModelMachine parseMachine(Parser parser) {
+    default ModelMachine parseMachine() {
         var machine = new ModelMachine();
+        var tape = getTape();
 
-        skipVoid(parser);
+        skipVoid();
 
-        while (parser.tape.alive()) {
-            var transition = tryTransition(machine, parser);
+        while (tape.alive()) {
+            var transition = tryTransition(machine);
 
             if (transition != null) {
                 machine.transitions.add(transition);
                 continue;
             }
 
-            if (tryToken(parser, 'I')) {
-                var stateId = readString(parser);
+            if (tryToken('I')) {
+                var stateId = readString();
                 var state = machine.mergeState(stateId);
 
                 machine.initial = state;
 
-                expectToken(parser, ';');
+                expectToken(';');
 
                 continue;
             }
 
-            if (tryToken(parser, 'A')) {
-                var stateId = readString(parser);
+            if (tryToken('A')) {
+                var stateId = readString();
                 var state = machine.mergeState(stateId);
 
                 state.accepted = true;
 
-                expectToken(parser, ';');
+                expectToken(';');
                 continue;
             }
 
-            throw new UnexpectedCharException(parser.tape);
+            throw new UnexpectedCharException(tape);
         }
 
         return machine;
     }
 
-    default ModelTransition tryTransition(ModelMachine machine, Parser parser) {
-        if (!tryToken(parser, 'T')) {
+    default ModelTransition tryTransition(ModelMachine machine) {
+        if (!tryToken('T')) {
             return null;
         }
 
-        var sourceId = readString(parser);
+        var sourceId = readString();
 
-        expectToken(parser, ',');
+        expectToken(',');
 
-        var targetId = readString(parser);
+        var targetId = readString();
 
         var transition = new ModelTransition();
         transition.source = machine.mergeState(sourceId);
         transition.target = machine.mergeState(targetId);
 
         while (true) {
-            if (tryToken(parser, ';')) {
+            if (tryToken(';')) {
                 break;
             }
-            else if (tryToken(parser, 'R')) {
-                var action = read_action(parser);
+            else if (tryToken('R')) {
+                var action = read_action();
 
                 if (transition.symbol == null) {
                     transition.preActions.add(action);
@@ -78,8 +78,8 @@ public interface AmMachineParser extends AmBase, AmValue {
                     transition.postActions.add(action);
                 }
             }
-            else if (tryToken(parser, 'S')) {
-                var symbol = read_symbol(parser);
+            else if (tryToken('S')) {
+                var symbol = read_symbol();
 
                 if (transition.symbol != null) {
                     throw new RuntimeException("symbol already defined");
@@ -88,7 +88,7 @@ public interface AmMachineParser extends AmBase, AmValue {
                 transition.symbol = symbol;
             }
             else {
-                throw new UnexpectedCharException(parser.tape);
+                throw new UnexpectedCharException(getTape());
             }
 
         }
@@ -96,20 +96,20 @@ public interface AmMachineParser extends AmBase, AmValue {
         return transition;
     }
 
-    default ModelAction read_action(Parser parser) {
+    default ModelAction read_action() {
         // TODO
         throw new UnsupportedOperationException();
     }
 
-    default ModelSymbol read_symbol(Parser parser) {
+    default ModelSymbol read_symbol() {
         ModelSymbol symbol;
-
-        if (parser.tape.peek() == '*') {
-            parser.tape.move();
+        var tape = getTape();
+        if (tape.peek() == '*') {
+            tape.move();
             symbol = new ModelSymbolWild();
         }
         else {
-            var arguments = read_arguments(parser);
+            var arguments = read_arguments();
 
             if (arguments.size() == 1) {
                 symbol = new ModelSymbolChar();
@@ -121,18 +121,18 @@ public interface AmMachineParser extends AmBase, AmValue {
                 ((ModelSymbolRange)symbol).end = arguments.get(1).charAt(0);
             }
             else {
-                throw new RuntimeException("unexpected number of arguments: " + parser.tape.getLocation());
+                throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());
             }
         }
 
         return symbol;
     }
 
-    default List<String> read_arguments(Parser parser) {
+    default List<String> read_arguments() {
         var arguments = new ArrayList<String>();
 
         while (true) {
-            var argument = tryString(parser);
+            var argument = tryString();
 
             if (argument == null) {
                 break;
@@ -140,7 +140,7 @@ public interface AmMachineParser extends AmBase, AmValue {
 
             arguments.add(argument);
 
-            if (!tryToken(parser, ',')) {
+            if (!tryToken(',')) {
                 break;
             }
         }

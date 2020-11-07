@@ -1,19 +1,18 @@
-package gramat.parsing;
+package gramat.source;
 
 import gramat.models.factories.ExpressionFactory;
 import gramat.models.expressions.ModelExpression;
-import gramat.input.Tape;
 
 import java.util.ArrayList;
 
 public interface AmExpressionParser extends AmBase, AmValue {
 
-    default ModelExpression readExpression(Parser parser) {
+    default ModelExpression readExpression() {
         var alternation = new ArrayList<ModelExpression>();
         var sequence = new ArrayList<ModelExpression>();
 
         while (true) {
-            var item = tryExpressionItem(parser);
+            var item = tryExpressionItem();
 
             if (item == null) {
                 break;
@@ -21,7 +20,7 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             sequence.add(item);
 
-            if (tryToken(parser, '|')) {
+            if (tryToken('|')) {
                 if (sequence.isEmpty()) {
                     throw new RuntimeException();
                 }
@@ -46,42 +45,42 @@ public interface AmExpressionParser extends AmBase, AmValue {
         }
     }
 
-    default ModelExpression tryExpressionItem(Parser parser) {
-        var group = tryGroup(parser);
+    default ModelExpression tryExpressionItem() {
+        var group = tryGroup();
         if (group != null) {
             return group;
         }
-        var optional = tryOptional(parser);
+        var optional = tryOptional();
         if (optional != null) {
             return optional;
         }
 
-        var repetition = tryRepetition(parser);
+        var repetition = tryRepetition();
         if (repetition != null) {
             return repetition;
         }
 
-        var wild = tryWild(parser);
+        var wild = tryWild();
         if (wild != null) {
             return wild;
         }
 
-        var literal = tryQuotedString(parser, '\"');
+        var literal = tryQuotedString('\"');
         if (literal != null) {
             return ExpressionFactory.literal(literal);
         }
 
-        var charClass = tryQuotedString(parser, '\'');
+        var charClass = tryQuotedString('\'');
         if (charClass != null) {
             return ExpressionFactory.characterClass(charClass);
         }
 
-        var reference = tryKeyword(parser);
+        var reference = tryKeyword();
         if (reference != null) {
             return ExpressionFactory.reference(reference);
         }
 
-        var call = tryCall(parser);
+        var call = tryCall();
         if (call != null) {
             return ExpressionFactory.call(call);
         }
@@ -89,52 +88,52 @@ public interface AmExpressionParser extends AmBase, AmValue {
         return null;
     }
 
-    default ModelExpression tryOptional(Parser parser) {
-        if (tryToken(parser, '[')) {
-            var expr = readExpression(parser);
+    default ModelExpression tryOptional() {
+        if (tryToken('[')) {
+            var expr = readExpression();
 
-            expectToken(parser, ']');
+            expectToken(']');
 
             return ExpressionFactory.optional(expr);
         }
         return null;
     }
 
-    default ModelExpression tryGroup(Parser parser) {
-        if (tryToken(parser, '(')) {
-            var expr = readExpression(parser);
+    default ModelExpression tryGroup() {
+        if (tryToken('(')) {
+            var expr = readExpression();
 
-            expectToken(parser, ')');
+            expectToken(')');
 
             return expr;
         }
         return null;
     }
 
-    default ModelExpression tryRepetition(Parser parser) {
-        if (tryToken(parser, '{')) {
+    default ModelExpression tryRepetition() {
+        if (tryToken('{')) {
             var minimum = 0;
 
-            if (tryToken(parser, '+')) {
+            if (tryToken('+')) {
                 minimum = 1;
             }
 
-            var content = readExpression(parser);
+            var content = readExpression();
             var separator = (ModelExpression)null;
 
-            if (tryToken(parser, '/')) {
-                separator = readExpression(parser);
+            if (tryToken('/')) {
+                separator = readExpression();
             }
 
-            expectToken(parser, '}');
+            expectToken('}');
 
             return ExpressionFactory.repetition(content, separator, minimum);
         }
         return null;
     }
 
-    default ModelExpression tryWild(Parser parser) {
-        if (tryToken(parser, '*')) {
+    default ModelExpression tryWild() {
+        if (tryToken('*')) {
             return ExpressionFactory.wild();
         }
         return null;

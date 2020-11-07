@@ -1,38 +1,39 @@
-package gramat.parsing;
+package gramat.source;
 
-import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
 
 public interface AmString extends AmBase {
 
-    default String readString(Parser parser) {
-        var value = tryString(parser);
+    default String readString() {
+        var value = tryString();
 
         if (value == null) {
-            throw new UnexpectedCharException(parser.tape);
+            throw new UnexpectedCharException(getTape());
         }
 
         return value;
     }
 
-    default String tryQuotedString(Parser parser, char delimiter) {
-        if (parser.tape.peek() == delimiter) {
+    default String tryQuotedString(char delimiter) {
+        var tape = getTape();
+
+        if (tape.peek() == delimiter) {
             var buffer = new StringBuilder();
 
-            parser.tape.move();
+            tape.move();
 
-            while (parser.tape.peek() != delimiter) {
-                var chr = parser.tape.read();
+            while (tape.peek() != delimiter) {
+                var chr = tape.read();
 
                 if (chr == '\\') {
-                    chr = parser.tape.read();
+                    chr = tape.read();
 
                     if (chr == delimiter) {
                         buffer.append(delimiter);
                     }
                     else if (chr == 'u') {
                         var code = (char)Integer.parseInt(new String(new char[] {
-                                parser.tape.read(), parser.tape.read(), parser.tape.read(), parser.tape.read(),
+                                tape.read(), tape.read(), tape.read(), tape.read(),
                         }), 16);
 
                         buffer.append(code);
@@ -53,7 +54,7 @@ public interface AmString extends AmBase {
                         buffer.append('\r');
                     }
                     else {
-                        throw new UnexpectedCharException(parser.tape, -1);
+                        throw new UnexpectedCharException(tape, -1);
                     }
                 }
                 else {
@@ -61,48 +62,49 @@ public interface AmString extends AmBase {
                 }
             }
 
-            if (parser.tape.peek() != delimiter) {
+            if (tape.peek() != delimiter) {
                 throw new RuntimeException();
             }
 
-            parser.tape.move();
+            tape.move();
 
-            skipVoid(parser);
+            skipVoid();
 
             return buffer.toString();
         }
         return null;
     }
 
-    default String tryKeyword(Parser parser) {
-        if (isKeywordChar(parser.tape.peek())) {
+    default String tryKeyword() {
+        var tape = getTape();
+        if (isKeywordChar(tape.peek())) {
             var buffer = new StringBuilder();
 
             do {
-                var chr = parser.tape.peek();
+                var chr = tape.peek();
 
-                parser.tape.move();
+                tape.move();
 
                 buffer.append(chr);
-            } while (isKeywordChar(parser.tape.peek()));
+            } while (isKeywordChar(tape.peek()));
 
-            skipVoid(parser);
+            skipVoid();
 
             return buffer.toString();
         }
         return null;
     }
 
-    default String tryString(Parser parser) {
-        var str = tryQuotedString(parser, '\"');
+    default String tryString() {
+        var str = tryQuotedString('\"');
         if (str != null) {
             return str;
         }
-        str = tryQuotedString(parser, '\'');
+        str = tryQuotedString('\'');
         if (str != null) {
             return str;
         }
-        return tryKeyword(parser);
+        return tryKeyword();
     }
 
     default boolean isKeywordChar(char c) {

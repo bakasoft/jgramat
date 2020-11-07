@@ -46,7 +46,7 @@ public class ParserSource implements Iterable<ValueParser> {
         var parser = searchParser(name);
 
         if (parser == null) {
-            throw new RuntimeException("Parser not found: " + name);
+            throw new RuntimeException("SourceParser not found: " + name);
         }
 
         return parser;
