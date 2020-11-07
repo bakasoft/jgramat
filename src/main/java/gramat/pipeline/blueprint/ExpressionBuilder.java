@@ -1,15 +1,15 @@
 package gramat.pipeline.blueprint;
 
 import gramat.badges.Badge;
+import gramat.badges.BadgeSource;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
-import gramat.framework.Progress;
+import gramat.framework.Context;
 import gramat.graph.Graph;
 import gramat.graph.Node;
 import gramat.graph.Root;
 import gramat.graph.plugs.Extension;
 import gramat.models.expressions.*;
+import gramat.parsers.ParserSource;
 import gramat.parsers.ValueParser;
 import gramat.pipeline.Template;
 import gramat.pipeline.blueprint.builders.*;
@@ -19,7 +19,7 @@ import gramat.graph.sets.NodeSet;
 
 import java.util.*;
 
-public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
+public class ExpressionBuilder implements BaseBuilder,
         AlternationBuilder,
         LiteralBuilder,
         OptionalBuilder,
@@ -30,21 +30,22 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
         WildBuilder,
         SpecialBuilder {
 
-    public static Template build(Component parent, Graph graph, ModelExpression main, NameMap<ModelExpression> expressions) {
-        try (var progress = new Progress("Building Expression")) {
+    public static Template build(Context ctx, Graph graph, ModelExpression main, NameMap<ModelExpression> expressions, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+        try (var ignore = ctx.pushLayer("Building Expression");) {
 
-            progress.log("Analyzing expression...");
+            ctx.info("Analyzing expression...");
 
             var stats = Stats.compute(main, expressions);
 
-            progress.log(0, stats.count, "Building main expression...");
+            ctx.info("Building main expression...");
+            ctx.setTotal(0, stats.count);
 
-            var builder = new ExpressionBuilder(parent, progress, expressions, stats);
+            var builder = new ExpressionBuilder(ctx, expressions, stats, alphabet, badges, parsers);
             var root = builder.build(graph, main);
             var extensions = new NameMap<Extension>();
 
             for (var reference : stats.recursiveReferences) {
-                progress.log("Building %s expression...", reference);
+                ctx.info("Building %s expression...", reference);
 
                 var refExpr = expressions.find(reference);
                 var refRoot = builder.build(graph, refExpr);
@@ -57,23 +58,28 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
         }
     }
 
-    private final Progress progress;
+    private final Context ctx;
     private final NameMap<ModelExpression> expressions;
     private final Queue<String> dependencyQueue;
     private final Stats stats;
+    private final Alphabet symbols;
+    private final BadgeSource badges;
+    private final ParserSource parsers;
 
     private final Set<ModelExpression> buildCount;
 
     private final HashMap<ModelExpression, Integer> trxIds;
 
-    private ExpressionBuilder(Component parent, Progress progress, NameMap<ModelExpression> expressions, Stats stats) {
-        super(parent);
-        this.progress = progress;
+    private ExpressionBuilder(Context ctx, NameMap<ModelExpression> expressions, Stats stats, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+        this.ctx = ctx;
         this.expressions = expressions;
         this.trxIds = new LinkedHashMap<>();
         this.dependencyQueue = new LinkedList<>();
         this.stats = stats;
         this.buildCount = new HashSet<>();
+        this.symbols = alphabet;
+        this.badges = badges;
+        this.parsers = parsers;
     }
 
     public Root build(Graph graph, ModelExpression expression) {
@@ -86,7 +92,7 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
     public NodeSet compileExpression(Graph graph, Node source, ModelExpression expression) {
         buildCount.add(expression);
 
-        progress.log(buildCount.size());
+        ctx.setTotal(0, buildCount.size());
 
         if (expression instanceof ModelOptional) {
             return compileOptional(graph, source, (ModelOptional)expression);
@@ -146,17 +152,17 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
 
     @Override
     public Badge getEmptyBadge() {
-        return gramat.badges.empty();
+        return badges.empty();
     }
 
     @Override
     public Alphabet getAlphabet() {
-        return gramat.symbols;
+        return symbols;
     }
 
     @Override
     public ValueParser findParser(String parser) {
-        return gramat.parsers.findParser(parser);
+        return parsers.findParser(parser);
     }
 
     @Override

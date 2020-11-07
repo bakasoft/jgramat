@@ -4,6 +4,6 @@
 
 .DS_Store
 
-*.err
 *.gmc
+*.log
 src/test/resources/output/

@@ -1,43 +1,37 @@
 package gramat.parsing;
 
 import gramat.actions.*;
-import gramat.actions.transactions.*;
 import gramat.badges.BadgeMode;
-import gramat.badges.BadgeToken;
-import gramat.exceptions.UnsupportedValueException;
+import gramat.framework.Context;
 import gramat.machine.Effect;
 import gramat.models.automata.*;
 import gramat.badges.Badge;
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
 import gramat.machine.State;
+import gramat.parsers.ParserSource;
 import gramat.symbols.Symbol;
-import gramat.util.Args;
-import gramat.util.PP;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class StateParser extends DefaultComponent {
+public class StateParser {
 
+    private final Context ctx;
     private final Map<String, State> idNodes;
 
-    public StateParser(Component parent) {
-        super(parent);
+    public StateParser(Context ctx) {
+        this.ctx = ctx;
         this.idNodes = new LinkedHashMap<>();
     }
 
-    public State parse(Tape tape) {
-        return parse(tape, false);
+    public State parse(Tape tape, ParserSource parsers) {
+        return parse(tape, false, parsers);
     }
 
-    public State parse(Tape tape, boolean runTests) {
-        var parser = new AmParser(this);
-
-        var machine = parser.parseMachine(tape);
+    public State parse(Tape tape, boolean runTests, ParserSource parsers) {
+        var parser = new AmParser(ctx);
+        var p = new Parser(tape, parsers);
+        var machine = parser.parseMachine(p);
 
         var node = build_machine(machine);
 

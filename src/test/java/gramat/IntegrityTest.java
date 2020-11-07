@@ -7,8 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import util.TestUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -17,9 +15,9 @@ public class IntegrityTest {
 
     @Test
     public void testIntegrity() throws IOException {
-        for (var compiledFile : TestUtils.getResourceFiles(path -> path.toString().endsWith(".gmc"))) {
-            var state0 = Format.read(compiledFile);
-            var data0 = new String(Files.readAllBytes(compiledFile));
+        for (var compiledFile : TestUtils.getResourcesFolder().searchFiles(file -> file.hasExtension("gmc"))) {
+            var state0 = Format.read(compiledFile.getAbsolutePath());
+            var data0 = new String(Files.readAllBytes(compiledFile.getAbsolutePath()));
 
             var data1 = new StringBuilder();
             Format.write(state0, data1);

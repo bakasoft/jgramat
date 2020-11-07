@@ -1,14 +1,15 @@
 package util;
 
-import java.io.IOException;
+import gramat.util.WorkingFile;
+import gramat.util.WorkingFolder;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class TestUtils {
 
@@ -49,35 +50,6 @@ public class TestUtils {
         return result.toString();
     }
 
-    public static void printHex(byte[] data) {
-        var col = 0;
-
-        for (int i = 0; i < data.length; i++) {
-            var b = 0xFF & data[i];
-
-            if (col > 0) {
-                System.out.print(' ');
-            }
-
-            var hex = Integer.toHexString(b).toUpperCase();
-
-            if (hex.length() == 1) {
-                System.out.print("0");
-            }
-
-            System.out.print(hex);
-
-            col++;
-
-            if (col == 50) {
-                col = 0;
-                System.out.println();
-            }
-        }
-
-        System.out.println();
-    }
-
     public static String sha1(byte[] data) {
         try {
             var md = MessageDigest.getInstance("SHA-1");
@@ -96,34 +68,12 @@ public class TestUtils {
         return formatter.toString();
     }
 
-    public static List<Path> getGrammarFiles() {
-        return getResourceFiles(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".gm"));
-    }
-
-    public static Path getResourcesFolder() {
+    public static WorkingFolder getResourcesFolder() {
         var cwd = System.getProperty("user.dir");
-        return Path.of(cwd, "src", "test", "resources");
+        return new WorkingFolder(Path.of(cwd, "src", "test", "resources"));
     }
 
-    public static Path getOutputFolder() {
-        return getResourcesFolder().resolve("output");
-    }
-
-    public static List<Path> getResourceFiles(Predicate<Path> condition) {
-        var resourcesFolder = getResourcesFolder();
-
-        if (!Files.exists(resourcesFolder)) {
-            throw new RuntimeException("Not found: " + resourcesFolder);
-        }
-
-        try {
-            return Files.walk(resourcesFolder)
-                    .sorted()
-                    .filter(condition)
-                    .collect(Collectors.toList());
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static WorkingFolder getOutputFolder() {
+        return getResourcesFolder().resolveFolder("output");
     }
 }

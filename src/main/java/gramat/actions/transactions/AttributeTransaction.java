@@ -1,6 +1,6 @@
 package gramat.actions.transactions;
 
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 import gramat.eval.RejectedException;
 import gramat.eval.transactions.TransactionAdapter;
 import gramat.util.NameMap;
@@ -21,12 +21,12 @@ public class AttributeTransaction extends TransactionAdapter {
     }
 
     @Override
-    public void begin(Context context) {
+    public void begin(EvalContext context) {
         context.pushContainer();
     }
 
     @Override
-    public Runnable prepareCommit(Context context) {
+    public Runnable prepareCommit(EvalContext context) {
         return () -> {
             var name = context.getName();
             var value = context.popValue();

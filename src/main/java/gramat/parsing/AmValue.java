@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface AmValue extends AmString {
 
-    default Object readValue(Tape tape) {
-        var value = tryValue(tape);
+    default Object readValue(Parser parser) {
+        var value = tryValue(parser);
 
         if (value == null) { // TODO what about null values?
             throw new RuntimeException();
@@ -21,30 +21,30 @@ public interface AmValue extends AmString {
         return value;
     }
 
-    default Object tryValue(Tape tape) {
-        var str = tryString(tape);
+    default Object tryValue(Parser parser) {
+        var str = tryString(parser);
 
-        var map = tryMap(tape, str);
+        var map = tryMap(parser, str);
 
         if (map != null) {
             return map;
         }
 
-        var list = tryList(tape, str);
+        var list = tryList(parser, str);
 
         if (list != null) {
             return list;
         }
 
-        var call = tryCall(tape);
+        var call = tryCall(parser);
 
         if (call != null) {
             if (call.expression != null) {
                 throw new RuntimeException("unexepcted expression");
             }
-            var parser = getGramat().parsers.findParser(str);
-            var text = getGramat().loadValue(call.keyword, call.arguments);
-            return parser.parse(text);
+            var valueParser = parser.parsers.findParser(str);
+            var text = parser.loadValue(call.keyword, call.arguments);
+            return valueParser.parse(text);
         }
 
         if (str == null) {
@@ -52,12 +52,12 @@ public interface AmValue extends AmString {
         }
 
         // check for parsed text
-        if (tryToken(tape, '(')) {
-            var parser = getGramat().parsers.findParser(str);
-            var text = tryString(tape);
-            var result = parser.parse(text);
+        if (tryToken(parser, '(')) {
+            var valueParser = parser.parsers.findParser(str);
+            var text = tryString(parser);
+            var result = valueParser.parse(text);
 
-            expectToken(tape, ')');
+            expectToken(parser, ')');
 
             return result;
         }
@@ -65,23 +65,23 @@ public interface AmValue extends AmString {
         return str;
     }
 
-    default MapData tryMap(Tape tape, String typeHint) {
-        if (!tryToken(tape, '{')) {
+    default MapData tryMap(Parser parser, String typeHint) {
+        if (!tryToken(parser, '{')) {
             return null;
         }
 
-        if (tryToken(tape, '}')) {
+        if (tryToken(parser, '}')) {
             return new MapData(typeHint);
         }
 
         var map = new MapData(typeHint);
 
         while (true) {
-            var key = readString(tape);
+            var key = readString(parser);
 
-            expectToken(tape, ':');
+            expectToken(parser, ':');
 
-            var value = readValue(tape);
+            var value = readValue(parser);
 
             if (map.containsKey(key)) {
                 throw new RuntimeException();
@@ -89,37 +89,37 @@ public interface AmValue extends AmString {
 
             map.put(key, value);
 
-            if (tryToken(tape, '}')) {
+            if (tryToken(parser, '}')) {
                 break;
             }
-            else if (!tryToken(tape, ',')) {
-                throw new UnexpectedCharException(tape);
+            else if (!tryToken(parser, ',')) {
+                throw new UnexpectedCharException(parser.tape);
             }
         }
 
         return map;
     }
 
-    default ListData tryList(Tape tape, String typeHint) {
-        if (!tryToken(tape, '[')) {
+    default ListData tryList(Parser parser, String typeHint) {
+        if (!tryToken(parser, '[')) {
             return null;
         }
 
-        if (tryToken(tape, ']')) {
+        if (tryToken(parser, ']')) {
             return new ListData(typeHint);
         }
 
         var list = new ListData(typeHint);
 
         while (true) {
-            var value = readValue(tape);
+            var value = readValue(parser);
 
             list.add(value);
 
-            if (tryToken(tape, ']')) {
+            if (tryToken(parser, ']')) {
                 break;
             }
-            else if (!tryToken(tape, ',')) {
+            else if (!tryToken(parser, ',')) {
                 throw new RuntimeException();
             }
         }
@@ -127,11 +127,11 @@ public interface AmValue extends AmString {
         return list;
     }
 
-    default List<Object> readArguments(Tape tape) {
+    default List<Object> readArguments(Parser parser) {
         var values = new ArrayList<>();
 
         while (true) {
-            var value = tryValue(tape);
+            var value = tryValue(parser);
 
             if (value == null) {
                 break;
@@ -139,7 +139,7 @@ public interface AmValue extends AmString {
 
             values.add(value);
 
-            if (!tryToken(tape, ',')) {
+            if (!tryToken(parser, ',')) {
                 break;
             }
         }

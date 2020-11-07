@@ -1,12 +1,12 @@
 package gramat.pipeline;
 
 import gramat.actions.*;
-import gramat.framework.Progress;
+import gramat.badges.BadgeSource;
+import gramat.framework.Context;
 import gramat.machine.Effect;
 import gramat.machine.State;
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
 import gramat.graph.*;
+import gramat.symbols.Alphabet;
 import gramat.util.Count;
 import gramat.graph.sets.NodeSet;
 
@@ -14,27 +14,30 @@ import java.util.*;
 
 import static gramat.util.DataUtils.map;
 
-public class StateCompiler extends DefaultComponent {
+public class StateCompiler {
 
-    public static State compile(Component parent, Machine machine) {
-        try (var progress = new Progress("Compiling State Machine")) {
-            var compiler = new StateCompiler(parent, progress, machine.graph);
+    public static State compile(Context ctx, Machine machine, Alphabet alphabet, BadgeSource badges) {
+        try (var ignored = ctx.pushLayer("Compiling State Machine")) {
+            var compiler = new StateCompiler(ctx, machine.graph, alphabet, badges);
 
             return compiler.compile(machine.root);
         }
     }
 
-    private final Progress progress;
+    private final Context ctx;
     private final Graph graph;
     private final Map<String, State> idStates;
     private final Count nextId;
+    private final Alphabet symbols;
+    private final BadgeSource badges;
 
-    private StateCompiler(Component parent, Progress progress, Graph graph) {
-        super(parent);
-        this.progress = progress;
+    private StateCompiler(Context ctx, Graph graph, Alphabet symbols, BadgeSource badges) {
+        this.ctx = ctx;
         this.graph = graph;
         this.idStates = new LinkedHashMap<>();
         this.nextId = new Count();
+        this.symbols = symbols;
+        this.badges = badges;
     }
 
     private State compile(Root root) {
@@ -44,7 +47,7 @@ public class StateCompiler extends DefaultComponent {
         var pValue = 0;
         var pTotal = 0;
 
-        progress.log("Converting to deterministic machine...");
+        ctx.info("Converting to deterministic machine...");
 
         queue.add(NodeSet.of(root.source));
         pTotal++;
@@ -53,12 +56,12 @@ public class StateCompiler extends DefaultComponent {
             var sources = queue.remove();
             var sourcesID = sources.computeID();
 
-            progress.log(pValue, pTotal, "Processing %s...", sourcesID);
+            ctx.setTotal(pValue, pTotal);
             pValue++;
 
             if (control.add(sourcesID)) {
-                for (var symbol : gramat.symbols) {
-                    for (var badge : gramat.badges) {
+                for (var symbol : symbols) {
+                    for (var badge : badges) {
                         var links = graph.findTransitions(sources, symbol, badge);
 
                         if (!links.isEmpty()) {
@@ -89,10 +92,9 @@ public class StateCompiler extends DefaultComponent {
             state = new State(String.valueOf(nextId.nextString()));
             state.accepted = nodes.containsAny(accepted);
 
-            if (nodes.anyMatch(n -> n.wild)) { // TODO improve this operation
-                var symbol = gramat.symbols.wild();
-                var badge = gramat.badges.empty();
-                // TODO what badge should it use?
+            if (nodes.anyMatch(n -> n.wild)) {
+                var symbol = symbols.wild();
+                var badge = badges.empty();
                 state.transition.add(badge, symbol, new Effect(state));
             }
 

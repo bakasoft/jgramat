@@ -1,8 +1,5 @@
 package gramat.eval;
 
-import gramat.framework.Logger;
-import gramat.parsers.ValueParser;
-
 import java.util.*;
 
 public class Container {

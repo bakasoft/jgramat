@@ -6,22 +6,22 @@ import gramat.models.source.ModelCall;
 public interface AmCallParser extends AmBase, AmValue, AmExpressionParser {
 
     @Override
-    default ModelCall tryCall(Tape tape) {
-        if (tryToken(tape, '@')) {
+    default ModelCall tryCall(Parser parser) {
+        if (tryToken(parser, '@')) {
             var call = new ModelCall();
 
-            call.keyword = readString(tape);
+            call.keyword = readString(parser);
 
-            if (tryToken(tape, '<')) {
-                call.arguments = readArguments(tape);
+            if (tryToken(parser, '<')) {
+                call.arguments = readArguments(parser);
 
-                expectToken(tape, '>');
+                expectToken(parser, '>');
             }
 
-            if (tryToken(tape, '(')) {
-                call.expression = readExpression(tape);
+            if (tryToken(parser, '(')) {
+                call.expression = readExpression(parser);
 
-                expectToken(tape, ')');
+                expectToken(parser, ')');
             }
 
             return call;

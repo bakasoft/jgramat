@@ -1,19 +1,19 @@
 package gramat.eval.transactions;
 
 import gramat.badges.Badge;
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 
 import java.util.*;
 
 public class TransactionManager {
 
-    private final Context context;
+    private final EvalContext context;
     private final Set<Integer> skip;
 
     private Queue<TRX> pending;
     private Queue<TRX> complete;
 
-    public TransactionManager(Context context) {
+    public TransactionManager(EvalContext context) {
         this.context = context;
         pending = new LinkedList<>();
         complete = new LinkedList<>();
@@ -24,7 +24,7 @@ public class TransactionManager {
         var hash = computeHash(transaction.getID(), badge);
 
         if (skip.remove(hash)) {
-            context.logger.debug("Skipping transaction: " + hash);
+            context.ctx.debug("Skipping transaction: " + hash);
             return;
         }
 

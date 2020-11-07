@@ -1,4 +1,4 @@
-package gramat.framework2;
+package gramat.framework;
 
 import java.io.PrintStream;
 import java.time.Instant;
@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
 
-public class StandardProcess implements Process {
+public class StandardContext implements Context {
 
     private final String globalName;
     private final PrintStream output;
@@ -16,7 +16,7 @@ public class StandardProcess implements Process {
     private String lastLevel;
     private String lastMessage;
 
-    public StandardProcess(String name, PrintStream output) {
+    public StandardContext(String name, PrintStream output) {
         this.globalName = name;
         this.output = output;
         this.layers = new ArrayDeque<>();
@@ -81,13 +81,18 @@ public class StandardProcess implements Process {
     }
 
     @Override
-    public void error(Throwable cause, String format, Object... args) {
-        log("ERROR", String.format(format, args));
+    public void error(Throwable cause) {
+        log("ERROR", cause.getMessage());
         cause.printStackTrace(output);
     }
 
     @Override
-    public void progress(int current, int total) {
+    public void setStatus(String format, Object... args) {
+
+    }
+
+    @Override
+    public void setTotal(int current, int total) {
         var layer = layer();
         layer.current = current;
         layer.total = total;
@@ -95,10 +100,22 @@ public class StandardProcess implements Process {
     }
 
     @Override
-    public void progress(int current) {
+    public void setProgress(int current) {
         var layer = layer();
         layer.current = current;
         tryPrintProgress();
+    }
+
+    @Override
+    public void addProgress(int count) {
+        var layer = layer();
+        layer.current = Objects.requireNonNullElse(layer.current, 0) + count;
+        tryPrintProgress();
+    }
+
+    @Override
+    public void clear() {
+
     }
 
     private void tryPrintProgress() {
@@ -111,7 +128,7 @@ public class StandardProcess implements Process {
     }
 
     @Override
-    public ProcessLayer pushLayer(String name) {
+    public ContextLayer pushLayer(String name) {
         var layer = new Layer(name);
 
         layers.push(layer);
@@ -127,7 +144,7 @@ public class StandardProcess implements Process {
         layers.pop();
     }
 
-    private class Layer implements ProcessLayer {
+    private class Layer implements ContextLayer {
 
         final String name;
 

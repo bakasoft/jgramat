@@ -1,10 +1,8 @@
 package gramat.actions;
 
-import gramat.badges.Badge;
 import gramat.badges.BadgeToken;
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 
-import java.util.List;
 import java.util.Objects;
 
 public class RecursionEnter implements ActionRecursive {
@@ -21,7 +19,7 @@ public class RecursionEnter implements ActionRecursive {
     }
 
     @Override
-    public void run(Context context) {
+    public void run(EvalContext context) {
         context.heap.push(badge);
     }
 

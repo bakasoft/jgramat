@@ -1,7 +1,7 @@
 package gramat.actions.transactions;
 
 import gramat.eval.transactions.TransactionAdapter;
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 import gramat.parsers.ValueParser;
 import gramat.util.NameMap;
 
@@ -23,14 +23,14 @@ public class ValueTransaction extends TransactionAdapter {
     }
 
     @Override
-    public void begin(Context context) {
+    public void begin(EvalContext context) {
         var beginPosition = context.tape.getPosition();
 
         context.pushPosition(beginPosition);
     }
 
     @Override
-    public Runnable prepareCommit(Context context) {
+    public Runnable prepareCommit(EvalContext context) {
         var end = context.tape.getPosition();
 
         return () -> {

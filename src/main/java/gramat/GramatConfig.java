@@ -1,11 +1,9 @@
 package gramat;
 
 import gramat.framework.ConfigurationEntry;
-import gramat.framework.LogLevel;
 
 public enum GramatConfig implements ConfigurationEntry {
     DEBUG("debug", false),
-    LOG_LEVEL("logger.level", LogLevel.WARNING),
     ;
 
     private final String key;

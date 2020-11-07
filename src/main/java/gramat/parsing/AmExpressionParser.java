@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public interface AmExpressionParser extends AmBase, AmValue {
 
-    default ModelExpression readExpression(Tape tape) {
+    default ModelExpression readExpression(Parser parser) {
         var alternation = new ArrayList<ModelExpression>();
         var sequence = new ArrayList<ModelExpression>();
 
         while (true) {
-            var item = tryExpressionItem(tape);
+            var item = tryExpressionItem(parser);
 
             if (item == null) {
                 break;
@@ -21,7 +21,7 @@ public interface AmExpressionParser extends AmBase, AmValue {
 
             sequence.add(item);
 
-            if (tryToken(tape, '|')) {
+            if (tryToken(parser, '|')) {
                 if (sequence.isEmpty()) {
                     throw new RuntimeException();
                 }
@@ -46,42 +46,42 @@ public interface AmExpressionParser extends AmBase, AmValue {
         }
     }
 
-    default ModelExpression tryExpressionItem(Tape tape) {
-        var group = tryGroup(tape);
+    default ModelExpression tryExpressionItem(Parser parser) {
+        var group = tryGroup(parser);
         if (group != null) {
             return group;
         }
-        var optional = tryOptional(tape);
+        var optional = tryOptional(parser);
         if (optional != null) {
             return optional;
         }
 
-        var repetition = tryRepetition(tape);
+        var repetition = tryRepetition(parser);
         if (repetition != null) {
             return repetition;
         }
 
-        var wild = tryWild(tape);
+        var wild = tryWild(parser);
         if (wild != null) {
             return wild;
         }
 
-        var literal = tryQuotedString(tape, '\"');
+        var literal = tryQuotedString(parser, '\"');
         if (literal != null) {
             return ExpressionFactory.literal(literal);
         }
 
-        var charClass = tryQuotedString(tape, '\'');
+        var charClass = tryQuotedString(parser, '\'');
         if (charClass != null) {
             return ExpressionFactory.characterClass(charClass);
         }
 
-        var reference = tryKeyword(tape);
+        var reference = tryKeyword(parser);
         if (reference != null) {
             return ExpressionFactory.reference(reference);
         }
 
-        var call = tryCall(tape);
+        var call = tryCall(parser);
         if (call != null) {
             return ExpressionFactory.call(call);
         }
@@ -89,52 +89,52 @@ public interface AmExpressionParser extends AmBase, AmValue {
         return null;
     }
 
-    default ModelExpression tryOptional(Tape tape) {
-        if (tryToken(tape, '[')) {
-            var expr = readExpression(tape);
+    default ModelExpression tryOptional(Parser parser) {
+        if (tryToken(parser, '[')) {
+            var expr = readExpression(parser);
 
-            expectToken(tape, ']');
+            expectToken(parser, ']');
 
             return ExpressionFactory.optional(expr);
         }
         return null;
     }
 
-    default ModelExpression tryGroup(Tape tape) {
-        if (tryToken(tape, '(')) {
-            var expr = readExpression(tape);
+    default ModelExpression tryGroup(Parser parser) {
+        if (tryToken(parser, '(')) {
+            var expr = readExpression(parser);
 
-            expectToken(tape, ')');
+            expectToken(parser, ')');
 
             return expr;
         }
         return null;
     }
 
-    default ModelExpression tryRepetition(Tape tape) {
-        if (tryToken(tape, '{')) {
+    default ModelExpression tryRepetition(Parser parser) {
+        if (tryToken(parser, '{')) {
             var minimum = 0;
 
-            if (tryToken(tape, '+')) {
+            if (tryToken(parser, '+')) {
                 minimum = 1;
             }
 
-            var content = readExpression(tape);
+            var content = readExpression(parser);
             var separator = (ModelExpression)null;
 
-            if (tryToken(tape, '/')) {
-                separator = readExpression(tape);
+            if (tryToken(parser, '/')) {
+                separator = readExpression(parser);
             }
 
-            expectToken(tape, '}');
+            expectToken(parser, '}');
 
             return ExpressionFactory.repetition(content, separator, minimum);
         }
         return null;
     }
 
-    default ModelExpression tryWild(Tape tape) {
-        if (tryToken(tape, '*')) {
+    default ModelExpression tryWild(Parser parser) {
+        if (tryToken(parser, '*')) {
             return ExpressionFactory.wild();
         }
         return null;

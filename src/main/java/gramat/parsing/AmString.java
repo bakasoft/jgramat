@@ -5,34 +5,34 @@ import gramat.exceptions.UnexpectedCharException;
 
 public interface AmString extends AmBase {
 
-    default String readString(Tape tape) {
-        var value = tryString(tape);
+    default String readString(Parser parser) {
+        var value = tryString(parser);
 
         if (value == null) {
-            throw new UnexpectedCharException(tape);
+            throw new UnexpectedCharException(parser.tape);
         }
 
         return value;
     }
 
-    default String tryQuotedString(Tape tape, char delimiter) {
-        if (tape.peek() == delimiter) {
+    default String tryQuotedString(Parser parser, char delimiter) {
+        if (parser.tape.peek() == delimiter) {
             var buffer = new StringBuilder();
 
-            tape.move();
+            parser.tape.move();
 
-            while (tape.peek() != delimiter) {
-                var chr = tape.read();
+            while (parser.tape.peek() != delimiter) {
+                var chr = parser.tape.read();
 
                 if (chr == '\\') {
-                    chr = tape.read();
+                    chr = parser.tape.read();
 
                     if (chr == delimiter) {
                         buffer.append(delimiter);
                     }
                     else if (chr == 'u') {
                         var code = (char)Integer.parseInt(new String(new char[] {
-                                tape.read(), tape.read(), tape.read(), tape.read(),
+                                parser.tape.read(), parser.tape.read(), parser.tape.read(), parser.tape.read(),
                         }), 16);
 
                         buffer.append(code);
@@ -53,7 +53,7 @@ public interface AmString extends AmBase {
                         buffer.append('\r');
                     }
                     else {
-                        throw new UnexpectedCharException(tape, -1);
+                        throw new UnexpectedCharException(parser.tape, -1);
                     }
                 }
                 else {
@@ -61,48 +61,48 @@ public interface AmString extends AmBase {
                 }
             }
 
-            if (tape.peek() != delimiter) {
+            if (parser.tape.peek() != delimiter) {
                 throw new RuntimeException();
             }
 
-            tape.move();
+            parser.tape.move();
 
-            skipVoid(tape);
+            skipVoid(parser);
 
             return buffer.toString();
         }
         return null;
     }
 
-    default String tryKeyword(Tape tape) {
-        if (isKeywordChar(tape.peek())) {
+    default String tryKeyword(Parser parser) {
+        if (isKeywordChar(parser.tape.peek())) {
             var buffer = new StringBuilder();
 
             do {
-                var chr = tape.peek();
+                var chr = parser.tape.peek();
 
-                tape.move();
+                parser.tape.move();
 
                 buffer.append(chr);
-            } while (isKeywordChar(tape.peek()));
+            } while (isKeywordChar(parser.tape.peek()));
 
-            skipVoid(tape);
+            skipVoid(parser);
 
             return buffer.toString();
         }
         return null;
     }
 
-    default String tryString(Tape tape) {
-        var str = tryQuotedString(tape, '\"');
+    default String tryString(Parser parser) {
+        var str = tryQuotedString(parser, '\"');
         if (str != null) {
             return str;
         }
-        str = tryQuotedString(tape, '\'');
+        str = tryQuotedString(parser, '\'');
         if (str != null) {
             return str;
         }
-        return tryKeyword(tape);
+        return tryKeyword(parser);
     }
 
     default boolean isKeywordChar(char c) {

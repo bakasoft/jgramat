@@ -9,67 +9,67 @@ import java.util.List;
 
 public interface AmMachineParser extends AmBase, AmValue {
 
-    default ModelMachine parseMachine(Tape tape) {
+    default ModelMachine parseMachine(Parser parser) {
         var machine = new ModelMachine();
 
-        skipVoid(tape);
+        skipVoid(parser);
 
-        while (tape.alive()) {
-            var transition = tryTransition(machine, tape);
+        while (parser.tape.alive()) {
+            var transition = tryTransition(machine, parser);
 
             if (transition != null) {
                 machine.transitions.add(transition);
                 continue;
             }
 
-            if (tryToken(tape, 'I')) {
-                var stateId = readString(tape);
+            if (tryToken(parser, 'I')) {
+                var stateId = readString(parser);
                 var state = machine.mergeState(stateId);
 
                 machine.initial = state;
 
-                expectToken(tape, ';');
+                expectToken(parser, ';');
 
                 continue;
             }
 
-            if (tryToken(tape, 'A')) {
-                var stateId = readString(tape);
+            if (tryToken(parser, 'A')) {
+                var stateId = readString(parser);
                 var state = machine.mergeState(stateId);
 
                 state.accepted = true;
 
-                expectToken(tape, ';');
+                expectToken(parser, ';');
                 continue;
             }
 
-            throw new UnexpectedCharException(tape);
+            throw new UnexpectedCharException(parser.tape);
         }
 
         return machine;
     }
 
-    default ModelTransition tryTransition(ModelMachine machine, Tape tape) {
-        if (!tryToken(tape, 'T')) {
+    default ModelTransition tryTransition(ModelMachine machine, Parser parser) {
+        if (!tryToken(parser, 'T')) {
             return null;
         }
 
-        var sourceId = readString(tape);
+        var sourceId = readString(parser);
 
-        expectToken(tape, ',');
+        expectToken(parser, ',');
 
-        var targetId = readString(tape);
+        var targetId = readString(parser);
 
         var transition = new ModelTransition();
         transition.source = machine.mergeState(sourceId);
         transition.target = machine.mergeState(targetId);
 
         while (true) {
-            if (tryToken(tape, ';')) {
+            if (tryToken(parser, ';')) {
                 break;
             }
-            else if (tryToken(tape, 'R')) {
-                var action = read_action(tape);
+            else if (tryToken(parser, 'R')) {
+                var action = read_action(parser);
 
                 if (transition.symbol == null) {
                     transition.preActions.add(action);
@@ -78,8 +78,8 @@ public interface AmMachineParser extends AmBase, AmValue {
                     transition.postActions.add(action);
                 }
             }
-            else if (tryToken(tape, 'S')) {
-                var symbol = read_symbol(tape);
+            else if (tryToken(parser, 'S')) {
+                var symbol = read_symbol(parser);
 
                 if (transition.symbol != null) {
                     throw new RuntimeException("symbol already defined");
@@ -88,7 +88,7 @@ public interface AmMachineParser extends AmBase, AmValue {
                 transition.symbol = symbol;
             }
             else {
-                throw new UnexpectedCharException(tape);
+                throw new UnexpectedCharException(parser.tape);
             }
 
         }
@@ -96,20 +96,20 @@ public interface AmMachineParser extends AmBase, AmValue {
         return transition;
     }
 
-    default ModelAction read_action(Tape tape) {
+    default ModelAction read_action(Parser parser) {
         // TODO
         throw new UnsupportedOperationException();
     }
 
-    default ModelSymbol read_symbol(Tape tape) {
+    default ModelSymbol read_symbol(Parser parser) {
         ModelSymbol symbol;
 
-        if (tape.peek() == '*') {
-            tape.move();
+        if (parser.tape.peek() == '*') {
+            parser.tape.move();
             symbol = new ModelSymbolWild();
         }
         else {
-            var arguments = read_arguments(tape);
+            var arguments = read_arguments(parser);
 
             if (arguments.size() == 1) {
                 symbol = new ModelSymbolChar();
@@ -121,18 +121,18 @@ public interface AmMachineParser extends AmBase, AmValue {
                 ((ModelSymbolRange)symbol).end = arguments.get(1).charAt(0);
             }
             else {
-                throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());
+                throw new RuntimeException("unexpected number of arguments: " + parser.tape.getLocation());
             }
         }
 
         return symbol;
     }
 
-    default List<String> read_arguments(Tape tape) {
+    default List<String> read_arguments(Parser parser) {
         var arguments = new ArrayList<String>();
 
         while (true) {
-            var argument = tryString(tape);
+            var argument = tryString(parser);
 
             if (argument == null) {
                 break;
@@ -140,7 +140,7 @@ public interface AmMachineParser extends AmBase, AmValue {
 
             arguments.add(argument);
 
-            if (!tryToken(tape, ',')) {
+            if (!tryToken(parser, ',')) {
                 break;
             }
         }

@@ -1,41 +1,40 @@
 package gramat.parsing;
 
-import gramat.framework.Component;
 import gramat.input.Tape;
 import gramat.exceptions.UnexpectedCharException;
 import gramat.models.source.ModelCall;
 
-public interface AmBase extends Component {
+public interface AmBase {
 
-    ModelCall tryCall(Tape tape);
+    ModelCall tryCall(Parser parser);
 
-    default boolean tryToken(Tape tape, char chr) {
-        if (tape.peek() == chr) {
-            tape.move();
-            skipVoid(tape);
+    default boolean tryToken(Parser parser, char chr) {
+        if (parser.tape.peek() == chr) {
+            parser.tape.move();
+            skipVoid(parser);
             return true;
         }
 
         return false;
     }
 
-    default void expectToken(Tape tape, char chr) {
-        if (!tryToken(tape, chr)) {
-            throw new UnexpectedCharException(tape);
+    default void expectToken(Parser parser, char chr) {
+        if (!tryToken(parser, chr)) {
+            throw new UnexpectedCharException(parser.tape);
         }
     }
 
-    default void skipVoid(Tape tape) {
-        while (tape.alive()) {
-            var chr = tape.peek();
+    default void skipVoid(Parser parser) {
+        while (parser.tape.alive()) {
+            var chr = parser.tape.peek();
 
             if (chr == '#') {
-                while (tape.alive() && tape.peek() != '\n') {
-                    tape.move();
+                while (parser.tape.alive() && parser.tape.peek() != '\n') {
+                    parser.tape.move();
                 }
             }
             else if (chr == ' ' || chr == '\r' || chr == '\n' || chr == '\t') {
-                tape.move();
+                parser.tape.move();
             }
             else {
                 break;

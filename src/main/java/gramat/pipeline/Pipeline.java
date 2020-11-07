@@ -1,26 +1,27 @@
 package gramat.pipeline;
 
-import gramat.formatting.NodeFormatter;
+import gramat.badges.BadgeSource;
 import gramat.formatting.StateFormatter;
-import gramat.framework.Component;
-import gramat.framework.Progress;
+import gramat.framework.Context;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
-import gramat.models.expressions.ModelExpression;
+import gramat.parsers.ParserSource;
 import gramat.parsing.AmParser;
+import gramat.parsing.Parser;
 import gramat.pipeline.blueprint.ExpressionBuilder;
+import gramat.symbols.Alphabet;
 import gramat.util.NameMap;
 
 public class Pipeline {
 
-    public static Source toSource(Component parent, Tape tape) {
-        return SourceParser.parse(parent, tape);
+    public static Source toSource(Context ctx, Tape tape, ParserSource parsers) {
+        return SourceParser.parse(ctx, tape, parsers);
     }
 
-    public static Template toTemplate(Component parent, Sentence sentence) {
+    public static Template toTemplate(Context ctx, Sentence sentence, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
         var graph = new Graph();
-        var template = ExpressionBuilder.build(parent, graph, sentence.expression, sentence.dependencies);
+        var template = ExpressionBuilder.build(ctx, graph, sentence.expression, sentence.dependencies, alphabet, badges, parsers);
 
 //        System.out.println("########## TEMPLATE");
 //        new NodeFormatter(System.out).write(graph, template.main);
@@ -35,9 +36,9 @@ public class Pipeline {
         return template;
     }
 
-    public static Machine toMachine(Component parent, Template template) {
-        try (var progress = new Progress("Assembling State Machine")) {
-            var machine = MachineCompiler.compile(parent, progress, template);
+    public static Machine toMachine(Context ctx, Template template, BadgeSource badges) {
+        try (var ignore = ctx.pushLayer("Assembling State Machine")) {
+            var machine = MachineCompiler.compile(ctx, template, badges);
 
             machine.validate();
 
@@ -49,31 +50,26 @@ public class Pipeline {
         }
     }
 
-    public static Sentence toSentence(Component parent, Tape tape) {
-        var parser = new AmParser(parent);
-        var expression = parser.readExpression(tape);
+    public static Sentence toSentence(Context ctx, Tape tape, ParserSource parsers) {
+        var parser = new AmParser(ctx);
+        var p = new Parser(tape, parsers);
+        var expression = parser.readExpression(p);
         return new Sentence(expression, new NameMap<>());
     }
 
-    public static State toState(Component parent, Tape tape) {
-        var sentence = toSentence(parent, tape);
-        return toState(parent, sentence);
+    public static State toState(Context ctx, Tape tape, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+        var sentence = toSentence(ctx, tape, parsers);
+        return toState(ctx, sentence, alphabet, badges, parsers);
     }
 
-    public static State toState(Component parent, Sentence sentence) {
-        var template = toTemplate(parent, sentence);
-        var machine = toMachine(parent, template);
-        return toState(parent, machine);
+    public static State toState(Context ctx, Sentence sentence, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+        var template = toTemplate(ctx, sentence, alphabet, badges, parsers);
+        var machine = toMachine(ctx, template, badges);
+        return toState(ctx, machine, alphabet, badges);
     }
 
-    public static State toState(Component parent, Machine machine) {
-        var state = StateCompiler.compile(parent, machine);
-
-        System.out.println("########## STATE");
-        new StateFormatter(System.out).write(state);
-        System.out.println("##########");
-
-        return state;
+    public static State toState(Context ctx, Machine machine, Alphabet alphabet, BadgeSource badges) {
+        return StateCompiler.compile(ctx, machine, alphabet, badges);
     }
 
 }

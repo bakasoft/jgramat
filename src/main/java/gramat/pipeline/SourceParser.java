@@ -1,12 +1,14 @@
 package gramat.pipeline;
 
-import gramat.framework.Component;
+import gramat.framework.Context;
 import gramat.input.Tape;
 import gramat.models.expressions.ModelExpression;
 import gramat.models.test.ModelEvalFail;
 import gramat.models.test.ModelEvalPass;
 import gramat.models.test.ModelTest;
+import gramat.parsers.ParserSource;
 import gramat.parsing.AmParser;
+import gramat.parsing.Parser;
 import gramat.util.Args;
 import gramat.util.NameMap;
 
@@ -16,30 +18,31 @@ import java.util.Objects;
 
 public class SourceParser {
 
-    public static Source parse(Component parent, Tape tape) {
-        var parser = new SourceParser(parent, tape);
+    public static Source parse(Context ctx, Tape tape, ParserSource parsers) {
+        var parser = new SourceParser(ctx, tape, parsers);
 
         return new Source(parser.rules, parser.tests, parser.main);
     }
 
     private final NameMap<ModelExpression> rules;
     private final List<ModelTest> tests;
-    private final Component parent;
+    private final Context ctx;
     private final Tape tape;
     private ModelExpression main;
 
-    private SourceParser(Component parent, Tape tape) {
-        this.parent = parent;
+    private SourceParser(Context ctx, Tape tape, ParserSource parsers) {
+        this.ctx = ctx;
         this.tape = tape;
         this.rules = new NameMap<>();
         this.tests = new ArrayList<>();
 
-        parse();
+        parse(parsers);
     }
 
-    private void parse() {
-        var parser = new AmParser(parent);
-        var file = parser.parseFile(tape);
+    private void parse(ParserSource parsers) {
+        var parser = new AmParser(ctx);
+        var p = new Parser(tape, parsers);
+        var file = parser.parseFile(p);
 
         if (file.rules != null) {
             for (var rule : file.rules) {

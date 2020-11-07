@@ -1,9 +1,8 @@
 package gramat.actions;
 
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 import gramat.eval.transactions.Transaction;
 
-import java.util.List;
 import java.util.Objects;
 
 public class EndAction implements ActionTransaction {
@@ -19,7 +18,7 @@ public class EndAction implements ActionTransaction {
     }
 
     @Override
-    public void run(Context context) {
+    public void run(EvalContext context) {
         var badge = context.heap.peek();
 
         context.manager.end(transaction, badge);

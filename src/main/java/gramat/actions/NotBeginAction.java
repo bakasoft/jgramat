@@ -1,10 +1,8 @@
 package gramat.actions;
 
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 import gramat.eval.transactions.Transaction;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class NotBeginAction implements ActionTransaction {
@@ -20,7 +18,7 @@ public class NotBeginAction implements ActionTransaction {
     }
 
     @Override
-    public void run(Context context) {
+    public void run(EvalContext context) {
         var badge = context.heap.peek();
 
         context.manager.notBegin(transaction.getID(), badge);

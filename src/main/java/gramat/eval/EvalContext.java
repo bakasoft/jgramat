@@ -1,18 +1,18 @@
 package gramat.eval;
 
 import gramat.eval.transactions.TransactionManager;
-import gramat.framework.Logger;
+import gramat.framework.Context;
 import gramat.input.Tape;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-public class Context {
+public class EvalContext {
 
+    public final Context ctx;
     public final Tape tape;
     public final Heap heap;
-    public final Logger logger;
 
     private final Stack<Container> containers;
 
@@ -20,8 +20,8 @@ public class Context {
 
     public final TransactionManager manager;
 
-    public Context(Logger logger, Tape tape, Heap heap) {
-        this.logger = logger;
+    public EvalContext(Context ctx, Tape tape, Heap heap) {
+        this.ctx = ctx;
         this.tape = tape;
         this.heap = heap;
         this.containers = new Stack<>();
@@ -29,12 +29,12 @@ public class Context {
     }
 
     public void pushContainer() {
-        logger.debug("push container");
+        ctx.debug("push container");
         containers.push(new Container());
     }
 
     public void addValue(Object value) {
-        logger.debug("add value %s", value);
+        ctx.debug("add value %s", value);
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
         }
@@ -45,7 +45,7 @@ public class Context {
     }
 
     public void setName(String name) {
-        logger.debug("set name %s", name);
+        ctx.debug("set name %s", name);
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
         }
@@ -65,7 +65,7 @@ public class Context {
     }
 
     public void setAttribute(String name, Object value) {
-        logger.debug("set attribute %s=%s", name, value);
+        ctx.debug("set attribute %s=%s", name, value);
 
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
@@ -77,7 +77,7 @@ public class Context {
     }
 
     public Map<String, ?> popAttributes() {
-        logger.debug("pop attributes");
+        ctx.debug("pop attributes");
 
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
@@ -92,7 +92,7 @@ public class Context {
     }
 
     public Object popValue() {
-        logger.debug("pop value");
+        ctx.debug("pop value");
 
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
@@ -114,7 +114,7 @@ public class Context {
     }
 
     public List<?> popArray() {
-        logger.debug("pop array");
+        ctx.debug("pop array");
 
         if (containers.isEmpty()) {
             throw new RejectedException("empty container stack");
@@ -129,7 +129,7 @@ public class Context {
     }
 
     public void pushPosition(int position) {
-        logger.debug("push position: " + position);
+        ctx.debug("push position: " + position);
         if (this.position != null) {
             throw new RejectedException("position already started");
         }
@@ -137,7 +137,7 @@ public class Context {
     }
 
     public int popPosition() {
-        logger.debug("pop position: " + position);
+        ctx.debug("pop position: " + position);
         if (this.position == null) {
             throw new RejectedException("position is not set");
         }

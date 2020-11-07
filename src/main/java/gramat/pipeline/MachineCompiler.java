@@ -4,11 +4,10 @@ import gramat.actions.Event;
 import gramat.actions.RecursionEnter;
 import gramat.actions.RecursionExit;
 import gramat.badges.Badge;
+import gramat.badges.BadgeSource;
 import gramat.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
-import gramat.framework.Progress;
+import gramat.framework.Context;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
 import gramat.symbols.SymbolReference;
@@ -18,32 +17,32 @@ import gramat.util.TokenGenerator;
 
 import java.util.*;
 
-public class MachineCompiler extends DefaultComponent {
+public class MachineCompiler {
 
-    public static Machine compile(Component parent, Progress progress, Template template) {
-        return new MachineCompiler(parent, progress, template.graph, template.extensions).compileRoot(template.main);
+    public static Machine compile(Context ctx, Template template, BadgeSource badges) {
+        return new MachineCompiler(ctx, template.graph, template.extensions, badges).compileRoot(template.main);
     }
 
-    private final Progress progress;
+    private final Context ctx;
     private final Graph graph;
     private final TokenGenerator callTokens;
-
+    private final BadgeSource badges;
     private final Deque<String> stackRef;
     private final NameMap<Extension> extensions;
 
-    private MachineCompiler(Component parent, Progress progress, Graph graph, NameMap<Extension> extensions) {
-        super(parent);
-        this.progress = progress;
+    private MachineCompiler(Context ctx, Graph graph, NameMap<Extension> extensions, BadgeSource badges) {
+        this.ctx = ctx;
         this.graph = graph;
         this.extensions = extensions;
         this.callTokens = new TokenGenerator();
         this.stackRef = new ArrayDeque<>();
+        this.badges = badges;
     }
 
     private Machine compileRoot(Root root) {
         int count = countReferences(root);
 
-        progress.log(0, count);
+        ctx.setTotal(0, count);
 
         connectBetween(root.source, root.targets);
 
@@ -62,17 +61,18 @@ public class MachineCompiler extends DefaultComponent {
     }
 
     private void connectLink(Extension extension, String reference, Link link) {
-        progress.add(1, "Connecting %s...", reference);
+        ctx.setStatus("Connecting %s...", reference);
+        ctx.addProgress(1);
 
         Badge newBadge;
 
         if (stackRef.contains(reference)) {
             var uid = Objects.hash(extension.id, link.source.id, link.target.id);
 
-            newBadge = gramat.badges.badge(reference + "-" + uid);
+            newBadge = badges.badge(reference + "-" + uid);
         }
         else {
-            newBadge = gramat.badges.empty();
+            newBadge = badges.empty();
         }
 
         stackRef.push(reference);
@@ -100,13 +100,13 @@ public class MachineCompiler extends DefaultComponent {
         if (type == PlugType.SOURCE_TO_TARGET) {
             linkSource = newSource;
             linkTarget = newTarget;
-            linkBadge = gramat.badges.empty();
+            linkBadge = badges.empty();
             linkEvent.wrap(wrapper);
         }
         else if (type == PlugType.TARGET_TO_SOURCE) {
             linkSource = newTarget;
             linkTarget = newSource;
-            linkBadge = gramat.badges.empty();
+            linkBadge = badges.empty();
             // TODO test ignored wrapping actions
         }
 
@@ -114,7 +114,7 @@ public class MachineCompiler extends DefaultComponent {
         else if (type == PlugType.SOURCE_TO_SOURCE) {
             linkSource = newSource;
             linkTarget = newSource;
-            linkBadge = gramat.badges.empty();
+            linkBadge = badges.empty();
             linkEvent.prepend(wrapper.before);  // TODO really?
         }
 
@@ -122,17 +122,17 @@ public class MachineCompiler extends DefaultComponent {
         else if (type == PlugType.SOURCE_TO_NODE) {
             linkSource = newSource;
             linkTarget = plug.getTarget();
-            linkBadge = gramat.badges.empty();
+            linkBadge = badges.empty();
             linkEvent.prepend(wrapper.before);
-            if (newBadge != gramat.badges.empty()) {
+            if (newBadge != badges.empty()) {
                 linkEvent.prepend(new RecursionEnter((BadgeToken)newBadge));
             }
         }
         else if (type == PlugType.TARGET_TO_NODE) {
             linkSource = newTarget;
             linkTarget = plug.getTarget();
-            linkBadge = gramat.badges.empty();
-            if (newBadge != gramat.badges.empty()) {
+            linkBadge = badges.empty();
+            if (newBadge != badges.empty()) {
                 linkEvent.prepend(new RecursionEnter((BadgeToken)newBadge));
             }
             // TODO test ignored wrapping actions
@@ -143,7 +143,7 @@ public class MachineCompiler extends DefaultComponent {
             linkSource = plug.getSource();
             linkTarget = newSource;
             linkBadge = newBadge;
-            if (newBadge != gramat.badges.empty()) {
+            if (newBadge != badges.empty()) {
                 linkEvent.append(new RecursionExit((BadgeToken)newBadge));
             }
         }
@@ -152,7 +152,7 @@ public class MachineCompiler extends DefaultComponent {
             linkTarget = newTarget;
             linkBadge = newBadge;
             linkEvent.append(wrapper.after);
-            if (newBadge != gramat.badges.empty()) {
+            if (newBadge != badges.empty()) {
                 linkEvent.append(new RecursionExit((BadgeToken)newBadge));
             }
         }

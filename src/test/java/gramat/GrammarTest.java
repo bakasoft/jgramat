@@ -1,114 +1,136 @@
 package gramat;
 
+import gramat.badges.Badge;
+import gramat.badges.BadgeSource;
 import gramat.eval.Evaluator;
 import gramat.formatting.StateFormatter;
-import gramat.framework2.StandardProcess;
+import gramat.framework.Context;
+import gramat.framework.StandardContext;
 import gramat.input.Tape;
+import gramat.machine.State;
 import gramat.machine.binary.Format;
+import gramat.parsers.ParserSource;
 import gramat.pipeline.Pipeline;
 import gramat.pipeline.Sentence;
 import gramat.pipeline.Source;
-import gramat.util.FSUtils;
-import gramat.util.Resources;
+import gramat.symbols.Alphabet;
+import gramat.util.WorkingFile;
 import org.junit.Test;
 import util.TestUtils;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 public class GrammarTest {
 
     @Test
     public void testGrammar() throws IOException {
-        var proc = new StandardProcess("test", System.out);  // NOSONAR
+        var resources = TestUtils.getResourcesFolder();
+        var test = new StandardContext("test", System.out);
+        var grammarFiles = resources.searchFiles(file -> file.hasExtension("gm"));
 
-        proc.debug("TEST!");
+        test.setTotal(0, grammarFiles.size());
 
-        for (var grammarFile : TestUtils.getGrammarFiles()) {
-            var nameExt = FSUtils.extractExtension(grammarFile);
-            var compiledFile = Path.of(nameExt.changeTo(".gmc"));
-            var gramat = new Gramat();
+        for (var grammarFile : grammarFiles) {
+            test.info("Processing grammar %s...", grammarFile);
 
-            Source source;
+            var logFile = grammarFile.withExtension("log");
 
-            try {
-                source = Pipeline.toSource(gramat, Tape.of(grammarFile));
+            logFile.deleteIfExists();
 
-                source.runTests(gramat);
-            }
-            catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            try (var logStream = logFile.openPrintStream()) {
+                var ctx = new StandardContext(grammarFile.getName(), logStream);
+                var source = testSource(ctx, grammarFile);
 
-            if (source.main != null) {
-                if (!Files.exists(compiledFile)) {
-                    compile(source, grammarFile, compiledFile);
-                }
+                if (source.main != null) {
+                    var badges = new BadgeSource();  // TODO really? this shouldn't be a dependency
+                    var state = testCompilation(ctx, grammarFile, source, badges);
+                    var testCases = searchTestCases(grammarFile);
 
-                System.out.println("Testing " + compiledFile);
+                    ctx.setTotal(0, testCases.size());
 
-                var state = Format.read(compiledFile);
+                    for (var testCase : testCases) {
+                        ctx.info("Testing file %s...", testCase);
 
-                for (var jsonCase : TestUtils.getResourceFiles(path -> path.toString().startsWith(nameExt.name) && (path.toString().endsWith(".txt")||path.toString().endsWith(".json")))) {
-                    var errorFile = Path.of(FSUtils.baseName(jsonCase) + ".err");
-                    var gramat2 = new Gramat();
-                    var tape = Tape.of(jsonCase);
-                    var evaluator = new Evaluator(gramat2, tape, gramat2.getLogger());
+                        testFileCase(state, testCase, badges);
 
-                    Files.deleteIfExists(errorFile);
-
-                    System.out.println("EVALUATING: " + jsonCase);
-
-                    try {
-                        var result = evaluator.evalValue(state);
-
-                        System.out.println("    RESULT: " + result);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-
-                        try (var output = Files.newOutputStream(errorFile)) {
-                            var printStream = new PrintStream(output);
-
-                            e.printStackTrace(printStream);
-
-                            printStream.println();
-                            printStream.println("STATE:");
-
-                            new StateFormatter(printStream).write(state);
-                        }
-
-                        throw e;
+                        ctx.addProgress(1);
                     }
                 }
             }
+            logFile.delete();
+
+            test.addProgress(1);
         }
     }
 
-    private static void compile(Source source, Path grammarFile, Path outputFile) {
-        System.out.println("Compiling: " + grammarFile);
+    private List<WorkingFile> searchTestCases(WorkingFile targetFile) {
+        return targetFile.getRoot().searchFiles(
+                file -> file.getName().startsWith(targetFile.getBaseName())
+                        && file.hasExtension("txt", "json"));
+    }
 
-        var state = Pipeline.toState(new Gramat(), new Sentence(source.main, source.rules));
-        var delete = true;
-        try {
+    private Source testSource(Context ctx, WorkingFile grammarFile) {
+        var tape = Tape.of(grammarFile.getAbsolutePath());
+
+        var parsers = new ParserSource();
+        var source = Pipeline.toSource(ctx, tape, parsers);
+
+        var alphabet = new Alphabet();
+        var badges = new BadgeSource();
+        source.runTests(ctx, alphabet, badges, parsers);
+
+        return source;
+    }
+
+    private State testCompilation(Context ctx, WorkingFile grammarFile, Source source, BadgeSource badges) throws IOException {
+        var compiledFile = grammarFile.withExtension("gmc");
+
+        if (!compiledFile.exists()) {
+            ctx.info("Compiling %s...", grammarFile);
+
+            var alphabet = new Alphabet();
+            var parsers = new ParserSource();
+            var state = Pipeline.toState(ctx, new Sentence(source.main, source.rules), alphabet, badges, parsers);
+
+            try (var output = compiledFile.openWriter()) {
+                Format.write(state, output);
+            }
+            catch (IOException e) {
+                compiledFile.delete();
+                throw e;
+            }
+        }
+
+        ctx.info("Loading %s...", compiledFile);
+
+        try (var reader = compiledFile.openReader()) {
+            return Format.read(reader);
+        }
+    }
+
+    private void testFileCase(State state, WorkingFile fileCase, BadgeSource badges) throws IOException {
+        var logFile = fileCase.withExtension("log");
+
+        logFile.deleteIfExists();
+
+        try (var logStream = logFile.openPrintStream()) {
+            var ctx = new StandardContext(fileCase.getName(), logStream);
+            var tape = Tape.of(fileCase.getAbsolutePath());
+            var evaluator = new Evaluator(ctx, tape, badges);
+
+            ctx.info("Evaluating %s...", fileCase);
+
             try {
-                try (var output = Files.newBufferedWriter(outputFile, StandardOpenOption.CREATE_NEW)) {
-                    Format.write(state, output);
-                }
-                delete = false;
-            }
-            finally {
-                if (delete) {
-                    Files.delete(outputFile);
-                }
+                var result = evaluator.evalValue(state);
+
+                ctx.info("Result: " + result);
+            } catch (Exception e) {
+                ctx.error(e);
+                throw e;
             }
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        logFile.delete();
     }
 
 }

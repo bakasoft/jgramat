@@ -2,7 +2,7 @@ package gramat.actions;
 
 import gramat.actions.transactions.*;
 import gramat.eval.transactions.Transaction;
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 import gramat.exceptions.UnsupportedValueException;
 
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class BeginAction implements ActionTransaction {
     }
 
     @Override
-    public void run(Context context) {
+    public void run(EvalContext context) {
         var badge = context.heap.peek();
 
         context.manager.begin(badge, transaction);

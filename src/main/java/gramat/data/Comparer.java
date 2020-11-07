@@ -71,8 +71,4 @@ public class Comparer {
         }
     }
 
-    public static void assertNotEquals(Object actual, Object notExpected) {
-        System.out.println("ACTUAL......: " + actual);
-        System.out.println("NOT EXPECTED: " + notExpected);
-    }
 }

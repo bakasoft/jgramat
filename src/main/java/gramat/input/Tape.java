@@ -7,8 +7,15 @@ import java.nio.file.Path;
 
 public class Tape {
 
-    public static Tape of(Path file) throws IOException {
-        var data = Files.readAllBytes(file);
+    public static Tape of(Path file) {
+        byte[] data;
+
+        try {
+            data = Files.readAllBytes(file);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return new Tape(new String(data, StandardCharsets.UTF_8), file.toString());
     }

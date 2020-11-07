@@ -1,8 +1,7 @@
 package gramat.eval;
 
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
-import gramat.framework.Logger;
+import gramat.badges.BadgeSource;
+import gramat.framework.Context;
 import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.util.PP;
@@ -10,20 +9,21 @@ import gramat.util.StringUtils;
 
 import java.util.LinkedHashSet;
 
-public class Evaluator extends DefaultComponent {
+public class Evaluator {
 
+    private final Context ctx;
     private final Tape tape;
-    private final Logger logger;
+    private final BadgeSource badges;
 
-    public Evaluator(Component parent, Tape tape, Logger logger) {
-        super(parent);
+    public Evaluator(Context ctx, Tape tape, BadgeSource badges) {
+        this.ctx = ctx;
         this.tape = tape;
-        this.logger = logger;
+        this.badges = badges;
     }
 
     public Object evalValue(State initial) {
-        var heap = new Heap(gramat.badges.empty());
-        var context = new Context(logger, tape, heap);
+        var heap = new Heap(badges.empty());
+        var context = new EvalContext(ctx, tape, heap);
 
         context.pushContainer();
 
@@ -32,7 +32,7 @@ public class Evaluator extends DefaultComponent {
         return context.popValue();
     }
 
-    private void eval_state(State initial, Context context) {
+    private void eval_state(State initial, EvalContext context) {
         var result = run_state(initial, context);
 
         if (context.heap.notEmpty()) {
@@ -49,7 +49,7 @@ public class Evaluator extends DefaultComponent {
         }
     }
 
-    private State run_state(State initial, Context context) {
+    private State run_state(State initial, EvalContext context) {
         var state = initial;
 
         while (true) {
@@ -57,7 +57,7 @@ public class Evaluator extends DefaultComponent {
                 break;
             }
 
-            logger.debug("evaluating state %s", state.id);
+            ctx.debug("evaluating state %s", state.id);
 
             // Find matching transition
             var badge = context.heap.peek();
@@ -66,25 +66,25 @@ public class Evaluator extends DefaultComponent {
 
             // This is the end of the run
             if (effect == null) {
-                logger.debug("missing transition from %s with %s / %s", state.id, PP.str(chr), PP.str(badge.toString()));
+                ctx.debug("missing transition from %s with %s / %s", state.id, PP.str(chr), PP.str(badge.toString()));
                 break;
             }
 
-            logger.debug("transition %s -> %s with %s / %s", state.id, effect.target.id, PP.str(chr), PP.str(badge.toString()));
+            ctx.debug("transition %s -> %s with %s / %s", state.id, effect.target.id, PP.str(chr), PP.str(badge.toString()));
 
             if (effect.before != null) {
                 for (var action : effect.before) {
-                    logger.debug("running action %s", action);
+                    ctx.debug("running action %s", action);
                     action.run(context);
                 }
             }
 
             tape.move();
-            logger.debug("tape moved to position: %s", tape.getPosition());
+            ctx.debug("tape moved to position: %s", tape.getPosition());
 
             if (effect.after != null) {
                 for (var action : effect.after) {
-                    logger.debug("running action %s", action);
+                    ctx.debug("running action %s", action);
                     action.run(context);
                 }
             }

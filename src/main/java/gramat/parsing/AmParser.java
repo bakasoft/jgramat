@@ -1,33 +1,34 @@
 package gramat.parsing;
 
+import gramat.framework.Context;
 import gramat.models.source.ModelFile;
-import gramat.framework.Component;
-import gramat.framework.DefaultComponent;
 import gramat.input.Tape;
 
 import java.util.ArrayList;
 
-public class AmParser extends DefaultComponent implements AmMachineParser, AmExpressionParser, AmCallParser, AmRuleParser {
+public class AmParser implements AmMachineParser, AmExpressionParser, AmCallParser, AmRuleParser {
 
-    public AmParser(Component parent) {
-        super(parent);
+    private final Context ctx;
+
+    public AmParser(Context ctx) {
+        this.ctx = ctx;
     }
 
-    public ModelFile parseFile(Tape tape) {
+    public ModelFile parseFile(Parser parser) {
         var file = new ModelFile();
         file.rules = new ArrayList<>();
         file.calls = new ArrayList<>();
 
-        skipVoid(tape);
+        skipVoid(parser);
 
         while (true) {
-            var call = tryCall(tape);
+            var call = tryCall(parser);
 
             if (call != null) {
                 file.calls.add(call);
             }
             else {
-                var rule = tryRule(tape);
+                var rule = tryRule(parser);
 
                 if (rule != null) {
                     file.rules.add(rule);
@@ -37,7 +38,7 @@ public class AmParser extends DefaultComponent implements AmMachineParser, AmExp
                 }
             }
 
-            expectToken(tape, ';');
+            expectToken(parser, ';');
         }
 
         return file;

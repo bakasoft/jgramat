@@ -1,9 +1,9 @@
 package gramat.actions;
 
-import gramat.eval.Context;
+import gramat.eval.EvalContext;
 
 public interface Action {
 
-    void run(Context context);
+    void run(EvalContext context);
 
 }
