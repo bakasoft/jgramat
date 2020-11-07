@@ -1,4 +1,4 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.exceptions.UnexpectedCharException;
 import gramat.input.Tape;
@@ -7,7 +7,7 @@ import gramat.parsers.ValueParser;
 
 import java.util.List;
 
-public interface AmBase {
+public interface BaseReader {
 
     String loadValue(String valueDirective, List<Object> arguments);
 

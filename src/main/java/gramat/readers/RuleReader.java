@@ -1,8 +1,8 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.models.source.ModelRule;
 
-public interface AmRuleParser extends AmBase, AmValue, AmExpressionParser {
+public interface RuleReader extends BaseReader, ValueReader, ExpressionReader {
     default ModelRule tryRule() {
         var keyword = tryString();
 

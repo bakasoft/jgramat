@@ -1,8 +1,8 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.models.source.ModelCall;
 
-public interface AmCallParser extends AmBase, AmValue, AmExpressionParser {
+public interface CallReader extends BaseReader, ValueReader, ExpressionReader {
 
     @Override
     default ModelCall tryCall() {

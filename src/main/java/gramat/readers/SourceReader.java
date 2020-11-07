@@ -1,35 +1,20 @@
-package gramat.source;
+package gramat.readers;
 
-import gramat.framework.Context;
-import gramat.input.Tape;
 import gramat.models.expressions.ModelExpression;
 import gramat.models.source.ModelSource;
 import gramat.models.test.ModelEvalFail;
 import gramat.models.test.ModelEvalPass;
 import gramat.models.test.ModelTest;
-import gramat.parsers.ParserSource;
-import gramat.parsers.ValueParser;
 import gramat.util.Args;
 import gramat.util.NameMap;
-import gramat.util.Resources;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SourceParser implements AmParser {
+public interface SourceReader extends FileReader {
 
-    private final Context ctx;
-    private final Tape tape;
-    private final ParserSource parsers;
-
-    public SourceParser(Context ctx, Tape tape, ParserSource parsers) {
-        this.ctx = ctx;
-        this.tape = tape;
-        this.parsers = parsers;
-    }
-
-    public ModelSource parseSource() {
+    default ModelSource parseSource() {
         var model = new ModelSource();
         model.rules = new NameMap<>();
         model.tests = new ArrayList<>();
@@ -76,28 +61,6 @@ public class SourceParser implements AmParser {
         test.input = args.getString("input");
         test.expression = expression;
         return test;
-    }
-
-    public String loadValue(String valueDirective, List<Object> arguments) {
-        if (Objects.equals(valueDirective, "readFile")) {
-            var args = Args.of(arguments, List.of("path"));
-            var path = args.getString("path");
-
-            return Resources.loadText(path);
-        }
-        else {
-            throw new RuntimeException("unsupported value directive: " + valueDirective);
-        }
-    }
-
-    @Override
-    public ValueParser findParser(String name) {
-        return parsers.findParser(name);
-    }
-
-    @Override
-    public Tape getTape() {
-        return tape;
     }
 
 }

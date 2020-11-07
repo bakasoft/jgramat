@@ -1,8 +1,8 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.exceptions.UnexpectedCharException;
 
-public interface AmString extends AmBase {
+public interface StringReader extends BaseReader {
 
     default String readString() {
         var value = tryString();

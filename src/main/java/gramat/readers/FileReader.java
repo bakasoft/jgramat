@@ -1,10 +1,10 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.models.source.ModelFile;
 
 import java.util.ArrayList;
 
-public interface AmParser extends AmMachineParser, AmExpressionParser, AmCallParser, AmRuleParser {
+public interface FileReader extends MachineReader, ExpressionReader, CallReader, RuleReader {
 
     default ModelFile parseFile() {
         var file = new ModelFile();

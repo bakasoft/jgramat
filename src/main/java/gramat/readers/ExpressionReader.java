@@ -1,11 +1,11 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.models.factories.ExpressionFactory;
 import gramat.models.expressions.ModelExpression;
 
 import java.util.ArrayList;
 
-public interface AmExpressionParser extends AmBase, AmValue {
+public interface ExpressionReader extends BaseReader, ValueReader {
 
     default ModelExpression readExpression() {
         var alternation = new ArrayList<ModelExpression>();

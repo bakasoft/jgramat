@@ -1,4 +1,4 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.models.automata.*;
 import gramat.exceptions.UnexpectedCharException;
@@ -6,7 +6,7 @@ import gramat.exceptions.UnexpectedCharException;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface AmMachineParser extends AmBase, AmValue {
+public interface MachineReader extends BaseReader, ValueReader {
 
     default ModelMachine parseMachine() {
         var machine = new ModelMachine();

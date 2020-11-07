@@ -1,4 +1,4 @@
-package gramat.source;
+package gramat.readers;
 
 import gramat.data.ListData;
 import gramat.data.MapData;
@@ -7,7 +7,7 @@ import gramat.exceptions.UnexpectedCharException;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface AmValue extends AmString {
+public interface ValueReader extends StringReader {
 
     default Object readValue() {
         var value = tryValue();
