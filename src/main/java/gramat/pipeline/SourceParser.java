@@ -3,6 +3,7 @@ package gramat.pipeline;
 import gramat.framework.Context;
 import gramat.input.Tape;
 import gramat.models.expressions.ModelExpression;
+import gramat.models.source.ModelSource;
 import gramat.models.test.ModelEvalFail;
 import gramat.models.test.ModelEvalPass;
 import gramat.models.test.ModelTest;
@@ -18,10 +19,13 @@ import java.util.Objects;
 
 public class SourceParser {
 
-    public static Source parse(Context ctx, Tape tape, ParserSource parsers) {
+    public static ModelSource parse(Context ctx, Tape tape, ParserSource parsers) {
         var parser = new SourceParser(ctx, tape, parsers);
-
-        return new Source(parser.rules, parser.tests, parser.main);
+        var source = new ModelSource();
+        source.rules = parser.rules;
+        source.tests = parser.tests;
+        source.main = parser.main;
+        return source;
     }
 
     private final NameMap<ModelExpression> rules;

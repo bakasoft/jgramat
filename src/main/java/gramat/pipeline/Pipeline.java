@@ -1,11 +1,11 @@
 package gramat.pipeline;
 
 import gramat.badges.BadgeSource;
-import gramat.formatting.StateFormatter;
 import gramat.framework.Context;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
+import gramat.models.source.ModelSource;
 import gramat.parsers.ParserSource;
 import gramat.parsing.AmParser;
 import gramat.parsing.Parser;
@@ -15,7 +15,7 @@ import gramat.util.NameMap;
 
 public class Pipeline {
 
-    public static Source toSource(Context ctx, Tape tape, ParserSource parsers) {
+    public static ModelSource toSource(Context ctx, Tape tape, ParserSource parsers) {
         return SourceParser.parse(ctx, tape, parsers);
     }
 

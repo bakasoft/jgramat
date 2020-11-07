@@ -16,8 +16,8 @@ public enum PlugType {
     TARGET_TO_TARGET;
 
     public static PlugType compute(Root root, Link link) {
-        if (link.source == root.source) {  // From Source
-            if (link.target == root.source) {  // To Source
+        if (link.source == root.source) {  // From ModelSource
+            if (link.target == root.source) {  // To ModelSource
                 return SOURCE_TO_SOURCE;
             }
             else if (root.targets.contains(link.target)) {  // To Target
@@ -28,7 +28,7 @@ public enum PlugType {
             }
         }
         else if (root.targets.contains(link.source)) {  // From Target
-            if (link.target == root.source) {  // To Source
+            if (link.target == root.source) {  // To ModelSource
                 return TARGET_TO_SOURCE;
             }
             else if (root.targets.contains(link.target)) {  // To Target
@@ -39,7 +39,7 @@ public enum PlugType {
             }
         }
         else {  // From Node
-            if (link.target == root.source) {  // To Source
+            if (link.target == root.source) {  // To ModelSource
                 return NODE_TO_SOURCE;
             }
             else if (root.targets.contains(link.target)) {  // To Target

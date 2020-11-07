@@ -1,24 +1,26 @@
 package gramat;
 
-import gramat.badges.Badge;
 import gramat.badges.BadgeSource;
 import gramat.eval.Evaluator;
-import gramat.formatting.StateFormatter;
+import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Context;
 import gramat.framework.StandardContext;
 import gramat.input.Tape;
 import gramat.machine.State;
 import gramat.machine.binary.Format;
+import gramat.models.formatters.ExpressionFormatter;
+import gramat.models.test.ModelEvalPass;
 import gramat.parsers.ParserSource;
 import gramat.pipeline.Pipeline;
 import gramat.pipeline.Sentence;
-import gramat.pipeline.Source;
+import gramat.models.source.ModelSource;
 import gramat.symbols.Alphabet;
 import gramat.util.WorkingFile;
 import org.junit.Test;
 import util.TestUtils;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GrammarTest {
@@ -70,7 +72,7 @@ public class GrammarTest {
                         && file.hasExtension("txt", "json"));
     }
 
-    private Source testSource(Context ctx, WorkingFile grammarFile) {
+    private ModelSource testSource(Context ctx, WorkingFile grammarFile) {
         var tape = Tape.of(grammarFile.getAbsolutePath());
 
         var parsers = new ParserSource();
@@ -78,12 +80,37 @@ public class GrammarTest {
 
         var alphabet = new Alphabet();
         var badges = new BadgeSource();
-        source.runTests(ctx, alphabet, badges, parsers);
+
+        runTests(ctx, source, alphabet, badges, parsers);
 
         return source;
     }
 
-    private State testCompilation(Context ctx, WorkingFile grammarFile, Source source, BadgeSource badges) throws IOException {
+    public void runTests(Context ctx, ModelSource source, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+        var cache = new LinkedHashMap<String, State>();
+        for (var test : source.tests) {
+            if (test instanceof ModelEvalPass) {
+                var pass = (ModelEvalPass)test;
+                var expressionStr = ExpressionFormatter.format(pass.expression);
+                var state = cache.computeIfAbsent(expressionStr, k ->
+                        Pipeline.toState(ctx, new Sentence(pass.expression, source.rules), alphabet, badges, parsers)
+                );
+                var tape = new Tape(pass.input);
+
+                ctx.debug("evaluating: %s", pass.input);
+
+                var evaluator = new Evaluator(ctx, tape, badges);
+                var result = evaluator.evalValue(state);
+
+                ctx.debug("result: %s", result);
+            }
+            else {
+                throw new UnsupportedValueException(test);
+            }
+        }
+    }
+
+    private State testCompilation(Context ctx, WorkingFile grammarFile, ModelSource source, BadgeSource badges) throws IOException {
         var compiledFile = grammarFile.withExtension("gmc");
 
         if (!compiledFile.exists()) {
