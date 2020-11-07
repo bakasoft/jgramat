@@ -4,9 +4,10 @@ import gramat.eval.Context;
 import gramat.eval.transactions.Transaction;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public class NotBeginAction implements Action {
+public class NotBeginAction implements ActionTransaction {
 
     private final Transaction transaction;
 
@@ -14,21 +15,15 @@ public class NotBeginAction implements Action {
         this.transaction = transaction;
     }
 
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
     @Override
     public void run(Context context) {
         var badge = context.heap.peek();
 
         context.manager.notBegin(transaction.getID(), badge);
-    }
-
-    @Override
-    public String getName() {
-        return "not-begin";
-    }
-
-    @Override
-    public List<String> getArguments() {
-        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
     }
 
     @Override

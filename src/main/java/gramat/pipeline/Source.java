@@ -12,6 +12,7 @@ import gramat.models.test.ModelTest;
 import gramat.util.NameMap;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Source {
@@ -20,13 +21,16 @@ public class Source {
 
     public final List<ModelTest> tests;
 
-    public Source(NameMap<ModelExpression> rules, List<ModelTest> tests) {
+    public final ModelExpression main;
+
+    public Source(NameMap<ModelExpression> rules, List<ModelTest> tests, ModelExpression main) {
         this.rules = rules;
         this.tests = tests;
+        this.main = main;
     }
 
     public int runTests(Component parent) {
-        var cache = new HashMap<String, State>();
+        var cache = new LinkedHashMap<String, State>();
         var count = 0;
         for (var test : tests) {
             if (test instanceof ModelEvalPass) {

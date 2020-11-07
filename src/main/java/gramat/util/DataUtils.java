@@ -1,18 +1,17 @@
 package gramat.util;
 
+import gramat.actions.Action;
 import gramat.models.expressions.ModelExpression;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public class DataUtils {
 
-    public static <T, R> List<R> map(Collection<T> items, Function<T, R> mapper) {
-        var result = new ArrayList<R>(items.size());
+    public static <R> List<R> mapInt(byte[] items, IntFunction<R> mapper) {
+        var result = new ArrayList<R>();
 
         for (var item : items) {
             result.add(mapper.apply(item));
@@ -75,5 +74,34 @@ public class DataUtils {
                 content.accept(item);
             }
         }
+    }
+
+    public static <T> Iterable<T> iterate(T[] items1, T[] items2) {
+        return () -> new Iterator<>() {
+            int i = 0;
+            int j = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < items1.length || j < items2.length;
+            }
+
+            @Override
+            public T next() {
+                if (i < items1.length) {
+                    var result = items1[i];
+                    i++;
+                    return result;
+                }
+                else if (j < items2.length) {
+                    var result = items2[j];
+                    j++;
+                    return result;
+                }
+                else {
+                    throw new NoSuchElementException();
+                }
+            }
+        };
     }
 }

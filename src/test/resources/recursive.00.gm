@@ -1,0 +1,16 @@
+value = string | object;
+
+string = @value('a-z');
+
+entry = @set(@name(string) ":" value);
+
+object = @object("{" { entry / "," } "}");
+
+@pass<"a">(value);
+@pass<"{a:b}">(value);
+@pass<"{a:b,c:d}">(value);
+@pass<"{a:{}}">(value);
+@pass<"{a:{},b:{}}">(value);
+@pass<"{a:{b:c},d:{e:f}}">(value);
+
+@main(value);

@@ -1,6 +1,7 @@
 package gramat.framework;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Configuration {
@@ -9,8 +10,8 @@ public class Configuration {
     private final Map<String, Object> overrides;
 
     public Configuration() {
-        defaults = new HashMap<>();
-        overrides = new HashMap<>();
+        defaults = new LinkedHashMap<>();
+        overrides = new LinkedHashMap<>();
     }
 
     public void register(ConfigurationEntry entry) {

@@ -1,10 +1,21 @@
 package gramat.input;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Tape {
 
-    // TODO Add support to load more tapes from a string path
+    public static Tape of(Path file) throws IOException {
+        var data = Files.readAllBytes(file);
 
+        return new Tape(new String(data, StandardCharsets.UTF_8), file.toString());
+    }
+
+    // TODO Add support to load more tapes from a string path
     private final String source;
+
     private final String content;
 
     private int position;

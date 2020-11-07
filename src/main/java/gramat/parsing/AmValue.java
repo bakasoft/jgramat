@@ -7,6 +7,7 @@ import gramat.exceptions.UnexpectedCharException;
 import gramat.util.Args;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface AmValue extends AmString {
 
@@ -42,7 +43,7 @@ public interface AmValue extends AmString {
                 throw new RuntimeException("unexepcted expression");
             }
             var parser = getGramat().parsers.findParser(str);
-            var text = getGramat().loadValue(call.keyword, Args.of(call.arguments));
+            var text = getGramat().loadValue(call.keyword, call.arguments);
             return parser.parse(text);
         }
 
@@ -126,7 +127,7 @@ public interface AmValue extends AmString {
         return list;
     }
 
-    default Object readArguments(Tape tape) {
+    default List<Object> readArguments(Tape tape) {
         var values = new ArrayList<>();
 
         while (true) {
@@ -143,12 +144,6 @@ public interface AmValue extends AmString {
             }
         }
 
-        if (values.isEmpty()) {
-            return null;
-        }
-        else if (values.size() == 1) {
-            return values.get(0);
-        }
         return values;
     }
 

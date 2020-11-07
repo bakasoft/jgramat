@@ -10,6 +10,7 @@ import gramat.symbols.Alphabet;
 import gramat.util.Args;
 import gramat.util.Resources;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Gramat implements Component {
@@ -59,9 +60,10 @@ public class Gramat implements Component {
         return this;
     }
 
-    public String loadValue(String valueDirective, Args args) {
+    public String loadValue(String valueDirective, List<Object> arguments) {
         if (Objects.equals(valueDirective, "readFile")) {
-            var path = args.pullAs(String.class);
+            var args = Args.of(arguments, List.of("path"));
+            var path = args.getString("path");
 
             return Resources.loadText(path);
         }

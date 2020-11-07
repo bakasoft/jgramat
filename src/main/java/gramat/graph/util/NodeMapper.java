@@ -10,6 +10,7 @@ import gramat.graph.sets.NodeSetMutable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class NodeMapper {
 
@@ -28,7 +29,7 @@ public class NodeMapper {
     private NodeMapper(Graph newGraph, NodeMapper parent) {
         this.newGraph = newGraph;
         this.parent = parent;
-        this.nodes = new HashMap<>();
+        this.nodes = new LinkedHashMap<>();
     }
 
     public void set(Node oldNode, Node newNode) {

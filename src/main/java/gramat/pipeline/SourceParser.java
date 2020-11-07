@@ -19,13 +19,14 @@ public class SourceParser {
     public static Source parse(Component parent, Tape tape) {
         var parser = new SourceParser(parent, tape);
 
-        return new Source(parser.rules, parser.tests);
+        return new Source(parser.rules, parser.tests, parser.main);
     }
 
     private final NameMap<ModelExpression> rules;
     private final List<ModelTest> tests;
     private final Component parent;
     private final Tape tape;
+    private ModelExpression main;
 
     private SourceParser(Component parent, Tape tape) {
         this.parent = parent;
@@ -48,12 +49,14 @@ public class SourceParser {
 
         if (file.calls != null) {
             for (var call : file.calls) {
-                var args = Args.of(call.arguments);
                 if (Objects.equals(call.keyword, "pass")) {
-                    tests.add(makePass(args, call.expression));
+                    tests.add(makePass(call.arguments, call.expression));
                 }
                 else if (Objects.equals(call.keyword, "fail")) {
-                    tests.add(makeFail(args, call.expression));
+                    tests.add(makeFail(call.arguments, call.expression));
+                }
+                else if (Objects.equals(call.keyword, "main")) {
+                    main = call.expression;
                 }
                 else {
                     throw new RuntimeException("unknown call: " + call.keyword);
@@ -62,16 +65,18 @@ public class SourceParser {
         }
     }
 
-    private ModelTest makePass(Args args, ModelExpression expression) {
+    private ModelTest makePass(List<Object> arguments, ModelExpression expression) {
         var test = new ModelEvalPass();
-        test.input = args.pullAs(String.class);
+        var args = Args.of(arguments, List.of("input"));
+        test.input = args.getString("input");
         test.expression = expression;
         return test;
     }
 
-    private ModelTest makeFail(Args args, ModelExpression expression) {
+    private ModelTest makeFail(List<Object> arguments, ModelExpression expression) {
         var test = new ModelEvalFail();
-        test.input = args.pullAs(String.class);
+        var args = Args.of(arguments, List.of("input"));
+        test.input = args.getString("input");
         test.expression = expression;
         return test;
     }

@@ -97,17 +97,8 @@ public interface AmMachineParser extends AmBase, AmValue {
     }
 
     default ModelAction read_action(Tape tape) {
-        var action = new ModelAction();
-
-        action.name = readString(tape);
-
-        if (tryToken(tape, '(')) {
-            action.arguments = read_arguments(tape);
-
-            expectToken(tape, ')');
-        }
-
-        return action;
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     default ModelSymbol read_symbol(Tape tape) {

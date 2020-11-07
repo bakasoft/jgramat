@@ -1,25 +1,38 @@
 package gramat.models.factories;
 
-import gramat.actions.Action;
+import gramat.actions.*;
+import gramat.actions.transactions.*;
 import gramat.badges.Badge;
 import gramat.badges.BadgeToken;
 import gramat.badges.BadgeWild;
+import gramat.eval.transactions.Transaction;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.machine.State;
 import gramat.models.automata.*;
+import gramat.pipeline.Machine;
 import gramat.symbols.*;
+import gramat.util.DataUtils;
 
 import java.util.*;
 
-public class MachineFactory {
+public class MachineFactory {// TODO Rename to MachineModeler or MachineDecompiler or MachineDisassembler
+
+    private final Map<Badge, ModelBadge> badges;
+    private final Map<Transaction, ModelTransaction> transactions;
+
+    public MachineFactory() {
+        badges = new LinkedHashMap<>();
+        transactions = new LinkedHashMap<>();
+    }
 
     public ModelMachine createMachine(State initial) {
         var machine = new ModelMachine();
-        var states = new HashMap<State, ModelState>();
-        var badges = new HashMap<Badge, ModelBadge>();
-        var symbols = new HashMap<Symbol, ModelSymbol>();
+        var states = new LinkedHashMap<State, ModelState>();
+        var symbols = new LinkedHashMap<Symbol, ModelSymbol>();
         var control = new HashSet<State>();
         var queue = new LinkedList<State>();
+
+        machine.transitions = new ArrayList<>();
 
         queue.add(initial);
 
@@ -30,7 +43,7 @@ public class MachineFactory {
                 var mSource = states.computeIfAbsent(state, this::createState);
 
                 for (var badge : state.transition.getBadges()) {
-                    var mBadge = badges.computeIfAbsent(badge, this::createBadge);
+                    var mBadge = makeBadge(badge);
 
                     for (var symbol : state.transition.getSymbols(badge)) {
                         var mSymbol = symbols.computeIfAbsent(symbol, this::createSymbol);
@@ -46,28 +59,113 @@ public class MachineFactory {
                         mTran.postActions = createActions(effect.after);
 
                         machine.transitions.add(mTran);
+
+                        queue.add(effect.target);
                     }
                 }
             }
         }
 
         machine.initial = states.get(initial);
+        machine.states = new ArrayList<>(states.values());
 
         return machine;
     }
 
+    private ModelBadge makeBadge(Badge badge) {
+        return badges.computeIfAbsent(badge, this::createBadge);
+    }
+
+    private ModelTransaction makeTransaction(Transaction transaction) {
+        return transactions.computeIfAbsent(transaction, this::createTransaction);
+    }
+
     private List<ModelAction> createActions(Action[] actions) {
         var models = new ArrayList<ModelAction>();
-        for (var action : actions) {
-            models.add(createAction(action));
+        if (actions != null) {
+            for (var action : actions) {
+                models.add(createAction(action));
+            }
         }
         return models;
     }
 
     private ModelAction createAction(Action action) {
-        var model = new ModelAction();
-        model.name = action.getName();
-        model.arguments = action.getArguments();
+        if (action instanceof RecursionEnter) {
+            var result = new ModelActionRecursion();
+            result.type = "enter";
+            result.badge = makeBadge(((RecursionEnter) action).badge);
+            return result;
+        }
+        else if (action instanceof RecursionExit) {
+            var result = new ModelActionRecursion();
+            result.type = "exit";
+            result.badge = makeBadge(((RecursionExit) action).badge);
+            return result;
+        }
+        else if (action instanceof ActionTransaction) {
+            var tran = makeTransaction(((ActionTransaction) action).getTransaction());
+            if (action instanceof BeginAction) {
+                var result = new ModelActionTransaction();
+                result.type = "begin";
+                result.transaction = tran;
+                return result;
+            }
+            else if (action instanceof EndAction) {
+                var result = new ModelActionTransaction();
+                result.type = "end";
+                result.transaction = tran;
+                return result;
+            }
+            else if (action instanceof NotBeginAction) {
+                var result = new ModelActionTransaction();
+                result.type = "not-begin";
+                result.transaction = tran;
+                return result;
+            }
+            else if (action instanceof NotEndAction) {
+                var result = new ModelActionTransaction();
+                result.type = "not-end";
+                result.transaction = tran;
+                return result;
+            }
+            else {
+                throw new UnsupportedValueException(action);
+            }
+        }
+        else {
+            throw new UnsupportedValueException(action);
+        }
+    }
+
+    private ModelTransaction createTransaction(Transaction tran) {
+        var model = new ModelTransaction();
+
+        model.id = tran.getID();
+
+        if (tran instanceof ArrayTransaction) {
+            model.type = "array";
+            model.typeHint = ((ArrayTransaction) tran).getTypeHint();
+        }
+        else if (tran instanceof AttributeTransaction) {
+            model.type = "attribute";
+            model.defaultName = ((AttributeTransaction) tran).getDefaultName();
+        }
+        else if (tran instanceof NameTransaction) {
+            model.type = "name";
+        }
+        else if (tran instanceof ObjectTransaction) {
+            model.type = "object";
+            model.typeHint = ((ObjectTransaction) tran).getTypeHint();
+        }
+        else if (tran instanceof ValueTransaction) {
+            model.type = "value";
+            model.parserName = ((ValueTransaction) tran).getParser().getName();
+        }
+        else {
+            throw new UnsupportedValueException(tran);
+        }
+
         return model;
     }
 

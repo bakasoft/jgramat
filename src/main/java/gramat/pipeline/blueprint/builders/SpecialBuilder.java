@@ -34,7 +34,7 @@ public interface SpecialBuilder extends BaseBuilder {
 
     default NodeSet compileObject(Graph graph, Node source, ModelObject object) {
         var id = nextTransactionID(object);
-        var trx = new ObjectTransaction(id);
+        var trx = new ObjectTransaction(id, object.type);
         return wrapActions(graph, source, object.content, trx);
     }
 

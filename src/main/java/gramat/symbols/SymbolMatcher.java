@@ -4,6 +4,7 @@ import gramat.symbols.Symbol;
 import gramat.symbols.SymbolWild;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class SymbolMatcher<T> {
     private final Map<Symbol, T> map;
 
     public SymbolMatcher() {
-        map = new HashMap<>();
+        map = new LinkedHashMap<>();
     }
 
     public void add(Symbol symbol, T value) {

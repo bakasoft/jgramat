@@ -70,7 +70,7 @@ public class ExpressionBuilder extends DefaultComponent implements BaseBuilder,
         super(parent);
         this.progress = progress;
         this.expressions = expressions;
-        this.trxIds = new HashMap<>();
+        this.trxIds = new LinkedHashMap<>();
         this.dependencyQueue = new LinkedList<>();
         this.stats = stats;
         this.buildCount = new HashSet<>();

@@ -7,7 +7,7 @@ import gramat.eval.Context;
 import java.util.List;
 import java.util.Objects;
 
-public class RecursionExit implements Action {
+public class RecursionExit implements ActionRecursive {
 
     public final BadgeToken badge;
 
@@ -16,18 +16,13 @@ public class RecursionExit implements Action {
     }
 
     @Override
+    public BadgeToken getBadge() {
+        return badge;
+    }
+
+    @Override
     public void run(Context context) {
         context.heap.pop(badge);
-    }
-
-    @Override
-    public String getName() {
-        return "exit";
-    }
-
-    @Override
-    public List<String> getArguments() {
-        return List.of(badge.token);
     }
 
     @Override

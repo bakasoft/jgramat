@@ -64,4 +64,10 @@ public class PP {
         }
         return type.getName();
     }
+
+    public static String hex(int value) {
+        var valueL = (0xFFFFFFFFL & value);
+
+        return "0x" + Long.toHexString(valueL).toUpperCase();
+    }
 }

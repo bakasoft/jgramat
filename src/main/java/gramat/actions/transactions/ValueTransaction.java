@@ -1,18 +1,25 @@
 package gramat.actions.transactions;
 
-import gramat.eval.transactions.DefaultTransaction;
+import gramat.eval.transactions.TransactionAdapter;
 import gramat.eval.Context;
 import gramat.parsers.ValueParser;
+import gramat.util.NameMap;
 
 import java.util.Objects;
 
-public class ValueTransaction extends DefaultTransaction {
+public class ValueTransaction extends TransactionAdapter {
+
+    public static final String NAME = "value";
 
     private final ValueParser parser;
 
     public ValueTransaction(int id, ValueParser parser) {
         super(id);
         this.parser = Objects.requireNonNull(parser);
+    }
+
+    public ValueParser getParser() {
+        return parser;
     }
 
     @Override
@@ -36,8 +43,9 @@ public class ValueTransaction extends DefaultTransaction {
     }
 
     @Override
-    public String getName() {
-        return "value";
+    protected void fillArgs(NameMap<Object> args) {
+        args.set("name", NAME);
+        args.set("parser", parser.getName());
     }
 
 }

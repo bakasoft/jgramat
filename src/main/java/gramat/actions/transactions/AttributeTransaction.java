@@ -2,9 +2,12 @@ package gramat.actions.transactions;
 
 import gramat.eval.Context;
 import gramat.eval.RejectedException;
-import gramat.eval.transactions.DefaultTransaction;
+import gramat.eval.transactions.TransactionAdapter;
+import gramat.util.NameMap;
 
-public class AttributeTransaction extends DefaultTransaction {
+public class AttributeTransaction extends TransactionAdapter {
+
+    public static final String NAME = "attribute";
 
     private final String defaultName;
 
@@ -13,6 +16,9 @@ public class AttributeTransaction extends DefaultTransaction {
         this.defaultName = defaultName;
     }
 
+    public String getDefaultName() {
+        return defaultName;
+    }
 
     @Override
     public void begin(Context context) {
@@ -42,7 +48,8 @@ public class AttributeTransaction extends DefaultTransaction {
     }
 
     @Override
-    public String getName() {
-        return "attribute";
+    protected void fillArgs(NameMap<Object> args) {
+        args.set("name", NAME);
+        args.set("defaultName", defaultName);
     }
 }

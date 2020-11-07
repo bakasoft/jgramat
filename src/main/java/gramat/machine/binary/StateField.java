@@ -1,6 +1,6 @@
 package gramat.machine.binary;
 
-import gramat.binary.IndexedField;
+import stone.binary.schema.IndexedField;
 
 public enum StateField implements IndexedField {
     ID(0),

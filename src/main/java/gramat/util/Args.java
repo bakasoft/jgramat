@@ -4,28 +4,8 @@ import java.util.*;
 
 public class Args {
 
-    public static Args of(Object any) {
-        if (any instanceof Collection) {
-            return of((Collection<?>)any);
-        }
-        else if (any instanceof Map) {
-            return of((Map<?,?>)any);
-        }
-        else {
-            var args = new Args();
-            args.args.add(new Arg(null, any));
-            return args;
-        }
-    }
-
-    public static Args of(Collection<?> items) {
-        var args = new Args();
-
-        for (var item : items) {
-            args.args.add(new Arg(null, item));
-        }
-
-        return args;
+    public static Args empty() {
+        return new Args();
     }
 
     public static Args of(Map<?, ?> map) {
@@ -34,83 +14,120 @@ public class Args {
             var name = String.valueOf(entry.getKey());
             var value = entry.getValue();
 
-            args.args.add(new Arg(name, value));
+            args.set(name, value);
         }
         return args;
     }
 
-    private final Object MANDATORY = new Object();
+    public static Args of(Collection<?> values, Collection<String> keys) {
+        var args = new Args();
+        var vIter = values.iterator();
+        var kIter = keys.iterator();
 
-    private final List<Arg> args;
+        while (vIter.hasNext()) {
+            if (kIter.hasNext()) {
+                var value = vIter.next();
+                var key = kIter.next();
 
-    private int currentIndex;
-
-    private Args() {
-        args = new ArrayList<>();
-        currentIndex = 0;
-    }
-
-    public <T> T pullAs(T defaultValue, Class<T> type) {
-        return convert_value(pull(defaultValue), type);
-    }
-
-    public <T> T pullAs(Class<T> type) {
-        return convert_value(pull(MANDATORY), type);
-    }
-
-    public Object pull(Object defaultValue) {
-        return pull(currentIndex, defaultValue);
-    }
-
-    private Object pull(int index, Object defaultValue) {
-        if (index >= 0 && index < args.size()) {
-            currentIndex = index + 1;
-
-            return args.get(index).value;
-        }
-
-        if (defaultValue == MANDATORY) {
-            throw new RuntimeException("argument not found: at " + index);
-        }
-
-        return defaultValue;
-    }
-
-    public Object pull(String name, Object defaultValue) {
-        // TODO change index accordingly
-
-        for (var arg : args) {
-            if (Objects.equals(arg.name, name)) {
-                return arg.value;
+                args.set(key, value);
+            }
+            else {
+                throw new RuntimeException();
             }
         }
 
-        if (defaultValue == MANDATORY) {
-            throw new RuntimeException("argument not found: " + name);
-        }
-
-        return defaultValue;
+        return args;
     }
 
-    private static <T> T convert_value(Object value, Class<T> type) {
-        if (value == null && !type.isPrimitive()) {
-            return null;
+    private static final Object MANDATORY = new Object();
+
+    private final Map<String, Object> map;
+
+    private final Set<String> usedKeys;
+
+    private Args() {
+        map = new LinkedHashMap<>();
+        usedKeys = new HashSet<>();
+    }
+
+    public Object get(String key, Object defaultValue) {
+        var result = map.getOrDefault(key, defaultValue);
+
+        usedKeys.add(key);
+
+        if (result == MANDATORY) {
+            throw new RuntimeException("argument not found: " + key);
         }
-        else if (type.isInstance(value)) {
-            return type.cast(value);
+
+        return result;
+    }
+
+    public Object get(String key) {
+        return get(key, MANDATORY);
+    }
+
+    public String getString(String key) {
+        return toString(get(key));
+    }
+
+    public String getString(String key, String defaultValue) {
+        return toString(get(key, defaultValue));
+    }
+
+    public int getInt(String key) {
+        return toInt(get(key));
+    }
+
+    public int getInt(String key, int defaultValue) {
+        return toInt(get(key, defaultValue));
+    }
+
+    public void set(String key, Object value) {
+        if (map.get(key) != null) {
+            throw new RuntimeException();
+        }
+        map.put(key, value);
+        usedKeys.add(key);
+    }
+
+    public Set<String> getUnknownKeys() {
+        var result = new HashSet<>(map.keySet());
+        result.removeAll(usedKeys);
+        return result;
+    }
+
+    public void validateUnknownKeys() {
+        var notUsedKeys = getUnknownKeys();
+
+        if (!notUsedKeys.isEmpty()) {
+            throw new RuntimeException("Unknown keys: " + notUsedKeys);
+        }
+    }
+
+    private static int toInt(Object value) {
+        if (value == null) {
+            throw new RuntimeException();
+        }
+        else if (value instanceof Integer) {
+            return (Integer) value;
+        }
+        else if (value instanceof Long) {
+            return ((Long) value).intValue();
+        }
+        else if (value instanceof String) {
+            return Integer.parseInt((String)value);
         }
         else {
-            throw new RuntimeException("invalid type");
+            throw new RuntimeException();
         }
     }
 
-    private static class Arg {
-        public final String name;
-        public final Object value;
-        private Arg(String name, Object value) {
-            this.name = name;
-            this.value = value;
+    private static String toString(Object value) {
+        if (value == null) {
+            return null;
         }
+
+        return value.toString();
     }
 
 }

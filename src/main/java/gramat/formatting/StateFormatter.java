@@ -98,7 +98,7 @@ public class StateFormatter extends AmFormatter {
     private static List<State> listStates(State root) {
         var control = new HashSet<State>();
         var queue = new LinkedList<State>();
-        var idNodes = new HashMap<String, State>();
+        var idNodes = new LinkedHashMap<String, State>();
 
         queue.add(root);
 

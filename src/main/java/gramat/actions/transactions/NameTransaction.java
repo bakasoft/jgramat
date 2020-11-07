@@ -1,9 +1,12 @@
 package gramat.actions.transactions;
 
 import gramat.eval.Context;
-import gramat.eval.transactions.DefaultTransaction;
+import gramat.eval.transactions.TransactionAdapter;
+import gramat.util.NameMap;
 
-public class NameTransaction extends DefaultTransaction {
+public class NameTransaction extends TransactionAdapter {
+
+    public static final String NAME = "name";
 
     public NameTransaction(int id) {
         super(id);
@@ -24,8 +27,8 @@ public class NameTransaction extends DefaultTransaction {
     }
 
     @Override
-    public String getName() {
-        return "name";
+    protected void fillArgs(NameMap<Object> args) {
+        args.set("name", NAME);
     }
 
 }

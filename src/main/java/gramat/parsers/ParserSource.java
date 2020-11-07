@@ -38,7 +38,8 @@ public class ParserSource implements Iterable<ValueParser> {
     public static List<ValueParser> listDefaultParsers() {
         return List.of(
                 new IntegerParser("integer"),
-                new StringParser("string"));
+                new StringParser("string"),
+                new StringParser("default"));
     }
 
     public ValueParser findParser(String name) {

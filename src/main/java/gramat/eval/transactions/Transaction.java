@@ -2,6 +2,8 @@ package gramat.eval.transactions;
 
 import gramat.eval.Context;
 
+import java.util.Map;
+
 public interface Transaction {
 
     int getID();
@@ -10,6 +12,6 @@ public interface Transaction {
 
     Runnable prepareCommit(Context context);
 
-    String getName();
+    Map<String, Object> getArgs();
 
 }

@@ -11,7 +11,7 @@ public class Transition {
     private final Map<Badge, SymbolMatcher<Effect>> badges;
 
     public Transition() {
-        badges = new HashMap<>();
+        badges = new LinkedHashMap<>();
     }
 
     public Set<Badge> getBadges() {

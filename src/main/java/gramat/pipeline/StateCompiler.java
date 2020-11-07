@@ -33,7 +33,7 @@ public class StateCompiler extends DefaultComponent {
         super(parent);
         this.progress = progress;
         this.graph = graph;
-        this.idStates = new HashMap<>();
+        this.idStates = new LinkedHashMap<>();
         this.nextId = new Count();
     }
 

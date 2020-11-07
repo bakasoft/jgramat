@@ -1,15 +1,22 @@
 package gramat.actions.transactions;
 
 import gramat.eval.Context;
-import gramat.eval.transactions.DefaultTransaction;
+import gramat.eval.transactions.TransactionAdapter;
+import gramat.util.NameMap;
 
-public class ArrayTransaction extends DefaultTransaction {
+public class ArrayTransaction extends TransactionAdapter {
 
-    private final Object typeHint;
+    public static final String NAME = "array";
 
-    public ArrayTransaction(int id, Object typeHint) {
+    private final String typeHint;
+
+    public ArrayTransaction(int id, String typeHint) {
         super(id);
         this.typeHint = typeHint;
+    }
+
+    public String getTypeHint() {
+        return typeHint;
     }
 
     @Override
@@ -29,8 +36,8 @@ public class ArrayTransaction extends DefaultTransaction {
     }
 
     @Override
-    public String getName() {
-        return "array";
+    protected void fillArgs(NameMap<Object> args) {
+        args.set("name", NAME);
+        args.set("typeHint", typeHint);
     }
-
 }

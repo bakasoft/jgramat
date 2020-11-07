@@ -6,7 +6,7 @@ import gramat.eval.transactions.Transaction;
 import java.util.List;
 import java.util.Objects;
 
-public class NotEndAction implements Action {
+public class NotEndAction implements ActionTransaction {
 
     private final Transaction transaction;
 
@@ -14,21 +14,15 @@ public class NotEndAction implements Action {
         this.transaction = transaction;
     }
 
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
     @Override
     public void run(Context context) {
         var badge = context.heap.peek();
 
         context.manager.notEnd(transaction, badge);
-    }
-
-    @Override
-    public String getName() {
-        return "not-end";
-    }
-
-    @Override
-    public List<String> getArguments() {
-        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
     }
 
     @Override

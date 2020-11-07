@@ -5,10 +5,9 @@ import gramat.eval.transactions.Transaction;
 import gramat.eval.Context;
 import gramat.exceptions.UnsupportedValueException;
 
-import java.util.List;
 import java.util.Objects;
 
-public class BeginAction implements Action {
+public class BeginAction implements ActionTransaction {
 
     private final Transaction transaction;
 
@@ -16,21 +15,15 @@ public class BeginAction implements Action {
         this.transaction = transaction;
     }
 
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
     @Override
     public void run(Context context) {
         var badge = context.heap.peek();
 
         context.manager.begin(badge, transaction);
-    }
-
-    @Override
-    public String getName() {
-        return "begin";
-    }
-
-    @Override
-    public List<String> getArguments() {
-        return List.of(transaction.getName(), String.valueOf(transaction.getID()));
     }
 
     @Override

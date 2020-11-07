@@ -17,6 +17,7 @@ import gramat.util.Args;
 import gramat.util.PP;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class StateParser extends DefaultComponent {
 
     public StateParser(Component parent) {
         super(parent);
-        this.idNodes = new HashMap<>();
+        this.idNodes = new LinkedHashMap<>();
     }
 
     public State parse(Tape tape) {
@@ -124,73 +125,18 @@ public class StateParser extends DefaultComponent {
     }
 
     private Action make_action(ModelAction data) {
-        var args = Args.of(data.arguments);
-        if (Objects.equals(data.name, "enter")) {
-            var token = args.pullAs(String.class);
-            var badge = gramat.badges.badge(token);
-            return new RecursionEnter((BadgeToken)badge);
-        }
-        else if (Objects.equals(data.name, "exit")) {
-            var token = args.pullAs(String.class);
-            var badge = gramat.badges.badge(token);
-            return new RecursionExit((BadgeToken)badge);
-        }
-        else if (Objects.equals(data.name, "begin")) {
-            var type = args.pullAs(String.class);
-            var trxID = Integer.parseInt(args.pullAs(String.class));
-
-            if (Objects.equals(type, "Object")) {
-                return new BeginAction(new ObjectTransaction(trxID));
-            }
-            else if (Objects.equals(type, "Value")) {
-                return new BeginAction(new ValueTransaction(trxID, null));
-            }
-            else if (Objects.equals(type, "Name")) {
-                return new BeginAction(new NameTransaction(trxID));
-            }
-            else if (Objects.equals(type, "Attribute")) {
-                return new BeginAction(new AttributeTransaction(trxID, null));
-            }
-            else if (Objects.equals(type, "Array")) {
-                return new BeginAction(new ArrayTransaction(trxID, null));
-            }
-            else {
-                throw new UnsupportedValueException(type);
-            }
-        }
-        else if (Objects.equals(data.name, "end")) {
-            var trxID = Integer.parseInt(data.arguments.get(0));
-            // TODO find transaction by ID
-            return new EndAction(null);
-        }
-        else {
-            throw new RuntimeException("Unsupported action: " + data.name);
-        }
+        // TODO use ActionAssembler
+        throw new RuntimeException();
     }
 
     private Symbol make_symbol(ModelSymbol symbol) {
-        if (symbol instanceof ModelSymbolWild) {
-            return gramat.symbols.wild();
-        }
-        else if (symbol instanceof ModelSymbolChar) {
-            var s = (ModelSymbolChar)symbol;
-            return gramat.symbols.character(s.value);
-        }
-        else if (symbol instanceof ModelSymbolRange) {
-            var s = (ModelSymbolRange)symbol;
-            return gramat.symbols.range(s.begin, s.end);
-        }
-        else {
-            throw new RuntimeException();
-        }
+        // TODO use SymbolAssembler
+        throw new RuntimeException();
     }
 
     private Badge make_badge(ModelBadge badge) {
-        if (badge == null) {
-            return gramat.badges.empty();
-        }
-
-        return gramat.badges.badge(badge.token);
+        // TODO BadgeAssembler
+        throw new RuntimeException();
     }
 
 }
