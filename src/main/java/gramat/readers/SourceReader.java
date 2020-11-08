@@ -1,7 +1,7 @@
 package gramat.readers;
 
-import gramat.models.expressions.ModelExpression;
-import gramat.models.source.ModelSource;
+import gramat.expressions.models.ModelExpression;
+import gramat.readers.models.ModelSource;
 import gramat.models.test.ModelEvalFail;
 import gramat.models.test.ModelEvalPass;
 import gramat.models.test.ModelTest;

@@ -5,10 +5,11 @@ import gramat.framework.Context;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
-import gramat.models.source.ModelSource;
+import gramat.readers.models.ModelSource;
 import gramat.parsers.ParserSource;
+import gramat.expressions.Template;
 import gramat.readers.GramatReader;
-import gramat.pipeline.blueprint.ExpressionBuilder;
+import gramat.expressions.ExpressionBuilder;
 import gramat.symbols.Alphabet;
 import gramat.util.NameMap;
 

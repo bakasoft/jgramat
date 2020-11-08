@@ -2,7 +2,7 @@ package gramat.readers;
 
 import gramat.exceptions.UnexpectedCharException;
 import gramat.input.Tape;
-import gramat.models.source.ModelCall;
+import gramat.readers.models.ModelCall;
 import gramat.parsers.ValueParser;
 
 import java.util.List;

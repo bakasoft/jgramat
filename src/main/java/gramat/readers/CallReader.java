@@ -1,6 +1,6 @@
 package gramat.readers;
 
-import gramat.models.source.ModelCall;
+import gramat.readers.models.ModelCall;
 
 public interface CallReader extends BaseReader, ValueReader, ExpressionReader {
 

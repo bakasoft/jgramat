@@ -1,8 +1,9 @@
 package gramat.models.formatters;
 
 import gramat.exceptions.UnsupportedValueException;
+import gramat.expressions.models.*;
 import gramat.formatting.BaseFormatter;
-import gramat.models.expressions.*;
+import gramat.expressions.models.*;
 import gramat.util.DataUtils;
 
 public class ExpressionFormatter extends BaseFormatter {

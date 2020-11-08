@@ -13,7 +13,7 @@ import gramat.models.test.ModelEvalPass;
 import gramat.parsers.ParserSource;
 import gramat.pipeline.Pipeline;
 import gramat.pipeline.Sentence;
-import gramat.models.source.ModelSource;
+import gramat.readers.models.ModelSource;
 import gramat.symbols.Alphabet;
 import gramat.util.WorkingFile;
 import org.junit.Test;

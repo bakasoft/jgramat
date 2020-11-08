@@ -1,6 +1,6 @@
 package gramat.readers;
 
-import gramat.models.source.ModelFile;
+import gramat.readers.models.ModelFile;
 
 import java.util.ArrayList;
 

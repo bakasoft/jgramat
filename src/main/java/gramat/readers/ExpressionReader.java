@@ -1,7 +1,7 @@
 package gramat.readers;
 
 import gramat.models.factories.ExpressionFactory;
-import gramat.models.expressions.ModelExpression;
+import gramat.expressions.models.ModelExpression;
 
 import java.util.ArrayList;
 

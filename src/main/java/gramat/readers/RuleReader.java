@@ -1,6 +1,6 @@
 package gramat.readers;
 
-import gramat.models.source.ModelRule;
+import gramat.readers.models.ModelRule;
 
 public interface RuleReader extends BaseReader, ValueReader, ExpressionReader {
     default ModelRule tryRule() {

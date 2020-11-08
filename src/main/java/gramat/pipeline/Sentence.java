@@ -1,6 +1,6 @@
 package gramat.pipeline;
 
-import gramat.models.expressions.ModelExpression;
+import gramat.expressions.models.ModelExpression;
 import gramat.util.NameMap;
 
 public class Sentence {

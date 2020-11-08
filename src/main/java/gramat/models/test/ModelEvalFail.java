@@ -1,6 +1,6 @@
 package gramat.models.test;
 
-import gramat.models.expressions.ModelExpression;
+import gramat.expressions.models.ModelExpression;
 
 public class ModelEvalFail implements ModelTest {
     public String input;
