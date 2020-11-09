@@ -1,11 +1,11 @@
 package gramat.pipeline.decoding;
 
-import gramat.actions.*;
-import gramat.badges.BadgeToken;
+import gramat.scheme.core.actions.*;
+import gramat.scheme.core.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.models.automata.ModelAction;
-import gramat.models.automata.ModelActionRecursion;
-import gramat.models.automata.ModelActionTransaction;
+import gramat.scheme.models.automata.ModelAction;
+import gramat.scheme.models.automata.ModelActionRecursion;
+import gramat.scheme.models.automata.ModelActionTransaction;
 
 import java.util.List;
 import java.util.Objects;

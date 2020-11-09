@@ -1,15 +1,14 @@
 package gramat.pipeline.assembling;
 
-import gramat.actions.*;
+import gramat.scheme.core.actions.*;
 import gramat.eval.transactions.Transaction;
-import gramat.actions.transactions.*;
+import gramat.scheme.core.actions.transactions.*;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.models.expressions.*;
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.graph.util.DirType;
-import gramat.graph.sets.NodeSet;
-import gramat.models.expressions.*;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.graph.util.DirType;
+import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.expressions.*;
 
 import java.util.ArrayList;
 

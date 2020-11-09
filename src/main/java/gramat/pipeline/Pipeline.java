@@ -1,16 +1,16 @@
 package gramat.pipeline;
 
-import gramat.badges.BadgeSource;
+import gramat.scheme.core.badges.BadgeSource;
 import gramat.pipeline.assembling.ExpressionAssembler;
 import gramat.framework.Context;
-import gramat.graph.Graph;
+import gramat.scheme.graph.Graph;
 import gramat.input.Tape;
-import gramat.machine.State;
+import gramat.scheme.machine.State;
 import gramat.pipeline.compiling.*;
-import gramat.models.parsing.ModelSource;
+import gramat.scheme.models.parsing.ModelSource;
 import gramat.parsers.ParserSource;
 import gramat.pipeline.parsing.GramatParser;
-import gramat.symbols.Alphabet;
+import gramat.scheme.core.symbols.Alphabet;
 import gramat.util.NameMap;
 
 public class Pipeline {

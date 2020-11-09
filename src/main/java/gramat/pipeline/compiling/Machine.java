@@ -1,8 +1,8 @@
 package gramat.pipeline.compiling;
 
-import gramat.graph.Graph;
-import gramat.graph.Root;
-import gramat.symbols.SymbolReference;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Root;
+import gramat.scheme.core.symbols.SymbolReference;
 
 public class Machine {
 

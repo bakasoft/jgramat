@@ -1,9 +1,9 @@
 package gramat.pipeline.assembling;
 
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.models.expressions.ModelSequence;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.models.expressions.ModelSequence;
+import gramat.scheme.graph.sets.NodeSet;
 
 public interface SequenceAssembler extends BaseAssembler {
 

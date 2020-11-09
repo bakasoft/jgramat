@@ -1,18 +1,18 @@
 package gramat.pipeline.compiling;
 
-import gramat.actions.Event;
-import gramat.actions.RecursionEnter;
-import gramat.actions.RecursionExit;
-import gramat.badges.Badge;
-import gramat.badges.BadgeSource;
-import gramat.badges.BadgeToken;
+import gramat.scheme.core.actions.Event;
+import gramat.scheme.core.actions.RecursionEnter;
+import gramat.scheme.core.actions.RecursionExit;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.core.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Context;
-import gramat.graph.*;
-import gramat.graph.plugs.*;
-import gramat.symbols.SymbolReference;
+import gramat.scheme.graph.*;
+import gramat.scheme.graph.plugs.*;
+import gramat.scheme.core.symbols.SymbolReference;
 import gramat.util.NameMap;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.sets.NodeSet;
 import gramat.util.TokenGenerator;
 
 import java.util.*;

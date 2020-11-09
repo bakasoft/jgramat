@@ -1,8 +1,8 @@
 package gramat.formatting;
 
-import gramat.badges.Badge;
-import gramat.machine.State;
-import gramat.symbols.Symbol;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.machine.State;
+import gramat.scheme.core.symbols.Symbol;
 import gramat.util.StringUtils;
 
 import java.util.*;

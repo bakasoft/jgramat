@@ -1,6 +1,6 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.parsing.ModelCall;
+import gramat.scheme.models.parsing.ModelCall;
 
 public interface CallParser extends BaseParser, ValueParser, ExpressionParser {
 

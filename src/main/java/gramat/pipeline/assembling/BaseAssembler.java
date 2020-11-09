@@ -1,13 +1,13 @@
 package gramat.pipeline.assembling;
 
-import gramat.badges.Badge;
-import gramat.models.expressions.ModelExpression;
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.graph.sets.NodeSetMutable;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.models.expressions.ModelExpression;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.graph.sets.NodeSetMutable;
 import gramat.parsers.ValueParser;
-import gramat.symbols.Alphabet;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.core.symbols.Alphabet;
+import gramat.scheme.graph.sets.NodeSet;
 
 import java.util.Set;
 

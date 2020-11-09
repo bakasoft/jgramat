@@ -1,10 +1,10 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.expressions.ModelExpression;
-import gramat.models.parsing.ModelSource;
-import gramat.models.test.ModelEvalFail;
-import gramat.models.test.ModelEvalPass;
-import gramat.models.test.ModelTest;
+import gramat.scheme.models.expressions.ModelExpression;
+import gramat.scheme.models.parsing.ModelSource;
+import gramat.scheme.models.test.ModelEvalFail;
+import gramat.scheme.models.test.ModelEvalPass;
+import gramat.scheme.models.test.ModelTest;
 import gramat.util.Args;
 import gramat.util.NameMap;
 

@@ -1,8 +1,7 @@
 package gramat;
 
-import stone.binary.formatter.JsonFormatter;
 import gramat.formatting.StateFormatter;
-import gramat.machine.binary.Format;
+import gramat.scheme.machine.binary.Format;
 import org.junit.Assert;
 import org.junit.Test;
 import util.TestUtils;

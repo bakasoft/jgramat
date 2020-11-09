@@ -1,8 +1,8 @@
 package gramat.pipeline.decoding;
 
-import gramat.badges.Badge;
-import gramat.badges.BadgeSource;
-import gramat.models.automata.ModelBadge;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.models.automata.ModelBadge;
 
 import java.util.Objects;
 

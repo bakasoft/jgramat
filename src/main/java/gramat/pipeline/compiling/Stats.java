@@ -1,7 +1,7 @@
 package gramat.pipeline.compiling;
 
-import gramat.models.expressions.ModelExpression;
-import gramat.models.expressions.ModelReference;
+import gramat.scheme.models.expressions.ModelExpression;
+import gramat.scheme.models.expressions.ModelReference;
 import gramat.util.NameMap;
 
 import java.util.*;

@@ -1,10 +1,10 @@
 package gramat.pipeline.assembling;
 
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.models.expressions.ModelExpression;
-import gramat.models.expressions.ModelRepetition;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.models.expressions.ModelExpression;
+import gramat.scheme.models.expressions.ModelRepetition;
+import gramat.scheme.graph.sets.NodeSet;
 
 public interface RepetitionAssembler extends BaseAssembler {
 

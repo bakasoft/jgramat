@@ -1,9 +1,9 @@
 package gramat.pipeline.decoding;
 
-import gramat.machine.Effect;
-import gramat.machine.State;
-import gramat.models.automata.*;
+import gramat.scheme.machine.Effect;
+import gramat.scheme.machine.State;
 import gramat.parsers.ParserSource;
+import gramat.scheme.models.automata.ModelMachine;
 
 public class MachineDecoder {
 

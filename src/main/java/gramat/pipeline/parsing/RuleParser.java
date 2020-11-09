@@ -1,6 +1,6 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.parsing.ModelRule;
+import gramat.scheme.models.parsing.ModelRule;
 
 public interface RuleParser extends BaseParser, ValueParser, ExpressionParser {
     default ModelRule tryRule() {

@@ -1,20 +1,20 @@
 package gramat;
 
-import gramat.badges.BadgeSource;
+import gramat.scheme.core.badges.BadgeSource;
 import gramat.eval.Evaluator;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Context;
 import gramat.framework.StandardContext;
 import gramat.input.Tape;
-import gramat.machine.State;
-import gramat.machine.binary.Format;
-import gramat.models.formatters.ExpressionFormatter;
-import gramat.models.test.ModelEvalPass;
+import gramat.scheme.machine.State;
+import gramat.scheme.machine.binary.Format;
+import gramat.scheme.models.formatters.ExpressionFormatter;
+import gramat.scheme.models.test.ModelEvalPass;
 import gramat.parsers.ParserSource;
 import gramat.pipeline.Pipeline;
 import gramat.pipeline.compiling.Sentence;
-import gramat.models.parsing.ModelSource;
-import gramat.symbols.Alphabet;
+import gramat.scheme.models.parsing.ModelSource;
+import gramat.scheme.core.symbols.Alphabet;
 import gramat.util.WorkingFile;
 import org.junit.Test;
 import util.TestUtils;

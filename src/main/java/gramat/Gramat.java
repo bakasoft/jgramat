@@ -1,16 +1,9 @@
 package gramat;
 
-import gramat.badges.BadgeSource;
+import gramat.scheme.core.badges.BadgeSource;
 import gramat.framework.Configuration;
-import gramat.framework.Context;
-import gramat.framework.StandardContext;
 import gramat.parsers.ParserSource;
-import gramat.symbols.Alphabet;
-import gramat.util.Args;
-import gramat.util.Resources;
-
-import java.util.List;
-import java.util.Objects;
+import gramat.scheme.core.symbols.Alphabet;
 
 public class Gramat {
 

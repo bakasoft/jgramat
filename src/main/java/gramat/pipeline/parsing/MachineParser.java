@@ -1,7 +1,7 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.automata.*;
 import gramat.exceptions.UnexpectedCharException;
+import gramat.scheme.models.automata.*;
 
 import java.util.ArrayList;
 import java.util.List;

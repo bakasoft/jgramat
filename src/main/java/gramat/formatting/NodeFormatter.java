@@ -1,13 +1,12 @@
 package gramat.formatting;
 
-import gramat.actions.Event;
-import gramat.badges.Badge;
+import gramat.scheme.core.actions.Event;
+import gramat.scheme.core.badges.Badge;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.graph.*;
-import gramat.graph.plugs.*;
-import gramat.graph.sets.NodeSetMutable;
-import gramat.symbols.Symbol;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.*;
+import gramat.scheme.graph.plugs.*;
+import gramat.scheme.graph.sets.NodeSetMutable;
+import gramat.scheme.core.symbols.Symbol;
 import gramat.util.StringUtils;
 
 public class NodeFormatter extends AmFormatter {

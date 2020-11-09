@@ -2,7 +2,7 @@ package gramat.pipeline.parsing;
 
 import gramat.exceptions.UnexpectedCharException;
 import gramat.input.Tape;
-import gramat.models.parsing.ModelCall;
+import gramat.scheme.models.parsing.ModelCall;
 import gramat.parsers.ValueParser;
 
 import java.util.List;

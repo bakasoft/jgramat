@@ -1,7 +1,7 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.expressions.ModelExpressionFactory;
-import gramat.models.expressions.ModelExpression;
+import gramat.scheme.models.expressions.ModelExpressionFactory;
+import gramat.scheme.models.expressions.ModelExpression;
 
 import java.util.ArrayList;
 

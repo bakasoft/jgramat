@@ -1,9 +1,9 @@
 package gramat.pipeline.decoding;
 
-import gramat.actions.transactions.*;
+import gramat.scheme.core.actions.transactions.*;
 import gramat.eval.transactions.Transaction;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.models.automata.ModelTransaction;
+import gramat.scheme.models.automata.ModelTransaction;
 import gramat.parsers.ParserSource;
 
 import java.util.LinkedHashMap;

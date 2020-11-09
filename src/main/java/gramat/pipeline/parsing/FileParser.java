@@ -1,6 +1,6 @@
 package gramat.pipeline.parsing;
 
-import gramat.models.parsing.ModelFile;
+import gramat.scheme.models.parsing.ModelFile;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 package gramat.pipeline.decoding;
 
-import gramat.machine.State;
-import gramat.models.automata.ModelState;
+import gramat.scheme.machine.State;
+import gramat.scheme.models.automata.ModelState;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

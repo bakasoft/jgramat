@@ -1,8 +1,8 @@
 package gramat.pipeline.compiling;
 
-import gramat.graph.Graph;
-import gramat.graph.Root;
-import gramat.graph.plugs.Extension;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Root;
+import gramat.scheme.graph.plugs.Extension;
 import gramat.util.NameMap;
 
 public class Template {

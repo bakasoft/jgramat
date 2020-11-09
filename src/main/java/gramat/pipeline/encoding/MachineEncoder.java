@@ -1,15 +1,15 @@
 package gramat.pipeline.encoding;
 
-import gramat.actions.*;
-import gramat.actions.transactions.*;
-import gramat.badges.Badge;
-import gramat.badges.BadgeToken;
-import gramat.badges.BadgeWild;
+import gramat.scheme.core.actions.*;
+import gramat.scheme.core.actions.transactions.*;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.core.badges.BadgeToken;
+import gramat.scheme.core.badges.BadgeWild;
 import gramat.eval.transactions.Transaction;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.machine.State;
-import gramat.models.automata.*;
-import gramat.symbols.*;
+import gramat.scheme.machine.State;
+import gramat.scheme.models.automata.*;
+import gramat.scheme.core.symbols.*;
 
 import java.util.*;
 

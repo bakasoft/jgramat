@@ -1,23 +1,22 @@
 package gramat.pipeline.assembling;
 
-import gramat.badges.Badge;
-import gramat.badges.BadgeSource;
+import gramat.scheme.core.badges.Badge;
+import gramat.scheme.core.badges.BadgeSource;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.models.expressions.*;
 import gramat.pipeline.compiling.ExtensionMaker;
 import gramat.pipeline.compiling.Stats;
 import gramat.pipeline.compiling.Template;
-import gramat.models.expressions.*;
 import gramat.framework.Context;
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.graph.Root;
-import gramat.graph.plugs.Extension;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.graph.Root;
+import gramat.scheme.graph.plugs.Extension;
 import gramat.parsers.ParserSource;
 import gramat.parsers.ValueParser;
-import gramat.symbols.Alphabet;
+import gramat.scheme.models.expressions.*;
+import gramat.scheme.core.symbols.Alphabet;
 import gramat.util.NameMap;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.sets.NodeSet;
 
 import java.util.*;
 

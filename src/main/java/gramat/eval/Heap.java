@@ -1,6 +1,6 @@
 package gramat.eval;
 
-import gramat.badges.Badge;
+import gramat.scheme.core.badges.Badge;
 import gramat.util.StringUtils;
 
 import java.util.Stack;

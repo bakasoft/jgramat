@@ -1,10 +1,10 @@
 package gramat.pipeline.assembling;
 
-import gramat.graph.Graph;
-import gramat.graph.Node;
-import gramat.graph.sets.NodeSetMutable;
-import gramat.models.expressions.ModelAlternation;
-import gramat.graph.sets.NodeSet;
+import gramat.scheme.graph.Graph;
+import gramat.scheme.graph.Node;
+import gramat.scheme.graph.sets.NodeSetMutable;
+import gramat.scheme.models.expressions.ModelAlternation;
+import gramat.scheme.graph.sets.NodeSet;
 
 public interface AlternationAssembler extends BaseAssembler {
 
