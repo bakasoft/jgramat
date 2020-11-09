@@ -1,4 +1,4 @@
-package gramat.models.factories;
+package gramat.expressions;
 
 import gramat.actions.*;
 import gramat.actions.transactions.*;
@@ -9,9 +9,7 @@ import gramat.eval.transactions.Transaction;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.machine.State;
 import gramat.models.automata.*;
-import gramat.pipeline.Machine;
 import gramat.symbols.*;
-import gramat.util.DataUtils;
 
 import java.util.*;
 

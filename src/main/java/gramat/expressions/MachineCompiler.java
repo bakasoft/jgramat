@@ -1,4 +1,4 @@
-package gramat.pipeline;
+package gramat.expressions;
 
 import gramat.actions.Event;
 import gramat.actions.RecursionEnter;
@@ -10,7 +10,6 @@ import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Context;
 import gramat.graph.*;
 import gramat.graph.plugs.*;
-import gramat.expressions.Template;
 import gramat.symbols.SymbolReference;
 import gramat.util.NameMap;
 import gramat.graph.sets.NodeSet;

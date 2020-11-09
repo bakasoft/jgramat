@@ -2,6 +2,7 @@ package gramat.pipeline;
 
 import gramat.actions.*;
 import gramat.badges.BadgeSource;
+import gramat.expressions.Machine;
 import gramat.framework.Context;
 import gramat.machine.Effect;
 import gramat.machine.State;

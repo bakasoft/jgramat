@@ -1,4 +1,4 @@
-package gramat.models.factories;
+package gramat.expressions;
 
 import gramat.expressions.models.*;
 import gramat.expressions.models.*;

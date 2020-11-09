@@ -1,4 +1,4 @@
-package gramat.pipeline;
+package gramat.expressions;
 
 import gramat.graph.Graph;
 import gramat.graph.Root;

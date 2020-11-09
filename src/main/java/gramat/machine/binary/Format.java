@@ -2,18 +2,9 @@ package gramat.machine.binary;
 
 
 import stone.StoneSchema;
-import stone.binary.input.BinaryDeserializer;
-import stone.binary.input.ObjectCreator;
-import stone.binary.input.impl.Creators;
-import stone.binary.input.impl.DefaultCreatorRepository;
-import stone.binary.output.BinarySerializer;
-import stone.binary.output.ObjectDescriber;
-import stone.binary.output.impl.DefaultDescriberRepository;
-import stone.binary.output.impl.Describers;
-import stone.binary.output.impl.HashReferenceStrategy;
 import gramat.machine.State;
 import gramat.models.automata.*;
-import gramat.models.factories.MachineFactory;
+import gramat.expressions.MachineFactory;
 import gramat.assemblers.MachineAssembler;
 import gramat.parsers.ParserSource;
 import stone.Stone;

@@ -1,4 +1,4 @@
-package gramat.pipeline;
+package gramat.expressions;
 
 import gramat.expressions.models.ModelExpression;
 import gramat.util.NameMap;
