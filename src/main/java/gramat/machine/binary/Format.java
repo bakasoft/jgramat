@@ -4,8 +4,8 @@ package gramat.machine.binary;
 import stone.StoneSchema;
 import gramat.machine.State;
 import gramat.models.automata.*;
-import gramat.expressions.MachineFactory;
-import gramat.assemblers.MachineAssembler;
+import gramat.pipeline.encoding.MachineEncoder;
+import gramat.pipeline.decoding.MachineDecoder;
 import gramat.parsers.ParserSource;
 import stone.Stone;
 import stone.io.StoneCharInput;
@@ -17,7 +17,7 @@ import java.nio.file.Path;
 public interface Format {
 
     static void write(State initial, Appendable output) throws IOException {
-        var factory = new MachineFactory();
+        var factory = new MachineEncoder();
         var schema = buildSchema();
         var machine = factory.createMachine(initial);
         var encoder = schema.createTextEncoder();
@@ -58,7 +58,7 @@ public interface Format {
 
         validate(machine);
 
-        var builder = new MachineAssembler(parsers);
+        var builder = new MachineDecoder(parsers);
 
         return builder.build(machine);
     }

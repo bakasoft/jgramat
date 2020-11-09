@@ -1,28 +1,29 @@
 package gramat.pipeline;
 
 import gramat.badges.BadgeSource;
-import gramat.expressions.*;
+import gramat.pipeline.assembling.ExpressionAssembler;
 import gramat.framework.Context;
 import gramat.graph.Graph;
 import gramat.input.Tape;
 import gramat.machine.State;
-import gramat.readers.models.ModelSource;
+import gramat.pipeline.compiling.*;
+import gramat.models.parsing.ModelSource;
 import gramat.parsers.ParserSource;
-import gramat.readers.GramatReader;
+import gramat.pipeline.parsing.GramatParser;
 import gramat.symbols.Alphabet;
 import gramat.util.NameMap;
 
 public class Pipeline {
 
     public static ModelSource toSource(Context ctx, Tape tape, ParserSource parsers) {
-        var reader = new GramatReader(ctx, tape, parsers);
+        var reader = new GramatParser(ctx, tape, parsers);
 
         return reader.parseSource();
     }
 
     public static Template toTemplate(Context ctx, Sentence sentence, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
         var graph = new Graph();
-        var template = ExpressionBuilder.build(ctx, graph, sentence.expression, sentence.dependencies, alphabet, badges, parsers);
+        var template = ExpressionAssembler.build(ctx, graph, sentence.expression, sentence.dependencies, alphabet, badges, parsers);
 
 //        System.out.println("########## TEMPLATE");
 //        new NodeFormatter(System.out).write(graph, template.main);
@@ -52,7 +53,7 @@ public class Pipeline {
     }
 
     public static Sentence toSentence(Context ctx, Tape tape, ParserSource parsers) {
-        var reader = new GramatReader(ctx, tape, parsers);
+        var reader = new GramatParser(ctx, tape, parsers);
         var expression = reader.readExpression();
         return new Sentence(expression, new NameMap<>());
     }

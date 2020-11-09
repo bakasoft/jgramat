@@ -1,6 +1,6 @@
 package gramat.models.test;
 
-import gramat.expressions.models.ModelExpression;
+import gramat.models.expressions.ModelExpression;
 
 public class ModelMatchPass implements ModelTest {
     public String input;

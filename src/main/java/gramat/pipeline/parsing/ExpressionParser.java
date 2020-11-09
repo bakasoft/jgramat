@@ -1,0 +1,142 @@
+package gramat.pipeline.parsing;
+
+import gramat.models.expressions.ModelExpressionFactory;
+import gramat.models.expressions.ModelExpression;
+
+import java.util.ArrayList;
+
+public interface ExpressionParser extends BaseParser, ValueParser {
+
+    default ModelExpression readExpression() {
+        var alternation = new ArrayList<ModelExpression>();
+        var sequence = new ArrayList<ModelExpression>();
+
+        while (true) {
+            var item = tryExpressionItem();
+
+            if (item == null) {
+                break;
+            }
+
+            sequence.add(item);
+
+            if (tryToken('|')) {
+                if (sequence.isEmpty()) {
+                    throw new RuntimeException();
+                }
+                alternation.add(ModelExpressionFactory.sequence(sequence));
+                sequence.clear();
+            }
+        }
+
+        // Flush left items
+        if (sequence.size() > 0) {
+            alternation.add(ModelExpressionFactory.sequence(sequence));
+        }
+
+        if (alternation.isEmpty()) {
+            throw new RuntimeException();
+        }
+        else if (alternation.size() == 1) {
+            return alternation.get(0);
+        }
+        else {
+            return ModelExpressionFactory.alternation(alternation);
+        }
+    }
+
+    default ModelExpression tryExpressionItem() {
+        var group = tryGroup();
+        if (group != null) {
+            return group;
+        }
+        var optional = tryOptional();
+        if (optional != null) {
+            return optional;
+        }
+
+        var repetition = tryRepetition();
+        if (repetition != null) {
+            return repetition;
+        }
+
+        var wild = tryWild();
+        if (wild != null) {
+            return wild;
+        }
+
+        var literal = tryQuotedString('\"');
+        if (literal != null) {
+            return ModelExpressionFactory.literal(literal);
+        }
+
+        var charClass = tryQuotedString('\'');
+        if (charClass != null) {
+            return ModelExpressionFactory.characterClass(charClass);
+        }
+
+        var reference = tryKeyword();
+        if (reference != null) {
+            return ModelExpressionFactory.reference(reference);
+        }
+
+        var call = tryCall();
+        if (call != null) {
+            return ModelExpressionFactory.call(call);
+        }
+
+        return null;
+    }
+
+    default ModelExpression tryOptional() {
+        if (tryToken('[')) {
+            var expr = readExpression();
+
+            expectToken(']');
+
+            return ModelExpressionFactory.optional(expr);
+        }
+        return null;
+    }
+
+    default ModelExpression tryGroup() {
+        if (tryToken('(')) {
+            var expr = readExpression();
+
+            expectToken(')');
+
+            return expr;
+        }
+        return null;
+    }
+
+    default ModelExpression tryRepetition() {
+        if (tryToken('{')) {
+            var minimum = 0;
+
+            if (tryToken('+')) {
+                minimum = 1;
+            }
+
+            var content = readExpression();
+            var separator = (ModelExpression)null;
+
+            if (tryToken('/')) {
+                separator = readExpression();
+            }
+
+            expectToken('}');
+
+            return ModelExpressionFactory.repetition(content, separator, minimum);
+        }
+        return null;
+    }
+
+    default ModelExpression tryWild() {
+        if (tryToken('*')) {
+            return ModelExpressionFactory.wild();
+        }
+        return null;
+    }
+
+}
