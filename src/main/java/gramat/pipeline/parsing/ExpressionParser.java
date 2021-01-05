@@ -1,15 +1,15 @@
 package gramat.pipeline.parsing;
 
-import gramat.scheme.models.expressions.ModelExpressionFactory;
-import gramat.scheme.models.expressions.ModelExpression;
+import gramat.scheme.data.expressions.ExpressionDataFactory;
+import gramat.scheme.data.expressions.ExpressionData;
 
 import java.util.ArrayList;
 
 public interface ExpressionParser extends BaseParser, ValueParser {
 
-    default ModelExpression readExpression() {
-        var alternation = new ArrayList<ModelExpression>();
-        var sequence = new ArrayList<ModelExpression>();
+    default ExpressionData readExpression() {
+        var alternation = new ArrayList<ExpressionData>();
+        var sequence = new ArrayList<ExpressionData>();
 
         while (true) {
             var item = tryExpressionItem();
@@ -24,14 +24,14 @@ public interface ExpressionParser extends BaseParser, ValueParser {
                 if (sequence.isEmpty()) {
                     throw new RuntimeException();
                 }
-                alternation.add(ModelExpressionFactory.sequence(sequence));
+                alternation.add(ExpressionDataFactory.sequence(sequence));
                 sequence.clear();
             }
         }
 
         // Flush left items
         if (sequence.size() > 0) {
-            alternation.add(ModelExpressionFactory.sequence(sequence));
+            alternation.add(ExpressionDataFactory.sequence(sequence));
         }
 
         if (alternation.isEmpty()) {
@@ -41,11 +41,11 @@ public interface ExpressionParser extends BaseParser, ValueParser {
             return alternation.get(0);
         }
         else {
-            return ModelExpressionFactory.alternation(alternation);
+            return ExpressionDataFactory.alternation(alternation);
         }
     }
 
-    default ModelExpression tryExpressionItem() {
+    default ExpressionData tryExpressionItem() {
         var group = tryGroup();
         if (group != null) {
             return group;
@@ -67,39 +67,39 @@ public interface ExpressionParser extends BaseParser, ValueParser {
 
         var literal = tryQuotedString('\"');
         if (literal != null) {
-            return ModelExpressionFactory.literal(literal);
+            return ExpressionDataFactory.literal(literal);
         }
 
         var charClass = tryQuotedString('\'');
         if (charClass != null) {
-            return ModelExpressionFactory.characterClass(charClass);
+            return ExpressionDataFactory.characterClass(charClass);
         }
 
         var reference = tryKeyword();
         if (reference != null) {
-            return ModelExpressionFactory.reference(reference);
+            return ExpressionDataFactory.reference(reference);
         }
 
         var call = tryCall();
         if (call != null) {
-            return ModelExpressionFactory.call(call);
+            return ExpressionDataFactory.call(call);
         }
 
         return null;
     }
 
-    default ModelExpression tryOptional() {
+    default ExpressionData tryOptional() {
         if (tryToken('[')) {
             var expr = readExpression();
 
             expectToken(']');
 
-            return ModelExpressionFactory.optional(expr);
+            return ExpressionDataFactory.optional(expr);
         }
         return null;
     }
 
-    default ModelExpression tryGroup() {
+    default ExpressionData tryGroup() {
         if (tryToken('(')) {
             var expr = readExpression();
 
@@ -110,7 +110,7 @@ public interface ExpressionParser extends BaseParser, ValueParser {
         return null;
     }
 
-    default ModelExpression tryRepetition() {
+    default ExpressionData tryRepetition() {
         if (tryToken('{')) {
             var minimum = 0;
 
@@ -119,7 +119,7 @@ public interface ExpressionParser extends BaseParser, ValueParser {
             }
 
             var content = readExpression();
-            var separator = (ModelExpression)null;
+            var separator = (ExpressionData)null;
 
             if (tryToken('/')) {
                 separator = readExpression();
@@ -127,14 +127,14 @@ public interface ExpressionParser extends BaseParser, ValueParser {
 
             expectToken('}');
 
-            return ModelExpressionFactory.repetition(content, separator, minimum);
+            return ExpressionDataFactory.repetition(content, separator, minimum);
         }
         return null;
     }
 
-    default ModelExpression tryWild() {
+    default ExpressionData tryWild() {
         if (tryToken('*')) {
-            return ModelExpressionFactory.wild();
+            return ExpressionDataFactory.wild();
         }
         return null;
     }

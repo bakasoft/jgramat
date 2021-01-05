@@ -1,8 +1,8 @@
 package gramat.pipeline.decoding;
 
-import gramat.scheme.core.badges.Badge;
-import gramat.scheme.core.badges.BadgeSource;
-import gramat.scheme.models.automata.ModelBadge;
+import gramat.scheme.common.badges.Badge;
+import gramat.scheme.common.badges.BadgeSource;
+import gramat.scheme.data.automata.BadgeData;
 
 import java.util.Objects;
 
@@ -18,13 +18,13 @@ public class BadgeDecoder {
         return source;
     }
 
-    public Badge build(ModelBadge model) {
-        Objects.requireNonNull(model);
+    public Badge build(BadgeData data) {
+        Objects.requireNonNull(data);
 
-        if(model.wild) {
+        if(data.wild) {
             return source.empty();
         }
-        var token = Objects.requireNonNull(model.token);
+        var token = Objects.requireNonNull(data.token);
 
         return source.badge(token);
     }

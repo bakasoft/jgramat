@@ -1,7 +1,7 @@
 package gramat;
 
 import gramat.formatting.StateFormatter;
-import gramat.scheme.machine.binary.Format;
+import gramat.pipeline.common.Format;
 import org.junit.Assert;
 import org.junit.Test;
 import util.TestUtils;

@@ -1,14 +1,14 @@
 package gramat.pipeline.assembling;
 
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Node;
-import gramat.scheme.models.expressions.ModelExpression;
-import gramat.scheme.models.expressions.ModelRepetition;
-import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Node;
+import gramat.scheme.data.expressions.ExpressionData;
+import gramat.scheme.data.expressions.RepetitionData;
+import gramat.scheme.models.sets.NodeSet;
 
 public interface RepetitionAssembler extends BaseAssembler {
 
-    default NodeSet compileRepetition(Graph graph, Node source, ModelRepetition repetition) {
+    default NodeSet compileRepetition(Graph graph, Node source, RepetitionData repetition) {
         if (repetition.separator != null) {
             if (repetition.minimum == 0) {
                 return compileZeroOrMany(graph, source, repetition.content, repetition.separator);
@@ -27,7 +27,7 @@ public interface RepetitionAssembler extends BaseAssembler {
         throw new RuntimeException();
     }
 
-    private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content) {
+    private NodeSet compileZeroOrMany(Graph graph, Node source, ExpressionData content) {
         var accepted = graph.createNode();
 
         graph.mergeNodesInto(
@@ -39,7 +39,7 @@ public interface RepetitionAssembler extends BaseAssembler {
         return NodeSet.of(source, accepted);
     }
 
-    private NodeSet compileZeroOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
+    private NodeSet compileZeroOrMany(Graph graph, Node source, ExpressionData content, ExpressionData separator) {
         var accepted = graph.createNode();
 
         graph.mergeNodesInto(
@@ -55,7 +55,7 @@ public interface RepetitionAssembler extends BaseAssembler {
         return NodeSet.of(source, accepted);
     }
 
-    private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content) {
+    private NodeSet compileOneOrMany(Graph graph, Node source, ExpressionData content) {
         var accepted = graph.createNode();
 
         graph.mergeNodesInto(
@@ -71,7 +71,7 @@ public interface RepetitionAssembler extends BaseAssembler {
         return NodeSet.of(accepted);
     }
 
-    private NodeSet compileOneOrMany(Graph graph, Node source, ModelExpression content, ModelExpression separator) {
+    private NodeSet compileOneOrMany(Graph graph, Node source, ExpressionData content, ExpressionData separator) {
         var accepted = graph.createNode();
 
         graph.mergeNodesInto(

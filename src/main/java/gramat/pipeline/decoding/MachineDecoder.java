@@ -1,9 +1,9 @@
 package gramat.pipeline.decoding;
 
-import gramat.scheme.machine.Effect;
-import gramat.scheme.machine.State;
-import gramat.parsers.ParserSource;
-import gramat.scheme.models.automata.ModelMachine;
+import gramat.scheme.Effect;
+import gramat.scheme.State;
+import gramat.scheme.common.parsers.ParserSource;
+import gramat.scheme.data.automata.MachineData;
 
 public class MachineDecoder {
 
@@ -21,7 +21,7 @@ public class MachineDecoder {
         this.actions = new ActionDecoder(transactions, badges);
     }
 
-    public State build(ModelMachine machine) {
+    public State build(MachineData machine) {
         for (var transition : machine.transitions) {
             var source = states.map(transition.source);
             var badge = badges.build(transition.badge);

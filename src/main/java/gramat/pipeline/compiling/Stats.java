@@ -1,7 +1,7 @@
 package gramat.pipeline.compiling;
 
-import gramat.scheme.models.expressions.ModelExpression;
-import gramat.scheme.models.expressions.ModelReference;
+import gramat.scheme.data.expressions.ExpressionData;
+import gramat.scheme.data.expressions.ReferenceData;
 import gramat.util.NameMap;
 
 import java.util.*;
@@ -16,9 +16,9 @@ public class Stats {
         this.count = count;
     }
 
-    public static Stats compute(ModelExpression main, NameMap<ModelExpression> expressions) {
+    public static Stats compute(ExpressionData main, NameMap<ExpressionData> expressions) {
         var references = new LinkedHashSet<String>();
-        var control = new HashSet<ModelExpression>();
+        var control = new HashSet<ExpressionData>();
         var stack = new ArrayDeque<String>();
 
         compute(main, expressions, stack, references, control);
@@ -26,10 +26,10 @@ public class Stats {
         return new Stats(references, control.size());
     }
 
-    private static void compute(ModelExpression main, NameMap<ModelExpression> expressions, Deque<String> stack, Set<String> references, Set<ModelExpression> control) {
+    private static void compute(ExpressionData main, NameMap<ExpressionData> expressions, Deque<String> stack, Set<String> references, Set<ExpressionData> control) {
         if (control.add(main)) {
-            if (main instanceof ModelReference) {
-                var reference = (ModelReference) main;
+            if (main instanceof ReferenceData) {
+                var reference = (ReferenceData) main;
 
                 if (!references.contains(reference.name)) {
                     if (stack.contains(reference.name)) {
@@ -48,7 +48,7 @@ public class Stats {
         }
     }
 
-    private static void compute(ModelExpression main, NameMap<ModelExpression> expressions, Deque<String> stack, Set<String> result, Set<ModelExpression> control, String name) {
+    private static void compute(ExpressionData main, NameMap<ExpressionData> expressions, Deque<String> stack, Set<String> result, Set<ExpressionData> control, String name) {
         stack.push(name);
 
         compute(main, expressions, stack, result, control);

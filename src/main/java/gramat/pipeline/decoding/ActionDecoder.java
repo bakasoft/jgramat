@@ -1,11 +1,11 @@
 package gramat.pipeline.decoding;
 
-import gramat.scheme.core.actions.*;
-import gramat.scheme.core.badges.BadgeToken;
+import gramat.scheme.common.actions.*;
+import gramat.scheme.common.badges.BadgeToken;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.scheme.models.automata.ModelAction;
-import gramat.scheme.models.automata.ModelActionRecursion;
-import gramat.scheme.models.automata.ModelActionTransaction;
+import gramat.scheme.data.automata.ActionData;
+import gramat.scheme.data.automata.ActionRecursionData;
+import gramat.scheme.data.automata.ActionTransactionData;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,27 +22,27 @@ public class ActionDecoder {
         this.transactions = transactions;
     }
 
-    public Action[] build(List<ModelAction> models) {
-        if (models == null) {
+    public Action[] build(List<ActionData> data) {
+        if (data == null) {
             return EMPTY;
         }
 
-        return models.stream().map(this::build).toArray(Action[]::new);
+        return data.stream().map(this::build).toArray(Action[]::new);
     }
 
-    public Action build(ModelAction data) {
-        if (data instanceof ModelActionRecursion) {
-            return build((ModelActionRecursion)data);
+    public Action build(ActionData data) {
+        if (data instanceof ActionRecursionData) {
+            return build((ActionRecursionData)data);
         }
-        else if (data instanceof ModelActionTransaction) {
-            return build((ModelActionTransaction)data);
+        else if (data instanceof ActionTransactionData) {
+            return build((ActionTransactionData)data);
         }
         else {
             throw new UnsupportedValueException(data);
         }
     }
 
-    public Action build(ModelActionRecursion data) {
+    public Action build(ActionRecursionData data) {
         var badge = badges.build(data.badge);
 
         if (!(badge instanceof BadgeToken)) {
@@ -59,7 +59,7 @@ public class ActionDecoder {
         }
     }
 
-    public Action build(ModelActionTransaction data) {
+    public Action build(ActionTransactionData data) {
         var trx = transactions.build(data.transaction);
 
         if (Objects.equals(data.type, "begin")) {

@@ -1,7 +1,7 @@
 package gramat.pipeline.decoding;
 
-import gramat.scheme.machine.State;
-import gramat.scheme.models.automata.ModelState;
+import gramat.scheme.State;
+import gramat.scheme.data.automata.StateData;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,17 +14,17 @@ public class StateDecoder {
         items = new LinkedHashMap<>();
     }
 
-    public State map(ModelState model) {
-        var state = items.computeIfAbsent(model.id, State::new);
+    public State map(StateData data) {
+        var state = items.computeIfAbsent(data.id, State::new);
 
         // Merge using OR
-        state.accepted |= model.accepted;
+        state.accepted |= data.accepted;
 
         return state;
     }
 
-    public State find(ModelState model) {
-        var state = items.get(model.id);
+    public State find(StateData data) {
+        var state = items.get(data.id);
 
         if (state == null) {
             throw new RuntimeException();

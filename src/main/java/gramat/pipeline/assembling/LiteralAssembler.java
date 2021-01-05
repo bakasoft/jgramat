@@ -1,13 +1,13 @@
 package gramat.pipeline.assembling;
 
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Node;
-import gramat.scheme.models.expressions.ModelLiteral;
-import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Node;
+import gramat.scheme.data.expressions.LiteralData;
+import gramat.scheme.models.sets.NodeSet;
 
 public interface LiteralAssembler extends BaseAssembler {
 
-    default NodeSet compileLiteral(Graph graph, Node source, ModelLiteral literal) {
+    default NodeSet compileLiteral(Graph graph, Node source, LiteralData literal) {
         var badge = getEmptyBadge();
         Node last = source;
 

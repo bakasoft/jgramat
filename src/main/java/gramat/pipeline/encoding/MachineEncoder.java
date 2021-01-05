@@ -1,15 +1,15 @@
 package gramat.pipeline.encoding;
 
-import gramat.scheme.core.actions.*;
-import gramat.scheme.core.actions.transactions.*;
-import gramat.scheme.core.badges.Badge;
-import gramat.scheme.core.badges.BadgeToken;
-import gramat.scheme.core.badges.BadgeWild;
+import gramat.scheme.common.actions.*;
+import gramat.scheme.common.actions.transactions.*;
+import gramat.scheme.common.badges.Badge;
+import gramat.scheme.common.badges.BadgeToken;
+import gramat.scheme.common.badges.BadgeWild;
 import gramat.eval.transactions.Transaction;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.scheme.machine.State;
-import gramat.scheme.models.automata.*;
-import gramat.scheme.core.symbols.*;
+import gramat.scheme.State;
+import gramat.scheme.data.automata.*;
+import gramat.scheme.common.symbols.*;
 
 import java.util.*;
 
@@ -17,18 +17,18 @@ public class MachineEncoder {
 
     // TODO Separate this file
 
-    private final Map<Badge, ModelBadge> badges;
-    private final Map<Transaction, ModelTransaction> transactions;
+    private final Map<Badge, BadgeData> badges;
+    private final Map<Transaction, TransactionData> transactions;
 
     public MachineEncoder() {
         badges = new LinkedHashMap<>();
         transactions = new LinkedHashMap<>();
     }
 
-    public ModelMachine createMachine(State initial) {
-        var machine = new ModelMachine();
-        var states = new LinkedHashMap<State, ModelState>();
-        var symbols = new LinkedHashMap<Symbol, ModelSymbol>();
+    public MachineData createMachine(State initial) {
+        var machine = new MachineData();
+        var states = new LinkedHashMap<State, StateData>();
+        var symbols = new LinkedHashMap<Symbol, SymbolData>();
         var control = new HashSet<State>();
         var queue = new LinkedList<State>();
 
@@ -50,7 +50,7 @@ public class MachineEncoder {
                         var effect = state.transition.getEffect(badge, symbol);
                         var mTarget = states.computeIfAbsent(effect.target, this::createState);
 
-                        var mTran = new ModelTransition();
+                        var mTran = new TransitionData();
                         mTran.source = mSource;
                         mTran.target = mTarget;
                         mTran.badge = mBadge;
@@ -72,33 +72,33 @@ public class MachineEncoder {
         return machine;
     }
 
-    private ModelBadge makeBadge(Badge badge) {
+    private BadgeData makeBadge(Badge badge) {
         return badges.computeIfAbsent(badge, this::createBadge);
     }
 
-    private ModelTransaction makeTransaction(Transaction transaction) {
+    private TransactionData makeTransaction(Transaction transaction) {
         return transactions.computeIfAbsent(transaction, this::createTransaction);
     }
 
-    private List<ModelAction> createActions(Action[] actions) {
-        var models = new ArrayList<ModelAction>();
+    private List<ActionData> createActions(Action[] actions) {
+        var data = new ArrayList<ActionData>();
         if (actions != null) {
             for (var action : actions) {
-                models.add(createAction(action));
+                data.add(createAction(action));
             }
         }
-        return models;
+        return data;
     }
 
-    private ModelAction createAction(Action action) {
+    private ActionData createAction(Action action) {
         if (action instanceof RecursionEnter) {
-            var result = new ModelActionRecursion();
+            var result = new ActionRecursionData();
             result.type = "enter";
             result.badge = makeBadge(((RecursionEnter) action).badge);
             return result;
         }
         else if (action instanceof RecursionExit) {
-            var result = new ModelActionRecursion();
+            var result = new ActionRecursionData();
             result.type = "exit";
             result.badge = makeBadge(((RecursionExit) action).badge);
             return result;
@@ -106,25 +106,25 @@ public class MachineEncoder {
         else if (action instanceof ActionTransaction) {
             var tran = makeTransaction(((ActionTransaction) action).getTransaction());
             if (action instanceof BeginAction) {
-                var result = new ModelActionTransaction();
+                var result = new ActionTransactionData();
                 result.type = "begin";
                 result.transaction = tran;
                 return result;
             }
             else if (action instanceof EndAction) {
-                var result = new ModelActionTransaction();
+                var result = new ActionTransactionData();
                 result.type = "end";
                 result.transaction = tran;
                 return result;
             }
             else if (action instanceof NotBeginAction) {
-                var result = new ModelActionTransaction();
+                var result = new ActionTransactionData();
                 result.type = "not-begin";
                 result.transaction = tran;
                 return result;
             }
             else if (action instanceof NotEndAction) {
-                var result = new ModelActionTransaction();
+                var result = new ActionTransactionData();
                 result.type = "not-end";
                 result.transaction = tran;
                 return result;
@@ -138,73 +138,73 @@ public class MachineEncoder {
         }
     }
 
-    private ModelTransaction createTransaction(Transaction tran) {
-        var model = new ModelTransaction();
+    private TransactionData createTransaction(Transaction tran) {
+        var data = new TransactionData();
 
-        model.id = tran.getID();
+        data.id = tran.getID();
 
         if (tran instanceof ArrayTransaction) {
-            model.type = "array";
-            model.typeHint = ((ArrayTransaction) tran).getTypeHint();
+            data.type = "array";
+            data.typeHint = ((ArrayTransaction) tran).getTypeHint();
         }
         else if (tran instanceof AttributeTransaction) {
-            model.type = "attribute";
-            model.defaultName = ((AttributeTransaction) tran).getDefaultName();
+            data.type = "attribute";
+            data.defaultName = ((AttributeTransaction) tran).getDefaultName();
         }
         else if (tran instanceof NameTransaction) {
-            model.type = "name";
+            data.type = "name";
         }
         else if (tran instanceof ObjectTransaction) {
-            model.type = "object";
-            model.typeHint = ((ObjectTransaction) tran).getTypeHint();
+            data.type = "object";
+            data.typeHint = ((ObjectTransaction) tran).getTypeHint();
         }
         else if (tran instanceof ValueTransaction) {
-            model.type = "value";
-            model.parserName = ((ValueTransaction) tran).getParser().getName();
+            data.type = "value";
+            data.parserName = ((ValueTransaction) tran).getParser().getName();
         }
         else {
             throw new UnsupportedValueException(tran);
         }
 
-        return model;
+        return data;
     }
 
-    public ModelState createState(State state) {
-        var model = new ModelState();
-        model.id = state.id;
-        model.accepted = state.accepted;
-        return model;
+    public StateData createState(State state) {
+        var data = new StateData();
+        data.id = state.id;
+        data.accepted = state.accepted;
+        return data;
     }
 
-    public ModelBadge createBadge(Badge badge) {
-        var model = new ModelBadge();
+    public BadgeData createBadge(Badge badge) {
+        var data = new BadgeData();
         if (badge instanceof BadgeToken) {
-            model.token = ((BadgeToken) badge).token;
+            data.token = ((BadgeToken) badge).token;
         }
         else if (badge instanceof BadgeWild) {
-            model.wild = true;
+            data.wild = true;
         }
         else {
             throw new UnsupportedValueException(badge);
         }
-        return model;
+        return data;
     }
 
-    public ModelSymbol createSymbol(Symbol symbol) {
+    public SymbolData createSymbol(Symbol symbol) {
         if (symbol instanceof SymbolChar) {
-            var model = new ModelSymbolChar();
-            model.value = ((SymbolChar) symbol).value;
-            return model;
+            var data = new SymbolCharData();
+            data.value = ((SymbolChar) symbol).value;
+            return data;
         }
         else if (symbol instanceof SymbolRange) {
             var range = (SymbolRange)symbol;
-            var model = new ModelSymbolRange();
-            model.begin = range.begin;
-            model.end = range.end;
-            return model;
+            var data = new SymbolRangeData();
+            data.begin = range.begin;
+            data.end = range.end;
+            return data;
         }
         else if (symbol instanceof SymbolWild) {
-            return new ModelSymbolWild();
+            return new SymbolWildData();
         }
         else {
             throw new UnsupportedValueException(symbol);

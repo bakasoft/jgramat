@@ -1,10 +1,10 @@
 package gramat.pipeline.compiling;
 
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Root;
-import gramat.scheme.graph.plugs.Extension;
-import gramat.scheme.graph.plugs.Plug;
-import gramat.scheme.graph.plugs.PlugType;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Root;
+import gramat.scheme.models.plugs.Extension;
+import gramat.scheme.models.plugs.Plug;
+import gramat.scheme.models.plugs.PlugType;
 
 import java.util.LinkedHashSet;
 

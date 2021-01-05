@@ -1,13 +1,13 @@
 package gramat.pipeline.parsing;
 
-import gramat.scheme.models.parsing.ModelCall;
+import gramat.scheme.data.parsing.CallData;
 
 public interface CallParser extends BaseParser, ValueParser, ExpressionParser {
 
     @Override
-    default ModelCall tryCall() {
+    default CallData tryCall() {
         if (tryToken('@')) {
-            var call = new ModelCall();
+            var call = new CallData();
 
             call.keyword = readString();
 

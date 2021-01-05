@@ -1,13 +1,13 @@
 package gramat.pipeline.assembling;
 
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Node;
-import gramat.scheme.models.expressions.ModelReference;
-import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Node;
+import gramat.scheme.data.expressions.ReferenceData;
+import gramat.scheme.models.sets.NodeSet;
 
 public interface ReferenceAssembler extends BaseAssembler {
 
-    default NodeSet compileReference(Graph graph, Node source, ModelReference reference) {
+    default NodeSet compileReference(Graph graph, Node source, ReferenceData reference) {
         if (getRecursiveReferences().contains(reference.name)) {
             var symbol = getAlphabet().reference(reference.name);
             var badge = getEmptyBadge();

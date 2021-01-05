@@ -2,8 +2,8 @@ package gramat.pipeline.parsing;
 
 import gramat.exceptions.UnexpectedCharException;
 import gramat.input.Tape;
-import gramat.scheme.models.parsing.ModelCall;
-import gramat.parsers.ValueParser;
+import gramat.scheme.data.parsing.CallData;
+import gramat.scheme.common.parsers.ValueParser;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface BaseParser {
 
     Tape getTape();
 
-    ModelCall tryCall();
+    CallData tryCall();
 
     default boolean tryToken(char chr) {
         var tape = getTape();

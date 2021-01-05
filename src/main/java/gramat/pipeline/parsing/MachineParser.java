@@ -1,15 +1,15 @@
 package gramat.pipeline.parsing;
 
 import gramat.exceptions.UnexpectedCharException;
-import gramat.scheme.models.automata.*;
+import gramat.scheme.data.automata.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public interface MachineParser extends BaseParser, ValueParser {
 
-    default ModelMachine parseMachine() {
-        var machine = new ModelMachine();
+    default MachineData parseMachine() {
+        var machine = new MachineData();
         var tape = getTape();
 
         skipVoid();
@@ -49,7 +49,7 @@ public interface MachineParser extends BaseParser, ValueParser {
         return machine;
     }
 
-    default ModelTransition tryTransition(ModelMachine machine) {
+    default TransitionData tryTransition(MachineData machine) {
         if (!tryToken('T')) {
             return null;
         }
@@ -60,7 +60,7 @@ public interface MachineParser extends BaseParser, ValueParser {
 
         var targetId = readString();
 
-        var transition = new ModelTransition();
+        var transition = new TransitionData();
         transition.source = machine.mergeState(sourceId);
         transition.target = machine.mergeState(targetId);
 
@@ -96,29 +96,29 @@ public interface MachineParser extends BaseParser, ValueParser {
         return transition;
     }
 
-    default ModelAction read_action() {
+    default ActionData read_action() {
         // TODO
         throw new UnsupportedOperationException();
     }
 
-    default ModelSymbol read_symbol() {
-        ModelSymbol symbol;
+    default SymbolData read_symbol() {
+        SymbolData symbol;
         var tape = getTape();
         if (tape.peek() == '*') {
             tape.move();
-            symbol = new ModelSymbolWild();
+            symbol = new SymbolWildData();
         }
         else {
             var arguments = read_arguments();
 
             if (arguments.size() == 1) {
-                symbol = new ModelSymbolChar();
-                ((ModelSymbolChar)symbol).value = arguments.get(0).charAt(0);
+                symbol = new SymbolCharData();
+                ((SymbolCharData)symbol).value = arguments.get(0).charAt(0);
             }
             else if (arguments.size() == 2) {
-                symbol = new ModelSymbolRange();
-                ((ModelSymbolRange)symbol).begin = arguments.get(0).charAt(0);
-                ((ModelSymbolRange)symbol).end = arguments.get(1).charAt(0);
+                symbol = new SymbolRangeData();
+                ((SymbolRangeData)symbol).begin = arguments.get(0).charAt(0);
+                ((SymbolRangeData)symbol).end = arguments.get(1).charAt(0);
             }
             else {
                 throw new RuntimeException("unexpected number of arguments: " + tape.getLocation());

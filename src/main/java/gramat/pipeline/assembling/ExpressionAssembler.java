@@ -1,22 +1,22 @@
 package gramat.pipeline.assembling;
 
-import gramat.scheme.core.badges.Badge;
-import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.common.badges.Badge;
+import gramat.scheme.common.badges.BadgeSource;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.pipeline.compiling.ExtensionMaker;
 import gramat.pipeline.compiling.Stats;
-import gramat.pipeline.compiling.Template;
+import gramat.scheme.models.Template;
 import gramat.framework.Context;
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Node;
-import gramat.scheme.graph.Root;
-import gramat.scheme.graph.plugs.Extension;
-import gramat.parsers.ParserSource;
-import gramat.parsers.ValueParser;
-import gramat.scheme.models.expressions.*;
-import gramat.scheme.core.symbols.Alphabet;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Node;
+import gramat.scheme.models.Root;
+import gramat.scheme.models.plugs.Extension;
+import gramat.scheme.common.parsers.ParserSource;
+import gramat.scheme.common.parsers.ValueParser;
+import gramat.scheme.data.expressions.*;
+import gramat.scheme.common.symbols.Alphabet;
 import gramat.util.NameMap;
-import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.sets.NodeSet;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ public class ExpressionAssembler implements BaseAssembler,
         WildAssembler,
         SpecialAssembler {
 
-    public static Template build(Context ctx, Graph graph, ModelExpression main, NameMap<ModelExpression> expressions, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+    public static Template build(Context ctx, Graph graph, ExpressionData main, NameMap<ExpressionData> expressions, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
         try (var ignore = ctx.pushLayer("Building Expression");) {
 
             ctx.info("Analyzing expression...");
@@ -60,18 +60,18 @@ public class ExpressionAssembler implements BaseAssembler,
     }
 
     private final Context ctx;
-    private final NameMap<ModelExpression> expressions;
+    private final NameMap<ExpressionData> expressions;
     private final Queue<String> dependencyQueue;
     private final Stats stats;
     private final Alphabet symbols;
     private final BadgeSource badges;
     private final ParserSource parsers;
 
-    private final Set<ModelExpression> buildCount;
+    private final Set<ExpressionData> buildCount;
 
-    private final HashMap<ModelExpression, Integer> trxIds;
+    private final HashMap<ExpressionData, Integer> trxIds;
 
-    private ExpressionAssembler(Context ctx, NameMap<ModelExpression> expressions, Stats stats, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+    private ExpressionAssembler(Context ctx, NameMap<ExpressionData> expressions, Stats stats, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
         this.ctx = ctx;
         this.expressions = expressions;
         this.trxIds = new LinkedHashMap<>();
@@ -83,56 +83,56 @@ public class ExpressionAssembler implements BaseAssembler,
         this.parsers = parsers;
     }
 
-    public Root build(Graph graph, ModelExpression expression) {
+    public Root build(Graph graph, ExpressionData expression) {
         var initial = graph.createNode();
         var accepted = compileExpression(graph, initial, expression);
         return new Root(initial, accepted);
     }
 
     @Override
-    public NodeSet compileExpression(Graph graph, Node source, ModelExpression expression) {
+    public NodeSet compileExpression(Graph graph, Node source, ExpressionData expression) {
         buildCount.add(expression);
 
         ctx.setTotal(0, buildCount.size());
 
-        if (expression instanceof ModelOptional) {
-            return compileOptional(graph, source, (ModelOptional)expression);
+        if (expression instanceof OptionalData) {
+            return compileOptional(graph, source, (OptionalData)expression);
         }
-        else if (expression instanceof ModelRepetition) {
-            return compileRepetition(graph, source, (ModelRepetition)expression);
+        else if (expression instanceof RepetitionData) {
+            return compileRepetition(graph, source, (RepetitionData)expression);
         }
-        else if (expression instanceof ModelSequence) {
-            return compileSequence(graph, source, (ModelSequence)expression);
+        else if (expression instanceof SequenceData) {
+            return compileSequence(graph, source, (SequenceData)expression);
         }
-        else if (expression instanceof ModelAlternation) {
-            return compileAlternation(graph, source, (ModelAlternation)expression);
+        else if (expression instanceof AlternationData) {
+            return compileAlternation(graph, source, (AlternationData)expression);
         }
-        else if (expression instanceof ModelRange) {
-            return compileRange(graph, source, (ModelRange)expression);
+        else if (expression instanceof RangeData) {
+            return compileRange(graph, source, (RangeData)expression);
         }
-        else if (expression instanceof ModelLiteral) {
-            return compileLiteral(graph, source, (ModelLiteral)expression);
+        else if (expression instanceof LiteralData) {
+            return compileLiteral(graph, source, (LiteralData)expression);
         }
-        else if (expression instanceof ModelReference) {
-            return compileReference(graph, source, (ModelReference)expression);
+        else if (expression instanceof ReferenceData) {
+            return compileReference(graph, source, (ReferenceData)expression);
         }
-        else if (expression instanceof ModelWild) {
-            return compileWild(graph, source, (ModelWild)expression);
+        else if (expression instanceof WildData) {
+            return compileWild(graph, source, (WildData)expression);
         }
-        else if (expression instanceof ModelValue) {
-            return compileValue(graph, source, (ModelValue)expression);
+        else if (expression instanceof ValueData) {
+            return compileValue(graph, source, (ValueData)expression);
         }
-        else if (expression instanceof ModelArray) {
-            return compileArray(graph, source, (ModelArray)expression);
+        else if (expression instanceof ArrayData) {
+            return compileArray(graph, source, (ArrayData)expression);
         }
-        else if (expression instanceof ModelObject) {
-            return compileObject(graph, source, (ModelObject)expression);
+        else if (expression instanceof ObjectData) {
+            return compileObject(graph, source, (ObjectData)expression);
         }
-        else if (expression instanceof ModelAttribute) {
-            return compileAttribute(graph, source, (ModelAttribute)expression);
+        else if (expression instanceof AttributeData) {
+            return compileAttribute(graph, source, (AttributeData)expression);
         }
-        else if (expression instanceof ModelName) {
-            return compileName(graph, source, (ModelName)expression);
+        else if (expression instanceof NameData) {
+            return compileName(graph, source, (NameData)expression);
         }
         else {
             throw new UnsupportedValueException(expression);
@@ -147,7 +147,7 @@ public class ExpressionAssembler implements BaseAssembler,
     }
 
     @Override
-    public int nextTransactionID(ModelExpression expression) {
+    public int nextTransactionID(ExpressionData expression) {
         return trxIds.computeIfAbsent(expression, k -> trxIds.size());
     }
 
@@ -167,7 +167,7 @@ public class ExpressionAssembler implements BaseAssembler,
     }
 
     @Override
-    public ModelExpression findExpression(String name) {
+    public ExpressionData findExpression(String name) {
         return expressions.find(name);
     }
 

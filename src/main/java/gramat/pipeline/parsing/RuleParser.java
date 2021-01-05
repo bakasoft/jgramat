@@ -1,13 +1,13 @@
 package gramat.pipeline.parsing;
 
-import gramat.scheme.models.parsing.ModelRule;
+import gramat.scheme.data.parsing.RuleData;
 
 public interface RuleParser extends BaseParser, ValueParser, ExpressionParser {
-    default ModelRule tryRule() {
+    default RuleData tryRule() {
         var keyword = tryString();
 
         if (keyword != null) {
-            var rule = new ModelRule();
+            var rule = new RuleData();
 
             rule.keyword = keyword;
 

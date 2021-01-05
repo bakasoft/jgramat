@@ -1,11 +1,11 @@
 package gramat.pipeline.decoding;
 
-import gramat.scheme.models.automata.ModelSymbol;
-import gramat.scheme.models.automata.ModelSymbolChar;
-import gramat.scheme.models.automata.ModelSymbolRange;
-import gramat.scheme.models.automata.ModelSymbolWild;
-import gramat.scheme.core.symbols.Alphabet;
-import gramat.scheme.core.symbols.Symbol;
+import gramat.scheme.data.automata.SymbolData;
+import gramat.scheme.data.automata.SymbolCharData;
+import gramat.scheme.data.automata.SymbolRangeData;
+import gramat.scheme.data.automata.SymbolWildData;
+import gramat.scheme.common.symbols.Alphabet;
+import gramat.scheme.common.symbols.Symbol;
 
 public class SymbolDecoder {
 
@@ -15,16 +15,16 @@ public class SymbolDecoder {
         alphabet = new Alphabet();
     }
 
-    public Symbol build(ModelSymbol model) {
-        if (model instanceof ModelSymbolWild) {
+    public Symbol build(SymbolData data) {
+        if (data instanceof SymbolWildData) {
             return alphabet.wild();
         }
-        else if (model instanceof ModelSymbolChar) {
-            var s = (ModelSymbolChar)model;
+        else if (data instanceof SymbolCharData) {
+            var s = (SymbolCharData)data;
             return alphabet.character(s.value);
         }
-        else if (model instanceof ModelSymbolRange) {
-            var s = (ModelSymbolRange)model;
+        else if (data instanceof SymbolRangeData) {
+            var s = (SymbolRangeData)data;
             return alphabet.range(s.begin, s.end);
         }
         else {

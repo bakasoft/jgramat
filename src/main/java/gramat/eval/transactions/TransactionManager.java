@@ -1,6 +1,6 @@
 package gramat.eval.transactions;
 
-import gramat.scheme.core.badges.Badge;
+import gramat.scheme.common.badges.Badge;
 import gramat.eval.EvalContext;
 
 import java.util.*;

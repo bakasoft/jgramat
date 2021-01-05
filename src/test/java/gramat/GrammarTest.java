@@ -1,20 +1,19 @@
 package gramat;
 
-import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.common.badges.BadgeSource;
 import gramat.eval.Evaluator;
 import gramat.exceptions.UnsupportedValueException;
 import gramat.framework.Context;
 import gramat.framework.StandardContext;
 import gramat.input.Tape;
-import gramat.scheme.machine.State;
-import gramat.scheme.machine.binary.Format;
-import gramat.scheme.models.formatters.ExpressionFormatter;
-import gramat.scheme.models.test.ModelEvalPass;
-import gramat.parsers.ParserSource;
+import gramat.scheme.data.parsing.GrammarData;
+import gramat.scheme.State;
+import gramat.pipeline.common.Format;
+import gramat.formatting.ExpressionFormatter;
+import gramat.scheme.data.test.EvalPassData;
+import gramat.scheme.common.parsers.ParserSource;
 import gramat.pipeline.Pipeline;
-import gramat.pipeline.compiling.Sentence;
-import gramat.scheme.models.parsing.ModelSource;
-import gramat.scheme.core.symbols.Alphabet;
+import gramat.scheme.common.symbols.Alphabet;
 import gramat.util.WorkingFile;
 import org.junit.Test;
 import util.TestUtils;
@@ -72,11 +71,11 @@ public class GrammarTest {
                         && file.hasExtension("txt", "json"));
     }
 
-    private ModelSource testSource(Context ctx, WorkingFile grammarFile) {
+    private GrammarData testSource(Context ctx, WorkingFile grammarFile) {
         var tape = Tape.of(grammarFile.getAbsolutePath());
 
         var parsers = new ParserSource();
-        var source = Pipeline.toSource(ctx, tape, parsers);
+        var source = Pipeline.toGrammarData(ctx, tape, parsers);
 
         var alphabet = new Alphabet();
         var badges = new BadgeSource();
@@ -86,14 +85,18 @@ public class GrammarTest {
         return source;
     }
 
-    public void runTests(Context ctx, ModelSource source, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
+    public void runTests(Context ctx, GrammarData source, Alphabet alphabet, BadgeSource badges, ParserSource parsers) {
         var cache = new LinkedHashMap<String, State>();
         for (var test : source.tests) {
-            if (test instanceof ModelEvalPass) {
-                var pass = (ModelEvalPass)test;
+            if (test instanceof EvalPassData) {
+                var pass = (EvalPassData)test;
                 var expressionStr = ExpressionFormatter.format(pass.expression);
+                var grammarData = new GrammarData();
+                grammarData.main = pass.expression;
+                grammarData.rules = source.rules;
+
                 var state = cache.computeIfAbsent(expressionStr, k ->
-                        Pipeline.toState(ctx, new Sentence(pass.expression, source.rules), alphabet, badges, parsers)
+                        Pipeline.toState(ctx, grammarData, alphabet, badges, parsers)
                 );
                 var tape = new Tape(pass.input);
 
@@ -110,7 +113,7 @@ public class GrammarTest {
         }
     }
 
-    private State testCompilation(Context ctx, WorkingFile grammarFile, ModelSource source, BadgeSource badges) throws IOException {
+    private State testCompilation(Context ctx, WorkingFile grammarFile, GrammarData grammarData, BadgeSource badges) throws IOException {
         var compiledFile = grammarFile.withExtension("gmc");
 
         if (!compiledFile.exists()) {
@@ -118,7 +121,7 @@ public class GrammarTest {
 
             var alphabet = new Alphabet();
             var parsers = new ParserSource();
-            var state = Pipeline.toState(ctx, new Sentence(source.main, source.rules), alphabet, badges, parsers);
+            var state = Pipeline.toState(ctx, grammarData, alphabet, badges, parsers);
 
             try (var output = compiledFile.openWriter()) {
                 Format.write(state, output);

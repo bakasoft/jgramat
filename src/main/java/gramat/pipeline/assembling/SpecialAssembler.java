@@ -1,51 +1,51 @@
 package gramat.pipeline.assembling;
 
-import gramat.scheme.core.actions.*;
+import gramat.scheme.common.actions.*;
 import gramat.eval.transactions.Transaction;
-import gramat.scheme.core.actions.transactions.*;
+import gramat.scheme.common.actions.transactions.*;
 import gramat.exceptions.UnsupportedValueException;
-import gramat.scheme.graph.Graph;
-import gramat.scheme.graph.Node;
-import gramat.scheme.graph.util.DirType;
-import gramat.scheme.graph.sets.NodeSet;
-import gramat.scheme.models.expressions.*;
+import gramat.scheme.models.Graph;
+import gramat.scheme.models.Node;
+import gramat.scheme.models.util.DirType;
+import gramat.scheme.models.sets.NodeSet;
+import gramat.scheme.data.expressions.*;
 
 import java.util.ArrayList;
 
 public interface SpecialAssembler extends BaseAssembler {
 
-    default NodeSet compileArray(Graph graph, Node source, ModelArray array) {
+    default NodeSet compileArray(Graph graph, Node source, ArrayData array) {
         var id = nextTransactionID(array);
         var trx = new ArrayTransaction(id, array.type);
         return wrapActions(graph, source, array.content, trx);
     }
 
-    default NodeSet compileAttribute(Graph graph, Node source, ModelAttribute attribute) {
+    default NodeSet compileAttribute(Graph graph, Node source, AttributeData attribute) {
         var id = nextTransactionID(attribute);
         var trx = new AttributeTransaction(id, attribute.name);
         return wrapActions(graph, source, attribute.content, trx);
     }
 
-    default NodeSet compileName(Graph graph, Node source, ModelName name) {
+    default NodeSet compileName(Graph graph, Node source, NameData name) {
         var id = nextTransactionID(name);
         var trx = new NameTransaction(id);
         return wrapActions(graph, source, name.content, trx);
     }
 
-    default NodeSet compileObject(Graph graph, Node source, ModelObject object) {
+    default NodeSet compileObject(Graph graph, Node source, ObjectData object) {
         var id = nextTransactionID(object);
         var trx = new ObjectTransaction(id, object.type);
         return wrapActions(graph, source, object.content, trx);
     }
 
-    default NodeSet compileValue(Graph graph, Node source, ModelValue value) {
+    default NodeSet compileValue(Graph graph, Node source, ValueData value) {
         var parser = findParser(value.parser);
         var id = nextTransactionID(value);
         var trx = new ValueTransaction(id, parser);
         return wrapActions(graph, source, value.content, trx);
     }
 
-    private NodeSet wrapActions(Graph graph, Node source, ModelExpression expression, Transaction transaction) {
+    private NodeSet wrapActions(Graph graph, Node source, ExpressionData expression, Transaction transaction) {
         graph.capturings.push(new ArrayList<>());
 
         var targets = compileExpression(graph, source, expression);

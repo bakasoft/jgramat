@@ -1,9 +1,9 @@
 package gramat.eval;
 
-import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.common.badges.BadgeSource;
 import gramat.framework.Context;
 import gramat.input.Tape;
-import gramat.scheme.machine.State;
+import gramat.scheme.State;
 import gramat.util.PP;
 import gramat.util.StringUtils;
 

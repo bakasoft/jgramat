@@ -1,14 +1,14 @@
 package gramat.pipeline.compiling;
 
-import gramat.scheme.core.actions.*;
-import gramat.scheme.core.badges.BadgeSource;
+import gramat.scheme.common.actions.*;
+import gramat.scheme.common.badges.BadgeSource;
 import gramat.framework.Context;
-import gramat.scheme.machine.Effect;
-import gramat.scheme.machine.State;
-import gramat.scheme.graph.*;
-import gramat.scheme.core.symbols.Alphabet;
+import gramat.scheme.Effect;
+import gramat.scheme.State;
+import gramat.scheme.models.*;
+import gramat.scheme.common.symbols.Alphabet;
 import gramat.util.Count;
-import gramat.scheme.graph.sets.NodeSet;
+import gramat.scheme.models.sets.NodeSet;
 
 import java.util.*;
 
