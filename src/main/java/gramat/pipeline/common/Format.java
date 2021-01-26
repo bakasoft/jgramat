@@ -3,14 +3,13 @@ package gramat.pipeline.common;
 
 import gramat.scheme.State;
 import gramat.scheme.data.automata.*;
-import stone.StoneSchema;
+import org.beat.Beat;
 import gramat.pipeline.encoding.MachineEncoder;
 import gramat.pipeline.decoding.MachineDecoder;
 import gramat.scheme.common.parsers.ParserSource;
-import stone.Stone;
-import stone.io.StoneCharInput;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -18,26 +17,25 @@ public interface Format {
 
     static void write(State initial, Appendable output) throws IOException {
         var factory = new MachineEncoder();
-        var schema = buildSchema();
+        var beat = buildSchema();
         var machine = factory.createMachine(initial);
-        var encoder = schema.createTextEncoder();
 
-        encoder.write(machine, Stone.prettyOutput(output));
+        beat.writeText(machine, output, true);
     }
 
-    static StoneSchema buildSchema() {
-        var schema = new StoneSchema();
-        schema.addType(MachineData.class);
-        schema.addType(StateData.class);
-        schema.addType(TransactionData.class);
-        schema.addType(ActionRecursionData.class);
-        schema.addType(ActionTransactionData.class);
-        schema.addType(BadgeData.class);
-        schema.addType(SymbolCharData.class);
-        schema.addType(SymbolRangeData.class);
-        schema.addType(SymbolWildData.class);
-        schema.addType(TransitionData.class);
-        return schema;
+    static Beat buildSchema() {
+        return Beat.builder()
+                .withObject(MachineData.class)
+                .withObject(StateData.class)
+                .withObject(TransactionData.class)
+                .withObject(ActionRecursionData.class)
+                .withObject(ActionTransactionData.class)
+                .withObject(BadgeData.class)
+                .withObject(SymbolCharData.class)
+                .withObject(SymbolRangeData.class)
+                .withObject(SymbolWildData.class)
+                .withObject(TransitionData.class)
+                .build();
     }
 
     static State read(Path path) throws IOException {
@@ -46,14 +44,9 @@ public interface Format {
         }
     }
 
-    static State read(Readable input) throws IOException {
-        return read(Stone.charInput(input));
-    }
-
-    static State read(StoneCharInput input) throws IOException{
-        var schema = buildSchema();
-        var decoder = schema.createTextDecoder();
-        var machine = (MachineData)decoder.read(input);
+    static State read(Reader input) {
+        var beat = buildSchema();
+        var machine = beat.readText(input, MachineData.class);
         var parsers = new ParserSource();
 
         validate(machine);
